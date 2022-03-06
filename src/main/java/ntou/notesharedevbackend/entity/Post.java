@@ -22,8 +22,8 @@ public class Post {
 
     // attributes
     private String type;
-    private ArrayList<String> author; // 共筆發起人以及管理員，用來核准加入共筆queue的
-    private String email;
+    private ArrayList<String> email; // 共筆發起人以及管理員，用來核准加入共筆queue的
+    private String author;
     private String department;
     private String subject;
     private String title;
@@ -37,8 +37,8 @@ public class Post {
     // constructors
     public Post() {
     }
-    public Post(String type, ArrayList<String> author, String email, String department, String subject, String title,
-                String content, Date date, Integer price, ArrayList<Comment> comments, ArrayList<Note> answers,ArrayList<String> wantEnterUsersEmail) {
+    public Post(String type, String author, ArrayList<String> email, String department, String subject, String title,
+                String content, Date date, Integer price, ArrayList<Comment> comments, ArrayList<Note> answers, ArrayList<String> wantEnterUsersEmail) {
         this.type = type;
         this.author = author;
         this.email = email;
@@ -62,19 +62,19 @@ public class Post {
         this.type = type;
     }
 
-    public ArrayList<String> getAuthor() {
+    public String getAuthor() {
         return author;
     }
 
-    public void setAuthor(ArrayList<String> author) {
+    public void setAuthor(String author) {
         this.author = author;
     }
 
-    public String getEmail() {
+    public ArrayList<String> getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(ArrayList<String> email) {
         this.email = email;
     }
 

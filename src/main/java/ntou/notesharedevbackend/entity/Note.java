@@ -51,7 +51,7 @@ public class Note {
     private String professor;
     private String school;
     private ArrayList<String> exitFolders; //所屬的所有資料夾
-    private String parentFolders; //目前資料夾
+    private String parentFolder; //目前資料夾
     private Integer likeCount;
     private Integer favoriteCount;
     private Integer unlockCount;
@@ -86,7 +86,7 @@ public class Note {
         this.professor = professor;
         this.school = school;
         this.exitFolders = exitFolders;
-        this.parentFolders = parentFolders;
+        this.parentFolder = parentFolders;
         this.likeCount = likeCount;
         this.favoriteCount = favoriteCount;
         this.unlockCount = unlockCount;
@@ -204,11 +204,11 @@ public class Note {
     }
 
     public String getParentFolders() {
-        return parentFolders;
+        return parentFolder;
     }
 
-    public void setParentFolders(String parentFolders) {
-        this.parentFolders = parentFolders;
+    public void setParentFolders(String parentFolder) {
+        this.parentFolder = parentFolder;
     }
 
     public Integer getLikeCount() {
