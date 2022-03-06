@@ -1,4 +1,4 @@
-//        email* string
+//        email* string unique
 //        name*	string
 //        password* string
 //        verifyCode string

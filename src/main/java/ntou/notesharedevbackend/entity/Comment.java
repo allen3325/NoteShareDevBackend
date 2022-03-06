@@ -22,14 +22,16 @@ public class Comment {
     private Boolean isReference;
     private Integer likeCount;
     private ArrayList<String> liker;
-    private ArrayList<String> referenceNotes;
+    private ArrayList<String> referenceNotesURL;
     private Integer floor;
     private Date date;
 
     // constructors
     public Comment() {
     }
-    public Comment(String author, String email, String content, Boolean isBest, Boolean isReference, Integer likeCount, ArrayList<String> liker, ArrayList<String> referenceNotes, Integer floor, Date date) {
+    public Comment(String author, String email, String content, Boolean isBest, Boolean isReference,
+                   Integer likeCount, ArrayList<String> liker, ArrayList<String> referenceNotesURL, Integer floor,
+                   Date date) {
         this.author = author;
         this.email = email;
         this.content = content;
@@ -37,7 +39,7 @@ public class Comment {
         this.isReference = isReference;
         this.likeCount = likeCount;
         this.liker = liker;
-        this.referenceNotes = referenceNotes;
+        this.referenceNotesURL = referenceNotesURL;
         this.floor = floor;
         this.date = date;
     }
@@ -100,11 +102,11 @@ public class Comment {
     }
 
     public ArrayList<String> getReferenceNotes() {
-        return referenceNotes;
+        return referenceNotesURL;
     }
 
-    public void setReferenceNotes(ArrayList<String> referenceNotes) {
-        this.referenceNotes = referenceNotes;
+    public void setReferenceNotes(ArrayList<String> referenceNotesURL) {
+        this.referenceNotesURL = referenceNotesURL;
     }
 
     public Integer getFloor() {

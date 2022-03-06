@@ -22,7 +22,7 @@ public class Post {
 
     // attributes
     private String type;
-    private String author;
+    private ArrayList<String> author; // 共筆發起人以及管理員，用來核准加入共筆queue的
     private String email;
     private String department;
     private String subject;
@@ -32,11 +32,13 @@ public class Post {
     private Integer price;
     private ArrayList<Comment> comments;
     private ArrayList<Note> answers;
+    private ArrayList<String> wantEnterUsersEmail;
 
     // constructors
     public Post() {
     }
-    public Post(String type, String author, String email, String department, String subject, String title, String content, Date date, Integer price, ArrayList<Comment> comments, ArrayList<Note> answers) {
+    public Post(String type, ArrayList<String> author, String email, String department, String subject, String title,
+                String content, Date date, Integer price, ArrayList<Comment> comments, ArrayList<Note> answers,ArrayList<String> wantEnterUsersEmail) {
         this.type = type;
         this.author = author;
         this.email = email;
@@ -48,6 +50,7 @@ public class Post {
         this.price = price;
         this.comments = comments;
         this.answers = answers;
+        this.wantEnterUsersEmail = wantEnterUsersEmail;
     }
 
     // getter and setter
@@ -59,11 +62,11 @@ public class Post {
         this.type = type;
     }
 
-    public String getAuthor() {
+    public ArrayList<String> getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(ArrayList<String> author) {
         this.author = author;
     }
 
@@ -137,5 +140,13 @@ public class Post {
 
     public void setAnswers(ArrayList<Note> answers) {
         this.answers = answers;
+    }
+
+    public ArrayList<String> getWantEnterUsersEmail() {
+        return wantEnterUsersEmail;
+    }
+
+    public void setWantEnterUsersEmail(ArrayList<String> wantEnterUsersEmail) {
+        this.wantEnterUsersEmail = wantEnterUsersEmail;
     }
 }

@@ -2,18 +2,14 @@
 //        科系department* string
 //        科目subject* string
 //        標題title* string
-//        日期date* date  default
-//	      內容content string
-//        作者author* [string]
-//        編輯人editor* string default建立筆記者 (共筆用)
-//        管理員manager  string (共筆用)
+//        作者Email authorEmail* [string]
+//        編輯人Email editorEmail* string default //建立筆記者 (共筆用)
+// 	      發起人headerEmail* string default 建立筆記者
+//        管理員Email managerEmail  string (共筆用)
+//        作者Name authorName* [string]
+// 	      發起人headerName* string default 建立筆記者
 //        老師professor string
 //        學校school string
-//        圖片picURL [string]
-//        檔案filesURL [string]
-//        tag   [string]
-//        hiddenTag [string]
-//        markdown [string]
 //        exitFolders* [string]//所屬的所有資料夾
 //        parentFolder* string //目前資料夾
 //        愛心數like* int default 0
@@ -24,10 +20,16 @@
 //        留言 [commentSchema]
 //        販賣點數 int
 //        公開/私人* boolean default false
+//        是否投稿 isSubmit; // 用於懸賞區投稿
 //        可否引用* boolean default false
-//        存檔版本* int default 1
-//        版本號* int default 1
-//        貢獻者 [string]
+//        tag   [string]
+//        hiddenTag [string]
+//        貢獻者 [string] // 投稿人 (懸賞用)
+//        存檔版本 versionToSave* [VersionContent]
+//        版本 version   [VersionContent]
+//        postID string // 紀錄貼文ID用於投稿後存在哪
+//        isBest Boolean // 用於懸賞區看是否為最佳解
+
 package ntou.notesharedevbackend.entity;
 
 import java.util.ArrayList;
@@ -40,20 +42,16 @@ public class Note {
     private String department;
     private String subject;
     private String title;
-    private Date date;
-    private String content;
-    private String author;
-    // token: private String editor;
-    private String manager; //共筆用
+    private String headerEmail; //建立筆記者
+    private String headerName; //建立筆記者
+    private ArrayList<String> authorEmail; //所有作者
+    private ArrayList<String> authorName; //所有作者
+    // token: private ArrayList<String> editorEmail;
+    private String managerEmail; //共筆用
     private String professor;
     private String school;
-    private ArrayList<String> picURL;
-    private ArrayList<String> fileURL;
-    private ArrayList<String> tags;
-    private ArrayList<String> hiddenTags;
-    private ArrayList<String> markdown;
-    private ArrayList<String> exitFolders;
-    private String parentFolders;
+    private ArrayList<String> exitFolders; //所屬的所有資料夾
+    private String parentFolders; //目前資料夾
     private Integer likeCount;
     private Integer favoriteCount;
     private Integer unlockCount;
@@ -62,30 +60,31 @@ public class Note {
     private ArrayList<Comment> comments;
     private Integer price;
     private Boolean isPublic;
+    private Boolean isSubmit; // 用於懸賞區投稿
     private Boolean quotable;
-    private Integer versionToSave;
-    private Integer version;
+    private ArrayList<String> tag;
+    private ArrayList<String> hiddenTag;
+    private ArrayList<VersionContent> versionToSave;
+    private ArrayList<VersionContent> version;
     private ArrayList<String> contributors;
+    private String postID; // 紀錄貼文ID用於投稿後存在哪
+    private Boolean isBest; // 用於懸賞區看是否為最佳解
 
     // constructors
     public Note() {
     }
-    public Note(String type, String department, String subject, String title, Date date, String content, String author, String manager, String professor, String school, ArrayList<String> picURL, ArrayList<String> fileURL, ArrayList<String> tags, ArrayList<String> hiddenTags, ArrayList<String> markdown, ArrayList<String> exitFolders, String parentFolders, Integer likeCount, Integer favoriteCount, Integer unlockCount, Boolean downloadable, Integer commentCount, ArrayList<Comment> comments, Integer price, Boolean isPublic, Boolean quotable, Integer versionToSave, Integer version, ArrayList<String> contributors) {
+    public Note(String type, String department, String subject, String title, String headerEmail, String headerName, ArrayList<String> authorEmail, ArrayList<String> authorName, String managerEmail, String professor, String school, ArrayList<String> exitFolders, String parentFolders, Integer likeCount, Integer favoriteCount, Integer unlockCount, Boolean downloadable, Integer commentCount, ArrayList<Comment> comments, Integer price, Boolean isPublic, Boolean isSubmit, Boolean quotable, ArrayList<String> tag, ArrayList<String> hiddenTag, ArrayList<VersionContent> versionToSave, ArrayList<VersionContent> version, ArrayList<String> contributors, String postID, Boolean isBest) {
         this.type = type;
         this.department = department;
         this.subject = subject;
         this.title = title;
-        this.date = date;
-        this.content = content;
-        this.author = author;
-        this.manager = manager;
+        this.headerEmail = headerEmail;
+        this.headerName = headerName;
+        this.authorEmail = authorEmail;
+        this.authorName = authorName;
+        this.managerEmail = managerEmail;
         this.professor = professor;
         this.school = school;
-        this.picURL = picURL;
-        this.fileURL = fileURL;
-        this.tags = tags;
-        this.hiddenTags = hiddenTags;
-        this.markdown = markdown;
         this.exitFolders = exitFolders;
         this.parentFolders = parentFolders;
         this.likeCount = likeCount;
@@ -96,10 +95,15 @@ public class Note {
         this.comments = comments;
         this.price = price;
         this.isPublic = isPublic;
+        this.isSubmit = isSubmit;
         this.quotable = quotable;
+        this.tag = tag;
+        this.hiddenTag = hiddenTag;
         this.versionToSave = versionToSave;
         this.version = version;
         this.contributors = contributors;
+        this.postID = postID;
+        this.isBest = isBest;
     }
 
     // getter and setter
@@ -135,36 +139,44 @@ public class Note {
         this.title = title;
     }
 
-    public Date getDate() {
-        return date;
+    public String getHeaderEmail() {
+        return headerEmail;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setHeaderEmail(String headerEmail) {
+        this.headerEmail = headerEmail;
     }
 
-    public String getContent() {
-        return content;
+    public String getHeaderName() {
+        return headerName;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setHeaderName(String headerName) {
+        this.headerName = headerName;
     }
 
-    public String getAuthor() {
-        return author;
+    public ArrayList<String> getAuthorEmail() {
+        return authorEmail;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setAuthorEmail(ArrayList<String> authorEmail) {
+        this.authorEmail = authorEmail;
     }
 
-    public String getManager() {
-        return manager;
+    public ArrayList<String> getAuthorName() {
+        return authorName;
     }
 
-    public void setManager(String manager) {
-        this.manager = manager;
+    public void setAuthorName(ArrayList<String> authorName) {
+        this.authorName = authorName;
+    }
+
+    public String getManagerEmail() {
+        return managerEmail;
+    }
+
+    public void setManagerEmail(String managerEmail) {
+        this.managerEmail = managerEmail;
     }
 
     public String getProfessor() {
@@ -181,46 +193,6 @@ public class Note {
 
     public void setSchool(String school) {
         this.school = school;
-    }
-
-    public ArrayList<String> getPicURL() {
-        return picURL;
-    }
-
-    public void setPicURL(ArrayList<String> picURL) {
-        this.picURL = picURL;
-    }
-
-    public ArrayList<String> getFileURL() {
-        return fileURL;
-    }
-
-    public void setFileURL(ArrayList<String> fileURL) {
-        this.fileURL = fileURL;
-    }
-
-    public ArrayList<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(ArrayList<String> tags) {
-        this.tags = tags;
-    }
-
-    public ArrayList<String> getHiddenTags() {
-        return hiddenTags;
-    }
-
-    public void setHiddenTags(ArrayList<String> hiddenTags) {
-        this.hiddenTags = hiddenTags;
-    }
-
-    public ArrayList<String> getMarkdown() {
-        return markdown;
-    }
-
-    public void setMarkdown(ArrayList<String> markdown) {
-        this.markdown = markdown;
     }
 
     public ArrayList<String> getExitFolders() {
@@ -303,6 +275,14 @@ public class Note {
         isPublic = aPublic;
     }
 
+    public Boolean getSubmit() {
+        return isSubmit;
+    }
+
+    public void setSubmit(Boolean submit) {
+        isSubmit = submit;
+    }
+
     public Boolean getQuotable() {
         return quotable;
     }
@@ -311,19 +291,35 @@ public class Note {
         this.quotable = quotable;
     }
 
-    public Integer getVersionToSave() {
+    public ArrayList<String> getTag() {
+        return tag;
+    }
+
+    public void setTag(ArrayList<String> tag) {
+        this.tag = tag;
+    }
+
+    public ArrayList<String> getHiddenTag() {
+        return hiddenTag;
+    }
+
+    public void setHiddenTag(ArrayList<String> hiddenTag) {
+        this.hiddenTag = hiddenTag;
+    }
+
+    public ArrayList<VersionContent> getVersionToSave() {
         return versionToSave;
     }
 
-    public void setVersionToSave(Integer versionToSave) {
+    public void setVersionToSave(ArrayList<VersionContent> versionToSave) {
         this.versionToSave = versionToSave;
     }
 
-    public Integer getVersion() {
+    public ArrayList<VersionContent> getVersion() {
         return version;
     }
 
-    public void setVersion(Integer version) {
+    public void setVersion(ArrayList<VersionContent> version) {
         this.version = version;
     }
 
@@ -333,5 +329,21 @@ public class Note {
 
     public void setContributors(ArrayList<String> contributors) {
         this.contributors = contributors;
+    }
+
+    public String getPostID() {
+        return postID;
+    }
+
+    public void setPostID(String postID) {
+        this.postID = postID;
+    }
+
+    public Boolean getBest() {
+        return isBest;
+    }
+
+    public void setBest(Boolean best) {
+        isBest = best;
     }
 }
