@@ -21,6 +21,7 @@ import java.util.Date;
 public class Post {
 
     // attributes
+    private String id;
     private String type;
     private ArrayList<String> email; // 共筆發起人以及管理員，用來核准加入共筆queue的
     private String author;
@@ -148,5 +149,13 @@ public class Post {
 
     public void setWantEnterUsersEmail(ArrayList<String> wantEnterUsersEmail) {
         this.wantEnterUsersEmail = wantEnterUsersEmail;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

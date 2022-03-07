@@ -38,6 +38,7 @@ import java.util.ArrayList;
 public class User {
 
     // attributes
+    private String id;
     private String email;
     private String name;
     private String password;
@@ -72,6 +73,15 @@ public class User {
     }
 
     // getter and setter
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getEmail() {
         return email;
     }
