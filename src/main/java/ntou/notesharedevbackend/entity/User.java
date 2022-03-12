@@ -30,6 +30,7 @@
 //        fans string//發文通知粉絲 存email或是userName
 //        coin * int default 初始點數
 package ntou.notesharedevbackend.entity;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -55,21 +56,6 @@ public class User {
 
     // constructor
     public User() {
-    }
-    public User(String email, String name, String password, String verifyCode, boolean isAdmin, boolean isActivate, String profile, ArrayList<String> strength, ArrayList<Folder> folders, ArrayList<String> subscribe, ArrayList<String> bell, ArrayList<String> fans, Integer coin) {
-        this.email = email;
-        this.name = name;
-        this.password = password;
-        this.verifyCode = verifyCode;
-        this.isAdmin = isAdmin;
-        this.isActivate = isActivate;
-        this.profile = profile;
-        this.strength = strength;
-        this.folders = folders;
-        this.subscribe = subscribe;
-        this.bell = bell;
-        this.fans = fans;
-        this.coin = coin;
     }
 
     // getter and setter

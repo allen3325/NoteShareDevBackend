@@ -9,12 +9,15 @@
 //    樓層數* int
 package ntou.notesharedevbackend.entity;
 
+import org.bson.types.ObjectId;
+
 import java.util.ArrayList;
 import java.util.Date;
 
 public class Comment {
 
     // attributes
+    private ObjectId id;
     private String author;
     private String email;
     private String content;
@@ -28,23 +31,19 @@ public class Comment {
 
     // constructors
     public Comment() {
-    }
-    public Comment(String author, String email, String content, Boolean isBest, Boolean isReference,
-                   Integer likeCount, ArrayList<String> liker, ArrayList<String> referenceNotesURL, Integer floor,
-                   Date date) {
-        this.author = author;
-        this.email = email;
-        this.content = content;
-        this.isBest = isBest;
-        this.isReference = isReference;
-        this.likeCount = likeCount;
-        this.liker = liker;
-        this.referenceNotesURL = referenceNotesURL;
-        this.floor = floor;
-        this.date = date;
+        this.id = new ObjectId();
     }
 
     // getter and setter
+
+    public ArrayList<String> getReferenceNotesURL() {
+        return referenceNotesURL;
+    }
+
+    public void setReferenceNotesURL(ArrayList<String> referenceNotesURL) {
+        this.referenceNotesURL = referenceNotesURL;
+    }
+
     public String getAuthor() {
         return author;
     }

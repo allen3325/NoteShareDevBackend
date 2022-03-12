@@ -34,27 +34,22 @@ public class Post {
     private ArrayList<Comment> comments;
     private ArrayList<Note> answers;
     private ArrayList<String> wantEnterUsersEmail;
+    private Boolean isPublic;
 
     // constructors
     public Post() {
     }
-    public Post(String type, String author, ArrayList<String> email, String department, String subject, String title,
-                String content, Date date, Integer price, ArrayList<Comment> comments, ArrayList<Note> answers, ArrayList<String> wantEnterUsersEmail) {
-        this.type = type;
-        this.author = author;
-        this.email = email;
-        this.department = department;
-        this.subject = subject;
-        this.title = title;
-        this.content = content;
-        this.date = date;
-        this.price = price;
-        this.comments = comments;
-        this.answers = answers;
-        this.wantEnterUsersEmail = wantEnterUsersEmail;
-    }
 
     // getter and setter
+
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
+    }
+
     public String getType() {
         return type;
     }

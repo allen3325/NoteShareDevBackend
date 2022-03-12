@@ -24,33 +24,41 @@
 
 package ntou.notesharedevbackend.entity;
 
+import org.bson.types.ObjectId;
+
 import java.util.ArrayList;
 
 public class Folder {
 
     // attributes
+    private ObjectId id;
     private String folderName;
     private ArrayList<Folder> folders;
     private ArrayList<Note> notes;
     private Boolean isPublic;
+    private Boolean isFavorite; // 收藏區
 
     // constructors
     public Folder() {
-    }
-    public Folder(String folderName, ArrayList<Folder> folders, ArrayList<Note> notes, Boolean isPublic) {
-        this.folderName = folderName;
-        this.folders = folders;
-        this.notes = notes;
-        this.isPublic = isPublic;
+        this.id = new ObjectId();
     }
 
     // getter and setter
+
     public String getFolderName() {
         return folderName;
     }
 
     public void setFolderName(String folderName) {
         this.folderName = folderName;
+    }
+
+    public Boolean getFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        this.isFavorite = favorite;
     }
 
     public ArrayList<Folder> getFolders() {

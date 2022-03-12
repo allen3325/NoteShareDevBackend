@@ -6,12 +6,15 @@
 //    markdown [string]
 package ntou.notesharedevbackend.entity;
 
+import org.bson.types.ObjectId;
+
 import java.util.ArrayList;
 import java.util.Date;
 
 public class VersionContent {
 
     // attributes
+    private ObjectId id;
     private Date date;
     private String content;
     private ArrayList<String> picURL;
@@ -20,16 +23,11 @@ public class VersionContent {
 
     // constructors
     public VersionContent() {
-    }
-    public VersionContent(Date date, String content, ArrayList<String> picURL, ArrayList<String> fileURL, ArrayList<String> markdown) {
-        this.date = date;
-        this.content = content;
-        this.picURL = picURL;
-        this.fileURL = fileURL;
-        this.markdown = markdown;
+        this.id = new ObjectId();
     }
 
     // getter and setter
+
     public Date getDate() {
         return date;
     }

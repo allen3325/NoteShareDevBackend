@@ -11,13 +11,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping(value = "/posts", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/post", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PostController {
     @Autowired
     private PostService postService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Post> getPost(@PathVariable("id") String id){
+    @GetMapping("/{postID}")
+    public ResponseEntity<Post> getPost(@PathVariable("postID") String id){
         Post post = postService.getPost(id);
         return ResponseEntity.ok(post);
     }
@@ -28,22 +28,22 @@ public class PostController {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{id}")
+                .path("/{postID}")
                 .buildAndExpand(post.getId())
                 .toUri();
 
         return ResponseEntity.created(location).body(post);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{postID}")
     public ResponseEntity<Post> replacePost(
-            @PathVariable("id") String id, @RequestBody Post request) {
+            @PathVariable("postID") String id, @RequestBody Post request) {
         Post post = postService.replacePost(id, request);
         return ResponseEntity.ok(post);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteProduct(@PathVariable("id") String id) {
+    @DeleteMapping("/{postID}")
+    public ResponseEntity deletePost(@PathVariable("postID") String id) {
         postService.deletePost(id);
         return ResponseEntity.noContent().build();
     }

@@ -32,12 +32,14 @@
 
 package ntou.notesharedevbackend.entity;
 
+import org.bson.types.ObjectId;
+
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Note {
 
     // attributes
+    private ObjectId id;
     private String type;
     private String department;
     private String subject;
@@ -57,7 +59,7 @@ public class Note {
     private Integer unlockCount;
     private Boolean downloadable;
     private Integer commentCount;
-    private ArrayList<Comment> comments;
+    private ArrayList<Comment> comment;
     private Integer price;
     private Boolean isPublic;
     private Boolean isSubmit; // 用於懸賞區投稿
@@ -69,50 +71,39 @@ public class Note {
     private ArrayList<String> contributors;
     private String postID; // 紀錄貼文ID用於投稿後存在哪
     private Boolean isBest; // 用於懸賞區看是否為最佳解
+    private Boolean isFavorite; // 收藏區
 
     // constructors
     public Note() {
-    }
-    public Note(String type, String department, String subject, String title, String headerEmail, String headerName, ArrayList<String> authorEmail, ArrayList<String> authorName, String managerEmail, String professor, String school, ArrayList<String> exitFolders, String parentFolders, Integer likeCount, Integer favoriteCount, Integer unlockCount, Boolean downloadable, Integer commentCount, ArrayList<Comment> comments, Integer price, Boolean isPublic, Boolean isSubmit, Boolean quotable, ArrayList<String> tag, ArrayList<String> hiddenTag, ArrayList<VersionContent> versionToSave, ArrayList<VersionContent> version, ArrayList<String> contributors, String postID, Boolean isBest) {
-        this.type = type;
-        this.department = department;
-        this.subject = subject;
-        this.title = title;
-        this.headerEmail = headerEmail;
-        this.headerName = headerName;
-        this.authorEmail = authorEmail;
-        this.authorName = authorName;
-        this.managerEmail = managerEmail;
-        this.professor = professor;
-        this.school = school;
-        this.exitFolders = exitFolders;
-        this.parentFolder = parentFolders;
-        this.likeCount = likeCount;
-        this.favoriteCount = favoriteCount;
-        this.unlockCount = unlockCount;
-        this.downloadable = downloadable;
-        this.commentCount = commentCount;
-        this.comments = comments;
-        this.price = price;
-        this.isPublic = isPublic;
-        this.isSubmit = isSubmit;
-        this.quotable = quotable;
-        this.tag = tag;
-        this.hiddenTag = hiddenTag;
-        this.versionToSave = versionToSave;
-        this.version = version;
-        this.contributors = contributors;
-        this.postID = postID;
-        this.isBest = isBest;
+        this.id = new ObjectId();
     }
 
+
     // getter and setter
+
+
     public String getType() {
         return type;
     }
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getParentFolder() {
+        return parentFolder;
+    }
+
+    public void setParentFolder(String parentFolder) {
+        this.parentFolder = parentFolder;
+    }
+
+    public Boolean getFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        isFavorite = favorite;
     }
 
     public String getDepartment() {
@@ -251,12 +242,12 @@ public class Note {
         this.commentCount = commentCount;
     }
 
-    public ArrayList<Comment> getComments() {
-        return comments;
+    public ArrayList<Comment> getComment() {
+        return comment;
     }
 
-    public void setComments(ArrayList<Comment> comments) {
-        this.comments = comments;
+    public void setComment(ArrayList<Comment> comment) {
+        this.comment = comment;
     }
 
     public Integer getPrice() {
