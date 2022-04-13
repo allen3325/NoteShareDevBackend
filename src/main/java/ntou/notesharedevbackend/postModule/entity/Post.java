@@ -10,8 +10,10 @@
 //        point* int
 //        comment [commentSchema]
 //        answer [NoteSchema]
-package ntou.notesharedevbackend.entity;
+package ntou.notesharedevbackend.postModule.entity;
 
+import ntou.notesharedevbackend.entity.Comment;
+import ntou.notesharedevbackend.entity.Note;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ public class Post {
 
     // attributes
     private String id;
-    private String type;
+    private String type; // QA, reward, collaboration
     private ArrayList<String> email; // 共筆發起人以及管理員，用來核准加入共筆queue的
     private String author;
     private String department;
@@ -32,7 +34,7 @@ public class Post {
     private Date date;
     private Integer price;
     private ArrayList<Comment> comments;
-    private ArrayList<Note> answers;
+    private ArrayList<String> answers; // to save note's ID
     private ArrayList<String> wantEnterUsersEmail;
     private Boolean isPublic;
 
@@ -130,13 +132,14 @@ public class Post {
         this.comments = comments;
     }
 
-    public ArrayList<Note> getAnswers() {
-        return answers;
-    }
-
-    public void setAnswers(ArrayList<Note> answers) {
-        this.answers = answers;
-    }
+    //TODO: note's ID
+//    public ArrayList<Note> getAnswers() {
+//        return answers;
+//    }
+//
+//    public void setAnswers(ArrayList<Note> answers) {
+//        this.answers = answers;
+//    }
 
     public ArrayList<String> getWantEnterUsersEmail() {
         return wantEnterUsersEmail;

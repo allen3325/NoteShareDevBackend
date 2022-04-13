@@ -34,7 +34,7 @@ public class Folder {
     private ObjectId id;
     private String folderName;
     private ArrayList<Folder> folders;
-    private ArrayList<Note> notes;
+    private ArrayList<String> notes; // note's ID
     private Boolean isPublic;
     private Boolean isFavorite; // 收藏區
 
@@ -69,13 +69,11 @@ public class Folder {
         this.folders = folders;
     }
 
-    public ArrayList<Note> getNotes() {
+    public ArrayList<String> getNotes() {
         return notes;
     }
 
-    public void setNotes(ArrayList<Note> notes) {
-        this.notes = notes;
-    }
+    // TODO : setNotes add Note's ID in ArrayList
 
     public Boolean getPublic() {
         return isPublic;

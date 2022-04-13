@@ -1,7 +1,7 @@
-package ntou.notesharedevbackend.controller;
+package ntou.notesharedevbackend.postModule.controller;
 
-import ntou.notesharedevbackend.entity.Post;
-import ntou.notesharedevbackend.service.PostService;
+import ntou.notesharedevbackend.postModule.entity.Post;
+import ntou.notesharedevbackend.postModule.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

@@ -21,12 +21,12 @@ public class Comment {
     private String author;
     private String email;
     private String content;
-    private Boolean isBest;
-    private Boolean isReference;
-    private Integer likeCount;
-    private ArrayList<String> liker;
-    private ArrayList<String> referenceNotesURL;
-    private Integer floor;
+    private Boolean isBest; // 是不是最佳解
+    private Boolean isReference; // 是不是參考解
+    private Integer likeCount; // 愛心數
+    private ArrayList<String> liker; // 按愛心的人
+    private ArrayList<String> referenceNotesURL; // 參考筆記的URL
+    private Integer floor; // 樓層數
     private Date date;
 
     // constructors

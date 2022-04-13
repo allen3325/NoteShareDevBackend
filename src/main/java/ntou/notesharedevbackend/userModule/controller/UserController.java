@@ -1,7 +1,7 @@
-package ntou.notesharedevbackend.controller;
+package ntou.notesharedevbackend.userModule.controller;
 
-import ntou.notesharedevbackend.entity.User;
-import ntou.notesharedevbackend.service.UserService;
+import ntou.notesharedevbackend.userModule.entity.User;
+import ntou.notesharedevbackend.userModule.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

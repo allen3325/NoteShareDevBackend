@@ -40,7 +40,7 @@ public class Note {
 
     // attributes
     private ObjectId id;
-    private String type;
+    private String type; // normal, reward, collaboration
     private String department;
     private String subject;
     private String title;
@@ -53,7 +53,8 @@ public class Note {
     private String professor;
     private String school;
     private ArrayList<String> exitFolders; //所屬的所有資料夾
-    private String parentFolder; //目前資料夾
+    //TODO: reference 是否還可以知道目前資料夾？
+    //    private String parentFolder; //目前資料夾
     private Integer likeCount;
     private Integer favoriteCount;
     private Integer unlockCount;
@@ -66,8 +67,8 @@ public class Note {
     private Boolean quotable;
     private ArrayList<String> tag;
     private ArrayList<String> hiddenTag;
-    private ArrayList<VersionContent> versionToSave;
-    private ArrayList<VersionContent> version;
+    private ArrayList<VersionContent> versionToSave; // 存檔欄位
+    private ArrayList<VersionContent> version; // 版本
     private ArrayList<String> contributors;
     private String postID; // 紀錄貼文ID用於投稿後存在哪
     private Boolean isBest; // 用於懸賞區看是否為最佳解
@@ -90,13 +91,13 @@ public class Note {
         this.type = type;
     }
 
-    public String getParentFolder() {
-        return parentFolder;
-    }
-
-    public void setParentFolder(String parentFolder) {
-        this.parentFolder = parentFolder;
-    }
+//    public String getParentFolder() {
+//        return parentFolder;
+//    }
+//
+//    public void setParentFolder(String parentFolder) {
+//        this.parentFolder = parentFolder;
+//    }
 
     public Boolean getFavorite() {
         return isFavorite;
@@ -194,13 +195,13 @@ public class Note {
         this.exitFolders = exitFolders;
     }
 
-    public String getParentFolders() {
-        return parentFolder;
-    }
-
-    public void setParentFolders(String parentFolder) {
-        this.parentFolder = parentFolder;
-    }
+//    public String getParentFolders() {
+//        return parentFolder;
+//    }
+//
+//    public void setParentFolders(String parentFolder) {
+//        this.parentFolder = parentFolder;
+//    }
 
     public Integer getLikeCount() {
         return likeCount;

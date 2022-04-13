@@ -1,6 +1,6 @@
-package ntou.notesharedevbackend.service;
+package ntou.notesharedevbackend.userModule.service;
 
-import ntou.notesharedevbackend.entity.User;
+import ntou.notesharedevbackend.userModule.entity.User;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

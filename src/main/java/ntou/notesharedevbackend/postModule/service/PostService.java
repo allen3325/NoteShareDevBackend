@@ -1,6 +1,6 @@
-package ntou.notesharedevbackend.service;
+package ntou.notesharedevbackend.postModule.service;
 
-import ntou.notesharedevbackend.entity.Post;
+import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,8 @@ public class PostService {
                 break;
             case "reward":
                 post.setPrice(request.getPrice());
-                post.setAnswers(request.getAnswers());
+                //TODO: fix that note is reference
+//                post.setAnswers(request.getAnswers());
                 break;
         }
         return postRepository.insert(post);
@@ -65,7 +66,8 @@ public class PostService {
                 break;
             case "reward":
                 post.setPrice(request.getPrice());
-                post.setAnswers(request.getAnswers());
+                //TODO: fix that note is reference
+//                post.setAnswers(request.getAnswers());
                 break;
         }
         return postRepository.save(post);

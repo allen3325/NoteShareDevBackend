@@ -29,7 +29,8 @@
 //        follow [user's email] 開啟小鈴鐺
 //        fans string//發文通知粉絲 存email或是userName
 //        coin * int default 初始點數
-package ntou.notesharedevbackend.entity;
+package ntou.notesharedevbackend.userModule.entity;
+import ntou.notesharedevbackend.entity.Folder;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
