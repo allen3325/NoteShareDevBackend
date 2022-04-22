@@ -15,15 +15,14 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import org.springframework.web.multipart.*;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import javax.servlet.http.*;
+import java.io.*;
 import java.nio.file.*;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.*;
 
 /* class to demonstrate use of Drive files list API */
 public class UploadConfig {
@@ -92,6 +91,19 @@ public class UploadConfig {
         File file = service.files().create(fileMetadata, mediaContent)
                 .setFields("id")
                 .execute();
+
         return file.getId();
+    }
+
+    public static void saveFile(MultipartFile[] files) {
+        try {
+            for (MultipartFile file : files) {
+                Path path = Paths.get("files", file.getOriginalFilename());
+                OutputStream os = Files.newOutputStream(path);
+                os.write(file.getBytes());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
