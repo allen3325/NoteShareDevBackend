@@ -30,14 +30,13 @@
 //        fans string//發文通知粉絲 存email或是userName
 //        coin * int default 初始點數
 package ntou.notesharedevbackend.userModule.entity;
-import ntou.notesharedevbackend.entity.Folder;
-import org.bson.types.ObjectId;
+import ntou.notesharedevbackend.folderModule.entity.Folder;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 
 @Document(collection = "user")
-public class User {
+public class AppUser {
 
     // attributes
     private String id;
@@ -56,7 +55,7 @@ public class User {
     private Integer coin;
 
     // constructor
-    public User() {
+    public AppUser() {
     }
 
     // getter and setter
