@@ -2,10 +2,10 @@ package ntou.notesharedevbackend.verificationModule.entity;
 
 import javax.validation.constraints.NotEmpty;
 public class SendMailRequest {
-    @NotEmpty
+    //@NotEmpty
     private String subject;
 
-    @NotEmpty
+    //@NotEmpty
     private String content;
 
     @NotEmpty

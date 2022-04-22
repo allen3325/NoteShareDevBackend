@@ -20,10 +20,10 @@ public class MailController {
     private MailService mailService;
 
     @PostMapping("/randomPassword")
-    public ResponseEntity<Void> randomPassword(@Valid @RequestBody SendMailRequest request) {
+    public ResponseEntity<SendMailRequest> randomPassword(@Valid @RequestBody SendMailRequest request) {
 
-        mailService.randomPasswordMail(request);
-        return ResponseEntity.noContent().build();
+        mailService.randomPasswordMail("lasfkjdf",request);
+        return ResponseEntity.ok(request);
     }
 
     @PostMapping("/resetPassword")
