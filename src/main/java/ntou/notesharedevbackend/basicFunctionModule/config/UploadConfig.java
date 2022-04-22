@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.*;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +67,7 @@ public class UploadConfig {
         return credential;
     }
 
-    public static void uploadFile(String fileName) throws IOException, GeneralSecurityException {
+    public static String uploadFile(String fileName) throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
@@ -85,19 +86,12 @@ public class UploadConfig {
 
         File fileMetadata = new File();
         fileMetadata.setName(fileName);
+
         java.io.File filePath = new java.io.File("files/" + fileName);
         FileContent mediaContent = new FileContent(fileType, filePath);
         File file = service.files().create(fileMetadata, mediaContent)
                 .setFields("id")
                 .execute();
-        System.out.println("File ID: " + file.getId());
-    }
-
-    public static void main(String[] args) {
-        try {
-            UploadConfig.uploadFile("photo.jpg");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        return file.getId();
     }
 }
