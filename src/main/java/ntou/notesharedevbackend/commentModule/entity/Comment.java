@@ -1,4 +1,4 @@
-package ntou.notesharedevbackend.entity;
+package ntou.notesharedevbackend.commentModule.entity;
 
 import org.bson.types.ObjectId;
 
@@ -18,7 +18,7 @@ import java.util.Date;
 public class Comment {
 
     // attributes
-    private ObjectId id;
+    private String id;
     private String author;
     private String email;
     private String content;
@@ -32,17 +32,17 @@ public class Comment {
 
     // constructors
     public Comment() {
-        this.id = new ObjectId();
+        this.id = new ObjectId().toString();
     }
 
     // getter and setter
 
-    public ArrayList<String> getReferenceNotesURL() {
-        return referenceNotesURL;
+    public String getId() {
+        return id;
     }
 
-    public void setReferenceNotesURL(ArrayList<String> referenceNotesURL) {
-        this.referenceNotesURL = referenceNotesURL;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getAuthor() {
@@ -101,11 +101,11 @@ public class Comment {
         this.liker = liker;
     }
 
-    public ArrayList<String> getReferenceNotes() {
+    public ArrayList<String> getReferenceNotesURL() {
         return referenceNotesURL;
     }
 
-    public void setReferenceNotes(ArrayList<String> referenceNotesURL) {
+    public void setReferenceNotesURL(ArrayList<String> referenceNotesURL) {
         this.referenceNotesURL = referenceNotesURL;
     }
 

@@ -4,7 +4,7 @@
 //    圖片picURL [string]
 //    檔案filesURL [string]
 //    markdown [string]
-package ntou.notesharedevbackend.entity;
+package ntou.notesharedevbackend.noteNodule.entity;
 
 import org.bson.types.ObjectId;
 
@@ -14,7 +14,7 @@ import java.util.Date;
 public class VersionContent {
 
     // attributes
-    private ObjectId id;
+    private String id;
     private Date date;
     private String content;
     private ArrayList<String> picURL;
@@ -23,10 +23,17 @@ public class VersionContent {
 
     // constructors
     public VersionContent() {
-        this.id = new ObjectId();
+        this.id = new ObjectId().toString();
     }
 
     // getter and setter
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public Date getDate() {
         return date;
