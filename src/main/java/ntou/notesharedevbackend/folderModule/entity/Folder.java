@@ -22,7 +22,7 @@
 //                },
 //              ]
 
-package ntou.notesharedevbackend.entity;
+package ntou.notesharedevbackend.folderModule.entity;
 
 import org.bson.types.ObjectId;
 
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 public class Folder {
 
     // attributes
-    private ObjectId id;
+    private String id;
     private String folderName;
     private ArrayList<Folder> folders;
     private ArrayList<String> notes; // note's ID
@@ -40,10 +40,18 @@ public class Folder {
 
     // constructors
     public Folder() {
-        this.id = new ObjectId();
+        this.id = new ObjectId().toString();
     }
 
     // getter and setter
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getFolderName() {
         return folderName;
@@ -51,14 +59,6 @@ public class Folder {
 
     public void setFolderName(String folderName) {
         this.folderName = folderName;
-    }
-
-    public Boolean getFavorite() {
-        return isFavorite;
-    }
-
-    public void setFavorite(Boolean favorite) {
-        this.isFavorite = favorite;
     }
 
     public ArrayList<Folder> getFolders() {
@@ -73,7 +73,9 @@ public class Folder {
         return notes;
     }
 
-    // TODO : setNotes add Note's ID in ArrayList
+    public void setNotes(ArrayList<String> notes) {
+        this.notes = notes;
+    }
 
     public Boolean getPublic() {
         return isPublic;
@@ -81,5 +83,13 @@ public class Folder {
 
     public void setPublic(Boolean aPublic) {
         isPublic = aPublic;
+    }
+
+    public Boolean getFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        isFavorite = favorite;
     }
 }

@@ -12,8 +12,7 @@
 //        answer [NoteSchema]
 package ntou.notesharedevbackend.postModule.entity;
 
-import ntou.notesharedevbackend.entity.Comment;
-import ntou.notesharedevbackend.entity.Note;
+import ntou.notesharedevbackend.commentModule.entity.Comment;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -33,10 +32,10 @@ public class Post {
     private String content;
     private Date date;
     private Integer price;
+    private Boolean isPublic;
     private ArrayList<Comment> comments;
     private ArrayList<String> answers; // to save note's ID
     private ArrayList<String> wantEnterUsersEmail;
-    private Boolean isPublic;
 
     // constructors
     public Post() {
@@ -44,12 +43,12 @@ public class Post {
 
     // getter and setter
 
-    public Boolean getPublic() {
-        return isPublic;
+    public String getId() {
+        return id;
     }
 
-    public void setPublic(Boolean aPublic) {
-        isPublic = aPublic;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getType() {
@@ -60,20 +59,20 @@ public class Post {
         this.type = type;
     }
 
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
     public ArrayList<String> getEmail() {
         return email;
     }
 
     public void setEmail(ArrayList<String> email) {
         this.email = email;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getDepartment() {
@@ -124,6 +123,14 @@ public class Post {
         this.price = price;
     }
 
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
+    }
+
     public ArrayList<Comment> getComments() {
         return comments;
     }
@@ -132,14 +139,13 @@ public class Post {
         this.comments = comments;
     }
 
-    //TODO: note's ID
-//    public ArrayList<Note> getAnswers() {
-//        return answers;
-//    }
-//
-//    public void setAnswers(ArrayList<Note> answers) {
-//        this.answers = answers;
-//    }
+    public ArrayList<String> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(ArrayList<String> answers) {
+        this.answers = answers;
+    }
 
     public ArrayList<String> getWantEnterUsersEmail() {
         return wantEnterUsersEmail;
@@ -147,13 +153,5 @@ public class Post {
 
     public void setWantEnterUsersEmail(ArrayList<String> wantEnterUsersEmail) {
         this.wantEnterUsersEmail = wantEnterUsersEmail;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 }
