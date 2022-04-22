@@ -1,6 +1,6 @@
 package ntou.notesharedevbackend.repository;
 
-import ntou.notesharedevbackend.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.Note;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
