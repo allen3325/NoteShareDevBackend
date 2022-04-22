@@ -30,16 +30,18 @@
 //        postID string // 紀錄貼文ID用於投稿後存在哪
 //        isBest Boolean // 用於懸賞區看是否為最佳解
 
-package ntou.notesharedevbackend.entity;
+package ntou.notesharedevbackend.noteNodule.entity;
 
-import org.bson.types.ObjectId;
+import ntou.notesharedevbackend.commentModule.entity.Comment;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 
+@Document(collection = "note")
 public class Note {
 
     // attributes
-    private ObjectId id;
+    private String id;
     private String type; // normal, reward, collaboration
     private String department;
     private String subject;
@@ -53,14 +55,14 @@ public class Note {
     private String professor;
     private String school;
     private ArrayList<String> exitFolders; //所屬的所有資料夾
-    //TODO: reference 是否還可以知道目前資料夾？
+    //TODO: reference 是否還可以知道目前資料夾？先拔除了
     //    private String parentFolder; //目前資料夾
     private Integer likeCount;
     private Integer favoriteCount;
     private Integer unlockCount;
     private Boolean downloadable;
     private Integer commentCount;
-    private ArrayList<Comment> comment;
+    private ArrayList<Comment> comments;
     private Integer price;
     private Boolean isPublic;
     private Boolean isSubmit; // 用於懸賞區投稿
@@ -75,13 +77,17 @@ public class Note {
     private Boolean isFavorite; // 收藏區
 
     // constructors
-    public Note() {
-        this.id = new ObjectId();
-    }
+    public Note() {}
 
 
     // getter and setter
+    public String getId() {
+        return id;
+    }
 
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getType() {
         return type;
@@ -89,22 +95,6 @@ public class Note {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-//    public String getParentFolder() {
-//        return parentFolder;
-//    }
-//
-//    public void setParentFolder(String parentFolder) {
-//        this.parentFolder = parentFolder;
-//    }
-
-    public Boolean getFavorite() {
-        return isFavorite;
-    }
-
-    public void setFavorite(Boolean favorite) {
-        isFavorite = favorite;
     }
 
     public String getDepartment() {
@@ -195,14 +185,6 @@ public class Note {
         this.exitFolders = exitFolders;
     }
 
-//    public String getParentFolders() {
-//        return parentFolder;
-//    }
-//
-//    public void setParentFolders(String parentFolder) {
-//        this.parentFolder = parentFolder;
-//    }
-
     public Integer getLikeCount() {
         return likeCount;
     }
@@ -243,12 +225,12 @@ public class Note {
         this.commentCount = commentCount;
     }
 
-    public ArrayList<Comment> getComment() {
-        return comment;
+    public ArrayList<Comment> getComments() {
+        return comments;
     }
 
-    public void setComment(ArrayList<Comment> comment) {
-        this.comment = comment;
+    public void setComments(ArrayList<Comment> comments) {
+        this.comments = comments;
     }
 
     public Integer getPrice() {
@@ -337,5 +319,13 @@ public class Note {
 
     public void setBest(Boolean best) {
         isBest = best;
+    }
+
+    public Boolean getFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        isFavorite = favorite;
     }
 }
