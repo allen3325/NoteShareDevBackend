@@ -1,18 +1,16 @@
 package ntou.notesharedevbackend.verificationModule.service;
 
-import ntou.notesharedevbackend.repository.UserRepository;
-import ntou.notesharedevbackend.userModule.entity.User;
-import ntou.notesharedevbackend.userModule.service.UserService;
+import ntou.notesharedevbackend.userModule.entity.AppUser;
+import ntou.notesharedevbackend.userModule.service.AppUserService;
 
-import ntou.notesharedevbackend.verificationModule.entity.SendMailRequest;
 import ntou.notesharedevbackend.verificationModule.config.MailConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.aggregation.ArithmeticOperators;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -25,7 +23,10 @@ public class MailService {
     @Autowired
     private MailConfig mailConfig;
 
+    @Autowired
+    private AppUserService userService ;
 
+    private BCryptPasswordEncoder passwordEncoder;
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     private static final String SPECIAL_CHARS = "!@#$%^&*_=+-/";
@@ -33,6 +34,7 @@ public class MailService {
 
     @PostConstruct
     private void init() {
+        passwordEncoder = new BCryptPasswordEncoder();
         mailSender = new JavaMailSenderImpl();
         mailSender.setHost(mailConfig.getHost());
         mailSender.setPort(mailConfig.getPort());
@@ -45,19 +47,17 @@ public class MailService {
         props.put("mail.transport.protocol", mailConfig.getProtocol());
     }
 
-    public void randomPasswordMail(String userID, SendMailRequest request) {
-        System.out.println(userID);
-        String randPassword = randomPassword();
-        UserService userService=new UserService();
-        User oldUser = userService.getUser(userID);//拿id去找email，就不用Request email
+    public void randomPasswordMail(String userID) {
 
-
+        AppUser user = userService.getUserById(userID);//拿id去找email，就不用Request email
+        user.setPassword(genRandomPassword());
+        userService.replaceUser(userID,user);
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setFrom(mailConfig.getUsername());
-        message.setTo(request.getReceivers());
-        message.setSubject("NoteShare隨機密碼");//request.getSubject()
-        message.setText("456");//request.getContent()
+        message.setTo(user.getEmail());
+        message.setSubject("NoteShare隨機密碼");
+        message.setText(user.getPassword());
 
         try {
             mailSender.send(message);
@@ -67,12 +67,20 @@ public class MailService {
             LOGGER.warn(e.getMessage());
         }
     }
-    public void resetPasswordMail(SendMailRequest request) {
+    public void resetPasswordMail(String userID,String oldPassword,String newPassword) {
+        AppUser user = userService.getUserById(userID);
+        if(passwordEncoder.matches(oldPassword,user.getPassword())){
+            user.setPassword(newPassword);
+            userService.replaceUser(userID,user);
+        }
+        else{
+            System.out.println("wrong password");
+            return;
+        }
         SimpleMailMessage message = new SimpleMailMessage();
-
         message.setFrom(mailConfig.getUsername());
-        message.setTo(request.getReceivers());
-        message.setSubject("NoteShare 重設密碼成功");//request.getSubject()
+        message.setTo(user.getEmail());
+        message.setSubject("NoteShare 重設密碼成功");
         message.setText("重設密碼成功！");
 
         try {
@@ -83,14 +91,16 @@ public class MailService {
             LOGGER.warn(e.getMessage());
         }
     }
-    public void resendCodeMail(SendMailRequest request) { //每次季都換一組 卡好寫
-        String randomCode = randomCode();
-        SimpleMailMessage message = new SimpleMailMessage();
+    public void resendCodeMail(String userID) { //是否需要判斷已開通?
+        AppUser user = userService.getUserById(userID);
+        user.setVerifyCode(randomCode());
+        userService.replaceUser(userID,user);
 
+        SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(mailConfig.getUsername());
-        message.setTo(request.getReceivers());
-        message.setSubject("NoteShare 開通帳號驗證碼");//request.getSubject()
-        message.setText("123");
+        message.setTo(user.getEmail());
+        message.setSubject("NoteShare 開通帳號驗證碼");
+        message.setText(user.getVerifyCode());
 
         try {
             mailSender.send(message);
@@ -101,7 +111,7 @@ public class MailService {
         }
     }
 
-    public static String randomPassword(){
+    public static String genRandomPassword(){
         char[] chars = new char[8];
         Random rnd = new Random();
         for(int i =0 ; i < 8; i ++){

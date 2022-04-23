@@ -1,14 +1,10 @@
 package ntou.notesharedevbackend.verificationModule.controller;
 
-import ntou.notesharedevbackend.verificationModule.entity.SendMailRequest;
 import ntou.notesharedevbackend.verificationModule.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -20,25 +16,23 @@ public class MailController {
     private MailService mailService;
 
     @PostMapping("/randomPassword")
-    public ResponseEntity<SendMailRequest> randomPassword(@Valid @RequestBody SendMailRequest request) {
-
-        mailService.randomPasswordMail("lasfkjdf",request);
-        return ResponseEntity.ok(request);
+    public ResponseEntity<String> randomPassword( @RequestParam (name = "id" , required = false) String userID) {
+        mailService.randomPasswordMail(userID);
+        return ResponseEntity.ok("Success");
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<Void> resetPassword(@Valid @RequestBody SendMailRequest request) {
-
-        mailService.resetPasswordMail(request);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> resetPassword( @RequestParam (name = "id" , required = false) String userID,
+                                              @RequestParam (name = "oldPassword", required = false) String oldPassword,
+                                              @RequestParam (name = "newPassword", required = false) String newPassword) {
+        mailService.resetPasswordMail(userID,oldPassword,newPassword);
+        return ResponseEntity.ok("Success");
     }
 
     @PostMapping("/resendCode")
-    public ResponseEntity<Void>  resendCodeMail(@Valid @RequestBody SendMailRequest request) {
-
-        mailService.resendCodeMail(request);
-
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String>  resendCodeMail(@RequestParam (name = "id" , required = false) String userID) {
+        mailService.resendCodeMail(userID);
+        return ResponseEntity.ok("Success");
     }
 
 }
