@@ -57,7 +57,7 @@ public class MailService {
 
         message.setFrom(mailConfig.getUsername());
         message.setTo(user.getEmail());
-        message.setSubject("NoteShare隨機密碼");
+        message.setSubject("NoteShare Random Password");
         message.setText(user.getPassword());
 
         try {
@@ -81,8 +81,8 @@ public class MailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(mailConfig.getUsername());
         message.setTo(user.getEmail());
-        message.setSubject("NoteShare 重設密碼成功");
-        message.setText("重設密碼成功！");
+        message.setSubject("NoteShare Password Reset Successfully");
+        message.setText("Password reset Successfully!");
 
         try {
             mailSender.send(message);
@@ -100,7 +100,7 @@ public class MailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(mailConfig.getUsername());
         message.setTo(user.getEmail());
-        message.setSubject("NoteShare 開通帳號驗證碼");
+        message.setSubject("NoteShare verification code");
         message.setText(user.getVerifyCode());
 
         try {
