@@ -4,6 +4,7 @@ import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 
 import ntou.notesharedevbackend.verificationModule.config.MailConfig;
+import ntou.notesharedevbackend.verificationModule.entity.AuthRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,11 +68,11 @@ public class MailService {
             LOGGER.warn(e.getMessage());
         }
     }
-    public void resetPasswordMail(String userID,String oldPassword,String newPassword) {
-        AppUser user = userService.getUserById(userID);
-        if(passwordEncoder.matches(oldPassword,user.getPassword())){
-            user.setPassword(newPassword);
-            userService.replaceUser(userID,user);
+    public void resetPasswordMail(AuthRequest request) {
+        AppUser user = userService.getUserById(request.getId());
+        if(passwordEncoder.matches(request.getPassword(),user.getPassword())){
+            user.setPassword(request.getNewPassword());
+            userService.replaceUser(request.getId(), user);
         }
         else{
             System.out.println("wrong password");

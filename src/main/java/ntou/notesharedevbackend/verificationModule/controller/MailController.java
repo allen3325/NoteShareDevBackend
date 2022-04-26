@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.verificationModule.controller;
 
+import ntou.notesharedevbackend.verificationModule.entity.AuthRequest;
 import ntou.notesharedevbackend.verificationModule.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,10 +23,8 @@ public class MailController {
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword( @RequestParam (name = "id" , required = false) String userID,
-                                              @RequestParam (name = "oldPassword", required = false) String oldPassword,
-                                              @RequestParam (name = "newPassword", required = false) String newPassword) {
-        mailService.resetPasswordMail(userID,oldPassword,newPassword);
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody AuthRequest request) {
+        mailService.resetPasswordMail(request);
         return ResponseEntity.ok("Success");
     }
 

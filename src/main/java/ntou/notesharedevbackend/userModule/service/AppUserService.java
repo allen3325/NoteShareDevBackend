@@ -43,8 +43,6 @@ public class AppUserService {
     }
 
     public AppUser replaceUser(String id, AppUser request){
-        AppUser oldUser = getUserById(id);
-
         AppUser user = new AppUser();
         user.setActivate(request.isActivate());
         user.setAdmin(request.isAdmin());
