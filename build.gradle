@@ -23,6 +23,21 @@ dependencies {
     implementation 'com.google.apis:google-api-services-drive:v3-rev20220214-1.32.1'
     implementation 'org.springframework.boot:spring-boot-starter-web:2.6.4'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb:2.6.4'
+    // https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto
+    implementation 'org.springframework.security:spring-security-crypto:5.6.1'
+    implementation 'org.springframework.boot:spring-boot-starter-mail:2.5.2'
+    implementation 'org.springframework.boot:spring-boot-starter-validation:2.6.3'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.4'
+    // https://mvnrepository.com/artifact/junit/junit
+    testImplementation 'junit:junit:4.13.1'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.3'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.3',
+            // Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:
+            //'org.bouncycastle:bcprov-jdk15on:1.60',
+            'io.jsonwebtoken:jjwt-jackson:0.11.3' // or 'io.jsonwebtoken:jjwt-gson:0.11.3' for gson
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
+    implementation 'org.springframework.boot:spring-boot-starter-security:2.6.3'
+
+
 
 }
