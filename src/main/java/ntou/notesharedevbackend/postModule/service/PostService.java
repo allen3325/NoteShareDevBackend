@@ -81,4 +81,10 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
+    public void modifyPublishStatus(String id) {
+        Post post = getPostById(id);
+        post.setPublic(!post.getPublic());
+        postRepository.save(post);
+    }
+
 }
