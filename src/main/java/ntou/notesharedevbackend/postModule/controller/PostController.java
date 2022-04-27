@@ -42,6 +42,12 @@ public class PostController {
         return ResponseEntity.ok(post);
     }
 
+    @PutMapping("/publish/{postID}")
+    public ResponseEntity modifyPublishStatus(@PathVariable("postID") String id) {
+        postService.modifyPublishStatus(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{postID}")
     public ResponseEntity deletePost(@PathVariable("postID") String id) {
         postService.deletePost(id);
