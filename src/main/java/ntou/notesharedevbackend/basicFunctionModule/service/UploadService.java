@@ -80,6 +80,8 @@ public class UploadService {
         VersionContent currentVersion = versionContents.get(Integer.parseInt(version));
         ArrayList<String> newPicsUrl = currentVersion.getPicURL();
 
+        if (newPicsUrl == null)
+            newPicsUrl = new ArrayList<>();
         newPicsUrl.add(picURL);
 
         currentVersion.setPicURL(newPicsUrl);
@@ -94,6 +96,8 @@ public class UploadService {
         VersionContent currentVersion = versionContents.get(Integer.parseInt(version));
         ArrayList<String> newFilesUrl = currentVersion.getFileURL();
 
+        if (newFilesUrl == null)
+            newFilesUrl = new ArrayList<>();
         newFilesUrl.add(fileURL);
 
         currentVersion.setFileURL(newFilesUrl);
