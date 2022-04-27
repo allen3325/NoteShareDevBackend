@@ -30,8 +30,8 @@ public class JWTService {
         // AuthenticationManager 支援多種身分驗證方式，執行時會接收 Authentication 介面的物件。
         // UsernamePasswordAuthenticationToken 其建構子的第一、二個參數接受任何型態（object）的物件。前者為 principal，代表與伺服器進行互動的人；後者為
         // credentials，是用來證明自己是 principal 的一種資料，通常是指密碼。
-        Authentication authentication = new UsernamePasswordAuthenticationToken(request.getId(), request.getPassword());
-//        System.out.println("ID is "+request.getId());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+//        System.out.println("email is "+request.getEmail());
 //        System.out.println("PW is "+request.getPassword());
         authentication = authenticationManager.authenticate(authentication);
 
@@ -43,7 +43,7 @@ public class JWTService {
 
         // generate Claims obj into JWT's payload
         Claims claims = Jwts.claims();
-        claims.put("username",userDetails.getUsername());
+        claims.put("email",userDetails.getUsername());
         claims.setExpiration(calendar.getTime()); // 到期時間 -> RFC 7519 標準的建議內容
         claims.setIssuer("NoteShareBackend"); // 核發者 -> RFC 7519 標準的建議內容
 

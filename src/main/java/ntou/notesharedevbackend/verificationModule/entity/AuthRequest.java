@@ -1,18 +1,29 @@
 package ntou.notesharedevbackend.verificationModule.entity;
 
 public class AuthRequest {
-    private String id;
+//    private String id;
 
     private String password;
 
     private String newPassword;
-    public String getId() {
-        return id;
+
+    private String email;
+
+    public String getEmail() {
+        return email;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setEmail(String email) {
+        this.email = email;
     }
+
+//    public String getId() {
+//        return id;
+//    }
+//
+//    public void setId(String id) {
+//        this.id = id;
+//    }
 
     public String getPassword() {
         return password;

@@ -48,17 +48,17 @@ public class MailService {
         props.put("mail.transport.protocol", mailConfig.getProtocol());
     }
 
-    public void randomPasswordMail(String userID) {
+    public void randomPasswordMail(String email) {
 
-        AppUser user = userService.getUserById(userID);//拿id去找email，就不用Request email
-        user.setPassword(genRandomPassword());
-        userService.replaceUser(userID,user);
+        AppUser user = userService.getUserByEmail(email);//拿id去找email，就不用Request email
+        String password = genRandomPassword();
+        userService.replacePassword(email,password);
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setFrom(mailConfig.getUsername());
-        message.setTo(user.getEmail());
+        message.setTo(email);
         message.setSubject("NoteShare Random Password");
-        message.setText(user.getPassword());
+        message.setText(password);
 
         try {
             mailSender.send(message);
@@ -69,10 +69,9 @@ public class MailService {
         }
     }
     public void resetPasswordMail(AuthRequest request) {
-        AppUser user = userService.getUserById(request.getId());
+        AppUser user = userService.getUserByEmail(request.getEmail());
         if(passwordEncoder.matches(request.getPassword(),user.getPassword())){
-            user.setPassword(request.getNewPassword());
-            userService.replaceUser(request.getId(), user);
+            userService.replacePassword(request.getEmail(), request.getNewPassword());
         }
         else{
             System.out.println("wrong password");
@@ -92,10 +91,10 @@ public class MailService {
             LOGGER.warn(e.getMessage());
         }
     }
-    public void resendCodeMail(String userID) { //是否需要判斷已開通?
-        AppUser user = userService.getUserById(userID);
+    public void resendCodeMail(String email) { //是否需要判斷已開通?
+        AppUser user = userService.getUserByEmail(email);
         user.setVerifyCode(randomCode());
-        userService.replaceUser(userID,user);
+        userService.replaceUser(user);
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(mailConfig.getUsername());
