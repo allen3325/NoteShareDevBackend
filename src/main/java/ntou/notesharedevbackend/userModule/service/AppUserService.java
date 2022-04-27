@@ -41,4 +41,23 @@ public class AppUserService {
         appUser.setCoin(request.getCoin());
         return userRepository.insert(appUser);
     }
+
+    public AppUser replaceUser(String id, AppUser request){
+        AppUser user = new AppUser();
+        user.setActivate(request.isActivate());
+        user.setAdmin(request.isAdmin());
+        user.setBell(request.getBell());
+        user.setCoin(request.getCoin());
+        user.setEmail(request.getEmail());
+        user.setFolders(request.getFolders());
+        user.setFans(request.getFans());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setName(request.getName());
+        user.setProfile(request.getProfile());
+        user.setStrength(request.getStrength());
+        user.setSubscribe(request.getSubscribe());
+        user.setVerifyCode(request.getVerifyCode());
+        user.setId(request.getId());
+        return userRepository.save(user);
+    }
 }
