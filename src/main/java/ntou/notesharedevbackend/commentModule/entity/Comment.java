@@ -1,10 +1,3 @@
-package ntou.notesharedevbackend.commentModule.entity;
-
-import org.bson.types.ObjectId;
-
-import java.util.ArrayList;
-import java.util.Date;
-
 //留言commentSchema
 //    author* string
 //    內容content* string
@@ -14,6 +7,12 @@ import java.util.Date;
 //    按愛心的人 [string]
 //    參考筆記 [string]//url link
 //    樓層數* int
+package ntou.notesharedevbackend.commentModule.entity;
+
+import org.bson.types.ObjectId;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 public class Comment {
 
