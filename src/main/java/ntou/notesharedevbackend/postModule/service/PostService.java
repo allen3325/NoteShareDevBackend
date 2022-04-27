@@ -94,4 +94,15 @@ public class PostService {
         postRepository.save(post);
     }
 
+    public void applyCollaboration(String id, String email) {
+        Post post = getPostById(id);
+        ArrayList<String> currentWantEnterUsersEmail = post.getWantEnterUsersEmail();
+        if (currentWantEnterUsersEmail == null)
+            currentWantEnterUsersEmail = new ArrayList<>();
+        currentWantEnterUsersEmail.add(email);
+        post.setWantEnterUsersEmail(currentWantEnterUsersEmail);
+
+        postRepository.save(post);
+    }
+
 }
