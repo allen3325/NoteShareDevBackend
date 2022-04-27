@@ -105,4 +105,18 @@ public class PostService {
         postRepository.save(post);
     }
 
+    public void approveCollaboration(String id, String email) {
+        Post post = getPostById(id);
+        ArrayList<String> currentEmails = post.getEmail();
+        currentEmails.add(email);
+        post.setEmail(currentEmails);
+        clearWantEnterUsersEmail(post, email);
+
+        postRepository.save(post);
+    }
+
+    public void clearWantEnterUsersEmail(Post post, String email) {
+        ArrayList<String> currentWantEnterUsersEmail = post.getWantEnterUsersEmail();
+        currentWantEnterUsersEmail.remove(email);
+    }
 }

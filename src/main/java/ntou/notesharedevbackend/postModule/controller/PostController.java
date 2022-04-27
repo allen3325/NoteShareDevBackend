@@ -60,6 +60,12 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/add/{postID}/{email}")
+    public ResponseEntity approveCollaboration(@PathVariable("postID") String id, @PathVariable("email") String email) {
+        postService.approveCollaboration(id, email);
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/{postID}")
     public ResponseEntity deletePost(@PathVariable("postID") String id) {
         postService.deletePost(id);
