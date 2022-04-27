@@ -16,6 +16,12 @@ public class PostController {
     @Autowired
     private PostService postService;
 
+    @GetMapping("/postType/{postType}")
+    public ResponseEntity<Post[]> getAllTypeOfPost(@PathVariable("postType") String postType) {
+        Post[] posts = postService.getAllTypeOfPost(postType);
+        return ResponseEntity.ok(posts);
+    }
+
     @GetMapping("/{postID}")
     public ResponseEntity<Post> getPostById(@PathVariable("postID") String id){
         Post post = postService.getPostById(id);

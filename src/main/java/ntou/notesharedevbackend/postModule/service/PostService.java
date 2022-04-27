@@ -6,11 +6,18 @@ import ntou.notesharedevbackend.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+
 @Service
 public class PostService {
     //TODO::::修好Post的schema CURD問題
     @Autowired
     private PostRepository postRepository;
+
+    public Post[] getAllTypeOfPost(String postType) {
+        List<Post> postList = postRepository.findAllByType(postType);
+        return postList.toArray(new Post[0]);
+    }
 
     public Post getPostById(String id) {
         return postRepository.findById(id)
