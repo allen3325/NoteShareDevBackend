@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class AppUserService {
     //TODO 以後要做 getByName
@@ -22,6 +25,15 @@ public class AppUserService {
     public AppUser getUserById(String id){
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Can't find user."));
+    }
+
+    public AppUser getUserByEmail(String email){
+        return userRepository.findByEmail(email);
+    }
+
+    public AppUser[] getAllUsers(){
+        List<AppUser> tmp = userRepository.findAll();
+        return tmp.toArray(new AppUser[0]);
     }
 
     public AppUser createUser(AppUser request) {
@@ -42,7 +54,7 @@ public class AppUserService {
         return userRepository.insert(appUser);
     }
 
-    public AppUser replaceUser(String id, AppUser request){
+    public AppUser replaceUser(AppUser request){
         AppUser user = new AppUser();
         user.setActivate(request.isActivate());
         user.setAdmin(request.isAdmin());
@@ -51,7 +63,7 @@ public class AppUserService {
         user.setEmail(request.getEmail());
         user.setFolders(request.getFolders());
         user.setFans(request.getFans());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPassword(request.getPassword());
         user.setName(request.getName());
         user.setProfile(request.getProfile());
         user.setStrength(request.getStrength());
@@ -59,5 +71,23 @@ public class AppUserService {
         user.setVerifyCode(request.getVerifyCode());
         user.setId(request.getId());
         return userRepository.save(user);
+    }
+
+    public void modifyStrength(String email, ArrayList<String> strength) {
+        AppUser user = getUserByEmail(email);
+        user.setStrength(strength);
+        userRepository.save(user);
+    }
+
+    public void modifyProfile(String email, String profile) {
+        AppUser user = getUserByEmail(email);
+        user.setProfile(profile);
+        userRepository.save(user);
+    }
+
+    public void replacePassword(String email, String genRandomPassword) {
+        AppUser user = getUserByEmail(email);
+        user.setPassword(passwordEncoder.encode(genRandomPassword));
+        userRepository.save(user);
     }
 }

@@ -17,8 +17,8 @@ public class MailController {
     private MailService mailService;
 
     @PostMapping("/randomPassword")
-    public ResponseEntity<String> randomPassword( @RequestParam (name = "id" , required = false) String userID) {
-        mailService.randomPasswordMail(userID);
+    public ResponseEntity<String> randomPassword( @RequestParam (name = "email" , required = false) String email) {
+        mailService.randomPasswordMail(email);
         return ResponseEntity.ok("Success");
     }
 
@@ -29,8 +29,8 @@ public class MailController {
     }
 
     @PostMapping("/resendCode")
-    public ResponseEntity<String>  resendCodeMail(@RequestParam (name = "id" , required = false) String userID) {
-        mailService.resendCodeMail(userID);
+    public ResponseEntity<String>  resendCodeMail(@RequestParam (name = "email" , required = false) String email) {
+        mailService.resendCodeMail(email);
         return ResponseEntity.ok("Success");
     }
 
