@@ -41,4 +41,10 @@ public class NoteController {
 
         return ResponseEntity.created(location).body(note);
     }
+
+    @PutMapping("/admin/{noteID}/{email}")
+    public ResponseEntity setManager(@PathVariable("noteID") String noteID, @PathVariable("email") String email) {
+        noteService.setManager(noteID, email);
+        return ResponseEntity.ok().build();
+    }
 }

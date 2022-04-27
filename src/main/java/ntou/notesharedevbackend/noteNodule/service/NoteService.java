@@ -55,4 +55,10 @@ public class NoteService {
 
         return noteRepository.insert(note);
     }
+
+    public void setManager(String noteID, String email) {
+        Note note = getNote(noteID);
+        note.setManagerEmail(email);
+        noteRepository.save(note);
+    }
 }
