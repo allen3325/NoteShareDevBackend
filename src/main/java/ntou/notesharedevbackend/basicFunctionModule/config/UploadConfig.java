@@ -66,6 +66,33 @@ public class UploadConfig {
         return credential;
     }
 
+    public static String uploadImage(String imageName) throws IOException, GeneralSecurityException {
+        // Build a new authorized API client service.
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+
+        String[] fileSplit = imageName.split("\\.");
+        String fileType = "";
+        if (fileSplit[1].equals("jpg")) {
+            fileType = "image/jpeg";
+        } else if (fileSplit[1].equals("png")) {
+            fileType = "image/png";
+        }
+
+        File fileMetadata = new File();
+        fileMetadata.setName(imageName);
+
+        java.io.File filePath = new java.io.File("files/" + imageName);
+        FileContent mediaContent = new FileContent(fileType, filePath);
+        File file = service.files().create(fileMetadata, mediaContent)
+                .setFields("id")
+                .execute();
+
+        return file.getId();
+    }
+
     public static String uploadFile(String fileName) throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -74,14 +101,7 @@ public class UploadConfig {
                 .build();
 
         String[] fileSplit = fileName.split("\\.");
-        String fileType = "";
-        if (fileSplit[1].equals("pdf")) {
-            fileType = "application/pdf";
-        } else if (fileSplit[1].equals("jpg")) {
-            fileType = "image/jpeg";
-        } else if (fileSplit[1].equals("png")) {
-            fileType = "image/png";
-        }
+        String fileType = "application/pdf";
 
         File fileMetadata = new File();
         fileMetadata.setName(fileName);
