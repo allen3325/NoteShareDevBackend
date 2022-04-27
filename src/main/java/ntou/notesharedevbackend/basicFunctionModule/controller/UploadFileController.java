@@ -19,7 +19,7 @@ public class UploadFileController {
     @PostMapping("/{noteID}/{version}")
     public ResponseEntity<String[]> uploadImage(
             @PathVariable("noteID") String noteID, @PathVariable("version") String version, @RequestParam("files") MultipartFile[] uploadfiles) {
-        String[] response = uploadImageService.uploadImage(uploadfiles);
+        String[] response = uploadImageService.uploadImage(uploadfiles, noteID, version);
 
         return ResponseEntity.ok(response);
     }
