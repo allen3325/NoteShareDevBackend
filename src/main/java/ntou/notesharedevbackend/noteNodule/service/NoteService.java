@@ -6,6 +6,8 @@ import ntou.notesharedevbackend.repository.NoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+
 @Service
 public class NoteService {
     @Autowired
@@ -59,6 +61,20 @@ public class NoteService {
     public void setManager(String noteID, String email) {
         Note note = getNote(noteID);
         note.setManagerEmail(email);
+        noteRepository.save(note);
+    }
+
+    public void kickUserFromCollaboration(String noteId, String email) {
+        Note note = getNote(noteId);
+        ArrayList<String> currentEmails = note.getAuthorEmail();
+        ArrayList<String> currentNames = note.getAuthorName();
+        int userIndex = currentEmails.indexOf(email);
+
+        currentEmails.remove(userIndex);
+        currentNames.remove(userIndex);
+        note.setAuthorEmail(currentEmails);
+        note.setAuthorName(currentNames);
+
         noteRepository.save(note);
     }
 }

@@ -47,4 +47,10 @@ public class NoteController {
         noteService.setManager(noteID, email);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/kick/{noteID}/{email}")
+    public ResponseEntity kickUserFromCollaboration(@PathVariable("noteID") String noteID, @PathVariable("email") String email) {
+        noteService.kickUserFromCollaboration(noteID, email);
+        return ResponseEntity.ok().build();
+    }
 }
