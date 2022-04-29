@@ -5,30 +5,27 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 
 public class FolderRequest {
-    private String email;
-    private String parentID;
+    private Integer floor; // 樓層
     private String folderName;
-    private ArrayList<Folder> folders;
-    private ArrayList<String> notes; // note's ID
     private Boolean isPublic;
-    private Boolean isFavorite; // 收藏區
+    private Integer indexAtFloor; // 樓層的index
 
     // getter and setter
 
-    public String getEmail() {
-        return email;
+    public Integer getIndexAtFloor() {
+        return indexAtFloor;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setIndexAtFloor(Integer indexAtFloor) {
+        this.indexAtFloor = indexAtFloor;
     }
 
-    public String getParentID() {
-        return parentID;
+    public Integer getFloor() {
+        return floor;
     }
 
-    public void setParentID(String parentID) {
-        this.parentID = parentID;
+    public void setFloor(Integer floor) {
+        this.floor = floor;
     }
 
     public String getFolderName() {
@@ -39,22 +36,6 @@ public class FolderRequest {
         this.folderName = folderName;
     }
 
-    public ArrayList<Folder> getFolders() {
-        return folders;
-    }
-
-    public void setFolders(ArrayList<Folder> folders) {
-        this.folders = folders;
-    }
-
-    public ArrayList<String> getNotes() {
-        return notes;
-    }
-
-    public void setNotes(ArrayList<String> notes) {
-        this.notes = notes;
-    }
-
     public Boolean getPublic() {
         return isPublic;
     }
@@ -63,11 +44,4 @@ public class FolderRequest {
         isPublic = aPublic;
     }
 
-    public Boolean getFavorite() {
-        return isFavorite;
-    }
-
-    public void setFavorite(Boolean favorite) {
-        isFavorite = favorite;
-    }
 }

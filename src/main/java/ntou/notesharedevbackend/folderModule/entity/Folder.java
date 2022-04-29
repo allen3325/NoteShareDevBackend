@@ -37,10 +37,22 @@ public class Folder {
     private ArrayList<String> notes; // note's ID
     private Boolean isPublic;
     private Boolean isFavorite; // 收藏區
+    private Integer floor; // 樓層
+    private Integer indexAtFloor; // 樓層的index
 
     // constructors
     public Folder() {
         this.id = new ObjectId().toString();
+    }
+
+    public Folder(FolderRequest folderRequest){
+        this.id = new ObjectId().toString();
+        this.folderName = folderRequest.getFolderName();
+        this.floor = folderRequest.getFloor();
+        this.isPublic = folderRequest.getPublic();
+        if(folderRequest.getIndexAtFloor() != null){
+            this.indexAtFloor = folderRequest.getIndexAtFloor();
+        }
     }
 
     // getter and setter
@@ -91,5 +103,21 @@ public class Folder {
 
     public void setFavorite(Boolean favorite) {
         isFavorite = favorite;
+    }
+
+    public Integer getFloor() {
+        return floor;
+    }
+
+    public void setFloor(Integer floor) {
+        this.floor = floor;
+    }
+
+    public Integer getIndexAtFloor() {
+        return indexAtFloor;
+    }
+
+    public void setIndexAtFloor(Integer indexAtFloor) {
+        this.indexAtFloor = indexAtFloor;
     }
 }

@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import ntou.notesharedevbackend.userModule.entity.AppUser;
+import ntou.notesharedevbackend.userModule.service.AppUserService;
 import ntou.notesharedevbackend.verificationModule.entity.AuthRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +23,8 @@ import java.util.stream.Collectors;
 public class JWTService {
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private AppUserService appUserService;
 
 //    private final String KEY = "VincentIsRunningBlogForProgrammingBeginner";
     private final String KEY = "NoteShareBackendAndItsShouldHaveVeryLongString";
@@ -71,4 +75,23 @@ public class JWTService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    public boolean signUp(AppUser request) {
+        if(appUserService.hasExitUserByEmail(request.getEmail())){
+            return false;
+        }else{
+            appUserService.createUser(request);
+            return true;
+        }
+    }
+
+    public boolean verifyCode(String email, String code) {
+        AppUser appUser = appUserService.getUserByEmail(email);
+        if(appUser.getVerifyCode().equals(code)){
+            appUser.setActivate(true);
+            appUserService.replaceUser(appUser);
+            return true;
+        }else{
+            return false;
+        }
+    }
 }
