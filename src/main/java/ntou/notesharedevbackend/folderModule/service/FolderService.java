@@ -21,7 +21,9 @@ public class FolderService {
     }
 
     public Folder getFolderByID(String email,String folderID){
-        Folder folders = userRepository.findFolderById(folderID);
+        AppUser user = userRepository.findFolderById(folderID);
+        List<Folder> folders = user.getFolders();
+        Folder target = null;
 //        for(Folder folder:folders){
 //            if(folder.getId()==folderID){
 //                return folder;
@@ -29,7 +31,7 @@ public class FolderService {
 //        }
 //        System.out.println("Can't find folder");
 //        return null;
-        return folders;
+        return target;
     }
 
 //    public Folder createFolder(FolderRequest request){
@@ -49,6 +51,14 @@ public class FolderService {
 //        folder.setNotes(request.getNotes());
 //        folders.add(folder);
 //        appUser.setFolders(folders);
+//    }
+
+    //TODO: 使用者給的樓層跟index合不合理
+//    public Folder createFolder(String email,FolderRequest request){
+//        AppUser appUser = userRepository.findByEmail(email);
 //
+//        Folder folder = new Folder(request);
+//
+//        List<Folder> folderList = appUser.getFolders();
 //    }
 }

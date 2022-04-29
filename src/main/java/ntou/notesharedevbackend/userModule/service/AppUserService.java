@@ -1,25 +1,36 @@
 package ntou.notesharedevbackend.userModule.service;
 
+import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.UserRepository;
+import ntou.notesharedevbackend.verificationModule.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class AppUserService {
     //TODO 以後要做 getByName
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    @Lazy(value = true)
+    private MailService mailService = new MailService();
     private BCryptPasswordEncoder passwordEncoder;
 
     public AppUserService(UserRepository userRepository){
         this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
+    }
+
+    public boolean hasExitUserByEmail(String email){
+        return userRepository.existsByEmail(email);
     }
 
     public AppUser getUserById(String id){
@@ -41,16 +52,18 @@ public class AppUserService {
         appUser.setEmail(request.getEmail());
         appUser.setName(request.getName());
         appUser.setPassword(passwordEncoder.encode(request.getPassword()));
-        appUser.setVerifyCode(request.getVerifyCode());
-        appUser.setAdmin(request.isAdmin());
-        appUser.setActivate(request.isActivate());
-        appUser.setProfile(request.getProfile());
-        appUser.setStrength(request.getStrength());
-        appUser.setFolders(request.getFolders());
-        appUser.setSubscribe(request.getSubscribe());
-        appUser.setBell(request.getBell());
-        appUser.setFans(request.getFans());
-        appUser.setCoin(request.getCoin());
+        appUser.setVerifyCode(randomCode());
+        appUser.setAdmin(false);
+        appUser.setActivate(false);
+//        appUser.setProfile(request.getProfile());
+//        appUser.setStrength(request.getStrength());
+        // TODO: mongoDB 預設值
+//        appUser.setFolders();
+//        appUser.setSubscribe(request.getSubscribe());
+//        appUser.setBell(request.getBell());
+//        appUser.setFans(request.getFans());
+        appUser.setCoin(300);
+        mailService.sendEmailToUser(request.getEmail(),"Your Verification Code",appUser.getVerifyCode());
         return userRepository.insert(appUser);
     }
 
@@ -89,5 +102,14 @@ public class AppUserService {
         AppUser user = getUserByEmail(email);
         user.setPassword(passwordEncoder.encode(genRandomPassword));
         userRepository.save(user);
+    }
+
+    public static String randomCode(){
+        char[] chars = new char[4];
+        Random rnd = new Random();
+        for(int i = 0; i < 4; i++){
+            chars[i]=(char)('0'+rnd.nextInt(10));
+        }
+        return new String(chars);
     }
 }

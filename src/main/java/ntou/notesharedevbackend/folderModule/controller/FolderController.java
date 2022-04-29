@@ -30,11 +30,11 @@ public class FolderController {
         return ResponseEntity.ok(folder);
     }
 
-//    @PostMapping
-//    public ResponseEntity<Folder> createFolder(@RequestBody FolderRequest request){
-//        Folder folder = folderService.createFolder(request);
+    //TODO: 使用者給的樓層跟index合不合理
+//    @PostMapping("/{email}")
+//    public ResponseEntity<Folder> createFolder(@PathVariable(name = "email")String email,
+//                                               @RequestBody FolderRequest request){
+//        Folder folder = folderService.createFolder(email,request);
 //    }
-
-
 
 }
