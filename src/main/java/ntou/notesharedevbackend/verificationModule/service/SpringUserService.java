@@ -22,10 +22,10 @@ public class SpringUserService implements UserDetailsService {
     private AppUserService appUserService;
 
     @Override
-    public UserDetails loadUserByUsername(String userID) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // TODO 以後改成ByName
         try{
-            AppUser user =  appUserService.getUserById(userID);
+            AppUser user =  appUserService.getUserByEmail(email);
 
             //該 User 類別是由 org.springframework.security.core.userdetails 的套件提供，本身已經實作 UserDetails，回傳該物件是較簡易的做法。至於建構子的第三個參數是 authorities，是用來定義使用者擁有的權限。
             return new User(user.getEmail(),user.getPassword(), Collections.emptyList());
