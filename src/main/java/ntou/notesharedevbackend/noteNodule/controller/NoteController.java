@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/note",produces = MediaType.APPLICATION_JSON_VALUE)
@@ -33,6 +34,12 @@ public class NoteController {
     public ResponseEntity<VersionContent> getNoteVersion(@PathVariable("noteID") String id, @PathVariable("version") int version) {
         VersionContent versionContent = noteService.getNoteVersion(id, version);
         return ResponseEntity.ok(versionContent);
+    }
+
+    @GetMapping("/tags/{noteID}")
+    public ResponseEntity<ArrayList<String>> getNoteTags(@PathVariable("noteID") String id) {
+        ArrayList<String> tags = noteService.getNoteTags(id);
+        return ResponseEntity.ok(tags);
     }
 
     @PostMapping("/{email}")

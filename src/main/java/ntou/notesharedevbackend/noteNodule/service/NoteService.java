@@ -23,6 +23,11 @@ public class NoteService {
         return note.getVersion().get(version);
     }
 
+    public ArrayList<String> getNoteTags(String id) {
+        Note note = getNote(id);
+        return note.getTag();
+    }
+
     public Note createNote(Note request,String email){
         //TODO 建立完要更新 User Schema
         Note note = new Note();
