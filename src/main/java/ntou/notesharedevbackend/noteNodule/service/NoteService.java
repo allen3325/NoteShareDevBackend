@@ -1,7 +1,7 @@
 package ntou.notesharedevbackend.noteNodule.service;
 
 import ntou.notesharedevbackend.exception.NotFoundException;
-import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +16,16 @@ public class NoteService {
     public Note getNote(String id){
         return noteRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Can't find note."));
+    }
+
+    public VersionContent getNoteVersion(String id, int version) {
+        Note note = getNote(id);
+        return note.getVersion().get(version);
+    }
+
+    public ArrayList<String> getNoteTags(String id) {
+        Note note = getNote(id);
+        return note.getTag();
     }
 
     public Note createNote(Note request,String email){
