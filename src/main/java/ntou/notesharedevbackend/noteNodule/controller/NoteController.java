@@ -1,6 +1,6 @@
 package ntou.notesharedevbackend.noteNodule.controller;
 
-import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,6 +27,12 @@ public class NoteController {
                 .toUri();
 
         return ResponseEntity.created(location).body(note);
+    }
+
+    @GetMapping("/{noteID}/{version}")
+    public ResponseEntity<VersionContent> getNoteVersion(@PathVariable("noteID") String id, @PathVariable("version") int version) {
+        VersionContent versionContent = noteService.getNoteVersion(id, version);
+        return ResponseEntity.ok(versionContent);
     }
 
     @PostMapping("/{email}")
