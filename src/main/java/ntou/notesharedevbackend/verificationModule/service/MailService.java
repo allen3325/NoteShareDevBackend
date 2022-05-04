@@ -25,7 +25,7 @@ public class MailService {
     private MailConfig mailConfig;
 
     @Autowired
-    private AppUserService userService ;
+    private AppUserService userService;
 
     private BCryptPasswordEncoder passwordEncoder;
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
@@ -53,20 +53,22 @@ public class MailService {
         AppUser user = userService.getUserByEmail(email);//拿id去找email，就不用Request email
         String password = genRandomPassword();
         userService.replacePassword(email,password);
-        SimpleMailMessage message = new SimpleMailMessage();
 
-        message.setFrom(mailConfig.getUsername());
-        message.setTo(email);
-        message.setSubject("NoteShare Random Password");
-        message.setText(password);
+        sendEmailToUser(user.getEmail(),"NoteShare Random Password",password);
 
-        try {
-            mailSender.send(message);
-        } catch (MailAuthenticationException e) {
-            LOGGER.error(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.warn(e.getMessage());
-        }
+//        SimpleMailMessage message = new SimpleMailMessage();
+//        message.setFrom(mailConfig.getUsername());
+//        message.setTo(email);
+//        message.setSubject("NoteShare Random Password");
+//        message.setText(password);
+//
+//        try {
+//            mailSender.send(message);
+//        } catch (MailAuthenticationException e) {
+//            LOGGER.error(e.getMessage());
+//        } catch (Exception e) {
+//            LOGGER.warn(e.getMessage());
+//        }
     }
     public void resetPasswordMail(AuthRequest request) {
         AppUser user = userService.getUserByEmail(request.getEmail());
@@ -77,30 +79,50 @@ public class MailService {
             System.out.println("wrong password");
             return;
         }
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(mailConfig.getUsername());
-        message.setTo(user.getEmail());
-        message.setSubject("NoteShare Password Reset Successfully");
-        message.setText("Password reset Successfully!");
 
-        try {
-            mailSender.send(message);
-        } catch (MailAuthenticationException e) {
-            LOGGER.error(e.getMessage());
-        } catch (Exception e) {
-            LOGGER.warn(e.getMessage());
-        }
+        sendEmailToUser(user.getEmail(),"NoteShare Password Reset Successfully" ,"Password reset Successfully!");
+//        SimpleMailMessage message = new SimpleMailMessage();
+//        message.setFrom(mailConfig.getUsername());
+//        message.setTo(user.getEmail());
+//        message.setSubject("NoteShare Password Reset Successfully");
+//        message.setText("Password reset Successfully!");
+//
+//        try {
+//            mailSender.send(message);
+//        } catch (MailAuthenticationException e) {
+//            LOGGER.error(e.getMessage());
+//        } catch (Exception e) {
+//            LOGGER.warn(e.getMessage());
+//        }
     }
     public void resendCodeMail(String email) { //是否需要判斷已開通?
         AppUser user = userService.getUserByEmail(email);
         user.setVerifyCode(randomCode());
         userService.replaceUser(user);
 
+        sendEmailToUser(user.getEmail(),"NoteShare verification code" ,user.getVerifyCode());
+//        SimpleMailMessage message = new SimpleMailMessage();
+//        message.setFrom(mailConfig.getUsername());
+//        message.setTo(user.getEmail());
+//        message.setSubject("NoteShare verification code");
+//        message.setText(user.getVerifyCode());
+
+//        try {
+//            mailSender.send(message);
+//        } catch (MailAuthenticationException e) {
+//            LOGGER.error(e.getMessage());
+//        } catch (Exception e) {
+//            LOGGER.warn(e.getMessage());
+//        }
+    }
+
+    public void sendEmailToUser(String email,String subject,String content){
         SimpleMailMessage message = new SimpleMailMessage();
+
         message.setFrom(mailConfig.getUsername());
-        message.setTo(user.getEmail());
-        message.setSubject("NoteShare verification code");
-        message.setText(user.getVerifyCode());
+        message.setTo(email);
+        message.setSubject(subject);
+        message.setText(content);
 
         try {
             mailSender.send(message);
