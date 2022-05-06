@@ -31,7 +31,12 @@ public class Comment {
 
     // constructors
     public Comment() {
+
         this.id = new ObjectId().toString();
+        this.isBest = false;
+        this.isReference = false;
+        this.likeCount = 0;
+        this.liker = new ArrayList<String>();
     }
 
     // getter and setter
