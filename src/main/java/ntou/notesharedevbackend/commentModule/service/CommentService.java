@@ -65,12 +65,14 @@ public class CommentService {
     }//需要去檢查每個comment中的floor嗎
 
     public Comment createComment(String id, Comment request){
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
-        Date date = calendar.getTime();
+//        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
+//
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS ZZZ");
+//        Date date = calendar.getTime();
         Note note = new Note();
         Post post = new Post();
         String type="";
-        System.out.println(date);
+//        System.out.println(date);
 
         ArrayList<Comment> commentArrayList= new ArrayList<Comment>();
         if(noteRepository.findById(id).isPresent()){
@@ -89,7 +91,7 @@ public class CommentService {
         Comment comment = new Comment();
         comment.setAuthor(request.getAuthor());
         comment.setContent(request.getContent());
-        comment.setDate(date);
+        comment.setDate(new Date());
         comment.setEmail(request.getEmail());
         comment.setFloor(commentArrayList.size());
         comment.setReferenceNotesURL(request.getReferenceNotesURL());
