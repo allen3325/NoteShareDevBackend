@@ -9,6 +9,7 @@
 //    樓層數* int
 package ntou.notesharedevbackend.commentModule.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -27,11 +28,17 @@ public class Comment {
     private ArrayList<String> liker; // 按愛心的人
     private ArrayList<String> referenceNotesURL; // 參考筆記的URL
     private Integer floor; // 樓層數
+    @JsonFormat(timezone = "GMT+08:00")
     private Date date;
 
     // constructors
     public Comment() {
+
         this.id = new ObjectId().toString();
+        this.isBest = false;
+        this.isReference = false;
+        this.likeCount = 0;
+        this.liker = new ArrayList<String>();
     }
 
     // getter and setter
