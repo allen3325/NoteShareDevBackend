@@ -40,7 +40,7 @@ public class CommentService {
             return note.getComments();
         } else if (postRepository.findById(id).isPresent()) {
             Post post = postService.getPostById(id);
-            if(post.getType()=="QA") {
+            if(post.getType().equals("QA")) {
                 return post.getComments();
             }else{
                 throw new NotFoundException("Wrong post type");
@@ -96,7 +96,7 @@ public class CommentService {
         comment.setFloor(commentArrayList.size());
         comment.setReferenceNotesURL(request.getReferenceNotesURL());
         commentArrayList.add(comment);
-        if(type=="note"){
+        if(type.equals("note")){
             note.setComments(commentArrayList);
             noteRepository.save(note);
         }else{
@@ -204,7 +204,6 @@ public class CommentService {
         } else if (postRepository.findById(id).isPresent()) {
             post = postService.getPostById(id);
             commentArrayList = post.getComments();
-            commentArrayList = note.getComments();
             commentArrayList.get(floor).setEmail(null);
             commentArrayList.get(floor).setAuthor(null);
             commentArrayList.get(floor).setDate(null);
