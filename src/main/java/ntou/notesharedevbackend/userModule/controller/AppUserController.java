@@ -37,18 +37,18 @@ public class AppUserController {
         return ResponseEntity.ok(appUser);
     }
 
-    @PostMapping
-    public ResponseEntity<AppUser> createUser(@RequestBody AppUser request){
-        AppUser appUser = appUserService.createUser(request);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(appUser.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(appUser);
-    }
+//    @PostMapping
+//    public ResponseEntity<AppUser> createUser(@RequestBody AppUser request){
+//        AppUser appUser = appUserService.createUser(request);
+//
+//        URI location = ServletUriComponentsBuilder
+//                .fromCurrentRequest()
+//                .path("/{id}")
+//                .buildAndExpand(appUser.getId())
+//                .toUri();
+//
+//        return ResponseEntity.created(location).body(appUser);
+//    }
 
     @PutMapping("/{email}")
     public ResponseEntity<AppUser> replaceUser(@RequestBody AppUser request){
