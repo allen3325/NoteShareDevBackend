@@ -48,7 +48,7 @@ public class NoteController {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{postID}")
+                .path("/{noteID}")
                 .buildAndExpand(note.getId())
                 .toUri();
 

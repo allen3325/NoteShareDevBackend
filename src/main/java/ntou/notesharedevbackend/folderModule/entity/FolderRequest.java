@@ -5,27 +5,36 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 
 public class FolderRequest {
-    private Integer floor; // 樓層
     private String folderName;
     private Boolean isPublic;
-    private Integer indexAtFloor; // 樓層的index
+    private String direction; // 路徑
+    private String parent; // 父資料夾
+    private ArrayList<String> children; // 子資料夾
 
     // getter and setter
 
-    public Integer getIndexAtFloor() {
-        return indexAtFloor;
+    public String getDirection() {
+        return direction;
     }
 
-    public void setIndexAtFloor(Integer indexAtFloor) {
-        this.indexAtFloor = indexAtFloor;
+    public void setDirection(String direction) {
+        this.direction = direction;
     }
 
-    public Integer getFloor() {
-        return floor;
+    public String getParent() {
+        return parent;
     }
 
-    public void setFloor(Integer floor) {
-        this.floor = floor;
+    public void setParent(String parent) {
+        this.parent = parent;
+    }
+
+    public ArrayList<String> getChildren() {
+        return children;
+    }
+
+    public void setChildren(ArrayList<String> children) {
+        this.children = children;
     }
 
     public String getFolderName() {

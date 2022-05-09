@@ -7,34 +7,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.List;
+import java.net.URI;
 
 @RestController
 @RequestMapping(value = "/folder", produces = MediaType.APPLICATION_JSON_VALUE )
 public class FolderController {
 
+    private final FolderService folderService;
+
     @Autowired
-    private FolderService folderService;
-
-    @GetMapping("/{email}")
-    public ResponseEntity<List<Folder>> getAllFoldersFromAUser(@PathVariable("email") String email){
-        List<Folder> folder = folderService.getAllFolderByEmail(email);
-        return ResponseEntity.ok(folder);
+    public FolderController(FolderService folderService) {
+        this.folderService = folderService;
     }
 
-    @GetMapping("/{email}/{folderID}")
-    public ResponseEntity<Folder> getFolderFromUser(@PathVariable(name="email")String email,
-                                                    @PathVariable(name = "folderID")String folderID) {
-        Folder folder = folderService.getFolderByID(email,folderID);
-        return ResponseEntity.ok(folder);
-    }
-
-    //TODO: 使用者給的樓層跟index合不合理
-//    @PostMapping("/{email}")
-//    public ResponseEntity<Folder> createFolder(@PathVariable(name = "email")String email,
-//                                               @RequestBody FolderRequest request){
-//        Folder folder = folderService.createFolder(email,request);
+//    @GetMapping("/{email}")
+//    public ResponseEntity<List<Folder>> getAllFoldersFromAUser(@PathVariable("email") String email){
+//        List<Folder> folder = folderService.getAllFolderByEmail(email);
+//        return ResponseEntity.ok(folder);
 //    }
+
+    @GetMapping("/{folderID}")
+    public ResponseEntity<Folder> getFolderFromID(@PathVariable(name = "folderID")String folderID) {
+        Folder folder = folderService.getFolderByID(folderID);
+        return ResponseEntity.ok(folder);
+    }
+
+    @PostMapping("/{email}")
+    public ResponseEntity<Folder> createFolder(@PathVariable(name = "email")String email,
+                                               @RequestBody FolderRequest request){
+        Folder folder = folderService.createFolder(email,request);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{folderID}")
+                .buildAndExpand(folder.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(folder);
+    }
 
 }
