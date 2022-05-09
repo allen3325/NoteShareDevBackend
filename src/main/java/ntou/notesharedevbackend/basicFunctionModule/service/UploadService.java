@@ -31,7 +31,7 @@ public class UploadService {
         String[] response = new String[0];
         try {
             for (String image : uploadedFileName.split(",")) {
-                String imagesURL = "https://www.googleapis.com/drive/v3/files/" + Upload.uploadImage(image);
+                String imagesURL = "https://drive.google.com/file/d/" + Upload.uploadImage(image) + "/view";
                 responseURL.add(imagesURL);
 
                 savePicURL(noteID, version, imagesURL);
@@ -57,7 +57,7 @@ public class UploadService {
         String[] response = new String[0];
         try {
             for (String file : uploadedFileName.split(",")) {
-                String filesURL = "https://www.googleapis.com/drive/v3/files/" + Upload.uploadFile(file);
+                String filesURL = "https://drive.google.com/file/d/" + Upload.uploadFile(file) + "/view";
                 responseURL.add(filesURL);
 
                 saveFileURL(noteID, version, filesURL);

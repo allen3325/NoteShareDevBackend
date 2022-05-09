@@ -18,7 +18,7 @@ import org.springframework.web.multipart.*;
 
 import java.io.*;
 import java.nio.file.*;
-import java.security.GeneralSecurityException;
+import java.security.*;
 import java.util.*;
 
 /* class to demonstrate use of Drive files list API */
@@ -64,6 +64,19 @@ public class Upload {
         return credential;
     }
 
+    public static void setPermission(String fileID) throws GeneralSecurityException, IOException {
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+
+        com.google.api.services.drive.model.Permission permission = new com.google.api.services.drive.model.Permission();
+        permission.setType("anyone");
+        permission.setRole("reader");
+
+        service.permissions().create(fileID, permission).execute();
+    }
+
     public static String uploadImage(String imageName) throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -89,6 +102,7 @@ public class Upload {
                 .setFields("id, parents")
                 .execute();
 
+        setPermission(file.getId());
         return file.getId();
     }
 
@@ -112,6 +126,7 @@ public class Upload {
                 .setFields("id, parents")
                 .execute();
 
+        setPermission(file.getId());
         return file.getId();
     }
 
