@@ -64,6 +64,17 @@ public class Upload {
         return credential;
     }
 
+    //TODO: GET uploaded file/image
+    public static void getFile(String fileID) throws GeneralSecurityException, IOException {
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+
+        File file = service.files().get(fileID).setFields("files(id,name,thumbnailLink)").execute();
+
+    }
+
     public static void setPermission(String fileID) throws GeneralSecurityException, IOException {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
