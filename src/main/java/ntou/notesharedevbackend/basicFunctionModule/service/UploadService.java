@@ -23,7 +23,7 @@ public class UploadService {
 
     public String[] uploadImage(MultipartFile[] request, String noteID, String version) {
         //save files to temporary directory
-        UploadConfig.saveFile(request);
+        Upload.saveFile(request);
 
         String uploadedFileName = Arrays.stream(request).map(x -> x.getOriginalFilename())
                 .filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.joining(","));
@@ -31,7 +31,7 @@ public class UploadService {
         String[] response = new String[0];
         try {
             for (String image : uploadedFileName.split(",")) {
-                String imagesURL = "https://www.googleapis.com/drive/v3/files/" + UploadConfig.uploadImage(image);
+                String imagesURL = "https://www.googleapis.com/drive/v3/files/" + Upload.uploadImage(image);
                 responseURL.add(imagesURL);
 
                 savePicURL(noteID, version, imagesURL);
@@ -49,7 +49,7 @@ public class UploadService {
 
     public String[] uploadFile(MultipartFile[] request, String noteID, String version) {
         //save files to temporary directory
-        UploadConfig.saveFile(request);
+        Upload.saveFile(request);
 
         String uploadedFileName = Arrays.stream(request).map(x -> x.getOriginalFilename())
                 .filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.joining(","));
@@ -57,7 +57,7 @@ public class UploadService {
         String[] response = new String[0];
         try {
             for (String file : uploadedFileName.split(",")) {
-                String filesURL = "https://www.googleapis.com/drive/v3/files/" + UploadConfig.uploadFile(file);
+                String filesURL = "https://www.googleapis.com/drive/v3/files/" + Upload.uploadFile(file);
                 responseURL.add(filesURL);
 
                 saveFileURL(noteID, version, filesURL);

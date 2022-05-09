@@ -14,18 +14,15 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList;
 import org.springframework.web.multipart.*;
 
-import javax.servlet.http.*;
 import java.io.*;
 import java.nio.file.*;
 import java.security.GeneralSecurityException;
 import java.util.*;
-import java.util.stream.*;
 
 /* class to demonstrate use of Drive files list API */
-public class UploadConfig {
+public class Upload {
     /** Application name. */
     private static final String APPLICATION_NAME = "Google Drive API Java Quickstart";
     /** Global instance of the JSON factory. */
@@ -39,6 +36,7 @@ public class UploadConfig {
      */
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+    private static final String FOLDER_ID = "1rvVKJuMKgGf8N9RpD34QNNYczvtQ7ixc";
 
     /**
      * Creates an authorized Credential object.
@@ -48,7 +46,7 @@ public class UploadConfig {
      */
     private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
         // Load client secrets.
-        InputStream in = UploadConfig.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+        InputStream in = Upload.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
         if (in == null) {
             throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
         }
@@ -83,11 +81,12 @@ public class UploadConfig {
 
         File fileMetadata = new File();
         fileMetadata.setName(imageName);
+        fileMetadata.setParents(Collections.singletonList(FOLDER_ID));
 
         java.io.File filePath = new java.io.File("files/" + imageName);
         FileContent mediaContent = new FileContent(fileType, filePath);
         File file = service.files().create(fileMetadata, mediaContent)
-                .setFields("id")
+                .setFields("id, parents")
                 .execute();
 
         return file.getId();
@@ -105,11 +104,12 @@ public class UploadConfig {
 
         File fileMetadata = new File();
         fileMetadata.setName(fileName);
+        fileMetadata.setParents(Collections.singletonList(FOLDER_ID));
 
         java.io.File filePath = new java.io.File("files/" + fileName);
         FileContent mediaContent = new FileContent(fileType, filePath);
         File file = service.files().create(fileMetadata, mediaContent)
-                .setFields("id")
+                .setFields("id, parents")
                 .execute();
 
         return file.getId();
