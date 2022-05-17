@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 @Service
 public class FolderService {
@@ -130,31 +129,23 @@ public class FolderService {
         Folder folder = getFolderByID(folderID);
         AppUser user = appUserService.getUserByEmail(email);
         ArrayList<String> foldersIDList = user.getFolders();
-        ArrayList<String> children = folder.getFolders();
 
-        // check it has children
-        if (!children.isEmpty()) {
-            // it has children folder -> delete all children (get all folders from userID and check who's parentID == folderID)
-            Iterator<String> iterator = foldersIDList.iterator();
-            while (iterator.hasNext()){
-                String tmpFolderID = iterator.next();
-                String parent = getFolderByID(tmpFolderID).getParent();
-                if(parent != null){
-                    if (parent.equals(folderID)) {
-//                        foldersIDList.remove(tmpFolderID);
-                        folderRepository.deleteById(folderID);
-                        iterator.remove();
-                    }
-                }
+        // fetch all folders under user and check its direction has contains wannaDelete folder's name
+        ArrayList<Folder> folders = getAllFoldersFromUser(email);
+        for(Folder tmpFolder : folders){
+            if(tmpFolder.getDirection().contains(folder.getFolderName())){
+                // update AppUser schema's folders
+                foldersIDList.remove(tmpFolder.getId());
+                folderRepository.deleteById(tmpFolder.getId());
             }
         }
 
-        // update user
+        // write update to AppUser schema
         foldersIDList.remove(folderID);
         user.setFolders(foldersIDList);
         appUserService.replaceUser(user);
 
-        // update parent's folders
+        // update parent's folders and write to Folder's schema
         if(folder.getParent() != null){
             Folder parentFolder = getFolderByID(folder.getParent());
             ArrayList<String> parentFolderIDList = parentFolder.getFolders();
@@ -162,8 +153,44 @@ public class FolderService {
             parentFolder.setFolders(parentFolderIDList);
             folderRepository.save(parentFolder);
         }
-
         // delete folder
         folderRepository.deleteById(folderID);
+    }
+
+    public Folder renameFolderByID(String email, String folderID, String wannaChangeName) {
+        System.out.println("wannaChangeName = "+wannaChangeName);
+        // get all folders and check its contains folder's name and change it.
+        Folder wannaChangeFolder = getFolderByID(folderID);
+        ArrayList<Folder> allFolders = getAllFoldersFromUser(email);
+        String oldName = wannaChangeFolder.getFolderName();
+
+        // change all directions
+        for(Folder folder : allFolders){
+            // find its related children folder
+            if(folder.getDirection().contains(oldName)){
+                // get new direction
+                String newDirection = "";
+                String[] hasOldNameDirection = folder.getDirection().split("/");
+                for (String oldDirection : hasOldNameDirection) {
+                    if (oldDirection.equals(oldName)) {
+                        newDirection += wannaChangeName;
+                    } else {
+                        newDirection += "/"+oldDirection;
+                    }
+                }
+                // update and write to its children
+                System.out.println(folder.getFolderName() + "will change into");
+                System.out.println(newDirection);
+                folder.setDirection(newDirection);
+                folderRepository.save(folder);
+            }
+        }
+
+        // change its name
+        Folder folder = getFolderByID(folderID);
+        folder.setFolderName(wannaChangeName);
+        folderRepository.save(folder);
+
+        return folder;
     }
 }
