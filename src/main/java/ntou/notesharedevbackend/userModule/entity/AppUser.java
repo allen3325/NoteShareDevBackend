@@ -30,7 +30,6 @@
 //        fans string//發文通知粉絲 存email或是userName
 //        coin * int default 初始點數
 package ntou.notesharedevbackend.userModule.entity;
-import ntou.notesharedevbackend.folderModule.entity.Folder;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -48,7 +47,8 @@ public class AppUser {
     private boolean isActivate;
     private String profile; //自我介紹
     private ArrayList<String> strength; //擅長科目
-    private ArrayList<Folder> folders;
+//    private ArrayList<Folder> folders;
+    private ArrayList<String> folders; // folder's ID
     private ArrayList<String> subscribe;
     private ArrayList<String> bell;
     private ArrayList<String> fans;
@@ -132,11 +132,11 @@ public class AppUser {
         this.strength = strength;
     }
 
-    public ArrayList<Folder> getFolders() {
+    public ArrayList<String> getFolders() {
         return folders;
     }
 
-    public void setFolders(ArrayList<Folder> folders) {
+    public void setFolders(ArrayList<String> folders) {
         this.folders = folders;
     }
 

@@ -25,20 +25,23 @@
 package ntou.notesharedevbackend.folderModule.entity;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 
+@Document(collection = "folder")
 public class Folder {
 
     // attributes
     private String id;
     private String folderName;
-    private ArrayList<Folder> folders;
+    private ArrayList<String> folders; // folder's ID
     private ArrayList<String> notes; // note's ID
     private Boolean isPublic;
     private Boolean isFavorite; // 收藏區
-    private Integer floor; // 樓層
-    private Integer indexAtFloor; // 樓層的index
+    private String direction; // 路徑
+    private String parent; // 父資料夾
+    private ArrayList<String> children; // 子資料夾
 
     // constructors
     public Folder() {
@@ -48,11 +51,12 @@ public class Folder {
     public Folder(FolderRequest folderRequest){
         this.id = new ObjectId().toString();
         this.folderName = folderRequest.getFolderName();
-        this.floor = folderRequest.getFloor();
         this.isPublic = folderRequest.getPublic();
-        if(folderRequest.getIndexAtFloor() != null){
-            this.indexAtFloor = folderRequest.getIndexAtFloor();
-        }
+        this.direction = folderRequest.getDirection();
+        this.parent = folderRequest.getParent();
+        this.children = new ArrayList<String>();
+        this.folders = new ArrayList<String>();
+        this.notes = new ArrayList<String>();
     }
 
     // getter and setter
@@ -73,11 +77,11 @@ public class Folder {
         this.folderName = folderName;
     }
 
-    public ArrayList<Folder> getFolders() {
+    public ArrayList<String> getFolders() {
         return folders;
     }
 
-    public void setFolders(ArrayList<Folder> folders) {
+    public void setFolders(ArrayList<String> folders) {
         this.folders = folders;
     }
 
@@ -105,19 +109,27 @@ public class Folder {
         isFavorite = favorite;
     }
 
-    public Integer getFloor() {
-        return floor;
+    public String getDirection() {
+        return direction;
     }
 
-    public void setFloor(Integer floor) {
-        this.floor = floor;
+    public void setDirection(String direction) {
+        this.direction = direction;
     }
 
-    public Integer getIndexAtFloor() {
-        return indexAtFloor;
+    public String getParent() {
+        return parent;
     }
 
-    public void setIndexAtFloor(Integer indexAtFloor) {
-        this.indexAtFloor = indexAtFloor;
+    public void setParent(String parent) {
+        this.parent = parent;
+    }
+
+    public ArrayList<String> getChildren() {
+        return children;
+    }
+
+    public void setChildren(ArrayList<String> children) {
+        this.children = children;
     }
 }

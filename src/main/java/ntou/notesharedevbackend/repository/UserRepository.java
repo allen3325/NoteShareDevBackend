@@ -12,7 +12,5 @@ import java.util.List;
 public interface UserRepository  extends MongoRepository<AppUser,String> {
     AppUser findByEmail(String email);
     List<AppUser> findByNameLike(String name);
-    @Query("{'folders.id': ?0}")
-    AppUser findFolderById(String id);
     boolean existsByEmail(String email);
 }
