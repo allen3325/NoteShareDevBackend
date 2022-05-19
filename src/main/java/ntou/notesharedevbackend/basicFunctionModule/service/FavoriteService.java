@@ -24,8 +24,10 @@ public class FavoriteService {
 
     public void favoriteNote(String id) {
         Note note = noteService.getNote(id);
-        note.setFavorite(!note.getFavorite());
-        noteRepository.save(note);
+        if (note.getFavorite() != null) {
+            note.setFavorite(!note.getFavorite());
+            noteRepository.save(note);
+        }
     }
 
     public void favoriteNoteComment(String noteID, String commentID, String email) {
