@@ -1,6 +1,7 @@
 package ntou.notesharedevbackend.searchModule.controller;
 
 import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.searchModule.entity.*;
 import ntou.notesharedevbackend.searchModule.service.*;
 import ntou.notesharedevbackend.userModule.entity.*;
 import org.springframework.beans.factory.annotation.*;
@@ -20,8 +21,8 @@ public class SearchController {
     }
 
     @GetMapping("/{keyword}")
-    public ResponseEntity<Note[]> getSearchedByKeyword(@PathVariable("keyword") String keyword, @RequestBody Note request) {
-        Note[] notes = searchService.getSearchedByKeyword(keyword, request);
+    public ResponseEntity<Note[]> getSearchedNoteByKeyword(@PathVariable("keyword") String keyword, @RequestBody Search request) {
+        Note[] notes = searchService.getSearchedNoteByKeyword(keyword, request);
         return ResponseEntity.ok(notes);
     }
 }
