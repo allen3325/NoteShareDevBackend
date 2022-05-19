@@ -12,9 +12,9 @@ import java.util.List;
 @Repository
 public interface UserRepository  extends MongoRepository<AppUser,String> {
     AppUser findByEmail(String email);
-    List<AppUser> findAppUserByNameLike(String name);
+    List<AppUser> findAllByNameLike(String name);
 
-    Page<AppUser> findAppUserByNameLike(String name, Pageable pageable);
+    Page<AppUser> findAllByNameLike(String name, Pageable pageable);
     @Query("{'folders.id': ?0}")
     AppUser findFolderById(String id);
     boolean existsByEmail(String email);

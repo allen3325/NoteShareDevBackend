@@ -23,10 +23,10 @@ public class SearchService {
     private NoteRepository noteRepository;
 
     public AppUser[] getSearchedUser(String userName) {
-        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by("name").descending());
-        Page<AppUser> appUserLikePage = userRepository.findAppUserByNameLike(userName, pageRequest);
-//        List<AppUser> appUserList = userRepository.findAppUserByNameLike(userName);
-        List<AppUser> appUserList = appUserLikePage.getContent();
+//        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by("name").descending());
+//        Page<AppUser> appUserLikePage = userRepository.findAllByNameLike(userName, pageRequest);
+//        List<AppUser> appUserList = appUserLikePage.getContent();
+        List<AppUser> appUserList = userRepository.findAllByNameLike(userName);
         return appUserList.toArray(new AppUser[0]);
     }
 
