@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.searchModule.controller;
 
+import ntou.notesharedevbackend.folderModule.entity.*;
 import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.searchModule.entity.*;
 import ntou.notesharedevbackend.searchModule.service.*;
@@ -20,9 +21,15 @@ public class SearchController {
         return ResponseEntity.ok(appUser);
     }
 
-    @GetMapping("/{keyword}")
+    @GetMapping("/note/{keyword}")
     public ResponseEntity<Note[]> getSearchedNoteByKeyword(@PathVariable("keyword") String keyword, @RequestBody Search request) {
         Note[] notes = searchService.getSearchedNoteByKeyword(keyword, request);
         return ResponseEntity.ok(notes);
+    }
+
+    @GetMapping("/folder/{keyword}")
+    public ResponseEntity<Folder[]> getSearchedFolderByKeyword(@PathVariable("keyword") String keyword) {
+        Folder[] folders = searchService.getSearchedFolderByKeyword(keyword);
+        return ResponseEntity.ok(folders);
     }
 }

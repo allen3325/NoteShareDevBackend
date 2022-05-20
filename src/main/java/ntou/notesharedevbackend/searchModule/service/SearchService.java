@@ -1,6 +1,7 @@
 package ntou.notesharedevbackend.searchModule.service;
 
 import com.fasterxml.jackson.databind.*;
+import ntou.notesharedevbackend.folderModule.entity.*;
 import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.repository.*;
 import ntou.notesharedevbackend.searchModule.entity.*;
@@ -22,10 +23,12 @@ public class SearchService {
     private UserRepository userRepository;
     @Autowired
     private NoteRepository noteRepository;
+    @Autowired
+    private FolderRepository folderRepository;
 
     public AppUser[] getSearchedUser(String userName) {
         PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by("name").descending());
-        Page<AppUser> appUserLikePage = userRepository.findByNameLike(userName, pageRequest);
+        Page<AppUser> appUserLikePage = userRepository.findByNameRegex(userName, pageRequest);
         List<AppUser> appUserList = appUserLikePage.getContent();
         return appUserList.toArray(new AppUser[0]);
     }
@@ -33,7 +36,7 @@ public class SearchService {
     public Note[] getSearchedNoteByKeyword(String keyword, Search search) {
         // initial search
         PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by("title").descending());
-        Page<Note> notesLikePage = noteRepository.findNoteByTitleLike(keyword, pageRequest);
+        Page<Note> notesLikePage = noteRepository.findNoteByTitleRegex(keyword, pageRequest);
         List<Note> noteList = notesLikePage.getContent();
         if (noteList.isEmpty())
             return noteList.toArray(new Note[0]);
@@ -96,4 +99,10 @@ public class SearchService {
         return noteList.toArray(new Note[0]);
     }
 
+    public Folder[] getSearchedFolderByKeyword(String keyword) {
+        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by("title").descending());
+        Page<Folder> foldersLikePage = folderRepository.findByFolderNameRegex(keyword, pageRequest);
+        List<Folder> folderList = foldersLikePage.getContent();
+        return folderList.toArray(new Folder[0]);
+    }
 }
