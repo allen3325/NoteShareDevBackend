@@ -25,22 +25,38 @@
 package ntou.notesharedevbackend.folderModule.entity;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 
+@Document(collection = "folder")
 public class Folder {
 
     // attributes
     private String id;
     private String folderName;
-    private ArrayList<Folder> folders;
+    private ArrayList<String> folders; // folder's ID
     private ArrayList<String> notes; // note's ID
     private Boolean isPublic;
     private Boolean isFavorite; // 收藏區
+    private String direction; // 路徑
+    private String parent; // 父資料夾
+    private ArrayList<String> children; // 子資料夾
 
     // constructors
     public Folder() {
         this.id = new ObjectId().toString();
+    }
+
+    public Folder(FolderRequest folderRequest){
+        this.id = new ObjectId().toString();
+        this.folderName = folderRequest.getFolderName();
+        this.isPublic = folderRequest.getPublic();
+        this.direction = folderRequest.getDirection();
+        this.parent = folderRequest.getParent();
+        this.children = new ArrayList<String>();
+        this.folders = new ArrayList<String>();
+        this.notes = new ArrayList<String>();
     }
 
     // getter and setter
@@ -61,11 +77,11 @@ public class Folder {
         this.folderName = folderName;
     }
 
-    public ArrayList<Folder> getFolders() {
+    public ArrayList<String> getFolders() {
         return folders;
     }
 
-    public void setFolders(ArrayList<Folder> folders) {
+    public void setFolders(ArrayList<String> folders) {
         this.folders = folders;
     }
 
@@ -91,5 +107,29 @@ public class Folder {
 
     public void setFavorite(Boolean favorite) {
         isFavorite = favorite;
+    }
+
+    public String getDirection() {
+        return direction;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = direction;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
+    }
+
+    public ArrayList<String> getChildren() {
+        return children;
+    }
+
+    public void setChildren(ArrayList<String> children) {
+        this.children = children;
     }
 }
