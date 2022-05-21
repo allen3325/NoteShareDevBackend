@@ -5,7 +5,7 @@ target/
 !**/src/test/**/target/
 
 ### token ###
-token/
+tokens/
 
 ### STS ###
 .apt_generated
