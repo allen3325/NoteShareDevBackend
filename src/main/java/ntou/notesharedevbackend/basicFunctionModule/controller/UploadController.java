@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.basicFunctionModule.controller;
 
+import ntou.notesharedevbackend.basicFunctionModule.entity.*;
 import ntou.notesharedevbackend.basicFunctionModule.service.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
@@ -12,18 +13,16 @@ public class UploadController {
     @Autowired
     UploadService uploadImageService;
 
-    @PostMapping("/picture/{noteID}/{version}")
-    public ResponseEntity<String[]> uploadImage(
-            @PathVariable("noteID") String noteID, @PathVariable("version") String version, @RequestParam("files") MultipartFile[] uploadfiles) {
-        String[] response = uploadImageService.uploadImage(uploadfiles, noteID, version);
+    @PostMapping("/picture")
+    public ResponseEntity<String[]> uploadImage(@ModelAttribute UploadDTO uploadDTO) {
+        String[] response = uploadImageService.uploadImage(uploadDTO.getFiles(), uploadDTO.getNoteID(), uploadDTO.getVersion());
 
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/file/{noteID}/{version}")
-    public ResponseEntity<String[]> uploadFile(
-            @PathVariable("noteID") String noteID, @PathVariable("version") String version, @RequestParam("files") MultipartFile[] uploadfiles) {
-        String[] response = uploadImageService.uploadFile(uploadfiles, noteID, version);
+    @PostMapping("/file")
+    public ResponseEntity<String[]> uploadFile(@ModelAttribute UploadDTO uploadDTO) {
+        String[] response = uploadImageService.uploadFile(uploadDTO.getFiles(), uploadDTO.getNoteID(), uploadDTO.getVersion());
 
         return ResponseEntity.ok(response);
     }
