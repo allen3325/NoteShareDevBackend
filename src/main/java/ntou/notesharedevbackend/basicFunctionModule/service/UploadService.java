@@ -1,6 +1,7 @@
 package ntou.notesharedevbackend.basicFunctionModule.service;
 
 import ntou.notesharedevbackend.basicFunctionModule.config.*;
+import ntou.notesharedevbackend.basicFunctionModule.entity.*;
 import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.noteNodule.service.*;
 import ntou.notesharedevbackend.repository.*;
@@ -20,6 +21,15 @@ public class UploadService {
     private NoteService noteService;
     @Autowired
     private NoteRepository noteRepository;
+
+    public GetImageDTO getImage(String imageID) {
+        try {
+            return Upload.getImage(imageID);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new GetImageDTO();   //TODO: exception handling
+        }
+    }
 
     public String[] uploadImage(MultipartFile[] request, String noteID, String version) {
         //save files to temporary directory
