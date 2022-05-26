@@ -15,9 +15,9 @@ version = '1.0'
 
 repositories {
     mavenCentral()
-    maven {
-        url "https://dl.bintray.com/michaelklishin/maven/"
-    }
+//    maven {
+//        url "https://dl.bintray.com/michaelklishin/maven/"
+//    }
     maven {
         url "https://jcenter.bintray.com/"
     }
@@ -44,6 +44,6 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security
     implementation 'org.springframework.boot:spring-boot-starter-security:2.6.3'
     implementation group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.2'
-//    compileOnly 'com.novemberain:quartz-mongodb:2.2.0-rc2'
+    implementation 'com.novemberain:quartz-mongodb:2.2.0-rc2'
 
 }
