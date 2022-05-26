@@ -55,6 +55,7 @@ public class Folder {
         this.path = folderRequest.getPath();
         this.parent = folderRequest.getParent();
         this.children = new ArrayList<String>();
+        this.isFavorite = false;
 //        this.folders = new ArrayList<String>();
         this.notes = new ArrayList<String>();
     }

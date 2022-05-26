@@ -7,7 +7,6 @@ import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.repository.FolderRepository;
-import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -196,23 +195,23 @@ public class FolderService {
     }
 
     // old:/CA/Ch2/Ch1-1 -> new:/CA/Ch1/Ch1-1
-    public void changeAllChildrenPath(String email, String folderID, Folder request){
+    public void changeAllChildrenPath(String email, String folderID, Folder request) {
         Folder folder = getFolderByID(folderID);
         String oldPath = folder.getPath();
         String newPath = request.getPath();
         ArrayList<Folder> allFolders = getAllFoldersFromUser(email);
-        for(Folder tmpFolder:allFolders){
+        for (Folder tmpFolder : allFolders) {
             // get related children and change their path
             String path = tmpFolder.getPath();
-            if(path.contains(oldPath) && !path.equals(oldPath)){
-                path = path.replace(oldPath,newPath);
+            if (path.contains(oldPath) && !path.equals(oldPath)) {
+                path = path.replace(oldPath, newPath);
                 tmpFolder.setPath(path);
                 folderRepository.save(tmpFolder);
             }
         }
     }
 
-    public void changeOldParentChildren(String email, String folderID, Folder request){
+    public void changeOldParentChildren(String email, String folderID, Folder request) {
         // get related old parent and delete folderID
         Folder folder = getFolderByID(folderID);
         Folder oldParent = getFolderByID(folder.getParent());
@@ -228,7 +227,7 @@ public class FolderService {
         String newParentID = request.getParent();
         // has children and parent
         if (!folder.getChildren().isEmpty() && folder.getParent() != null) {
-            changeAllChildrenPath(email,folderID,request);
+            changeAllChildrenPath(email, folderID, request);
             changeOldParentChildren(email, folderID, request);
         }
         // has no children but has parent
@@ -246,5 +245,33 @@ public class FolderService {
         folderRepository.save(newParent);
 
         return folder;
+    }
+
+    public void setFavorite(String email, String folderID) {
+        Folder folder = getFolderByID(folderID);
+        AppUser appUser = appUserService.getUserByEmail(email);
+        folder.setFavorite(!folder.getFavorite());
+        ArrayList<String> folderIDList = appUser.getFolders();
+        // find Favorite folder in user
+        for (String tmpFolderID : folderIDList) {
+            Folder tmpFolder = getFolderByID(tmpFolderID);
+            if (tmpFolder.getFolderName().equals("Favorite")) {
+                ArrayList<String> tmpFolderChildren = tmpFolder.getChildren();
+                // add folder into Favorite
+                if (folder.getFavorite()) {
+                    // check Favorite folder does not contain this folder
+                    if(!tmpFolderChildren.contains(folderID)){
+                        tmpFolderChildren.add(folderID);
+                    }
+                }
+                // delete folder from Favorite
+                else{
+                    tmpFolderChildren.remove(folderID);
+                }
+                // update tmpFolder and save to repo.
+                tmpFolder.setChildren(tmpFolderChildren);
+                folderRepository.save(tmpFolder);
+            }
+        }
     }
 }
