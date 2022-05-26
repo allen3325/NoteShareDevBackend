@@ -21,7 +21,7 @@ public class FolderController {
     private final FolderService folderService;
 
     @Autowired
-    public FolderController(FolderService folderService, AppUserService appUserService) {
+    public FolderController(FolderService folderService) {
         this.folderService = folderService;
     }
 
