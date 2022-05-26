@@ -31,7 +31,9 @@ public class PostController {
     @PostMapping
     public ResponseEntity<Post> createPost(@RequestBody Post request) {
         Post post = postService.createPost(request);
-
+        if(post.getType().equals("collaboration")){
+          postService.schedulerPublishTime(post);
+        }
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{postID}")

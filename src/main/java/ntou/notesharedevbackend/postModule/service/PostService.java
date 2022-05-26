@@ -3,6 +3,8 @@ package ntou.notesharedevbackend.postModule.service;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.PostRepository;
+import ntou.notesharedevbackend.schedulerModule.entity.Task;
+import ntou.notesharedevbackend.schedulerModule.service.SchedulingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ public class PostService {
     //TODO::::修好Post的schema CURD問題
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private SchedulingService schedulingService;
 
     public Post[] getAllTypeOfPost(String postType) {
         List<Post> postList = postRepository.findAllByType(postType);
@@ -39,6 +43,13 @@ public class PostService {
         post.setComments(request.getComments());
         post.setAnswers(request.getAnswers());
         post.setWantEnterUsersEmail(request.getWantEnterUsersEmail());
+        if(post.getType().equals("collaboration")){
+            Task task = new Task();
+            task = request.getTask();
+            post.setTask(request.getTask());
+            post.getTask().setType(post.getType());
+            post.getTask().setNoteID(post.getAnswers().get(0));
+        }
 //        switch (request.getType()) {
 //            case "QA":
 //                post.setPrice(request.getPrice());
@@ -76,6 +87,8 @@ public class PostService {
                 break;
             case "collaboration":
                 post.setWantEnterUsersEmail(request.getWantEnterUsersEmail());
+                post.setTask(request.getTask());
+                post.setVote(request.getVote());
                 break;
             case "reward":
                 post.setPrice(request.getPrice());
@@ -118,5 +131,8 @@ public class PostService {
     public void clearWantEnterUsersEmail(Post post, String email) {
         ArrayList<String> currentWantEnterUsersEmail = post.getWantEnterUsersEmail();
         currentWantEnterUsersEmail.remove(email);
+    }
+    public void schedulerPublishTime(Post post){
+        schedulingService.addSchedule(post.getId(),post.getTask());
     }
 }

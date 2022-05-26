@@ -87,4 +87,19 @@ public class NoteService {
 
         noteRepository.save(note);
     }
+
+    public void publishOrSubmit(String noteID){
+        Note note = getNote(noteID);
+        if(note.getType().equals("reward")){
+            if(note.getSubmit().equals(false)) {
+                note.setSubmit(true);
+            }
+        }else{
+            if(note.getPublic().equals(false)){
+                note.setPublic(true);
+            }else{
+                note.setPublic(false);
+            }
+        }
+    }
 }

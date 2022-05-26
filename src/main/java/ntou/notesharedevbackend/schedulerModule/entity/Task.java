@@ -9,10 +9,9 @@ public class Task {
     private int year;
     private int month;
     private int day;
-    private int hour;
-    private int minute;
-    private int second;
-    private boolean done = false;
+    private int hour = 17;
+    private int minute = 0;
+    private int second = 0;
     private String noteID ;
 
     public String getId() {
@@ -77,14 +76,6 @@ public class Task {
 
     public void setSecond(int second) {
         this.second = second;
-    }
-
-    public boolean isDone() {
-        return done;
-    }
-
-    public void setDone(boolean done) {
-        this.done = done;
     }
 
     public String getNoteID() {
