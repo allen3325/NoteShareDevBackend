@@ -39,6 +39,26 @@ public class FolderService {
         return folders;
     }
 
+    public Folder getFavoriteFolderByUserEmail(String email) {
+        ArrayList<String> tmpFolderIDList = appUserService.getUserByEmail(email).getFolders();
+        for (String folderID : tmpFolderIDList) {
+            if (getFolderByID(folderID).getFolderName().equals("Favorite")) {
+                return getFolderByID(folderID);
+            }
+        }
+        return null;
+    }
+
+    public Folder getBuyFolderByUserEmail(String email) {
+        ArrayList<String> tmpFolderIDList = appUserService.getUserByEmail(email).getFolders();
+        for (String folderID : tmpFolderIDList) {
+            if (getFolderByID(folderID).getFolderName().equals("Buy")) {
+                return getFolderByID(folderID);
+            }
+        }
+        return null;
+    }
+
     public Folder getFolderByID(String folderID) {
         return folderRepository.findById(folderID)
                 .orElseThrow(() -> new NotFoundException("Can't find folder."));
@@ -211,6 +231,10 @@ public class FolderService {
         }
     }
 
+    public Folder replaceFolder(Folder request) {
+        return folderRepository.save(request);
+    }
+
     public void changeOldParentChildren(String email, String folderID, Folder request) {
         // get related old parent and delete folderID
         Folder folder = getFolderByID(folderID);
@@ -253,25 +277,21 @@ public class FolderService {
         folder.setFavorite(!folder.getFavorite());
         ArrayList<String> folderIDList = appUser.getFolders();
         // find Favorite folder in user
-        for (String tmpFolderID : folderIDList) {
-            Folder tmpFolder = getFolderByID(tmpFolderID);
-            if (tmpFolder.getFolderName().equals("Favorite")) {
-                ArrayList<String> tmpFolderChildren = tmpFolder.getChildren();
-                // add folder into Favorite
-                if (folder.getFavorite()) {
-                    // check Favorite folder does not contain this folder
-                    if(!tmpFolderChildren.contains(folderID)){
-                        tmpFolderChildren.add(folderID);
-                    }
-                }
-                // delete folder from Favorite
-                else{
-                    tmpFolderChildren.remove(folderID);
-                }
-                // update tmpFolder and save to repo.
-                tmpFolder.setChildren(tmpFolderChildren);
-                folderRepository.save(tmpFolder);
+        Folder favoriteFolder = getFavoriteFolderByUserEmail(email);
+        ArrayList<String> favoriteFolderChildren = favoriteFolder.getChildren();
+        // add folder into Favorite
+        if (folder.getFavorite()) {
+            // check Favorite folder does not contain this folder
+            if (!favoriteFolderChildren.contains(folderID)) {
+                favoriteFolderChildren.add(folderID);
             }
         }
+        // delete folder from Favorite
+        else {
+            favoriteFolderChildren.remove(folderID);
+        }
+        // update tmpFolder and save to repo.
+        favoriteFolder.setChildren(favoriteFolderChildren);
+        folderRepository.save(favoriteFolder);
     }
 }
