@@ -7,18 +7,19 @@ import java.util.ArrayList;
 public class FolderRequest {
     private String folderName;
     private Boolean isPublic;
-    private String direction; // 路徑
+    private String path; // 路徑
     private String parent; // 父資料夾
-    private ArrayList<String> children; // 子資料夾
+//    private ArrayList<String> children; // 子資料夾
 
     // getter and setter
 
-    public String getDirection() {
-        return direction;
+
+    public String getPath() {
+        return path;
     }
 
-    public void setDirection(String direction) {
-        this.direction = direction;
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getParent() {
@@ -29,13 +30,13 @@ public class FolderRequest {
         this.parent = parent;
     }
 
-    public ArrayList<String> getChildren() {
-        return children;
-    }
-
-    public void setChildren(ArrayList<String> children) {
-        this.children = children;
-    }
+//    public ArrayList<String> getChildren() {
+//        return children;
+//    }
+//
+//    public void setChildren(ArrayList<String> children) {
+//        this.children = children;
+//    }
 
     public String getFolderName() {
         return folderName;

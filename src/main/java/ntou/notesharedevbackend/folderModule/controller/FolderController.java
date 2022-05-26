@@ -44,6 +44,19 @@ public class FolderController {
         return ResponseEntity.ok(folder);
     }
 
+    @PutMapping("/save/{email}/{folderID}")
+    public ResponseEntity<Folder> changePathByID(@PathVariable(name = "email")String email, @PathVariable(name =
+            "folderID")String folderID,@RequestBody Folder request){
+        Folder folder = folderService.changePathByID(email,folderID,request);
+        return ResponseEntity.ok(folder);
+    }
+
+    @PutMapping("/favorite/{email}/{folderID}")
+    public ResponseEntity favorite(@PathVariable(name = "email")String email, @PathVariable(name = "folderID")String folderID){
+        folderService.setFavorite(email,folderID);
+        return ResponseEntity.status(201).build();
+    }
+
     @PostMapping("/{email}")
     public ResponseEntity<Folder> createFolder(@PathVariable(name = "email")String email,
                                                @RequestBody FolderRequest request){
