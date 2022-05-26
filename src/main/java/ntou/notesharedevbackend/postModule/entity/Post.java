@@ -13,6 +13,7 @@
 package ntou.notesharedevbackend.postModule.entity;
 
 import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class Post {
     private ArrayList<Comment> comments;
     private ArrayList<String> answers; // to save note's ID
     private ArrayList<String> wantEnterUsersEmail;
+    private Task task;
 
     // constructors
     public Post() {
@@ -153,5 +155,13 @@ public class Post {
 
     public void setWantEnterUsersEmail(ArrayList<String> wantEnterUsersEmail) {
         this.wantEnterUsersEmail = wantEnterUsersEmail;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
     }
 }
