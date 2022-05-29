@@ -15,11 +15,12 @@ public class VersionContent {
 
     // attributes
     private String id;
-    private Date date;
-    private String content;
-    private ArrayList<String> picURL;
-    private ArrayList<String> fileURL;
-    private ArrayList<String> markdown;
+    private String mycustom_html;
+    private String mycustom_components;
+    private String mycustom_assets;
+    private String mycustom_css;
+    private String mycustom_styles;
+
 
     // constructors
     public VersionContent() {
@@ -35,43 +36,75 @@ public class VersionContent {
         this.id = id;
     }
 
-    public Date getDate() {
-        return date;
+//    public Date getDate() {
+//        return date;
+//    }
+//
+//    public void setDate(Date date) {
+//        this.date = date;
+//    }
+
+    public String getMycustom_html() {
+        return mycustom_html;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setMycustom_html(String mycustom_html) {
+        this.mycustom_html = mycustom_html;
     }
 
-    public String getContent() {
-        return content;
+    public String getMycustom_components() {
+        return mycustom_components;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setMycustom_components(String mycustom_components) {
+        this.mycustom_components = mycustom_components;
     }
 
-    public ArrayList<String> getPicURL() {
-        return picURL;
+    public String getMycustom_assets() {
+        return mycustom_assets;
     }
 
-    public void setPicURL(ArrayList<String> picURL) {
-        this.picURL = picURL;
+    public void setMycustom_assets(String mycustom_assets) {
+        this.mycustom_assets = mycustom_assets;
     }
 
-    public ArrayList<String> getFileURL() {
-        return fileURL;
+    public String getMycustom_css() {
+        return mycustom_css;
     }
 
-    public void setFileURL(ArrayList<String> fileURL) {
-        this.fileURL = fileURL;
+    public void setMycustom_css(String mycustom_css) {
+        this.mycustom_css = mycustom_css;
     }
 
-    public ArrayList<String> getMarkdown() {
-        return markdown;
+    public String getMycustom_styles() {
+        return mycustom_styles;
     }
 
-    public void setMarkdown(ArrayList<String> markdown) {
-        this.markdown = markdown;
+    public void setMycustom_styles(String mycustom_styles) {
+        this.mycustom_styles = mycustom_styles;
     }
+
+    //    public ArrayList<String> getPicURL() {
+//        return picURL;
+//    }
+//
+//    public void setPicURL(ArrayList<String> picURL) {
+//        this.picURL = picURL;
+//    }
+//
+//    public ArrayList<String> getFileURL() {
+//        return fileURL;
+//    }
+//
+//    public void setFileURL(ArrayList<String> fileURL) {
+//        this.fileURL = fileURL;
+//    }
+//
+//    public ArrayList<String> getMarkdown() {
+//        return markdown;
+//    }
+//
+//    public void setMarkdown(ArrayList<String> markdown) {
+//        this.markdown = markdown;
+//    }
 }

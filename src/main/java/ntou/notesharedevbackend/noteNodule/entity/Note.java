@@ -36,16 +36,31 @@ import ntou.notesharedevbackend.commentModule.entity.Comment;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Date;
 
+//TODO:
+// 1. update schema by frontend
+// 2. 喜歡筆記的人（前端判斷使用者是否按過喜歡）
+// 3. 收藏（把isFavorite拔掉了）。因為改成 by reference 所以沒用
+// 4. favorite 前端判斷方法，應該是去看此 user 的 Favorite 資料夾有無此筆記？ -> 影響我們要不要有一個 favoriter（像是liker）
+// 5. Unlocker？（解鎖的人，前端也需要判斷此筆記是否已購買。還是搜尋的時候要篩掉？）
+// 6. 需要前端給他們的 versionContent 送什麼？（Date 後端建還是前端建）
+// 7. mycustom-components 是 Array 嗎？
+// 8. mycustom-components 的 - 改成 _ 的問題
 @Document(collection = "note")
 public class Note {
 
     // attributes
     private String id;
     private String type; // normal, reward, collaboration
+    private String name;
+    private String slug;
+    private Date createdAt;
+    private Date updatedAt;
+    private int __v;
     private String department;
     private String subject;
-    private String title;
+//    private String title; // change to name
     private String headerEmail; //建立筆記者
     private String headerName; //建立筆記者
     private ArrayList<String> authorEmail; //所有作者
@@ -54,9 +69,8 @@ public class Note {
     private String managerEmail; //共筆用
     private String professor;
     private String school;
-    private ArrayList<String> exitFolders; //所屬的所有資料夾
-    //TODO: reference 是否還可以知道目前資料夾？先拔除了
-    //    private String parentFolder; //目前資料夾
+//    private String parentFolder; //目前資料夾
+    private ArrayList<String> liker; // 喜灣筆記的人
     private Integer likeCount;
     private Integer favoriteCount;
     private Integer unlockCount;
@@ -74,7 +88,7 @@ public class Note {
     private ArrayList<String> contributors;
     private String postID; // 紀錄貼文ID用於投稿後存在哪
     private Boolean isBest; // 用於懸賞區看是否為最佳解
-    private Boolean isFavorite; // 收藏區
+//    private Boolean isFavorite; // 收藏區
 
     // constructors
     public Note() {}
@@ -113,13 +127,13 @@ public class Note {
         this.subject = subject;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
+//    public String getTitle() {
+//        return title;
+//    }
+//
+//    public void setTitle(String title) {
+//        this.title = title;
+//    }
 
     public String getHeaderEmail() {
         return headerEmail;
@@ -177,13 +191,13 @@ public class Note {
         this.school = school;
     }
 
-    public ArrayList<String> getExitFolders() {
-        return exitFolders;
-    }
-
-    public void setExitFolders(ArrayList<String> exitFolders) {
-        this.exitFolders = exitFolders;
-    }
+//    public ArrayList<String> getExitFolders() {
+//        return exitFolders;
+//    }
+//
+//    public void setExitFolders(ArrayList<String> exitFolders) {
+//        this.exitFolders = exitFolders;
+//    }
 
     public Integer getLikeCount() {
         return likeCount;
@@ -321,11 +335,11 @@ public class Note {
         isBest = best;
     }
 
-    public Boolean getFavorite() {
-        return isFavorite;
-    }
-
-    public void setFavorite(Boolean favorite) {
-        isFavorite = favorite;
-    }
+//    public Boolean getFavorite() {
+//        return isFavorite;
+//    }
+//
+//    public void setFavorite(Boolean favorite) {
+//        isFavorite = favorite;
+//    }
 }
