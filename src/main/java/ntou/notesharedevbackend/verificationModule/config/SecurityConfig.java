@@ -39,6 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/verification/parse").permitAll()
                 .anyRequest().permitAll() //TODO tmp for testing
                 .and()
+                .csrf().disable()
                 .cors();
     }
 
