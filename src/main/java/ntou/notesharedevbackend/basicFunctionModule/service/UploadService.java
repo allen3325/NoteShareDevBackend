@@ -1,6 +1,7 @@
 package ntou.notesharedevbackend.basicFunctionModule.service;
 
 import ntou.notesharedevbackend.basicFunctionModule.config.*;
+import ntou.notesharedevbackend.basicFunctionModule.entity.*;
 import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.noteNodule.service.*;
 import ntou.notesharedevbackend.repository.*;
@@ -21,9 +22,18 @@ public class UploadService {
     @Autowired
     private NoteRepository noteRepository;
 
+    public GetImageDTO getImage(String imageID) {
+        try {
+            return Upload.getImage(imageID);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new GetImageDTO();   //TODO: exception handling
+        }
+    }
+
     public String[] uploadImage(MultipartFile[] request, String noteID, String version) {
         //save files to temporary directory
-        UploadConfig.saveFile(request);
+        Upload.saveFile(request);
 
         String uploadedFileName = Arrays.stream(request).map(x -> x.getOriginalFilename())
                 .filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.joining(","));
@@ -31,7 +41,7 @@ public class UploadService {
         String[] response = new String[0];
         try {
             for (String image : uploadedFileName.split(",")) {
-                String imagesURL = "https://www.googleapis.com/drive/v3/files/" + UploadConfig.uploadImage(image);
+                String imagesURL = Upload.uploadImage(image);
                 responseURL.add(imagesURL);
 
                 savePicURL(noteID, version, imagesURL);
@@ -49,7 +59,7 @@ public class UploadService {
 
     public String[] uploadFile(MultipartFile[] request, String noteID, String version) {
         //save files to temporary directory
-        UploadConfig.saveFile(request);
+        Upload.saveFile(request);
 
         String uploadedFileName = Arrays.stream(request).map(x -> x.getOriginalFilename())
                 .filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.joining(","));
@@ -57,7 +67,7 @@ public class UploadService {
         String[] response = new String[0];
         try {
             for (String file : uploadedFileName.split(",")) {
-                String filesURL = "https://www.googleapis.com/drive/v3/files/" + UploadConfig.uploadFile(file);
+                String filesURL = Upload.uploadFile(file);
                 responseURL.add(filesURL);
 
                 saveFileURL(noteID, version, filesURL);
