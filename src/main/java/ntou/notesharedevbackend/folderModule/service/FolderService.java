@@ -192,15 +192,15 @@ public class FolderService {
                 String newDirection = "";
                 String[] hasOldNameDirection = folder.getPath().split("/");
                 for (String oldDirection : hasOldNameDirection) {
-                    if (oldDirection.equals(oldName)) {
-                        newDirection += wannaChangeName;
-                    } else {
-                        newDirection += "/" + oldDirection;
+                    if(!oldDirection.equals("")){
+                        if (oldDirection.equals(oldName)) {
+                            newDirection += "/" + wannaChangeName;
+                        } else {
+                            newDirection += "/" + oldDirection;
+                        }
                     }
                 }
                 // update and write to its children
-                System.out.println(folder.getFolderName() + "will change into");
-                System.out.println(newDirection);
                 folder.setPath(newDirection);
                 folderRepository.save(folder);
             }
