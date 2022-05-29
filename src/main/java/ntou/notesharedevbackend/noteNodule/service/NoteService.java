@@ -35,7 +35,7 @@ public class NoteService {
         note.setType(request.getType());
         note.setDepartment(request.getDepartment());
         note.setSubject(request.getSubject());
-        note.setTitle(request.getTitle());
+//        note.setTitle(request.getTitle());
         //TODO HeaderEmail 應從URL拿？
         note.setHeaderEmail(request.getHeaderEmail());
         note.setHeaderName(request.getHeaderName());
@@ -63,7 +63,7 @@ public class NoteService {
         note.setContributors(request.getContributors());
         note.setPostID(request.getPostID());
         note.setBest(request.getBest());
-        note.setFavorite(request.getFavorite());
+//        note.setFavorite(request.getFavorite());
 
         return noteRepository.insert(note);
     }

@@ -11,11 +11,11 @@ public class FavoriteController {
     @Autowired
     private FavoriteService favoriteService;
 
-    @PutMapping("/note/{noteID}")
-    public ResponseEntity favoriteNote(@PathVariable("noteID") String id) {
-        favoriteService.favoriteNote(id);
-        return ResponseEntity.ok().build();
-    }
+//    @PutMapping("/note/{noteID}")
+//    public ResponseEntity favoriteNote(@PathVariable("noteID") String id) {
+//        favoriteService.favoriteNote(id);
+//        return ResponseEntity.ok().build();
+//    }
 
     @PutMapping("/note/{noteID}/{commentID}")
     public ResponseEntity favoriteNoteComment(@PathVariable("noteID") String noteID, @PathVariable("commentID") String commentID, @RequestParam("email") String email) {

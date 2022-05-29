@@ -20,6 +20,8 @@ public class VersionContent {
     private String mycustom_assets;
     private String mycustom_css;
     private String mycustom_styles;
+    private ArrayList<String> picURL;
+    private ArrayList<String> fileURL;
 
 
     // constructors
@@ -84,21 +86,21 @@ public class VersionContent {
         this.mycustom_styles = mycustom_styles;
     }
 
-    //    public ArrayList<String> getPicURL() {
-//        return picURL;
-//    }
-//
-//    public void setPicURL(ArrayList<String> picURL) {
-//        this.picURL = picURL;
-//    }
-//
-//    public ArrayList<String> getFileURL() {
-//        return fileURL;
-//    }
-//
-//    public void setFileURL(ArrayList<String> fileURL) {
-//        this.fileURL = fileURL;
-//    }
+        public ArrayList<String> getPicURL() {
+        return picURL;
+    }
+
+    public void setPicURL(ArrayList<String> picURL) {
+        this.picURL = picURL;
+    }
+
+    public ArrayList<String> getFileURL() {
+        return fileURL;
+    }
+
+    public void setFileURL(ArrayList<String> fileURL) {
+        this.fileURL = fileURL;
+    }
 //
 //    public ArrayList<String> getMarkdown() {
 //        return markdown;
