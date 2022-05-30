@@ -68,6 +68,7 @@ public class NoteService {
         return noteRepository.insert(note);
     }
 
+    // TODO: 存到對應的post裡的email（為管理員以及發起者，具有權限管理貼文）裡
     public void setManager(String noteID, String email) {
         Note note = getNote(noteID);
         note.setManagerEmail(email);
