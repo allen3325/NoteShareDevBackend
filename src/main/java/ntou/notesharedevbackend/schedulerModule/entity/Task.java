@@ -1,19 +1,22 @@
 package ntou.notesharedevbackend.schedulerModule.entity;
 
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "task")
+import org.bson.types.ObjectId;
+
 public class Task {
     private String id;
-    private String type;
+    private String type;//publish or vote
     private int year;
     private int month;
     private int day;
-    private int hour = 17;
-    private int minute = 0;
-    private int second = 0;
-    private String noteID ;
-
+//    private int hour = 17;
+//    private int minute = 0;
+//    private int second = 0;
+    private String noteIDOrVoteID ;
+    private String postID;
+    public Task(){
+        this.id = new ObjectId().toString();
+    }
     public String getId() {
         return id;
     }
@@ -54,35 +57,43 @@ public class Task {
         this.day = day;
     }
 
-    public int getHour() {
-        return hour;
+//    public int getHour() {
+//        return hour;
+//    }
+//
+//    public void setHour(int hour) {
+//        this.hour = hour;
+//    }
+//
+//    public int getMinute() {
+//        return minute;
+//    }
+//
+//    public void setMinute(int minute) {
+//        this.minute = minute;
+//    }
+//
+//    public int getSecond() {
+//        return second;
+//    }
+//
+//    public void setSecond(int second) {
+//        this.second = second;
+//    }
+
+    public String getNoteIDOrVoteID() {
+        return noteIDOrVoteID;
     }
 
-    public void setHour(int hour) {
-        this.hour = hour;
+    public void setNoteIDOrVoteID(String noteIDOrVoteID) {
+        this.noteIDOrVoteID = noteIDOrVoteID;
     }
 
-    public int getMinute() {
-        return minute;
+    public String getPostID() {
+        return postID;
     }
 
-    public void setMinute(int minute) {
-        this.minute = minute;
-    }
-
-    public int getSecond() {
-        return second;
-    }
-
-    public void setSecond(int second) {
-        this.second = second;
-    }
-
-    public String getNoteID() {
-        return noteID;
-    }
-
-    public void setNoteID(String noteID) {
-        this.noteID = noteID;
+    public void setPostID(String postID) {
+        this.postID = postID;
     }
 }

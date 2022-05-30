@@ -9,6 +9,7 @@ public class Vote {
     private ArrayList<String> agree;//user's email
     private ArrayList<String> disagree;//user's email
     private String kickTarget;//user's name
+    private String result="yet";
 
     public String getId() {
         return id;
@@ -56,5 +57,13 @@ public class Vote {
 
     public void setKickTarget(String kickTarget) {
         this.kickTarget = kickTarget;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }

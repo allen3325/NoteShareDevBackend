@@ -17,6 +17,7 @@ import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -39,7 +40,7 @@ public class Post {
     private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID
     private ArrayList<String> wantEnterUsersEmail;
     private Task task;
-    private Vote vote;
+    private ArrayList<Vote> vote;
 
     // constructors
     public Post() {
@@ -167,11 +168,11 @@ public class Post {
         this.task = task;
     }
 
-    public Vote getVote() {
+    public ArrayList<Vote> getVote() {
         return vote;
     }
 
-    public void setVote(Vote vote) {
+    public void setVote(ArrayList<Vote> vote) {
         this.vote = vote;
     }
 }

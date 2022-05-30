@@ -31,8 +31,10 @@ public class PostController {
     @PostMapping
     public ResponseEntity<Post> createPost(@RequestBody Post request) {
         Post post = postService.createPost(request);
+        System.out.println("creat post");
+        //create collaboration post and set collaboration note publish time
         if(post.getType().equals("collaboration")){
-          postService.schedulerPublishTime(post);
+          post.setTask(postService.schedulerPublishTime(post.getId(),request.getTask()));
         }
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

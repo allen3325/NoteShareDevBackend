@@ -4,8 +4,10 @@ import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
+import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import ntou.notesharedevbackend.schedulerModule.service.SchedulingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,6 +18,7 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
     @Autowired
+    @Lazy(value = true)
     private SchedulingService schedulingService;
 
     public Post[] getAllTypeOfPost(String postType) {
@@ -43,13 +46,6 @@ public class PostService {
         post.setComments(request.getComments());
         post.setAnswers(request.getAnswers());
         post.setWantEnterUsersEmail(request.getWantEnterUsersEmail());
-        if(post.getType().equals("collaboration")){
-            Task task = new Task();
-            task = request.getTask();
-            post.setTask(request.getTask());
-            post.getTask().setType(post.getType());
-            post.getTask().setNoteID(post.getAnswers().get(0));
-        }
 //        switch (request.getType()) {
 //            case "QA":
 //                post.setPrice(request.getPrice());
@@ -132,7 +128,76 @@ public class PostService {
         ArrayList<String> currentWantEnterUsersEmail = post.getWantEnterUsersEmail();
         currentWantEnterUsersEmail.remove(email);
     }
-    public void schedulerPublishTime(Post post){
-        schedulingService.addSchedule(post.getId(),post.getTask());
+    public Task schedulerPublishTime(String postID,Task request){
+        Post post = getPostById(postID);
+        if(post.getType().equals("collaboration")){//check post is collaboration
+            Task task = new Task();
+            task.setPostID(postID);
+            task.setType("publish");
+            task.setNoteIDOrVoteID(post.getAnswers().get(0));
+            task.setYear(request.getYear());
+            task.setMonth(request.getMonth());
+            task.setDay(request.getDay());
+            post.setTask(task);
+            postRepository.save(post);
+            schedulingService.addSchedule(task);
+            return task;
+        }else{
+            return null;
+        }
     }
+    public Vote addVote(String postID, Vote request){
+        Vote vote= new Vote();
+        vote.setType(request.getType());
+        vote.setTask(schedulerPublishTime(postID,request.getTask()));
+        if(vote.getType().equals("kick")){
+            vote.setKickTarget(request.getKickTarget());
+        }
+        Post post = getPostById(postID);
+        ArrayList<Vote> voteArrayList = post.getVote();
+        voteArrayList.add(vote);
+        post.setVote(voteArrayList);
+        postRepository.save(post);
+        return vote;
+    }
+    public Task replacePublishTime (String postID, Task request){
+        Post post = getPostById(postID);
+        post.setTask(null);
+        postRepository.save(post);
+        return schedulerPublishTime(postID, request);
+    }
+
+    public Vote replaceVote(String postID, String voteID, Vote request){
+        Post post = getPostById(postID);
+        ArrayList<Vote> voteArrayList = post.getVote();
+        Vote newVote = new Vote();
+        for(Vote v : voteArrayList){
+            if(v.getId().equals(voteID)){//find target vote
+                newVote.setId(v.getId());
+                newVote.setType(request.getType());
+                if(!request.getTask().equals(v.getTask())){//task change
+                    Task newTask  = new Task();
+                    newTask.setPostID(postID);
+                    newTask.setNoteIDOrVoteID(voteID);
+                    newTask.setType(request.getTask().getType());
+                    newTask.setYear(request.getTask().getYear());
+                    newTask.setMonth(request.getTask().getMonth());
+                    newTask.setDay(request.getTask().getDay());
+                    newVote.setTask(newTask);
+                    schedulingService.addSchedule(newVote.getTask());
+                }
+                newVote.setAgree(request.getAgree());
+                newVote.setDisagree(request.getDisagree());
+                newVote.setKickTarget(request.getKickTarget());
+                newVote.setResult(request.getResult());
+                voteArrayList.set(voteArrayList.indexOf(v), newVote);
+                break;
+            }
+        }
+        post.setVote(voteArrayList);
+        postRepository.save(post);
+        return newVote;
+    }
+
+
 }
