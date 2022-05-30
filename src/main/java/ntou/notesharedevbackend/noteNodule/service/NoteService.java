@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+//TODO: 更新schema，檢查有沒有漏掉的
 @Service
 public class NoteService {
     @Autowired
@@ -29,14 +30,11 @@ public class NoteService {
     }
 
     public Note createNote(Note request,String email){
-        //TODO 建立完要更新 User Schema
         Note note = new Note();
         System.out.println("email is "+email);
         note.setType(request.getType());
         note.setDepartment(request.getDepartment());
         note.setSubject(request.getSubject());
-//        note.setTitle(request.getTitle());
-        //TODO HeaderEmail 應從URL拿？
         note.setHeaderEmail(request.getHeaderEmail());
         note.setHeaderName(request.getHeaderName());
         note.setAuthorEmail(request.getAuthorEmail());
@@ -44,8 +42,6 @@ public class NoteService {
         note.setManagerEmail(request.getManagerEmail());
         note.setProfessor(request.getProfessor());
         note.setSchool(request.getSchool());
-        // TODO exitFolder 有必要？
-//        note.setExitFolders(request.getExitFolders());
         note.setLikeCount(request.getLikeCount());
         note.setFavoriteCount(request.getFavoriteCount());
         note.setUnlockCount(request.getUnlockCount());
@@ -63,7 +59,6 @@ public class NoteService {
         note.setContributors(request.getContributors());
         note.setPostID(request.getPostID());
         note.setBest(request.getBest());
-//        note.setFavorite(request.getFavorite());
 
         return noteRepository.insert(note);
     }

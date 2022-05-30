@@ -101,12 +101,4 @@ public class VersionContent {
     public void setFileURL(ArrayList<String> fileURL) {
         this.fileURL = fileURL;
     }
-//
-//    public ArrayList<String> getMarkdown() {
-//        return markdown;
-//    }
-//
-//    public void setMarkdown(ArrayList<String> markdown) {
-//        this.markdown = markdown;
-//    }
 }

@@ -10,7 +10,6 @@ import java.util.*;
 
 @Service
 public class PostService {
-    //TODO::::修好Post的schema CURD問題
     @Autowired
     private PostRepository postRepository;
 
