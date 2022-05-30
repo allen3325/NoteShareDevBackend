@@ -7,7 +7,6 @@ import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.repository.FolderRepository;
-import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ public class FolderService {
     private final NoteService noteService;
 
     @Autowired
-    public FolderService(FolderRepository folderRepository, UserRepository userRepository, AppUserService appUserService, NoteService noteService) {
+    public FolderService(FolderRepository folderRepository, AppUserService appUserService, NoteService noteService) {
         this.folderRepository = folderRepository;
         this.appUserService = appUserService;
         this.noteService = noteService;
@@ -40,13 +39,33 @@ public class FolderService {
         return folders;
     }
 
+    public Folder getFavoriteFolderByUserEmail(String email) {
+        ArrayList<String> tmpFolderIDList = appUserService.getUserByEmail(email).getFolders();
+        for (String folderID : tmpFolderIDList) {
+            if (getFolderByID(folderID).getFolderName().equals("Favorite")) {
+                return getFolderByID(folderID);
+            }
+        }
+        return null;
+    }
+
+    public Folder getBuyFolderByUserEmail(String email) {
+        ArrayList<String> tmpFolderIDList = appUserService.getUserByEmail(email).getFolders();
+        for (String folderID : tmpFolderIDList) {
+            if (getFolderByID(folderID).getFolderName().equals("Buy")) {
+                return getFolderByID(folderID);
+            }
+        }
+        return null;
+    }
+
     public Folder getFolderByID(String folderID) {
         return folderRepository.findById(folderID)
                 .orElseThrow(() -> new NotFoundException("Can't find folder."));
     }
 
     public ArrayList<Folder> getAllFoldersByFolderID(String folderID) {
-        ArrayList<String> folderIDList = getFolderByID(folderID).getFolders();
+        ArrayList<String> folderIDList = getFolderByID(folderID).getChildren();
         ArrayList<Folder> folders = new ArrayList<Folder>();
         if (!folderIDList.isEmpty()) {
             for (String id : folderIDList) {
@@ -70,7 +89,7 @@ public class FolderService {
     public FolderReturn getAllContentUnderFolderID(String folderID) {
         Folder folder = getFolderByID(folderID);
         ArrayList<String> noteIDList = folder.getNotes();
-        ArrayList<String> folderIDList = folder.getFolders();
+        ArrayList<String> folderIDList = folder.getChildren();
         FolderReturn folderReturn = new FolderReturn(folder);
         ArrayList<Note> notes = new ArrayList<Note>();
         ArrayList<Folder> folders = new ArrayList<Folder>();
@@ -82,7 +101,7 @@ public class FolderService {
             folders.add(getFolderByID(tmpFolderID));
         }
 
-        folderReturn.setFolders(folders);
+        folderReturn.setChildren(folders);
         folderReturn.setNotes(notes);
 
         return folderReturn;
@@ -90,13 +109,14 @@ public class FolderService {
 
     public void addChildrenToParent(String childrenID, String parentID) {
         Folder parent = getFolderByID(parentID);
-        ArrayList<String> folderList = parent.getFolders();
-        folderList.add(childrenID);
-        parent.setFolders(folderList);
+        ArrayList<String> childrenList = parent.getChildren();
+        childrenList.add(childrenID);
+        parent.setChildren(childrenList);
 
         folderRepository.save(parent);
     }
 
+    //TODO: update parent's children
     public Folder createFolder(String email, FolderRequest request) {
         AppUser appUser = appUserService.getUserByEmail(email);
         Folder folder = new Folder(request);
@@ -132,8 +152,8 @@ public class FolderService {
 
         // fetch all folders under user and check its direction has contains wannaDelete folder's name
         ArrayList<Folder> folders = getAllFoldersFromUser(email);
-        for(Folder tmpFolder : folders){
-            if(tmpFolder.getDirection().contains(folder.getFolderName())){
+        for (Folder tmpFolder : folders) {
+            if (tmpFolder.getPath().contains(folder.getFolderName())) {
                 // update AppUser schema's folders
                 foldersIDList.remove(tmpFolder.getId());
                 folderRepository.deleteById(tmpFolder.getId());
@@ -146,11 +166,11 @@ public class FolderService {
         appUserService.replaceUser(user);
 
         // update parent's folders and write to Folder's schema
-        if(folder.getParent() != null){
+        if (folder.getParent() != null) {
             Folder parentFolder = getFolderByID(folder.getParent());
-            ArrayList<String> parentFolderIDList = parentFolder.getFolders();
+            ArrayList<String> parentFolderIDList = parentFolder.getChildren();
             parentFolderIDList.remove(folderID);
-            parentFolder.setFolders(parentFolderIDList);
+            parentFolder.setChildren(parentFolderIDList);
             folderRepository.save(parentFolder);
         }
         // delete folder
@@ -158,30 +178,30 @@ public class FolderService {
     }
 
     public Folder renameFolderByID(String email, String folderID, String wannaChangeName) {
-        System.out.println("wannaChangeName = "+wannaChangeName);
+        System.out.println("wannaChangeName = " + wannaChangeName);
         // get all folders and check its contains folder's name and change it.
         Folder wannaChangeFolder = getFolderByID(folderID);
         ArrayList<Folder> allFolders = getAllFoldersFromUser(email);
         String oldName = wannaChangeFolder.getFolderName();
 
         // change all directions
-        for(Folder folder : allFolders){
+        for (Folder folder : allFolders) {
             // find its related children folder
-            if(folder.getDirection().contains(oldName)){
+            if (folder.getPath().contains(oldName)) {
                 // get new direction
                 String newDirection = "";
-                String[] hasOldNameDirection = folder.getDirection().split("/");
+                String[] hasOldNameDirection = folder.getPath().split("/");
                 for (String oldDirection : hasOldNameDirection) {
-                    if (oldDirection.equals(oldName)) {
-                        newDirection += wannaChangeName;
-                    } else {
-                        newDirection += "/"+oldDirection;
+                    if(!oldDirection.equals("")){
+                        if (oldDirection.equals(oldName)) {
+                            newDirection += "/" + wannaChangeName;
+                        } else {
+                            newDirection += "/" + oldDirection;
+                        }
                     }
                 }
                 // update and write to its children
-                System.out.println(folder.getFolderName() + "will change into");
-                System.out.println(newDirection);
-                folder.setDirection(newDirection);
+                folder.setPath(newDirection);
                 folderRepository.save(folder);
             }
         }
@@ -192,5 +212,86 @@ public class FolderService {
         folderRepository.save(folder);
 
         return folder;
+    }
+
+    // old:/CA/Ch2/Ch1-1 -> new:/CA/Ch1/Ch1-1
+    public void changeAllChildrenPath(String email, String folderID, Folder request) {
+        Folder folder = getFolderByID(folderID);
+        String oldPath = folder.getPath();
+        String newPath = request.getPath();
+        ArrayList<Folder> allFolders = getAllFoldersFromUser(email);
+        for (Folder tmpFolder : allFolders) {
+            // get related children and change their path
+            String path = tmpFolder.getPath();
+            if (path.contains(oldPath) && !path.equals(oldPath)) {
+                path = path.replace(oldPath, newPath);
+                tmpFolder.setPath(path);
+                folderRepository.save(tmpFolder);
+            }
+        }
+    }
+
+    public Folder replaceFolder(Folder request) {
+        return folderRepository.save(request);
+    }
+
+    public void changeOldParentChildren(String email, String folderID, Folder request) {
+        // get related old parent and delete folderID
+        Folder folder = getFolderByID(folderID);
+        Folder oldParent = getFolderByID(folder.getParent());
+        ArrayList<String> oldChildren = oldParent.getChildren();
+        oldChildren.remove(folderID);
+        oldParent.setChildren(oldChildren);
+        folderRepository.save(oldParent);
+    }
+
+    public Folder changePathByID(String email, String folderID, Folder request) {
+        Folder folder = getFolderByID(folderID);
+        String newPath = request.getPath();
+        String newParentID = request.getParent();
+        // has children and parent
+        if (!folder.getChildren().isEmpty() && folder.getParent() != null) {
+            changeAllChildrenPath(email, folderID, request);
+            changeOldParentChildren(email, folderID, request);
+        }
+        // has no children but has parent
+        else if (folder.getChildren().isEmpty()) {
+            changeOldParentChildren(email, folderID, request);
+        }
+        // update own parent and path
+        folder.setPath(newPath);
+        folder.setParent(newParentID);
+        folderRepository.save(folder);
+        // update new parent's children
+        Folder newParent = getFolderByID(newParentID);
+        ArrayList<String> newParentChildrenList = newParent.getChildren();
+        newParentChildrenList.add(folderID);
+        folderRepository.save(newParent);
+
+        return folder;
+    }
+
+    public void setFavorite(String email, String folderID) {
+        Folder folder = getFolderByID(folderID);
+        AppUser appUser = appUserService.getUserByEmail(email);
+        folder.setFavorite(!folder.getFavorite());
+        ArrayList<String> folderIDList = appUser.getFolders();
+        // find Favorite folder in user
+        Folder favoriteFolder = getFavoriteFolderByUserEmail(email);
+        ArrayList<String> favoriteFolderChildren = favoriteFolder.getChildren();
+        // add folder into Favorite
+        if (folder.getFavorite()) {
+            // check Favorite folder does not contain this folder
+            if (!favoriteFolderChildren.contains(folderID)) {
+                favoriteFolderChildren.add(folderID);
+            }
+        }
+        // delete folder from Favorite
+        else {
+            favoriteFolderChildren.remove(folderID);
+        }
+        // update tmpFolder and save to repo.
+        favoriteFolder.setChildren(favoriteFolderChildren);
+        folderRepository.save(favoriteFolder);
     }
 }

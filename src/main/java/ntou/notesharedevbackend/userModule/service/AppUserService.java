@@ -1,6 +1,8 @@
 package ntou.notesharedevbackend.userModule.service;
 
 import ntou.notesharedevbackend.folderModule.entity.Folder;
+import ntou.notesharedevbackend.folderModule.entity.FolderRequest;
+import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.UserRepository;
@@ -23,6 +25,9 @@ public class AppUserService {
     @Lazy(value = true)
     private MailService mailService = new MailService();
     private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    @Lazy(value = true)
+    private FolderService folderService;
 
     public AppUserService(UserRepository userRepository){
         this.userRepository = userRepository;
@@ -48,6 +53,10 @@ public class AppUserService {
     }
 
     public AppUser createUser(AppUser request) {
+        // check email has existed
+        if(userRepository.existsByEmail(request.getEmail())){
+            return null;
+        }
         AppUser appUser = new AppUser();
         appUser.setEmail(request.getEmail());
         appUser.setName(request.getName());
@@ -57,14 +66,29 @@ public class AppUserService {
         appUser.setActivate(false);
 //        appUser.setProfile(request.getProfile());
 //        appUser.setStrength(request.getStrength());
-        // TODO: mongoDB 預設值
 //        appUser.setFolders();
 //        appUser.setSubscribe(request.getSubscribe());
 //        appUser.setBell(request.getBell());
 //        appUser.setFans(request.getFans());
         appUser.setCoin(300);
         mailService.sendEmailToUser(request.getEmail(),"Your Verification Code",appUser.getVerifyCode());
-        return userRepository.insert(appUser);
+        userRepository.insert(appUser);
+        //TODO: mongoDB 預設值 (User 要有 Buy 跟 Favorite 資料夾)
+        // create Buy and Favorite folder
+        FolderRequest buy = new FolderRequest();
+        FolderRequest favorite = new FolderRequest();
+        buy.setParent(null);
+        buy.setFolderName("Buy");
+        buy.setPublic(false);
+        buy.setPath("/Buy");
+        favorite.setParent(null);
+        favorite.setFolderName("Favorite");
+        favorite.setPublic(false);
+        favorite.setPath("/Favorite");
+        folderService.createFolder(appUser.getEmail(), buy);
+        folderService.createFolder(appUser.getEmail(), favorite);
+        appUser = getUserById(appUser.getId());
+        return appUser;
     }
 
     public AppUser replaceUser(AppUser request){
