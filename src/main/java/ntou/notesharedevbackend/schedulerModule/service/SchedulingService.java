@@ -27,42 +27,15 @@ public class SchedulingService {
     private PostService postService;
 
     public Task newPublishSchedule(String postID, Task request){
-        LocalDate currentDate = LocalDate.now();
-        int currentDay = currentDate.getDayOfMonth();
-        Month month = currentDate.getMonth();
-        int currentmonth = month.getValue();
-        int currentYear = currentDate.getYear();
-        if(request.getYear() < currentYear){//past year
+        if(timeBeforeNow(request)){
             return null;
-        } else if (request.getYear() == currentYear) {//same year
-            if(request.getMonth() < currentmonth){//past month
-                return null;
-            } else if (request.getMonth() == currentmonth) {
-                if(request.getDay() <= currentDay){//hour already set , can not set same day
-                    return null;
-                }
-            }
         }
         Task task = postService.schedulerPublishTime(postID,request);
         return task;
     }
     public Vote newVoteSchedule(String postID, Vote request){
-        LocalDate currentDate = LocalDate.now();
-        int currentDay = currentDate.getDayOfMonth();
-        Month month = currentDate.getMonth();
-        int currentmonth = month.getValue();
-        int currentYear = currentDate.getYear();
-        Task task = request.getTask();
-        if(task.getYear() < currentYear){//past year
+        if(timeBeforeNow(request.getTask())){
             return null;
-        } else if (task.getYear() == currentYear) {//same year
-            if(task.getMonth() < currentmonth){//past month
-                return null;
-            } else if (task.getMonth() == currentmonth) {
-                if(task.getDay() <= currentDay){//hour already set , can not set same day
-                    return null;
-                }
-            }
         }
         Vote vote = postService.addVote(postID,request);
         return vote;
@@ -78,11 +51,12 @@ public class SchedulingService {
             //dateOf(hour,minute,second,day,month,year)
             SimpleTrigger trigger = (SimpleTrigger) newTrigger()
                     .withIdentity(request.getId())
-                    .startAt(DateBuilder.dateOf(17, 0,0,request.getDay(),request.getMonth(),request.getYear()))
+                    .startAt(DateBuilder.dateOf(0, 35,0,request.getDay(),request.getMonth(),request.getYear()))
                     .build();
             Scheduler scheduler = quartzConfig.schedulerFactoryBean().getScheduler();
             scheduler.scheduleJob(jobDetail,trigger);
             scheduler.start();
+            System.out.println("schedule "+request.getId());
         }catch(IOException | SchedulerException e){
             e.printStackTrace();
         }
@@ -94,11 +68,16 @@ public class SchedulingService {
             scheduler.deleteJob(new JobKey(taskID));
             TriggerKey triggerKey = new TriggerKey(taskID);
             scheduler.unscheduleJob(triggerKey);
+            System.out.println("Cancel "+ taskID);
         }catch(IOException | SchedulerException e){
             e.printStackTrace();
         }
     }
     public Task modifyPublishSchedule(String postID ,Task request){
+        if(timeBeforeNow(request)){
+            return null;
+        }
+        //modify -> cancel old task first then add new task
         String oldTaskID = postService.getPostById(postID).getTask().getId();
         cancelSchedule(oldTaskID);
         return postService.replacePublishTime(postID, request);
@@ -106,12 +85,32 @@ public class SchedulingService {
 
     public  Vote modifyVoteSchedule(String postID, String voteID, Vote request){
         Post post = postService.getPostById(postID);
-        for(Vote v : post.getVote()){
-            if(v.getId().equals(voteID)){
-                cancelSchedule((v.getTask().getId()));//cancel old task
-                break;
+//        for(Vote v : post.getVote()){
+//            if(v.getId().equals(voteID)){
+//                cancelSchedule((v.getTask().getId()));//cancel old task
+//                break;
+//            }
+//        }
+        return postService.replaceVote(postID, voteID, request);
+    }
+
+    public boolean timeBeforeNow(Task request){
+        LocalDate currentDate = LocalDate.now();
+        int currentDay = currentDate.getDayOfMonth();
+        Month month = currentDate.getMonth();
+        int currentMonth = month.getValue();
+        int currentYear = currentDate.getYear();
+        if(request.getYear() < currentYear){//past year
+            return true;
+        } else if (request.getYear() == currentYear) {//same year
+            if(request.getMonth() < currentMonth){//past month
+                return true;
+            } else if (request.getMonth() == currentMonth) {
+                if(request.getDay() <= currentDay){//hour already set , can not set same day
+                    return true;
+                }
             }
         }
-        return postService.replaceVote(postID, voteID, request);
+        return false;
     }
 }

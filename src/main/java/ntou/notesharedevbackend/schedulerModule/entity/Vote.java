@@ -1,16 +1,21 @@
 package ntou.notesharedevbackend.schedulerModule.entity;
 
+import org.bson.types.ObjectId;
+
 import java.util.ArrayList;
 
 public class Vote {
     private String id;
     private String type;//kick, publishTime
     private Task task;
-    private ArrayList<String> agree;//user's email
-    private ArrayList<String> disagree;//user's email
+    private ArrayList<String> agree = new ArrayList<String>();//user's email
+    private ArrayList<String> disagree = new ArrayList<String>();//user's email
     private String kickTarget;//user's name
     private String result="yet";
 
+    public Vote(){
+        this.id = new ObjectId().toString();
+    }
     public String getId() {
         return id;
     }

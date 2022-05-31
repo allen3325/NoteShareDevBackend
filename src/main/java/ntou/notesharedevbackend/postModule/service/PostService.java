@@ -146,20 +146,7 @@ public class PostService {
             return null;
         }
     }
-    public Vote addVote(String postID, Vote request){
-        Vote vote= new Vote();
-        vote.setType(request.getType());
-        vote.setTask(schedulerPublishTime(postID,request.getTask()));
-        if(vote.getType().equals("kick")){
-            vote.setKickTarget(request.getKickTarget());
-        }
-        Post post = getPostById(postID);
-        ArrayList<Vote> voteArrayList = post.getVote();
-        voteArrayList.add(vote);
-        post.setVote(voteArrayList);
-        postRepository.save(post);
-        return vote;
-    }
+
     public Task replacePublishTime (String postID, Task request){
         Post post = getPostById(postID);
         post.setTask(null);
@@ -167,30 +154,53 @@ public class PostService {
         return schedulerPublishTime(postID, request);
     }
 
+    public Vote addVote(String postID, Vote request){
+        Vote vote= new Vote();
+        vote.setType(request.getType());
+        if(vote.getType().equals("kick")){
+            vote.setKickTarget(request.getKickTarget());
+        }
+        //set Task
+        Task task = new Task();
+        task.setType("vote");
+        task.setNoteIDOrVoteID(vote.getId());
+        task.setYear(request.getTask().getYear());
+        task.setMonth(request.getTask().getMonth());
+        task.setDay(request.getTask().getDay());
+        task.setPostID(postID);
+        vote.setTask(task);
+        schedulingService.addSchedule(vote.getTask());
+        Post post = getPostById(postID);
+        ArrayList<Vote> voteArrayList = new ArrayList<Vote>();
+        voteArrayList.add(vote);
+        post.setVote(voteArrayList);
+        postRepository.save(post);
+        return vote;
+    }
+
     public Vote replaceVote(String postID, String voteID, Vote request){
         Post post = getPostById(postID);
         ArrayList<Vote> voteArrayList = post.getVote();
         Vote newVote = new Vote();
         for(Vote v : voteArrayList){
-            if(v.getId().equals(voteID)){//find target vote
+            if(v.getId().equals(voteID)){//find old vote
+                schedulingService.cancelSchedule(v.getTask().getId());//cancel old task
                 newVote.setId(v.getId());
                 newVote.setType(request.getType());
-                if(!request.getTask().equals(v.getTask())){//task change
-                    Task newTask  = new Task();
-                    newTask.setPostID(postID);
-                    newTask.setNoteIDOrVoteID(voteID);
-                    newTask.setType(request.getTask().getType());
-                    newTask.setYear(request.getTask().getYear());
-                    newTask.setMonth(request.getTask().getMonth());
-                    newTask.setDay(request.getTask().getDay());
-                    newVote.setTask(newTask);
-                    schedulingService.addSchedule(newVote.getTask());
-                }
+                Task newTask  = new Task();//set new task
+                newTask.setPostID(postID);
+                newTask.setNoteIDOrVoteID(voteID);
+                newTask.setType("vote");
+                newTask.setYear(request.getTask().getYear());
+                newTask.setMonth(request.getTask().getMonth());
+                newTask.setDay(request.getTask().getDay());
+                newVote.setTask(newTask);//set vote's task
+                schedulingService.addSchedule(newVote.getTask());
                 newVote.setAgree(request.getAgree());
                 newVote.setDisagree(request.getDisagree());
                 newVote.setKickTarget(request.getKickTarget());
                 newVote.setResult(request.getResult());
-                voteArrayList.set(voteArrayList.indexOf(v), newVote);
+                voteArrayList.set(voteArrayList.indexOf(v), newVote);//更新vote
                 break;
             }
         }
@@ -199,5 +209,51 @@ public class PostService {
         return newVote;
     }
 
-
+    public boolean voteCollaborationVote(String postID, String voteID,String email,String option){
+        Post post = getPostById(postID);
+        for(Vote v : post.getVote()){
+            if(v.getId().equals(voteID)){
+                if(v.getAgree().contains(email)){//原本投同意
+                    if(option.equals("agree")){//取消同意
+                        v.getAgree().remove(email);
+                        post.getVote().set(post.getVote().indexOf(v),v);
+                        postRepository.save(post);
+                        return true;
+                    }else{//改投不同意
+                        v.getAgree().remove(email);
+                        v.getDisagree().add(email);
+                        post.getVote().set(post.getVote().indexOf(v),v);
+                        postRepository.save(post);
+                        return true;
+                    }
+                } else if (v.getDisagree().contains(email)) {//原本投不同意
+                    if(option.equals("agree")){//改投同意
+                        v.getDisagree().remove(email);
+                        v.getAgree().add(email);
+                        post.getVote().set(post.getVote().indexOf(v),v);
+                        postRepository.save(post);
+                        return true;
+                    }else{//取消同意
+                        v.getDisagree().remove(email);
+                        post.getVote().set(post.getVote().indexOf(v),v);
+                        postRepository.save(post);
+                        return true;
+                    }
+                }else{//尚未投票
+                    if(option.equals("agree")){//投同意
+                        v.getAgree().add(email);
+                        post.getVote().set(post.getVote().indexOf(v),v);
+                        postRepository.save(post);
+                        return true;
+                    }else{//投不同意
+                        v.getDisagree().add(email);
+                        post.getVote().set(post.getVote().indexOf(v),v);
+                        postRepository.save(post);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
