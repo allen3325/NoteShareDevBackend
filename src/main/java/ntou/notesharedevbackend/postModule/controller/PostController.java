@@ -3,9 +3,11 @@ package ntou.notesharedevbackend.postModule.controller;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
+import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -80,7 +82,30 @@ public class PostController {
             throw new NotFoundException("Can not vote");
         }
     }
-
+    @PutMapping("/{postID}/{answerID}")
+    public ResponseEntity rewardChooseBestAnswer(@PathVariable("postID") String postID, @PathVariable("answerID") String answerID,@RequestBody String email){
+        if(postService.rewardChooseBestAnswer(postID,answerID,email)){
+            return ResponseEntity.ok().build();
+        }else{
+            throw new NotFoundException("Can't not choose best answer");
+        }
+    }
+    @PutMapping("/{postID}/{commentID}")
+    public ResponseEntity QAChooseBestAnswer(@PathVariable("postID") String postID, @PathVariable("commentID") String commentID,@RequestBody String email){
+        if(postService.QAChooseBestAnswer(postID,commentID,email)){
+            return ResponseEntity.ok().build();
+        }else{
+            throw new NotFoundException("Can't not choose best answer");
+        }
+    }
+    @PutMapping("/reference/{postID}/{commentID}")
+    public ResponseEntity QAChooseReferenceAnswer(@PathVariable("postID") String postID, @PathVariable("commentID") String commentID,@RequestBody String email){
+        if(postService.QAChooseReferenceAnswer(postID,commentID,email)){
+            return ResponseEntity.ok().build();
+        }else{
+            throw new NotFoundException("Can't not choose best answer");
+        }
+    }
     @DeleteMapping("/{postID}")
     public ResponseEntity deletePost(@PathVariable("postID") String id) {
         postService.deletePost(id);

@@ -3,6 +3,7 @@ package ntou.notesharedevbackend.noteNodule.service;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.repository.NoteRepository;
+import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,8 @@ import java.util.*;
 public class NoteService {
     @Autowired
     private NoteRepository noteRepository;
+    @Autowired
+    private AppUserService appUserService;
 
     public Note getNote(String id){
         return noteRepository.findById(id)
@@ -101,6 +104,17 @@ public class NoteService {
                 note.setPublic(false);
             }
         }
+        noteRepository.save(note);
+    }
+
+    public void rewardNoteBestAnswer(String noteID,String email){
+        Note note = getNote(noteID);
+        note.setBest(true);
+        //TODO 新增點數
+        //TODO 位置，筆記移轉給懸賞人 移除投稿人擁有權
+        note.getAuthorEmail().add(email);
+        String userName = appUserService.getUserByEmail(email).getName();
+        note.getAuthorName().add(userName);
         noteRepository.save(note);
     }
 
