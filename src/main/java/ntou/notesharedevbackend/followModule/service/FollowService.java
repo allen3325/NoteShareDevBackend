@@ -29,12 +29,14 @@ public class FollowService {
         AppUser followingUser = userRepository.findByEmail(followEmail);
         ArrayList<String> subscribeList = user.getSubscribe();
         ArrayList<String> fansList = followingUser.getFans();
-        subscribeList.add(followEmail);
-        fansList.add(userEmail);
-        user.setSubscribe(subscribeList);
-        followingUser.setFans(fansList);
-        userRepository.save(user);
-        userRepository.save(followingUser);
+        if (!subscribeList.contains(followEmail)) {
+            subscribeList.add(followEmail);
+            fansList.add(userEmail);
+            user.setSubscribe(subscribeList);
+            followingUser.setFans(fansList);
+            userRepository.save(user);
+            userRepository.save(followingUser);
+        }
     }
 
     public void unfollow(String userEmail, String unfollowEmail) {
@@ -42,11 +44,13 @@ public class FollowService {
         AppUser followingUser = userRepository.findByEmail(unfollowEmail);
         ArrayList<String> subscribeList = user.getSubscribe();
         ArrayList<String> fansList = followingUser.getFans();
-        subscribeList.remove(unfollowEmail);
-        fansList.remove(userEmail);
-        user.setSubscribe(subscribeList);
-        followingUser.setFans(fansList);
-        userRepository.save(user);
-        userRepository.save(followingUser);
+        if (subscribeList.contains(unfollowEmail)) {
+            subscribeList.remove(unfollowEmail);
+            fansList.remove(userEmail);
+            user.setSubscribe(subscribeList);
+            followingUser.setFans(fansList);
+            userRepository.save(user);
+            userRepository.save(followingUser);
+        }
     }
 }
