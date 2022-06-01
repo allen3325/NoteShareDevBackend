@@ -9,7 +9,6 @@ package ntou.notesharedevbackend.noteNodule.entity;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class VersionContent {
 
@@ -20,6 +19,7 @@ public class VersionContent {
     private String mycustom_assets;
     private String mycustom_css;
     private String mycustom_styles;
+    private Boolean isTemp; // 看是暫存區還是版本號
     private ArrayList<String> picURL;
     private ArrayList<String> fileURL;
 
@@ -100,5 +100,13 @@ public class VersionContent {
 
     public void setFileURL(ArrayList<String> fileURL) {
         this.fileURL = fileURL;
+    }
+
+    public Boolean getTemp() {
+        return isTemp;
+    }
+
+    public void setTemp(Boolean temp) {
+        isTemp = temp;
     }
 }

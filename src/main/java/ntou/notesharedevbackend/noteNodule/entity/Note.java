@@ -46,12 +46,11 @@ public class Note {
     private Integer commentCount;
     private ArrayList<Comment> comments;
     private Integer price;
-    private Boolean isPublic;
+    private Boolean isPublic; // 筆記是否公開
     private Boolean isSubmit; // 用於懸賞區投稿
     private Boolean quotable;
     private ArrayList<String> tag;
     private ArrayList<String> hiddenTag;
-    private ArrayList<VersionContent> versionToSave; // 存檔欄位
     private ArrayList<VersionContent> version; // 版本
     private ArrayList<String> contributors;
     private String postID; // 紀錄貼文ID用於投稿後存在哪
@@ -246,14 +245,6 @@ public class Note {
 
     public void setHiddenTag(ArrayList<String> hiddenTag) {
         this.hiddenTag = hiddenTag;
-    }
-
-    public ArrayList<VersionContent> getVersionToSave() {
-        return versionToSave;
-    }
-
-    public void setVersionToSave(ArrayList<VersionContent> versionToSave) {
-        this.versionToSave = versionToSave;
     }
 
     public ArrayList<VersionContent> getVersion() {

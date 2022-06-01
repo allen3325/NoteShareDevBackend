@@ -55,15 +55,28 @@ public class NoteController {
         return ResponseEntity.created(location).body(note);
     }
 
+    @PutMapping("/{noteID}/{version}")
+    public ResponseEntity updateNoteContent(@RequestBody VersionContent versionContent,@PathVariable("noteID")String id,
+                                            @PathVariable(
+            "version")int version){
+        Note res = noteService.updateNoteVersion(id,version,versionContent);
+
+        return ResponseEntity.ok(res.getVersion().get(version));
+    }
+
     @PutMapping("/admin/{noteID}/{email}")
     public ResponseEntity setManager(@PathVariable("noteID") String noteID, @PathVariable("email") String email) {
         noteService.setManager(noteID, email);
-        return ResponseEntity.ok().build();
+        Map<String,String> res = new HashMap<>();
+        res.put("msg","Success");
+        return ResponseEntity.ok(res);
     }
 
     @PutMapping("/kick/{noteID}/{email}")
     public ResponseEntity kickUserFromCollaboration(@PathVariable("noteID") String noteID, @PathVariable("email") String email) {
         noteService.kickUserFromCollaboration(noteID, email);
-        return ResponseEntity.ok().build();
+        Map<String,String> res = new HashMap<>();
+        res.put("msg","Success");
+        return ResponseEntity.ok(res);
     }
 }

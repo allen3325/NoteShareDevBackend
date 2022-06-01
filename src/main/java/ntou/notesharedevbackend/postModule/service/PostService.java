@@ -104,6 +104,7 @@ public class PostService {
         postRepository.save(post);
     }
 
+    //TODO: 記得要將email跟name(用email去拿user.name)加進note的author email,author name
     public void approveCollaboration(String id, String email) {
         Post post = getPostById(id);
         ArrayList<String> currentEmails = post.getEmail();
