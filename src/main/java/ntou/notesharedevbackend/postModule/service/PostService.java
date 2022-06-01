@@ -273,6 +273,7 @@ public class PostService {
     }
 
     public boolean QAChooseBestAnswer(String postID, String commentID, String email){
+        //TODO 點數增減
         Post post = getPostById(postID);
         if(post.getEmail().contains(email)){
             for(Comment c: post.getComments()){
@@ -297,6 +298,7 @@ public class PostService {
 
     public boolean QAChooseReferenceAnswer(String postID, String commentID, String email){
         //TODO 參考解數量
+        //TODO 點數增減
         Post post = getPostById(postID);
         if(post.getEmail().contains(email)){
             for(Comment c: post.getComments()){
