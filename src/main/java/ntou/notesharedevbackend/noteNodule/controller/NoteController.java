@@ -37,13 +37,15 @@ public class NoteController {
     }
 
     @GetMapping("/tags/{noteID}")
-    public ResponseEntity<ArrayList<String>> getNoteTags(@PathVariable("noteID") String id) {
+    public ResponseEntity<Object> getNoteTags(@PathVariable("noteID") String id) {
         ArrayList<String> tags = noteService.getNoteTags(id);
-        return ResponseEntity.ok(tags);
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("tags",tags);
+        return ResponseEntity.ok(map);
     }
 
     @PostMapping("/{email}")
-    public ResponseEntity<Note> createPost(@PathVariable("email") String email ,@RequestBody Note request) {
+    public ResponseEntity<Note> createNote(@PathVariable("email") String email ,@RequestBody Note request) {
         Note note = noteService.createNote(request,email);
 
         URI location = ServletUriComponentsBuilder
@@ -55,15 +57,28 @@ public class NoteController {
         return ResponseEntity.created(location).body(note);
     }
 
+    @PutMapping("/{noteID}/{version}")
+    public ResponseEntity updateNoteContent(@RequestBody VersionContent versionContent,@PathVariable("noteID")String id,
+                                            @PathVariable(
+            "version")int version){
+        Note res = noteService.updateNoteVersion(id,version,versionContent);
+
+        return ResponseEntity.ok(res.getVersion().get(version));
+    }
+
     @PutMapping("/admin/{noteID}/{email}")
     public ResponseEntity setManager(@PathVariable("noteID") String noteID, @PathVariable("email") String email) {
         noteService.setManager(noteID, email);
-        return ResponseEntity.ok().build();
+        Map<String,String> res = new HashMap<>();
+        res.put("msg","Success");
+        return ResponseEntity.ok(res);
     }
 
     @PutMapping("/kick/{noteID}/{email}")
     public ResponseEntity kickUserFromCollaboration(@PathVariable("noteID") String noteID, @PathVariable("email") String email) {
         noteService.kickUserFromCollaboration(noteID, email);
-        return ResponseEntity.ok().build();
+        Map<String,String> res = new HashMap<>();
+        res.put("msg","Success");
+        return ResponseEntity.ok(res);
     }
 }

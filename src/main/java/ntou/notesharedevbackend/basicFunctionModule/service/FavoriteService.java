@@ -22,13 +22,13 @@ public class FavoriteService {
     @Autowired
     private PostService postService;
 
-    public void favoriteNote(String id) {
-        Note note = noteService.getNote(id);
-        if (note.getFavorite() != null) {
-            note.setFavorite(!note.getFavorite());
-            noteRepository.save(note);
-        }
-    }
+//    public void favoriteNote(String id) {
+//        Note note = noteService.getNote(id);
+//        if (note.getFavorite() != null) {
+//            note.setFavorite(!note.getFavorite());
+//            noteRepository.save(note);
+//        }
+//    }
 
     public void favoriteNoteComment(String noteID, String commentID, String email) {
         Note note = noteService.getNote(noteID);

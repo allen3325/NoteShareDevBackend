@@ -1,8 +1,11 @@
 package ntou.notesharedevbackend.noteNodule.service;
 
+import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.repository.NoteRepository;
+import ntou.notesharedevbackend.userModule.entity.AppUser;
+import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +15,8 @@ import java.util.*;
 public class NoteService {
     @Autowired
     private NoteRepository noteRepository;
+    @Autowired
+    private AppUserService appUserService;
 
     public Note getNote(String id){
         return noteRepository.findById(id)
@@ -23,47 +28,65 @@ public class NoteService {
         return note.getVersion().get(version);
     }
 
+    public Note updateNoteVersion(String id, int version,VersionContent newVersionContent){
+        Note note = getNote(id);
+        ArrayList<VersionContent> oldVersionContent = note.getVersion();
+        if(oldVersionContent.size() > version+1) {
+            oldVersionContent.set(version, newVersionContent);
+        }else{
+            oldVersionContent.add(newVersionContent);
+        }
+
+        return noteRepository.save(note);
+    }
+
     public ArrayList<String> getNoteTags(String id) {
         Note note = getNote(id);
         return note.getTag();
     }
 
     public Note createNote(Note request,String email){
-        //TODO 建立完要更新 User Schema
         Note note = new Note();
-        System.out.println("email is "+email);
+        AppUser user = appUserService.getUserByEmail(email);
+        ArrayList<String> authorEmail = new ArrayList<String>();
+        ArrayList<String> authorName = new ArrayList<String>();
+        authorEmail.add(user.getEmail());
+        authorName.add(user.getName());
+
+        note.setName(request.getName());
         note.setType(request.getType());
+        note.setSlug(request.getSlug());
+        note.setCreatedAt(request.getCreatedAt());
+        note.setUpdatedAt(request.getUpdatedAt());
+        note.set__v(request.get__v());
         note.setDepartment(request.getDepartment());
         note.setSubject(request.getSubject());
-        note.setTitle(request.getTitle());
-        //TODO HeaderEmail 應從URL拿？
-        note.setHeaderEmail(request.getHeaderEmail());
-        note.setHeaderName(request.getHeaderName());
-        note.setAuthorEmail(request.getAuthorEmail());
-        note.setAuthorName(request.getAuthorName());
+        note.setHeaderEmail(user.getEmail());
+        note.setHeaderName(user.getName());
+        note.setAuthorEmail(authorEmail);
+        note.setAuthorName(authorName);
         note.setManagerEmail(request.getManagerEmail());
         note.setProfessor(request.getProfessor());
         note.setSchool(request.getSchool());
-        // TODO exitFolder 有必要？
-//        note.setExitFolders(request.getExitFolders());
-        note.setLikeCount(request.getLikeCount());
-        note.setFavoriteCount(request.getFavoriteCount());
-        note.setUnlockCount(request.getUnlockCount());
+        note.setLiker(new ArrayList<String>());
+        note.setBuyer(new ArrayList<String>());
+        note.setFavoriter(new ArrayList<String>());
+        note.setLikeCount(0);
+        note.setFavoriteCount(0);
+        note.setUnlockCount(0);
         note.setDownloadable(request.getDownloadable());
-        note.setCommentCount(request.getCommentCount());
-        note.setComments(request.getComments());
+        note.setCommentCount(0);
+        note.setComments(new ArrayList<Comment>());
         note.setPrice(request.getPrice());
         note.setPublic(request.getPublic());
         note.setSubmit(request.getSubmit());
         note.setQuotable(request.getQuotable());
-        note.setTag(request.getTag());
-        note.setHiddenTag(request.getHiddenTag());
-        note.setVersionToSave(request.getVersionToSave());
-        note.setVersion(request.getVersion());
-        note.setContributors(request.getContributors());
+        note.setTag(new ArrayList<String>());
+        note.setHiddenTag(new ArrayList<String>());
+        note.setVersion(new ArrayList<VersionContent>());
+        note.setContributors(new ArrayList<String>());
         note.setPostID(request.getPostID());
         note.setBest(request.getBest());
-        note.setFavorite(request.getFavorite());
 
         return noteRepository.insert(note);
     }

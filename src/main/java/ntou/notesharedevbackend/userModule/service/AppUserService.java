@@ -18,7 +18,6 @@ import java.util.Random;
 
 @Service
 public class AppUserService {
-    //TODO 以後要做 getByName
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -73,7 +72,6 @@ public class AppUserService {
         appUser.setCoin(300);
         mailService.sendEmailToUser(request.getEmail(),"Your Verification Code",appUser.getVerifyCode());
         userRepository.insert(appUser);
-        //TODO: mongoDB 預設值 (User 要有 Buy 跟 Favorite 資料夾)
         // create Buy and Favorite folder
         FolderRequest buy = new FolderRequest();
         FolderRequest favorite = new FolderRequest();

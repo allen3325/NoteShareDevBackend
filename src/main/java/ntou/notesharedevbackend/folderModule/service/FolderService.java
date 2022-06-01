@@ -116,7 +116,6 @@ public class FolderService {
         folderRepository.save(parent);
     }
 
-    //TODO: update parent's children
     public Folder createFolder(String email, FolderRequest request) {
         AppUser appUser = appUserService.getUserByEmail(email);
         Folder folder = new Folder(request);

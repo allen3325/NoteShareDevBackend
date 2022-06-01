@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 @RestController
 @RequestMapping(value = "/coin",produces = MediaType.APPLICATION_JSON_VALUE)
 public class CoinController {
@@ -29,12 +31,15 @@ public class CoinController {
     }
 
     @PutMapping("/note/{email}/{noteID}")
-    public ResponseEntity buyNote(@PathVariable String email,@PathVariable String noteID){
+    public ResponseEntity<Object> buyNote(@PathVariable String email,@PathVariable String noteID){
         Note note = coinService.buyNote(email,noteID);
+        HashMap<String,Object> res = new HashMap<>();
         if(note == null){
-            return ResponseEntity.status(412).body("money is not enough.");
+            res.put("msg","money is not enough or bought the note.");
+            return ResponseEntity.status(412).body(res);
         }else{
-            return ResponseEntity.ok(note);
+            res.put("note",note);
+            return ResponseEntity.ok(res);
         }
     }
 }
