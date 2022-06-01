@@ -22,7 +22,7 @@ public class JWTController {
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody AppUser request){
         if(jwtService.signUp(request)){
-            return ResponseEntity.ok("Successful.");
+            return ResponseEntity.status(201).body("Successful.");
         }else{
             return ResponseEntity.status(409).body("Has the same email registered!");
         }

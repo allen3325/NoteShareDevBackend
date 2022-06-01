@@ -13,6 +13,10 @@ public class Search {
     private Boolean haveReward;
     private Boolean downloadable;
     private ArrayList<String> tag;
+    private Integer unlockCount;
+    private Integer favoriteCount;
+    private Integer price;
+    private Boolean quotable;
 
     public Boolean getDownloadable() {
         return downloadable;
@@ -92,5 +96,37 @@ public class Search {
 
     public void setHaveReward(Boolean haveReward) {
         this.haveReward = haveReward;
+    }
+
+    public Integer getUnlockCount() {
+        return unlockCount;
+    }
+
+    public void setUnlockCount(Integer unlockCount) {
+        this.unlockCount = unlockCount;
+    }
+
+    public Integer getFavoriteCount() {
+        return favoriteCount;
+    }
+
+    public void setFavoriteCount(Integer favoriteCount) {
+        this.favoriteCount = favoriteCount;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
+    public Boolean getQuotable() {
+        return quotable;
+    }
+
+    public void setQuotable(Boolean quotable) {
+        this.quotable = quotable;
     }
 }

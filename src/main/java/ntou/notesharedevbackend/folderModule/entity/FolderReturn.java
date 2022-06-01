@@ -8,13 +8,13 @@ public class FolderReturn {
     // attributes
     private String id;
     private String folderName;
-    private ArrayList<Folder> folders; // folder
+//    private ArrayList<Folder> folders; // folder
     private ArrayList<Note> notes; // note
     private Boolean isPublic;
     private Boolean isFavorite; // 收藏區
-    private String direction; // 路徑
+    private String path; // 路徑
     private String parent; // 父資料夾
-    private ArrayList<String> children; // 子資料夾
+    private ArrayList<Folder> children; // 子資料夾
 
     public FolderReturn() {
     }
@@ -23,9 +23,9 @@ public class FolderReturn {
         this.folderName = folder.getFolderName();
         this.isPublic = folder.getPublic();
         this.isFavorite = folder.getFavorite();
-        this.direction = folder.getDirection();
+        this.path = folder.getPath();
         this.parent = folder.getParent();
-        this.children = folder.getChildren();
+//        this.children = folder.getChildren();
     }
 
     public String getId() {
@@ -44,13 +44,13 @@ public class FolderReturn {
         this.folderName = folderName;
     }
 
-    public ArrayList<Folder> getFolders() {
-        return folders;
-    }
-
-    public void setFolders(ArrayList<Folder> folders) {
-        this.folders = folders;
-    }
+//    public ArrayList<Folder> getFolders() {
+//        return folders;
+//    }
+//
+//    public void setFolders(ArrayList<Folder> folders) {
+//        this.folders = folders;
+//    }
 
     public ArrayList<Note> getNotes() {
         return notes;
@@ -76,12 +76,12 @@ public class FolderReturn {
         isFavorite = favorite;
     }
 
-    public String getDirection() {
-        return direction;
+    public String getPath() {
+        return path;
     }
 
-    public void setDirection(String direction) {
-        this.direction = direction;
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getParent() {
@@ -92,11 +92,20 @@ public class FolderReturn {
         this.parent = parent;
     }
 
-    public ArrayList<String> getChildren() {
+//    public ArrayList<String> getChildren() {
+//        return children;
+//    }
+//
+//    public void setChildren(ArrayList<String> children) {
+//        this.children = children;
+//    }
+
+
+    public ArrayList<Folder> getChildren() {
         return children;
     }
 
-    public void setChildren(ArrayList<String> children) {
+    public void setChildren(ArrayList<Folder> children) {
         this.children = children;
     }
 }

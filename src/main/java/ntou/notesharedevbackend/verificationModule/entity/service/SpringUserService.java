@@ -23,7 +23,6 @@ public class SpringUserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // TODO 以後改成ByName
         try{
             AppUser user =  appUserService.getUserByEmail(email);
 

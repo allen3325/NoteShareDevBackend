@@ -129,7 +129,7 @@ public class CommentService {
 //                    c.setReferenceNotesURL((request.getReferenceNotesURL()));
 //                    c.setReference(request.getReference());
 //                    c.setDate(request.getDate());
-//                    c.setContent(request.getContent());
+//                    c.setMycustom_html(request.getMycustom_html());
 //                    c.setLikeCount(request.getLikeCount());
 //                    c.setLiker(request.getLiker());
 ////                    c.setEmail(request.getEmail());//不應該變
@@ -161,7 +161,7 @@ public class CommentService {
 //                    c.setReferenceNotesURL((request.getReferenceNotesURL()));
 //                    c.setReference(request.getReference());
 //                    c.setDate(request.getDate());
-//                    c.setContent(request.getContent());
+//                    c.setMycustom_html(request.getMycustom_html());
 //                    c.setLikeCount(request.getLikeCount());
 //                    c.setLiker(request.getLiker());
 ////                    c.setEmail(request.getEmail());//不應該變
