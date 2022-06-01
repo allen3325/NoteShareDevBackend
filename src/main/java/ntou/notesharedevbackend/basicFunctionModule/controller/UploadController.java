@@ -12,9 +12,9 @@ public class UploadController {
     @Autowired
     UploadService uploadImageService;
 
-    @GetMapping("/picture/{imageID}")
-    public ResponseEntity<GetImageDTO> getImage(@PathVariable("imageID") String imageID) {
-        GetImageDTO image = uploadImageService.getImage(imageID);
+    @GetMapping("/picture/{noteID}/{version}")
+    public ResponseEntity<GetImageDTO> getImage(@PathVariable("noteID") String noteID, @PathVariable("version") int version) {
+        GetImageDTO image = uploadImageService.getImage(noteID, version);
         return ResponseEntity.ok(image);
     }
 

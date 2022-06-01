@@ -22,7 +22,11 @@ public class UploadService {
     @Autowired
     private NoteRepository noteRepository;
 
-    public GetImageDTO getImage(String imageID) {
+    public GetImageDTO getImage(String noteID, int version) {
+        Note note = noteService.getNote(noteID);
+        ArrayList<VersionContent> versions = note.getVersion();
+        VersionContent versionContent = versions.get(version);
+        String imageID = versionContent.getPicURL().get(0);        // assume a note only contains an image
         try {
             return Upload.getImage(imageID);
         } catch (Exception e) {
