@@ -35,8 +35,8 @@ public class SearchService {
 
     public Note[] getSearchedNoteByKeyword(String keyword, Search search) {
         // initial search
-        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by("title").descending());
-        Page<Note> notesLikePage = noteRepository.findNoteByTitleRegex(keyword, pageRequest);
+        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by("name").descending());
+        Page<Note> notesLikePage = noteRepository.findNoteByNameRegex(keyword, pageRequest);
         List<Note> noteList = notesLikePage.getContent();
         if (noteList.isEmpty())
             return noteList.toArray(new Note[0]);
@@ -52,6 +52,10 @@ public class SearchService {
         Boolean haveReward = search.getHaveReward();
         Boolean downloadable = search.getDownloadable();
         ArrayList<String> tag = search.getTag();
+        Integer unlockCount = search.getUnlockCount();
+        Integer favoriteCount = search.getFavoriteCount();
+        Integer price = search.getPrice();
+        Boolean quotable = search.getQuotable();
 
         if (school != null)
             noteList = noteList.stream()
@@ -80,6 +84,22 @@ public class SearchService {
         if (tag != null)
             noteList = noteList.stream()
                     .filter((Note n) -> n.getTag().containsAll(tag))
+                    .collect(Collectors.toList());
+        if (unlockCount != null)
+            noteList = noteList.stream()
+                    .filter((Note n) -> n.getUnlockCount() >= unlockCount)
+                    .collect(Collectors.toList());
+        if (favoriteCount != null)
+            noteList = noteList.stream()
+                    .filter((Note n) -> n.getFavoriteCount() >= favoriteCount)
+                    .collect(Collectors.toList());
+        if (price != null)
+            noteList = noteList.stream()
+                    .filter((Note n) -> n.getPrice() >= price)
+                    .collect(Collectors.toList());
+        if (quotable != null)
+            noteList = noteList.stream()
+                    .filter((Note n) -> n.getQuotable().equals(quotable))
                     .collect(Collectors.toList());
 
         //determine which type of note should be displayed
