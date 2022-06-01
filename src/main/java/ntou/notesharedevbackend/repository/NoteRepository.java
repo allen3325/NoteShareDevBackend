@@ -9,6 +9,6 @@ import java.util.*;
 
 @Repository
 public interface NoteRepository extends MongoRepository<Note,String> {
-    @Query(value = "{'title': {$regex : ?0, $options: 'i'}}")
-    Page<Note> findNoteByTitleRegex(String title, Pageable pageable);
+    @Query(value = "{'name': {$regex : ?0, $options: 'i'}}")
+    Page<Note> findNoteByNameRegex(String name, Pageable pageable);
 }
