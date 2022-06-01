@@ -83,7 +83,7 @@ public class PostController {
             throw new NotFoundException("Can not vote");
         }
     }
-    @PutMapping("/{postID}/{answerID}")
+    @PutMapping("/reward/best/{postID}/{answerID}")
     public ResponseEntity rewardChooseBestAnswer(@PathVariable("postID") String postID, @PathVariable("answerID") String answerID,@RequestBody String email){
         if(postService.rewardChooseBestAnswer(postID,answerID,email)){
             return ResponseEntity.ok().build();
@@ -91,7 +91,7 @@ public class PostController {
             throw new NotFoundException("Can't not choose best answer");
         }
     }
-    @PutMapping("/{postID}/{commentID}")
+    @PutMapping("/qa/best/{postID}/{commentID}")
     public ResponseEntity QAChooseBestAnswer(@PathVariable("postID") String postID, @PathVariable("commentID") String commentID,@RequestBody String email){
         if(postService.QAChooseBestAnswer(postID,commentID,email)){
             return ResponseEntity.ok().build();
@@ -99,7 +99,7 @@ public class PostController {
             throw new NotFoundException("Can't not choose best answer");
         }
     }
-    @PutMapping("/reference/{postID}/{commentID}")
+    @PutMapping("/qa/reference/{postID}/{commentID}")
     public ResponseEntity QAChooseReferenceAnswer(@PathVariable("postID") String postID, @PathVariable("commentID") String commentID,@RequestBody String email){
         if(postService.QAChooseReferenceAnswer(postID,commentID,email)){
             return ResponseEntity.ok().build();
