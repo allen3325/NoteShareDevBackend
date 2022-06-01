@@ -76,7 +76,7 @@ public class PostTest {
         postRepository.insert(post);
 
         mockMvc.perform(get("/post/" + post.getId())
-                .headers(httpHeaders))
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(post.getId()))
                 .andExpect(jsonPath("$.type").value(post.getType()))
@@ -99,7 +99,7 @@ public class PostTest {
         postRepository.insert(post);
 
         mockMvc.perform(get("/post/postType/" + post.getType())
-                .headers(httpHeaders))
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(post.getId()))
                 .andExpect(jsonPath("$[0].type").value(post.getType()))
@@ -116,6 +116,7 @@ public class PostTest {
                 .andExpect(jsonPath("$[0].public").value(post.getPublic()));
     }
 
+    // TODO: fix this.
     @Test
     public void testCreatePost() throws Exception {
         Post post = createPost();
@@ -170,7 +171,7 @@ public class PostTest {
         postRepository.insert(post);
 
         mockMvc.perform(put("/post/publish/" + post.getId())
-                .headers(httpHeaders))
+                        .headers(httpHeaders))
                 .andExpect(status().isNoContent());
     }
 
@@ -180,7 +181,7 @@ public class PostTest {
         postRepository.insert(post);
 
         mockMvc.perform(put("/post/{postID}/{email}", post.getId(), "genewang7@gmail.com")
-                .headers(httpHeaders))
+                        .headers(httpHeaders))
                 .andExpect(status().isOk());
     }
 
@@ -190,7 +191,7 @@ public class PostTest {
         postRepository.insert(post);
 
         mockMvc.perform(put("/post/add/{postID}/{email}", post.getId(), "genewang7@gmail.com")
-                .headers(httpHeaders))
+                        .headers(httpHeaders))
                 .andExpect(status().isOk());
     }
 }

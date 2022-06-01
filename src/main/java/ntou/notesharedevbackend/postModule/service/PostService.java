@@ -1,9 +1,11 @@
 package ntou.notesharedevbackend.postModule.service;
 
 import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.exception.NotFoundException;
+import ntou.notesharedevbackend.postModule.entity.PostRequest;
 import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
@@ -35,7 +37,7 @@ public class PostService {
                 .orElseThrow(() -> new NotFoundException("Can't find product."));
     }
 
-    public Post createPost(Post request) {
+    public Post createPost(PostRequest request) {
         Post post = new Post();
         post.setType(request.getType());
         post.setEmail(request.getEmail());
@@ -50,6 +52,21 @@ public class PostService {
         post.setComments(request.getComments());
         post.setAnswers(request.getAnswers());
         post.setWantEnterUsersEmail(request.getWantEnterUsersEmail());
+        if(request.getType().equals("collaboration")){//若為共筆貼文，須建立共筆筆記
+            Note note = new Note();
+            note.setPrice(request.getPrice());
+            note.setCreatedAt(request.getCreatedAt());
+            note.setName(null);
+            note.setType(request.getType());
+            note.setPublic(false);
+            Note createdNote = noteService.createNote(note,request.getEmail().get(0));
+            ArrayList<String> answers = new ArrayList<String>();//把新增的共筆筆記ID存到共筆貼文內的answer
+            answers.add(createdNote.getId());
+            post.setAnswers(answers);
+            Post newPost =postRepository.insert(post);
+            noteService.collaborationNoteSetPostID(createdNote.getId(),newPost.getId());
+            return newPost;
+        }
 //        switch (request.getType()) {
 //            case "QA":
 //                post.setPrice(request.getPrice());

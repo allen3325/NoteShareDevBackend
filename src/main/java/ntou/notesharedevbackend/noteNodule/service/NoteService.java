@@ -139,4 +139,9 @@ public class NoteService {
         noteRepository.save(note);
     }
 
+    public void collaborationNoteSetPostID(String noteID, String postID){
+        Note note = getNote(noteID);
+        note.setPostID(postID);
+        noteRepository.save(note);
+    }
 }
