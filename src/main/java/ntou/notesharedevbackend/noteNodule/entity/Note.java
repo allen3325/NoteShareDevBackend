@@ -1,62 +1,44 @@
-//        type* string // normal, reward, collaboration
-//        科系department* string
-//        科目subject* string
-//        標題title* string
-//        作者Email authorEmail* [string]
-//        編輯人Email editorEmail* string default //建立筆記者 (共筆用)
-// 	      發起人headerEmail* string default 建立筆記者
-//        管理員Email managerEmail  string (共筆用)
-//        作者Name authorName* [string]
-// 	      發起人headerName* string default 建立筆記者
-//        老師professor string
-//        學校school string
-//        exitFolders* [string]//所屬的所有資料夾
-//        parentFolder* string //目前資料夾
-//        愛心數like* int default 0
-//        收藏數* int default 0
-//        解鎖次數* int default 0
-//        可否下載* boolean default false
-//        留言數 int default 0
-//        留言 [commentSchema]
-//        販賣點數 int
-//        公開/私人* boolean default false
-//        是否投稿 isSubmit; // 用於懸賞區投稿
-//        可否引用* boolean default false
-//        tag   [string]
-//        hiddenTag [string]
-//        貢獻者 [string] // 投稿人 (懸賞用)
-//        存檔版本 versionToSave* [VersionContent]
-//        版本 version   [VersionContent]
-//        postID string // 紀錄貼文ID用於投稿後存在哪
-//        isBest Boolean // 用於懸賞區看是否為最佳解
-
 package ntou.notesharedevbackend.noteNodule.entity;
 
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Date;
 
+//TODO:
+// 1. update schema by frontend V
+// 2. 喜歡筆記的人（前端判斷使用者是否按過喜歡）V
+// 3. 收藏（把isFavorite拔掉了）。因為改成 by reference 所以沒用 V
+// 4. a方案. favorite 前端判斷方法，應該是去看此 user 的 Favorite 資料夾有無此筆記？ X
+//    b方案. 我們有一個 favoriter（像是liker）V
+// 5. buyer？ -> 買筆記的時候要在這邊加購買者（解鎖的人，前端也需要判斷此筆記是否已購買。還是搜尋的時候要篩掉？）V
+// 6. 需要前端給他們的 versionContent 送什麼？（Date 後端建還是前端建）
+// 7. mycustom-components 是 Array 嗎？
+// 8. mycustom-components 的 - 改成 _ 的問題
 @Document(collection = "note")
 public class Note {
 
     // attributes
     private String id;
     private String type; // normal, reward, collaboration
+    private String name; // title
+    private String slug;
+    private Date createdAt;
+    private Date updatedAt;
+    private int __v;
     private String department;
     private String subject;
-    private String title;
-    private String headerEmail; //建立筆記者
-    private String headerName; //建立筆記者
-    private ArrayList<String> authorEmail; //所有作者
-    private ArrayList<String> authorName; //所有作者
-    // token: private ArrayList<String> editorEmail;
-    private String managerEmail; //共筆用
+    private String headerEmail; // 建立筆記者
+    private String headerName; // 建立筆記者
+    private ArrayList<String> authorEmail; // 所有作者
+    private ArrayList<String> authorName; // 所有作者
+    private String managerEmail; // 共筆用
     private String professor;
     private String school;
-    private ArrayList<String> exitFolders; //所屬的所有資料夾
-    //TODO: reference 是否還可以知道目前資料夾？先拔除了
-    //    private String parentFolder; //目前資料夾
+    private ArrayList<String> liker; // 喜灣筆記的人
+    private ArrayList<String> buyer; // 購買筆記的人
+    private ArrayList<String> favoriter; // 收藏這筆記的人
     private Integer likeCount;
     private Integer favoriteCount;
     private Integer unlockCount;
@@ -64,17 +46,15 @@ public class Note {
     private Integer commentCount;
     private ArrayList<Comment> comments;
     private Integer price;
-    private Boolean isPublic;
+    private Boolean isPublic; // 筆記是否公開
     private Boolean isSubmit; // 用於懸賞區投稿
     private Boolean quotable;
     private ArrayList<String> tag;
     private ArrayList<String> hiddenTag;
-    private ArrayList<VersionContent> versionToSave; // 存檔欄位
     private ArrayList<VersionContent> version; // 版本
     private ArrayList<String> contributors;
     private String postID; // 紀錄貼文ID用於投稿後存在哪
     private Boolean isBest; // 用於懸賞區看是否為最佳解
-    private Boolean isFavorite; // 收藏區
 
     // constructors
     public Note() {}
@@ -113,13 +93,6 @@ public class Note {
         this.subject = subject;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     public String getHeaderEmail() {
         return headerEmail;
@@ -177,13 +150,6 @@ public class Note {
         this.school = school;
     }
 
-    public ArrayList<String> getExitFolders() {
-        return exitFolders;
-    }
-
-    public void setExitFolders(ArrayList<String> exitFolders) {
-        this.exitFolders = exitFolders;
-    }
 
     public Integer getLikeCount() {
         return likeCount;
@@ -281,14 +247,6 @@ public class Note {
         this.hiddenTag = hiddenTag;
     }
 
-    public ArrayList<VersionContent> getVersionToSave() {
-        return versionToSave;
-    }
-
-    public void setVersionToSave(ArrayList<VersionContent> versionToSave) {
-        this.versionToSave = versionToSave;
-    }
-
     public ArrayList<VersionContent> getVersion() {
         return version;
     }
@@ -321,11 +279,67 @@ public class Note {
         isBest = best;
     }
 
-    public Boolean getFavorite() {
-        return isFavorite;
+    public String getName() {
+        return name;
     }
 
-    public void setFavorite(Boolean favorite) {
-        isFavorite = favorite;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public int get__v() {
+        return __v;
+    }
+
+    public void set__v(int __v) {
+        this.__v = __v;
+    }
+
+    public ArrayList<String> getLiker() {
+        return liker;
+    }
+
+    public void setLiker(ArrayList<String> liker) {
+        this.liker = liker;
+    }
+
+    public ArrayList<String> getBuyer() {
+        return buyer;
+    }
+
+    public void setBuyer(ArrayList<String> buyer) {
+        this.buyer = buyer;
+    }
+
+    public ArrayList<String> getFavoriter() {
+        return favoriter;
+    }
+
+    public void setFavoriter(ArrayList<String> favoriter) {
+        this.favoriter = favoriter;
     }
 }
