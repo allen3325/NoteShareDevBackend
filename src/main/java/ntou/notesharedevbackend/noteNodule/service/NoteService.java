@@ -111,4 +111,32 @@ public class NoteService {
 
         noteRepository.save(note);
     }
+
+    public void publishOrSubmit(String noteID){
+        Note note = getNote(noteID);
+        if(note.getType().equals("reward")){
+            if(!note.getSubmit()) {
+                note.setSubmit(true);
+            }
+        }else{
+            if(!note.getPublic()){
+                note.setPublic(true);
+            }else{
+                note.setPublic(false);
+            }
+        }
+        noteRepository.save(note);
+    }
+
+    public void rewardNoteBestAnswer(String noteID,String email){
+        Note note = getNote(noteID);
+        note.setBest(true);
+        //TODO 新增點數
+        //TODO 位置，筆記移轉給懸賞人 移除投稿人擁有權
+        note.getAuthorEmail().add(email);
+        String userName = appUserService.getUserByEmail(email).getName();
+        note.getAuthorName().add(userName);
+        noteRepository.save(note);
+    }
+
 }

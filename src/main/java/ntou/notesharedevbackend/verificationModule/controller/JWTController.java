@@ -2,7 +2,7 @@ package ntou.notesharedevbackend.verificationModule.controller;
 
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.verificationModule.entity.AuthRequest;
-import ntou.notesharedevbackend.verificationModule.service.JWTService;
+import ntou.notesharedevbackend.verificationModule.entity.service.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
