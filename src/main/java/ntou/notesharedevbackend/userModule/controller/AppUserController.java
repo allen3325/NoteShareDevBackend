@@ -37,20 +37,20 @@ public class AppUserController {
         return ResponseEntity.ok(appUser);
     }
 
-    @PostMapping
-    public ResponseEntity createUser(@RequestBody AppUser request) {
-        AppUser appUser = appUserService.createUser(request);
-        if (appUser == null) {
-            return ResponseEntity.badRequest().body("can't have the same email.");
-        }
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(appUser.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(appUser);
-    }
+//    @PostMapping
+//    public ResponseEntity createUser(@RequestBody AppUser request) {
+//        AppUser appUser = appUserService.createUser(request);
+//        if (appUser == null) {
+//            return ResponseEntity.badRequest().body("can't have the same email.");
+//        }
+//        URI location = ServletUriComponentsBuilder
+//                .fromCurrentRequest()
+//                .path("/{id}")
+//                .buildAndExpand(appUser.getId())
+//                .toUri();
+//
+//        return ResponseEntity.created(location).body(appUser);
+//    }
 
     @PutMapping("/{email}")
     public ResponseEntity<AppUser> replaceUser(@RequestBody AppUser request) {
