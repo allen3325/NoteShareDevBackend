@@ -2,6 +2,7 @@ package ntou.notesharedevbackend.postModule.controller;
 
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.postModule.entity.Post;
+import ntou.notesharedevbackend.postModule.entity.PostRequest;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post request) {
+    public ResponseEntity<Post> createPost(@RequestBody PostRequest request) {
         Post post = postService.createPost(request);
         System.out.println("creat post");
         //create collaboration post and set collaboration note publish time

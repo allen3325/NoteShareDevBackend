@@ -17,6 +17,7 @@ import java.awt.*;
 public class ScheduleController {
     @Autowired
     private SchedulingService schedulingService;
+
     @PostMapping("/publish/{postID}")
     public ResponseEntity<Task> addPublishTask(@PathVariable(name = "postID") String postID,@RequestBody Task request){
         Task task =schedulingService.newPublishSchedule(postID,request);
@@ -45,4 +46,10 @@ public class ScheduleController {
         Vote vote =schedulingService.modifyVoteSchedule(postID, voteID,request);
         return ResponseEntity.ok().body(vote);
     }
+    @DeleteMapping("/cancelTask/{taskID}")
+    public ResponseEntity cancelTask(@PathVariable (name ="taskID") String taskID){
+        schedulingService.cancelSchedule(taskID);
+        return ResponseEntity.noContent().build();
+    }
+
 }
