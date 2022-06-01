@@ -6,7 +6,7 @@ import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.UserRepository;
-import ntou.notesharedevbackend.verificationModule.service.MailService;
+import ntou.notesharedevbackend.verificationModule.entity.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

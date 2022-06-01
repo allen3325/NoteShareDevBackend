@@ -13,8 +13,11 @@
 package ntou.notesharedevbackend.postModule.entity;
 
 import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.schedulerModule.entity.Task;
+import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -34,8 +37,10 @@ public class Post {
     private Integer price;
     private Boolean isPublic;
     private ArrayList<Comment> comments;
-    private ArrayList<String> answers; // to save note's ID
+    private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID
     private ArrayList<String> wantEnterUsersEmail;
+    private Task task;
+    private ArrayList<Vote> vote;
 
     // constructors
     public Post() {
@@ -153,5 +158,21 @@ public class Post {
 
     public void setWantEnterUsersEmail(ArrayList<String> wantEnterUsersEmail) {
         this.wantEnterUsersEmail = wantEnterUsersEmail;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
+    }
+
+    public ArrayList<Vote> getVote() {
+        return vote;
+    }
+
+    public void setVote(ArrayList<Vote> vote) {
+        this.vote = vote;
     }
 }
