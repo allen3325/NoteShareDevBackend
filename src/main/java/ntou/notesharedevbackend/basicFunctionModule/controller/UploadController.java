@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.*;
+
 @RestController
 @RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UploadController {
@@ -13,20 +15,29 @@ public class UploadController {
     UploadService uploadImageService;
 
     @GetMapping("/picture/{noteID}/{version}")
-    public ResponseEntity<GetImageDTO> getImage(@PathVariable("noteID") String noteID, @PathVariable("version") int version) {
+    public ResponseEntity<Map<String, GetImageDTO>> getImage(@PathVariable("noteID") String noteID, @PathVariable("version") int version) {
         GetImageDTO image = uploadImageService.getImage(noteID, version);
-        return ResponseEntity.ok(image);
+        Map<String, GetImageDTO> map = new HashMap<>();
+        map.put("imageInfo", image);
+
+        return ResponseEntity.ok(map);
     }
 
     @PostMapping("/picture")
-    public ResponseEntity<String[]> uploadImage(@ModelAttribute UploadDTO uploadDTO) {
+    public ResponseEntity<Map<String, String[]>> uploadImage(@ModelAttribute UploadDTO uploadDTO) {
         String[] response = uploadImageService.uploadImage(uploadDTO.getFiles(), uploadDTO.getNoteID(), uploadDTO.getVersion());
-        return ResponseEntity.ok(response);
+        Map<String, String[]> map = new HashMap<>();
+        map.put("imageID", response);
+
+        return ResponseEntity.ok(map);
     }
 
     @PostMapping("/file")
-    public ResponseEntity<String[]> uploadFile(@ModelAttribute UploadDTO uploadDTO) {
+    public ResponseEntity<Map<String, String[]>> uploadFile(@ModelAttribute UploadDTO uploadDTO) {
         String[] response = uploadImageService.uploadFile(uploadDTO.getFiles(), uploadDTO.getNoteID(), uploadDTO.getVersion());
-        return ResponseEntity.ok(response);
+        Map<String, String[]> map = new HashMap<>();
+        map.put("fileID", response);
+
+        return ResponseEntity.ok(map);
     }
 }

@@ -31,7 +31,7 @@ public class UploadService {
             return Upload.getImage(imageID);
         } catch (Exception e) {
             e.printStackTrace();
-            return new GetImageDTO();   //TODO: exception handling
+            return new GetImageDTO();
         }
     }
 
