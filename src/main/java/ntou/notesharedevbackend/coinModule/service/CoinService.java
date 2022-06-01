@@ -40,6 +40,7 @@ public class CoinService {
         return appUser;
     }
 
+    // TODO: 忘記幫作者加點數
     public Note buyNote(String email, String noteID) {
         AppUser appUser = appUserService.getUserByEmail(email);
         Note note = noteService.getNote(noteID);
