@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .anyRequest().authenticated() // anyRequest(): 對剩下的 API 定義規則
                 .antMatchers(HttpMethod.POST, "/verification").permitAll()
                 .antMatchers(HttpMethod.POST, "/verification/parse").permitAll()
-                .anyRequest().permitAll() //TODO tmp for testing
+                .anyRequest().permitAll() // tmp for testing
                 .and()
                 .csrf().disable()
                 .cors();

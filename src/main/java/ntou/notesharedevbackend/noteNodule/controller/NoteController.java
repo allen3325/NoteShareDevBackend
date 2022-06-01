@@ -37,13 +37,15 @@ public class NoteController {
     }
 
     @GetMapping("/tags/{noteID}")
-    public ResponseEntity<ArrayList<String>> getNoteTags(@PathVariable("noteID") String id) {
+    public ResponseEntity<Object> getNoteTags(@PathVariable("noteID") String id) {
         ArrayList<String> tags = noteService.getNoteTags(id);
-        return ResponseEntity.ok(tags);
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("tags",tags);
+        return ResponseEntity.ok(map);
     }
 
     @PostMapping("/{email}")
-    public ResponseEntity<Note> createPost(@PathVariable("email") String email ,@RequestBody Note request) {
+    public ResponseEntity<Note> createNote(@PathVariable("email") String email ,@RequestBody Note request) {
         Note note = noteService.createNote(request,email);
 
         URI location = ServletUriComponentsBuilder

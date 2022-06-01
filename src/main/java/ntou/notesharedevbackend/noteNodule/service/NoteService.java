@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-//TODO: 更新schema，檢查有沒有漏掉的
 @Service
 public class NoteService {
     @Autowired
