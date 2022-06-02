@@ -15,10 +15,10 @@ public class UploadController {
     UploadService uploadImageService;
 
     @GetMapping("/picture/{noteID}/{version}")
-    public ResponseEntity<Map<String, GetImageDTO>> getImage(@PathVariable("noteID") String noteID, @PathVariable("version") int version) {
-        GetImageDTO image = uploadImageService.getImage(noteID, version);
-        Map<String, GetImageDTO> map = new HashMap<>();
-        map.put("imageInfo", image);
+    public ResponseEntity<Map<String, GetImageDTO[]>> getImage(@PathVariable("noteID") String noteID, @PathVariable("version") int version) {
+        GetImageDTO[] images = uploadImageService.getImage(noteID, version);
+        Map<String, GetImageDTO[]> map = new HashMap<>();
+        map.put("images", images);
 
         return ResponseEntity.ok(map);
     }
