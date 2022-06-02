@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.basicFunctionModule.controller;
 
+import io.swagger.v3.oas.annotations.*;
 import ntou.notesharedevbackend.basicFunctionModule.entity.*;
 import ntou.notesharedevbackend.basicFunctionModule.service.*;
 import org.springframework.beans.factory.annotation.*;
@@ -14,6 +15,7 @@ public class UploadController {
     @Autowired
     UploadService uploadImageService;
 
+    @Operation(summary = "Get images by note version")
     @GetMapping("/picture/{noteID}/{version}")
     public ResponseEntity<Map<String, GetImageDTO[]>> getImage(@PathVariable("noteID") String noteID, @PathVariable("version") int version) {
         GetImageDTO[] images = uploadImageService.getImage(noteID, version);
@@ -23,6 +25,7 @@ public class UploadController {
         return ResponseEntity.ok(map);
     }
 
+    @Operation(summary = "Upload image")
     @PostMapping("/picture")
     public ResponseEntity<Map<String, String[]>> uploadImage(@ModelAttribute UploadDTO uploadDTO) {
         String[] response = uploadImageService.uploadImage(uploadDTO.getFiles(), uploadDTO.getNoteID(), uploadDTO.getVersion());
@@ -32,6 +35,7 @@ public class UploadController {
         return ResponseEntity.ok(map);
     }
 
+    @Operation(summary = "Upload file")
     @PostMapping("/file")
     public ResponseEntity<Map<String, String[]>> uploadFile(@ModelAttribute UploadDTO uploadDTO) {
         String[] response = uploadImageService.uploadFile(uploadDTO.getFiles(), uploadDTO.getNoteID(), uploadDTO.getVersion());
