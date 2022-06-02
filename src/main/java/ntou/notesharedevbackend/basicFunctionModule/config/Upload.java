@@ -65,20 +65,23 @@ public class Upload {
         return credential;
     }
 
-    public static GetImageDTO getImage(String fileID) throws GeneralSecurityException, IOException {
+    public static GetImageDTO[] getImage(ArrayList<String> fileID) throws GeneralSecurityException, IOException {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
                 .setApplicationName(APPLICATION_NAME)
                 .build();
 
-        File file = service.files().get(fileID).setFields("id, name, hasThumbnail, thumbnailLink").execute();
-        GetImageDTO getImageDTO = new GetImageDTO();
-        getImageDTO.setId(file.getId());
-        getImageDTO.setName(file.getName());
-        getImageDTO.setHasThumbnail(file.getHasThumbnail());
-        getImageDTO.setThumbnailLink(file.getThumbnailLink());
-
-        return getImageDTO;
+        List<GetImageDTO> getImageDTOList = new ArrayList<>();
+        for (String id : fileID) {
+            File file = service.files().get(id).setFields("id, name, hasThumbnail, thumbnailLink").execute();
+            GetImageDTO getImageDTO = new GetImageDTO();
+            getImageDTO.setId(file.getId());
+            getImageDTO.setName(file.getName());
+            getImageDTO.setHasThumbnail(file.getHasThumbnail());
+            getImageDTO.setThumbnailLink(file.getThumbnailLink());
+            getImageDTOList.add(getImageDTO);
+        }
+        return getImageDTOList.toArray(new GetImageDTO[0]);
     }
 
     public static void setPermission(String fileID) throws GeneralSecurityException, IOException {

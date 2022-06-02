@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.basicFunctionModule.controller;
 
+import io.swagger.v3.oas.annotations.*;
 import ntou.notesharedevbackend.basicFunctionModule.service.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
@@ -19,6 +20,7 @@ public class FavoriteController {
 //        return ResponseEntity.ok().build();
 //    }
 
+    @Operation(summary = "Favorite a comment from a note", description = "email是傳誰做favorite的動作")
     @PutMapping("/favorite/note/{noteID}/{commentID}/{email}")
     public ResponseEntity<Map<String, String>> favoriteNoteComment(@PathVariable("noteID") String noteID, @PathVariable("commentID") String commentID, @PathVariable("email") String email) {
         favoriteService.favoriteNoteComment(noteID, commentID, email);
@@ -28,6 +30,7 @@ public class FavoriteController {
         return ResponseEntity.ok(map);
     }
 
+    @Operation(summary = "Favorite a comment from a post", description = "email是傳誰做favorite的動作")
     @PutMapping("/favorite/post/{postID}/{commentID}/{email}")
     public ResponseEntity<Map<String, String>> favoritePostComment(@PathVariable("postID") String postID, @PathVariable("commentID") String commentID, @PathVariable("email") String email) {
         favoriteService.favoritePostComment(postID, commentID, email);
@@ -37,15 +40,16 @@ public class FavoriteController {
         return ResponseEntity.ok(map);
     }
 
+    @Operation(summary = "UnFavorite a comment from a note", description = "email是傳誰做favorite的動作")
     @PutMapping("/unFavorite/note/{noteID}/{commentID}/{email}")
     public ResponseEntity<Map<String, String>> unFavoriteNoteComment(@PathVariable("noteID") String noteID, @PathVariable("commentID") String commentID, @PathVariable("email") String email) {
         favoriteService.unFavoriteNoteComment(noteID, commentID, email);
         Map<String, String> map = new HashMap<>();
         map.put("msg", "Success");
-
         return ResponseEntity.ok(map);
     }
 
+    @Operation(summary = "UnFavorite a comment from a post", description = "email是傳誰做favorite的動作")
     @PutMapping("/unFavorite/post/{postID}/{commentID}/{email}")
     public ResponseEntity<Map<String, String>> unFavoritePostComment(@PathVariable("postID") String postID, @PathVariable("commentID") String commentID, @PathVariable("email") String email) {
         favoriteService.unFavoritePostComment(postID, commentID, email);
