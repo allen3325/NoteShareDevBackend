@@ -2,7 +2,7 @@ package ntou.notesharedevbackend.searchModule.entity;
 
 import java.util.*;
 
-public class Search {
+public class SearchNote {
     private String school;
     private String subject;
     private String department;

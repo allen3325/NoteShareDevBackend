@@ -1,8 +1,8 @@
 package ntou.notesharedevbackend.searchModule.service;
 
-import com.fasterxml.jackson.databind.*;
 import ntou.notesharedevbackend.folderModule.entity.*;
 import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.repository.*;
 import ntou.notesharedevbackend.searchModule.entity.*;
 import ntou.notesharedevbackend.userModule.entity.*;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.*;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.*;
 
-import javax.swing.text.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -24,6 +23,8 @@ public class SearchService {
     @Autowired
     private NoteRepository noteRepository;
     @Autowired
+    private PostRepository postRepository;
+    @Autowired
     private FolderRepository folderRepository;
 
     public AppUser[] getSearchedUser(String userName) {
@@ -33,7 +34,7 @@ public class SearchService {
         return appUserList.toArray(new AppUser[0]);
     }
 
-    public Note[] getSearchedNoteByKeyword(String keyword, Search search) {
+    public Note[] getSearchedNoteByKeyword(String keyword, SearchNote searchNote) {
         // initial search
         PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by("name").descending());
         Page<Note> notesLikePage = noteRepository.findNoteByNameRegex(keyword, pageRequest);
@@ -42,20 +43,20 @@ public class SearchService {
             return noteList.toArray(new Note[0]);
 
         // additional search condition
-        String school = search.getSchool();
-        String subject = search.getSubject();
-        String department = search.getDepartment();
-        String professor = search.getProfessor();
-        String headerName = search.getHeaderName();
-        Boolean haveNormal = search.getHaveNormal();
-        Boolean haveCollaboration = search.getHaveCollaboration();
-        Boolean haveReward = search.getHaveReward();
-        Boolean downloadable = search.getDownloadable();
-        ArrayList<String> tag = search.getTag();
-        Integer unlockCount = search.getUnlockCount();
-        Integer favoriteCount = search.getFavoriteCount();
-        Integer price = search.getPrice();
-        Boolean quotable = search.getQuotable();
+        String school = searchNote.getSchool();
+        String subject = searchNote.getSubject();
+        String department = searchNote.getDepartment();
+        String professor = searchNote.getProfessor();
+        String headerName = searchNote.getHeaderName();
+        Boolean haveNormal = searchNote.getHaveNormal();
+        Boolean haveCollaboration = searchNote.getHaveCollaboration();
+        Boolean haveReward = searchNote.getHaveReward();
+        Boolean downloadable = searchNote.getDownloadable();
+        ArrayList<String> tag = searchNote.getTag();
+        Integer unlockCount = searchNote.getUnlockCount();
+        Integer favoriteCount = searchNote.getFavoriteCount();
+        Integer price = searchNote.getPrice();
+        Boolean quotable = searchNote.getQuotable();
 
         if (school != null)
             noteList = noteList.stream()
@@ -117,6 +118,57 @@ public class SearchService {
         }
 
         return noteList.toArray(new Note[0]);
+    }
+
+    public Post[] getSearchedPostByKeyword(String keyword, SearchPost searchPost) {
+        //initial search
+        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by("title").descending());
+        Page<Post> postsLikePage = postRepository.findPostByTitleRegex(keyword, pageRequest);
+        List<Post> postList = postsLikePage.getContent();
+        if (postList.isEmpty())
+            return postList.toArray(new Post[0]);
+
+        // additional search condition
+        String subject = searchPost.getSubject();
+        String department = searchPost.getDepartment();
+        String author = searchPost.getAuthor();
+        Integer price = searchPost.getPrice();
+        Boolean haveQA = searchPost.getHaveQA();
+        Boolean haveCollaboration = searchPost.getHaveCollaboration();
+        Boolean haveReward = searchPost.getHaveReward();
+
+        if (subject != null)
+            postList = postList.stream()
+                    .filter((Post p) -> p.getSubject().contains(subject))
+                    .collect(Collectors.toList());
+        if (department != null)
+            postList = postList.stream()
+                    .filter((Post p) -> p.getDepartment().contains(department))
+                    .collect(Collectors.toList());
+        if (author != null)
+            postList = postList.stream()
+                    .filter((Post p) -> p.getAuthor().contains(author))
+                    .collect(Collectors.toList());
+        if (price != null)
+            postList = postList.stream()
+                    .filter((Post p) -> p.getPrice() >= price)
+                    .collect(Collectors.toList());
+
+        //determine which type of note should be displayed
+        if (haveQA != null) {
+            if (!haveQA)
+                postList.removeIf((Post p) -> (p.getType().equals("QA")));
+        }
+        if (haveCollaboration != null) {
+            if (!haveCollaboration)
+                postList.removeIf((Post p) -> (p.getType().equals("collaboration")));
+        }
+        if (haveReward != null) {
+            if (!haveReward)
+                postList.removeIf((Post p) -> (p.getType().equals("reward")));
+        }
+
+        return postList.toArray(new Post[0]);
     }
 
     public Folder[] getSearchedFolderByKeyword(String keyword) {
