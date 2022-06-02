@@ -3,6 +3,7 @@ package ntou.notesharedevbackend.searchModule.controller;
 import io.swagger.v3.oas.annotations.*;
 import ntou.notesharedevbackend.folderModule.entity.*;
 import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.searchModule.entity.*;
 import ntou.notesharedevbackend.searchModule.service.*;
 import ntou.notesharedevbackend.userModule.entity.*;
@@ -30,10 +31,20 @@ public class SearchController {
 
     @Operation(summary = "Get notes by search", description = "找note名稱\n haveNormal, haveCollaboration, haveReward 想要得到的筆記的種類，三個都true代表三種類型的筆記都會找")
     @GetMapping("/note/{keyword}")
-    public ResponseEntity<Map<String, Note[]>> getSearchedNoteByKeyword(@PathVariable("keyword") String keyword, @RequestBody Search request) {
+    public ResponseEntity<Map<String, Note[]>> getSearchedNoteByKeyword(@PathVariable("keyword") String keyword, @RequestBody SearchNote request) {
         Note[] notes = searchService.getSearchedNoteByKeyword(keyword, request);
         Map<String, Note[]> map = new HashMap<>();
         map.put("search", notes);
+
+        return ResponseEntity.ok(map);
+    }
+
+    @Operation(summary = "Get posts by search", description = "找post名稱\n haveQA, haveCollaboration, haveReward 想要得到的筆記的種類，三個都true代表三種類型的筆記都會找")
+    @GetMapping("/post/{keyword}")
+    public ResponseEntity<Map<String, Post[]>> getSearchedPostByKeyword(@PathVariable("keyword") String keyword, @RequestBody SearchPost request) {
+        Post[] posts = searchService.getSearchedPostByKeyword(keyword, request);
+        Map<String, Post[]> map = new HashMap<>();
+        map.put("search", posts);
 
         return ResponseEntity.ok(map);
     }
