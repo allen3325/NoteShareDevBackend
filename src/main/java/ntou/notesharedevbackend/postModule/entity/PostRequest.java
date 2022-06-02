@@ -1,30 +1,13 @@
-//貼文postSchema
-//        type* string //QA, reward, collaboration
-//        author* string
-//        email* String
-//        department* string
-//        subject* string
-//        title* string
-//        content* string
-//        date* date
-//        point* int
-//        comment [commentSchema]
-//        answer [NoteSchema]
 package ntou.notesharedevbackend.postModule.entity;
 
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 
-@Document(collection = "post")
-public class Post {
-
-    // attributes
+public class PostRequest {
     private String id;
     private String type; // QA, reward, collaboration
     private ArrayList<String> email; // 共筆發起人以及管理員，用來核准加入共筆queue的
@@ -34,19 +17,14 @@ public class Post {
     private String title;
     private String content;
     private Date date;
-    private Integer price;//為共筆貼文時，為共筆筆記的金額
+    private Integer price;
     private Boolean isPublic;
     private ArrayList<Comment> comments;
     private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID
     private ArrayList<String> wantEnterUsersEmail;
     private Task task;
     private ArrayList<Vote> vote;
-
-    // constructors
-    public Post() {
-    }
-
-    // getter and setter
+    private Date createdAt;
 
     public String getId() {
         return id;
@@ -174,5 +152,13 @@ public class Post {
 
     public void setVote(ArrayList<Vote> vote) {
         this.vote = vote;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }
