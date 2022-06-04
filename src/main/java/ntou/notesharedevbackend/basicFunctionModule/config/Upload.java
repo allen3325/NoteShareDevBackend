@@ -10,6 +10,7 @@ import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.util.*;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
@@ -18,6 +19,7 @@ import ntou.notesharedevbackend.basicFunctionModule.entity.*;
 import org.springframework.web.multipart.*;
 
 import java.io.*;
+import java.net.*;
 import java.nio.file.*;
 import java.security.*;
 import java.util.*;
@@ -133,9 +135,7 @@ public class Upload {
                 .setApplicationName(APPLICATION_NAME)
                 .build();
 
-        String[] fileSplit = fileName.split("\\.");
         String fileType = "application/pdf";
-
         File fileMetadata = new File();
         fileMetadata.setName(fileName);
         fileMetadata.setParents(Collections.singletonList(FOLDER_ID));
@@ -152,6 +152,8 @@ public class Upload {
 
     public static void saveFile(MultipartFile[] files) {
         try {
+            Files.createDirectories(Paths.get("././././././files"));
+
             for (MultipartFile file : files) {
                 Path path = Paths.get("files", file.getOriginalFilename());
                 OutputStream os = Files.newOutputStream(path);
