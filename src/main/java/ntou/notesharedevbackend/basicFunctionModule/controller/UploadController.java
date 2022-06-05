@@ -15,7 +15,7 @@ public class UploadController {
     @Autowired
     UploadService uploadImageService;
 
-    @Operation(summary = "Get images by note version")
+    @Operation(summary = "Get images by note version", description = "thumbnailLink是這張圖片的url")
     @GetMapping("/picture/{noteID}/{version}")
     public ResponseEntity<Map<String, GetImageDTO[]>> getImage(@PathVariable("noteID") String noteID, @PathVariable("version") int version) {
         GetImageDTO[] images = uploadImageService.getImage(noteID, version);

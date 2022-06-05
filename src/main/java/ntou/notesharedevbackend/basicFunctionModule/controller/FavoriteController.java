@@ -40,7 +40,7 @@ public class FavoriteController {
         return ResponseEntity.ok(map);
     }
 
-    @Operation(summary = "UnFavorite a comment from a note", description = "email是傳誰做favorite的動作")
+    @Operation(summary = "UnFavorite a comment from a note", description = "email是傳誰做unFavorite的動作")
     @PutMapping("/unFavorite/note/{noteID}/{commentID}/{email}")
     public ResponseEntity<Map<String, String>> unFavoriteNoteComment(@PathVariable("noteID") String noteID, @PathVariable("commentID") String commentID, @PathVariable("email") String email) {
         favoriteService.unFavoriteNoteComment(noteID, commentID, email);
@@ -49,7 +49,7 @@ public class FavoriteController {
         return ResponseEntity.ok(map);
     }
 
-    @Operation(summary = "UnFavorite a comment from a post", description = "email是傳誰做favorite的動作")
+    @Operation(summary = "UnFavorite a comment from a post", description = "email是傳誰做unFavorite的動作")
     @PutMapping("/unFavorite/post/{postID}/{commentID}/{email}")
     public ResponseEntity<Map<String, String>> unFavoritePostComment(@PathVariable("postID") String postID, @PathVariable("commentID") String commentID, @PathVariable("email") String email) {
         favoriteService.unFavoritePostComment(postID, commentID, email);
