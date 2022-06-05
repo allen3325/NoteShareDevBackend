@@ -70,15 +70,19 @@ public class CommentService {
         String type="";
 //        System.out.println(date);
 
-        ArrayList<Comment> commentArrayList= new ArrayList<Comment>();
+        ArrayList<Comment> commentArrayList;
         if(noteRepository.findById(id).isPresent()){
             type="note";
             note = noteService.getNote(id);
             commentArrayList = note.getComments();
+            if (commentArrayList == null)
+                commentArrayList = new ArrayList<>();
         } else if (postRepository.findById(id).isPresent()) {
             type="post";
             post = postService.getPostById(id);
             commentArrayList = post.getComments();
+            if (commentArrayList == null)
+                commentArrayList = new ArrayList<>();
         }
         else{
             throw new NotFoundException("Can't find any note or post matched id");
@@ -97,6 +101,7 @@ public class CommentService {
             noteRepository.save(note);
         }else{
             post.setComments(commentArrayList);
+            post.setCommentCount(post.getComments().size());
             postRepository.save(post);
         }
         return comment;
