@@ -92,10 +92,27 @@ public class SearchService {
             noteList = noteList.stream()
                     .filter((Note n) -> n.getDownloadable().equals(downloadable))
                     .collect(Collectors.toList());
-        if (tag != null)
-            noteList = noteList.stream()
-                    .filter((Note n) -> n.getTag().containsAll(tag))
-                    .collect(Collectors.toList());
+        if (tag != null) {
+            List<Note> tempNoteList = new ArrayList<>();
+            for (Note note : noteList) {
+                if (note.getTag().size() == 0)
+                    continue;
+                ArrayList<String> noteTag = note.getTag();
+                boolean find = false;
+                for (String value : noteTag) {
+                    for (String s : tag) {
+                        if (value.contains(s)) {
+                            find = true;
+                            break;
+                        }
+                    }
+                }
+                if (find)
+                    tempNoteList.add(note);
+            }
+
+            noteList = tempNoteList;
+        }
         if (unlockCount != null)
             noteList = noteList.stream()
                     .filter((Note n) -> n.getUnlockCount() >= unlockCount)
