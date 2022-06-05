@@ -34,9 +34,19 @@ public class SearchService {
         return appUserList.toArray(new AppUser[0]);
     }
 
-    public Note[] getSearchedNoteByKeyword(String keyword, SearchNote searchNote) {
-        // initial search
-        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by("name").descending());
+//    Note -> Sort By
+//      - likeCount
+//      - Date = createdAt or updatedAt
+//      - price
+//      - unlockCount
+//      - favoriteCount
+    public Note[] getSearchedNoteByKeyword(String keyword, SearchNote searchNote, String sortBy) {
+        // initial search, determine sort method
+        if (sortBy.equals(""))
+            sortBy = "name";
+        else if (sortBy.equals("Date"))
+            sortBy = "createAt";
+        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by(sortBy).descending());
         Page<Note> notesLikePage = noteRepository.findNoteByNameRegex(keyword, pageRequest);
         List<Note> noteList = notesLikePage.getContent();
         if (noteList.isEmpty())
@@ -120,9 +130,15 @@ public class SearchService {
         return noteList.toArray(new Note[0]);
     }
 
-    public Post[] getSearchedPostByKeyword(String keyword, SearchPost searchPost) {
-        //initial search
-        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by("title").descending());
+//    Post -> Sort By
+//      - commentCount
+//      - date
+//      - price
+    public Post[] getSearchedPostByKeyword(String keyword, SearchPost searchPost, String sortBy) {
+        //initial search, determine sort method
+        if (sortBy.equals(""))
+            sortBy = "title";
+        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by(sortBy).descending());
         Page<Post> postsLikePage = postRepository.findPostByTitleRegex(keyword, pageRequest);
         List<Post> postList = postsLikePage.getContent();
         if (postList.isEmpty())

@@ -37,6 +37,8 @@ public class Post {
     private Integer price;//為共筆貼文時，為共筆筆記的金額
     private Boolean isPublic;
     private ArrayList<Comment> comments;
+    private Integer commentCount;
+
     private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID
     private ArrayList<String> wantEnterUsersEmail;
     private Task task;
@@ -174,5 +176,13 @@ public class Post {
 
     public void setVote(ArrayList<Vote> vote) {
         this.vote = vote;
+    }
+
+    public Integer getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(Integer commentCount) {
+        this.commentCount = commentCount;
     }
 }
