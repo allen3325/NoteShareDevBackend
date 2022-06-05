@@ -29,7 +29,9 @@ public class SearchController {
         return ResponseEntity.ok(map);
     }
 
-    @Operation(summary = "Get notes by search", description = "找note名稱\n haveNormal, haveCollaboration, haveReward 想要得到的筆記的種類，三個都true代表三種類型的筆記都會找")
+    @Operation(summary = "Get notes by search", description = "找note名稱: " +
+            "haveNormal, haveCollaboration, haveReward 想要得到的筆記的種類，三個都true代表三種類型的筆記都會找。 " +
+            "sortBy後面填排序方式: likeCount, createdAt or updatedAt(兩種date排序方式), price, unlockCount, favoriteCount")
     @GetMapping("/note/{keyword}")
     public ResponseEntity<Map<String, Note[]>> getSearchedNoteByKeyword(@PathVariable("keyword") String keyword, @RequestBody SearchNote request,
                                                                         @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
@@ -40,7 +42,9 @@ public class SearchController {
         return ResponseEntity.ok(map);
     }
 
-    @Operation(summary = "Get posts by search", description = "找post名稱\n haveQA, haveCollaboration, haveReward 想要得到的筆記的種類，三個都true代表三種類型的筆記都會找")
+    @Operation(summary = "Get posts by search", description = "找post名稱: " +
+            "haveQA, haveCollaboration, haveReward 想要得到的筆記的種類，三個都true代表三種類型的筆記都會找。 " +
+            "sortBy後面填排序方式: commentCount, date, price")
     @GetMapping("/post/{keyword}")
     public ResponseEntity<Map<String, Post[]>> getSearchedPostByKeyword(@PathVariable("keyword") String keyword, @RequestBody SearchPost request,
                                                                         @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
