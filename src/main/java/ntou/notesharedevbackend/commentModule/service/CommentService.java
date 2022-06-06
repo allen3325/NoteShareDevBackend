@@ -94,7 +94,7 @@ public class CommentService {
         comment.setDate(new Date());
         comment.setEmail(request.getEmail());
         comment.setFloor(commentArrayList.size());
-        comment.setReferenceNotesURL(request.getReferenceNotesURL());
+//        comment.setReferenceNotesURL(request.getReferenceNotesURL());
         commentArrayList.add(comment);
         if(type.equals("note")){
             note.setComments(commentArrayList);
@@ -117,8 +117,8 @@ public class CommentService {
             Note note = noteService.getNote(id);
             commentArrayList = note.getComments();
             commentArrayList.get(floor).setBest(request.getBest());
-            commentArrayList.get(floor).setReference(request.getReference());
-            commentArrayList.get(floor).setReferenceNotesURL(request.getReferenceNotesURL());
+//            commentArrayList.get(floor).setReference(request.getReference());
+//            commentArrayList.get(floor).setReferenceNotesURL(request.getReferenceNotesURL());
             commentArrayList.get(floor).setLiker(request.getLiker());
             commentArrayList.get(floor).setLikeCount(request.getLikeCount());
             commentArrayList.get(floor).setContent(request.getContent());
@@ -150,8 +150,8 @@ public class CommentService {
             Post post = postService.getPostById(id);
             commentArrayList = post.getComments();
             commentArrayList.get(floor).setBest(request.getBest());
-            commentArrayList.get(floor).setReference(request.getReference());
-            commentArrayList.get(floor).setReferenceNotesURL(request.getReferenceNotesURL());
+//            commentArrayList.get(floor).setReference(request.getReference());
+//            commentArrayList.get(floor).setReferenceNotesURL(request.getReferenceNotesURL());
             commentArrayList.get(floor).setLiker(request.getLiker());
             commentArrayList.get(floor).setLikeCount(request.getLikeCount());
             commentArrayList.get(floor).setContent(request.getContent());
@@ -196,8 +196,8 @@ public class CommentService {
             commentArrayList.get(floor).setContent(null);
             commentArrayList.get(floor).setLikeCount(null);
             commentArrayList.get(floor).setLiker(null);
-            commentArrayList.get(floor).setReferenceNotesURL(null);
-            commentArrayList.get(floor).setReference(null);
+//            commentArrayList.get(floor).setReferenceNotesURL(null);
+//            commentArrayList.get(floor).setReference(null);
             commentArrayList.get(floor).setBest(null);
             note.setComments(commentArrayList);
             noteRepository.save(note);
@@ -211,8 +211,8 @@ public class CommentService {
             commentArrayList.get(floor).setContent(null);
             commentArrayList.get(floor).setLikeCount(null);
             commentArrayList.get(floor).setLiker(null);
-            commentArrayList.get(floor).setReferenceNotesURL(null);
-            commentArrayList.get(floor).setReference(null);
+//            commentArrayList.get(floor).setReferenceNotesURL(null);
+//            commentArrayList.get(floor).setReference(null);
             commentArrayList.get(floor).setBest(null);
             post.setComments(commentArrayList);
             postRepository.save(post);

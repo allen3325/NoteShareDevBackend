@@ -53,12 +53,12 @@ public class NoteService {
         authorEmail.add(user.getEmail());
         authorName.add(user.getName());
 
-        note.setName(request.getName());
+        note.setTitle(request.getTitle());
         note.setType(request.getType());
-        note.setSlug(request.getSlug());
-        note.setCreatedAt(request.getCreatedAt());
-        note.setUpdatedAt(request.getUpdatedAt());
-        note.set__v(request.get__v());
+//        note.setSlug(request.getSlug());
+//        note.setCreatedAt(request.getCreatedAt());
+//        note.setUpdatedAt(request.getUpdatedAt());
+//        note.set__v(request.get__v());
         note.setDepartment(request.getDepartment());
         note.setSubject(request.getSubject());
         note.setHeaderEmail(user.getEmail());

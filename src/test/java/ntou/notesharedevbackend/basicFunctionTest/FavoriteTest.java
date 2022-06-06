@@ -68,7 +68,7 @@ public class FavoriteTest {
         comment.setEmail("genewang7@gmail.com");
         comment.setContent("讚");
         comment.setBest(false);
-        comment.setReference(false);
+//        comment.setReference(false);
         comment.setLikeCount(0);
 
         ArrayList<String> liker = new ArrayList<>();

@@ -55,8 +55,8 @@ public class PostService {
         if(request.getType().equals("collaboration")){//若為共筆貼文，須建立共筆筆記
             Note note = new Note();
             note.setPrice(request.getPrice());
-            note.setCreatedAt(request.getCreatedAt());
-            note.setName(null);
+//            note.setCreatedAt(request.getCreatedAt());
+            note.setTitle(null);
             note.setType(request.getType());
             note.setPublic(false);
             Note createdNote = noteService.createNote(note,request.getEmail().get(0));
@@ -104,7 +104,7 @@ public class PostService {
                 break;
             case "collaboration":
                 post.setWantEnterUsersEmail(request.getWantEnterUsersEmail());
-                post.setTask(request.getTask());
+//                post.setTask(request.getTask());
                 post.setVote(request.getVote());
                 break;
             case "reward":
@@ -156,12 +156,12 @@ public class PostService {
         if(post.getType().equals("collaboration")){//check post is collaboration
             Task task = new Task();
             task.setPostID(postID);
-            task.setType("publish");
-            task.setNoteIDOrVoteID(post.getAnswers().get(0));
+//            task.setType("publish");
+            task.setVoteID(post.getAnswers().get(0));
             task.setYear(request.getYear());
             task.setMonth(request.getMonth());
             task.setDay(request.getDay());
-            post.setTask(task);
+//            post.setTask(task);
             postRepository.save(post);
             schedulingService.addSchedule(task);
             return task;
@@ -172,21 +172,21 @@ public class PostService {
 
     public Task replacePublishTime (String postID, Task request){
         Post post = getPostById(postID);
-        post.setTask(null);
+//        post.setTask(null);
         postRepository.save(post);
         return schedulerPublishTime(postID, request);
     }
 
     public Vote addVote(String postID, Vote request){
         Vote vote= new Vote();
-        vote.setType(request.getType());
-        if(vote.getType().equals("kick")){
-            vote.setKickTarget(request.getKickTarget());
-        }
+//        vote.setType(request.getType());
+//        if(vote.getType().equals("kick")){
+//            vote.setKickTarget(request.getKickTarget());
+//        }
         //set Task
         Task task = new Task();
-        task.setType("vote");
-        task.setNoteIDOrVoteID(vote.getId());
+//        task.setType("vote");
+        task.setVoteID(vote.getId());
         task.setYear(request.getTask().getYear());
         task.setMonth(request.getTask().getMonth());
         task.setDay(request.getTask().getDay());
@@ -209,11 +209,11 @@ public class PostService {
             if(v.getId().equals(voteID)){//find old vote
                 schedulingService.cancelSchedule(v.getTask().getId());//cancel old task
                 newVote.setId(v.getId());
-                newVote.setType(request.getType());
+//                newVote.setType(request.getType());
                 Task newTask  = new Task();//set new task
                 newTask.setPostID(postID);
-                newTask.setNoteIDOrVoteID(voteID);
-                newTask.setType("vote");
+                newTask.setVoteID(voteID);
+//                newTask.setType("vote");
                 newTask.setYear(request.getTask().getYear());
                 newTask.setMonth(request.getTask().getMonth());
                 newTask.setDay(request.getTask().getDay());
@@ -322,7 +322,7 @@ public class PostService {
             for(Comment c: post.getComments()){
                 if(c.getId().equals(commentID)){
                     Comment referenceComment = c;
-                    referenceComment.setReference(true);
+//                    referenceComment.setReference(true);
                     post.getComments().set(post.getComments().indexOf(c),referenceComment);
                     postRepository.save(post);
                     return true;

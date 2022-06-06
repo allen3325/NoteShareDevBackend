@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.postModule.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
@@ -8,23 +9,91 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class PostRequest {
+    // attributes
     private String id;
     private String type; // QA, reward, collaboration
     private ArrayList<String> email; // 共筆發起人以及管理員，用來核准加入共筆queue的
     private String author;
     private String department;
     private String subject;
+    private String school;
+    private String professor;
     private String title;
     private String content;
+    @JsonFormat(timezone = "GMT+08:00")
     private Date date;
-    private Integer price;
+    private Integer price; //為共筆貼文時，為共筆筆記的金額
+    private Integer bestPrice; //最佳解金額
+    private Integer referencePrice; //參考解金額
+    private Integer referenceNumber; //剩餘參考解數目
     private Boolean isPublic;
     private ArrayList<Comment> comments;
+    private Integer commentCount;
+
     private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID
     private ArrayList<String> wantEnterUsersEmail;
-    private Task task;
+    //    private Task task;
+    @JsonFormat(timezone = "GMT+08:00")
+    private Date publishDate;
     private ArrayList<Vote> vote;
-    private Date createdAt;
+
+    // getter and setter
+
+    public String getSchool() {
+        return school;
+    }
+
+    public void setSchool(String school) {
+        this.school = school;
+    }
+
+    public String getProfessor() {
+        return professor;
+    }
+
+    public void setProfessor(String professor) {
+        this.professor = professor;
+    }
+
+    public Integer getBestPrice() {
+        return bestPrice;
+    }
+
+    public void setBestPrice(Integer bestPrice) {
+        this.bestPrice = bestPrice;
+    }
+
+    public Integer getReferencePrice() {
+        return referencePrice;
+    }
+
+    public void setReferencePrice(Integer referencePrice) {
+        this.referencePrice = referencePrice;
+    }
+
+    public Integer getReferenceNumber() {
+        return referenceNumber;
+    }
+
+    public void setReferenceNumber(Integer referenceNumber) {
+        this.referenceNumber = referenceNumber;
+    }
+
+    public Integer getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(Integer commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public Date getPublishDate() {
+        return publishDate;
+    }
+
+    public void setPublishDate(Date publishDate) {
+        this.publishDate = publishDate;
+    }
 
     public String getId() {
         return id;
@@ -137,14 +206,14 @@ public class PostRequest {
     public void setWantEnterUsersEmail(ArrayList<String> wantEnterUsersEmail) {
         this.wantEnterUsersEmail = wantEnterUsersEmail;
     }
-
-    public Task getTask() {
-        return task;
-    }
-
-    public void setTask(Task task) {
-        this.task = task;
-    }
+//
+//    public Task getTask() {
+//        return task;
+//    }
+//
+//    public void setTask(Task task) {
+//        this.task = task;
+//    }
 
     public ArrayList<Vote> getVote() {
         return vote;
@@ -154,11 +223,11 @@ public class PostRequest {
         this.vote = vote;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
+//    public Date getCreatedAt() {
+//        return createdAt;
+//    }
+//
+//    public void setCreatedAt(Date createdAt) {
+//        this.createdAt = createdAt;
+//    }
 }

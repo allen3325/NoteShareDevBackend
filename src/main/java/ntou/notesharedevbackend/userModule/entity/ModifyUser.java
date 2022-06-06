@@ -14,6 +14,15 @@ public class ModifyUser {
     private ArrayList<String> bell;
     private ArrayList<String> fans;
     private Integer coin;
+    private String headshotPhoto;
+
+    public String getHeadshotPhoto() {
+        return headshotPhoto;
+    }
+
+    public void setHeadshotPhoto(String headshotPhoto) {
+        this.headshotPhoto = headshotPhoto;
+    }
 
     public boolean isAdmin() {
         return isAdmin;

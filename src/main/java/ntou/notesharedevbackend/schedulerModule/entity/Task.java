@@ -5,18 +5,21 @@ import org.bson.types.ObjectId;
 
 public class Task {
     private String id;
-    private String type;//publish or vote
+//    private String type;//publish or vote
     private int year;
     private int month;
     private int day;
 //    private int hour = 17;
 //    private int minute = 0;
 //    private int second = 0;
-    private String noteIDOrVoteID ;
+    private String voteID;
     private String postID;
+
     public Task(){
         this.id = new ObjectId().toString();
     }
+
+    // getter and setter
     public String getId() {
         return id;
     }
@@ -25,13 +28,13 @@ public class Task {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
+//    public String getType() {
+//        return type;
+//    }
+//
+//    public void setType(String type) {
+//        this.type = type;
+//    }
 
     public int getYear() {
         return year;
@@ -81,12 +84,12 @@ public class Task {
 //        this.second = second;
 //    }
 
-    public String getNoteIDOrVoteID() {
-        return noteIDOrVoteID;
+    public String getVoteID() {
+        return voteID;
     }
 
-    public void setNoteIDOrVoteID(String noteIDOrVoteID) {
-        this.noteIDOrVoteID = noteIDOrVoteID;
+    public void setVoteID(String voteID) {
+        this.voteID = voteID;
     }
 
     public String getPostID() {

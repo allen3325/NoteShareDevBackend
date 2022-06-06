@@ -53,6 +53,7 @@ public class AppUser {
     private ArrayList<String> bell;
     private ArrayList<String> fans;
     private Integer coin;
+    private String headshotPhoto;
 
     // constructor
     public AppUser() {
@@ -60,9 +61,18 @@ public class AppUser {
         this.subscribe = new ArrayList<String>();
         this.bell = new ArrayList<String>();
         this.fans = new ArrayList<String>();
+        this.headshotPhoto = null;
     }
 
     // getter and setter
+
+    public String getHeadshotPhoto() {
+        return headshotPhoto;
+    }
+
+    public void setHeadshotPhoto(String headshotPhoto) {
+        this.headshotPhoto = headshotPhoto;
+    }
 
     public String getId() {
         return id;

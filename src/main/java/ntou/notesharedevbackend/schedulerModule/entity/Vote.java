@@ -6,16 +6,21 @@ import java.util.ArrayList;
 
 public class Vote {
     private String id;
-    private String type;//kick, publishTime
+//    private String type;//kick, publishTime
     private Task task;
-    private ArrayList<String> agree = new ArrayList<String>();//user's email
-    private ArrayList<String> disagree = new ArrayList<String>();//user's email
+    private ArrayList<String> agree;//user's email
+    private ArrayList<String> disagree;//user's email
     private String kickTarget;//user's name
-    private String result="yet";
+    private String result;
 
     public Vote(){
         this.id = new ObjectId().toString();
+        this.agree = new ArrayList<String>();
+        this.disagree = new ArrayList<String>();
+        this.result = "yet";
     }
+
+    //getter and setter
     public String getId() {
         return id;
     }
@@ -24,13 +29,13 @@ public class Vote {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
+//    public String getType() {
+//        return type;
+//    }
+//
+//    public void setType(String type) {
+//        this.type = type;
+//    }
 
     public Task getTask() {
         return task;

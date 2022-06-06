@@ -13,6 +13,9 @@ import java.util.*;
 
 @RestController
 @RequestMapping(value = "/note",produces = MediaType.APPLICATION_JSON_VALUE)
+//TODO: update note public (api).
+// 缺少put整份筆記的api @PutMapping("/{email}")
+// 缺少將筆記存在某項特定資料夾的api @PutMapping("/save/{noteID}/{folderID}")
 public class NoteController {
     @Autowired
     private NoteService noteService;
