@@ -2,7 +2,6 @@ package ntou.notesharedevbackend.postModule.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
-import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 
 import java.util.ArrayList;
@@ -91,8 +90,8 @@ public class PostRequest {
         return publishDate;
     }
 
-    public void setPublishDate(Date publishDate) {
-        this.publishDate = publishDate;
+    public void setPublishDate() {
+        this.publishDate = new Date();
     }
 
     public String getId() {
@@ -163,8 +162,8 @@ public class PostRequest {
         return date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate() {
+        this.date = new Date();
     }
 
     public Integer getPrice() {

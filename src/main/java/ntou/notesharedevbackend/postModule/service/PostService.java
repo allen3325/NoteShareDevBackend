@@ -46,7 +46,7 @@ public class PostService {
         post.setSubject(request.getSubject());
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
-        post.setDate(request.getDate());
+        post.setDate();
         post.setPublic(request.getPublic());
         post.setPrice(request.getPrice());
         post.setComments(request.getComments());
@@ -96,7 +96,7 @@ public class PostService {
         post.setSubject(request.getSubject());
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
-        post.setDate(request.getDate());
+        post.setDate();
         switch (request.getType()) {
             case "QA":
                 post.setPrice(request.getPrice());

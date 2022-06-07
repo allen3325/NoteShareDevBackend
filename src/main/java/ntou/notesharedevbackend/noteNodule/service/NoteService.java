@@ -2,11 +2,14 @@ package ntou.notesharedevbackend.noteNodule.service;
 
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.exception.NotFoundException;
+import ntou.notesharedevbackend.folderModule.entity.Folder;
+import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -17,6 +20,10 @@ public class NoteService {
     private NoteRepository noteRepository;
     @Autowired
     private AppUserService appUserService;
+    @Autowired
+    @Lazy
+    private FolderService folderService;
+
 
     public Note getNote(String id){
         return noteRepository.findById(id)
@@ -37,6 +44,8 @@ public class NoteService {
             oldVersionContent.add(newVersionContent);
         }
 
+        note.setVersion(oldVersionContent);
+
         return noteRepository.save(note);
     }
 
@@ -53,14 +62,10 @@ public class NoteService {
         authorEmail.add(user.getEmail());
         authorName.add(user.getName());
 
-        note.setTitle(request.getTitle());
         note.setType(request.getType());
-//        note.setSlug(request.getSlug());
-//        note.setCreatedAt(request.getCreatedAt());
-//        note.setUpdatedAt(request.getUpdatedAt());
-//        note.set__v(request.get__v());
         note.setDepartment(request.getDepartment());
         note.setSubject(request.getSubject());
+        note.setTitle(request.getTitle());
         note.setHeaderEmail(user.getEmail());
         note.setHeaderName(user.getName());
         note.setAuthorEmail(authorEmail);
@@ -83,9 +88,14 @@ public class NoteService {
         note.setQuotable(request.getQuotable());
         note.setTag(new ArrayList<String>());
         note.setHiddenTag(new ArrayList<String>());
-        note.setVersion(new ArrayList<VersionContent>());
+        if(request.getVersion().isEmpty()){
+            note.setVersion(new ArrayList<VersionContent>());
+        }else{
+            note.setVersion(request.getVersion());
+        }
         note.setContributors(new ArrayList<String>());
         note.setPostID(request.getPostID());
+        note.setReference(request.getReference());
         note.setBest(request.getBest());
 
         return noteRepository.insert(note);
@@ -119,11 +129,7 @@ public class NoteService {
                 note.setSubmit(true);
             }
         }else{
-            if(!note.getPublic()){
-                note.setPublic(true);
-            }else{
-                note.setPublic(false);
-            }
+            note.setPublic(!note.getPublic());
         }
         noteRepository.save(note);
     }
@@ -143,5 +149,72 @@ public class NoteService {
         Note note = getNote(noteID);
         note.setPostID(postID);
         noteRepository.save(note);
+    }
+
+    public Note replaceNote(Note request, String id) {
+        Note oldNote = getNote(id);
+        Note note = new Note();
+
+        note.setId(oldNote.getId());
+        note.setType(request.getType());
+        note.setDepartment(request.getDepartment());
+        note.setSubject(request.getSubject());
+        note.setTitle(request.getTitle());
+        note.setHeaderEmail(request.getHeaderEmail());
+        note.setHeaderName(request.getHeaderName());
+        note.setAuthorEmail(request.getAuthorEmail());
+        note.setAuthorName(request.getAuthorName());
+        note.setManagerEmail(request.getManagerEmail());
+        note.setProfessor(request.getProfessor());
+        note.setSchool(request.getSchool());
+        note.setLiker(request.getLiker());
+        note.setBuyer(request.getBuyer());
+        note.setFavoriter(request.getFavoriter());
+        note.setLikeCount(request.getLikeCount());
+        note.setFavoriteCount(request.getFavoriteCount());
+        note.setUnlockCount(request.getUnlockCount());
+        note.setDownloadable(request.getDownloadable());
+        note.setCommentCount(request.getCommentCount());
+        note.setComments(request.getComments());
+        note.setPrice(request.getPrice());
+        note.setPublic(request.getPublic());
+        note.setSubmit(request.getSubmit());
+        note.setQuotable(request.getQuotable());
+        note.setTag(request.getTag());
+        note.setHiddenTag(request.getHiddenTag());
+        note.setVersion(request.getVersion());
+        note.setContributors(request.getContributors());
+        note.setPostID(request.getPostID());
+        note.setReference(request.getReference());
+        note.setBest(request.getBest());
+
+        return noteRepository.save(request);
+    }
+
+    public Folder copyNoteToFolder(String noteID, String folderID) {
+        Folder folder =  folderService.getFolderByID(folderID);
+        ArrayList<String> notes = folder.getNotes();
+
+        notes.add(noteID);
+        folder.setNotes(notes);
+        folderService.replaceFolder(folder);
+
+        return folder;
+    }
+
+    public Folder deleteNoteFromFolder(String noteID, String folderID) {
+        Folder folder =  folderService.getFolderByID(folderID);
+        ArrayList<String> notes = folder.getNotes();
+
+        if(notes.contains(noteID)){
+            notes.remove(noteID);
+        }else{
+            return null;
+        }
+
+        folder.setNotes(notes);
+        folderService.replaceFolder(folder);
+
+        return folder;
     }
 }

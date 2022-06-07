@@ -29,6 +29,7 @@ public class VersionContent {
     // constructors
     public VersionContent() {
         this.id = new ObjectId().toString();
+        this.date = new Date();
     }
 
     // getter and setter
@@ -44,8 +45,8 @@ public class VersionContent {
         return date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate() {
+        this.date = new Date();
     }
 
     public ArrayList<Content> getContent() {

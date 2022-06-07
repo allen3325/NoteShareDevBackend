@@ -49,7 +49,7 @@ public class PostTest {
         post.setSubject("Operation System");
         post.setTitle("Interrupt vs trap");
         post.setContent("this is a post!");
-        post.setDate(new Date());
+        post.setDate();
         post.setPrice(null);
         post.setComments(null);
         ArrayList<String> answers = new ArrayList<>();

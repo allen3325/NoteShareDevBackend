@@ -49,8 +49,8 @@ public class Post {
         return publishDate;
     }
 
-    public void setPublishDate(Date publishDate) {
-        this.publishDate = publishDate;
+    public void setPublishDate() {
+        this.publishDate = new Date();
     }
 
     public String getSchool() {
@@ -161,8 +161,8 @@ public class Post {
         return date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate() {
+        this.date = new Date();
     }
 
     public Integer getPrice() {
