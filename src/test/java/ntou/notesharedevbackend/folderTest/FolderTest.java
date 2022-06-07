@@ -3,6 +3,7 @@ package ntou.notesharedevbackend.folderTest;
 
 import ntou.notesharedevbackend.repository.FolderRepository;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,12 +53,11 @@ public class FolderTest {
         mockMvc.perform(requestBuilder)
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").hasJsonPath())
-                .andExpect(jsonPath("$.folderName").value(request.getString("folderName")))
-                .andExpect(jsonPath("$.public").value(request.getBoolean("public")))
-                .andExpect(jsonPath("$.path").value(request.getString("path")))
-                .andExpect(jsonPath("$.parent").value(request.getString("parent")))
-                .andExpect(header().exists(HttpHeaders.LOCATION))
+                .andExpect(jsonPath("$.res.id").hasJsonPath())
+                .andExpect(jsonPath("$.res.folderName").value(request.getString("folderName")))
+                .andExpect(jsonPath("$.res.public").value(request.getBoolean("public")))
+                .andExpect(jsonPath("$.res.path").value(request.getString("path")))
+                .andExpect(jsonPath("$.res.parent").value(request.getString("parent")))
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
     }
 

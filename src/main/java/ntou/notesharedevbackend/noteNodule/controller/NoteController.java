@@ -15,9 +15,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping(value = "/note",produces = MediaType.APPLICATION_JSON_VALUE)
-//TODO: update note version public (api). V
-// 缺少put整份筆記的api @PutMapping("/{email}") V
-// 缺少將筆記存在某項特定資料夾的api @PutMapping("/save/{noteID}/{folderID}") V
+//TODO: 缺少like筆記api -> update Liker
 public class NoteController {
     @Autowired
     private NoteService noteService;
