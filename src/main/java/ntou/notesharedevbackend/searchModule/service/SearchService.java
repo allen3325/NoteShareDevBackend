@@ -131,20 +131,22 @@ public class SearchService {
                     .collect(Collectors.toList());
 
         //determine which type of note should be displayed
+        List<Note> copyOfNoteList = new ArrayList<>(noteList);
+
         if (haveNormal != null) {
             if (!haveNormal)
-                noteList.removeIf((Note n) -> (n.getType().equals("normal")));
+                copyOfNoteList.removeIf((Note n) -> (n.getType().equals("normal")));
         }
         if (haveCollaboration != null) {
             if (!haveCollaboration)
-                noteList.removeIf((Note n) -> (n.getType().equals("collaboration")));
+                copyOfNoteList.removeIf((Note n) -> (n.getType().equals("collaboration")));
         }
         if (haveReward != null) {
             if (!haveReward)
-                noteList.removeIf((Note n) -> (n.getType().equals("reward")));
+                copyOfNoteList.removeIf((Note n) -> (n.getType().equals("reward")));
         }
 
-        return noteList.toArray(new Note[0]);
+        return copyOfNoteList.toArray(new Note[0]);
     }
 
 //    Post -> Sort By
@@ -188,20 +190,22 @@ public class SearchService {
                     .collect(Collectors.toList());
 
         //determine which type of note should be displayed
+        List<Post> copyOfPostList = new ArrayList<>(postList);
+
         if (haveQA != null) {
             if (!haveQA)
-                postList.removeIf((Post p) -> (p.getType().equals("QA")));
+                copyOfPostList.removeIf((Post p) -> (p.getType().equals("QA")));
         }
         if (haveCollaboration != null) {
             if (!haveCollaboration)
-                postList.removeIf((Post p) -> (p.getType().equals("collaboration")));
+                copyOfPostList.removeIf((Post p) -> (p.getType().equals("collaboration")));
         }
         if (haveReward != null) {
             if (!haveReward)
-                postList.removeIf((Post p) -> (p.getType().equals("reward")));
+                copyOfPostList.removeIf((Post p) -> (p.getType().equals("reward")));
         }
 
-        return postList.toArray(new Post[0]);
+        return copyOfPostList.toArray(new Post[0]);
     }
 
     public Folder[] getSearchedFolderByKeyword(String keyword) {
