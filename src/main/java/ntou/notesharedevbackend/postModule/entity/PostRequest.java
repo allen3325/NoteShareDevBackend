@@ -2,11 +2,12 @@ package ntou.notesharedevbackend.postModule.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
-import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class PostRequest {
     // attributes
@@ -91,8 +92,8 @@ public class PostRequest {
         return publishDate;
     }
 
-    public void setPublishDate(Date publishDate) {
-        this.publishDate = publishDate;
+    public void setPublishDate(Date date) {
+        this.publishDate = date;
     }
 
     public String getId() {
@@ -163,8 +164,9 @@ public class PostRequest {
         return date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
+        this.date = calendar.getTime();
     }
 
     public Integer getPrice() {

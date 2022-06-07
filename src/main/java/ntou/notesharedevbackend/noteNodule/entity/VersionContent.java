@@ -10,7 +10,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class VersionContent {
 
@@ -29,6 +31,7 @@ public class VersionContent {
     // constructors
     public VersionContent() {
         this.id = new ObjectId().toString();
+        this.date = new Date();
     }
 
     // getter and setter
@@ -44,8 +47,9 @@ public class VersionContent {
         return date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
+        this.date = calendar.getTime();
     }
 
     public ArrayList<Content> getContent() {

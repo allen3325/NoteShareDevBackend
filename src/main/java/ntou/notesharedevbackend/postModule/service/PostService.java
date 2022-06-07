@@ -10,6 +10,8 @@ import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import ntou.notesharedevbackend.schedulerModule.service.SchedulingService;
+import ntou.notesharedevbackend.userModule.entity.AppUser;
+import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -20,12 +22,14 @@ import java.util.*;
 public class PostService {
     @Autowired
     private PostRepository postRepository;
-
     @Autowired
     private NoteService noteService;
     @Autowired
     @Lazy(value = true)
     private SchedulingService schedulingService;
+    @Autowired
+    @Lazy(value = true)
+    private AppUserService appUserService;
 
     public Post[] getAllTypeOfPost(String postType) {
         List<Post> postList = postRepository.findAllByType(postType);
@@ -37,33 +41,52 @@ public class PostService {
                 .orElseThrow(() -> new NotFoundException("Can't find product."));
     }
 
-    public Post createPost(PostRequest request) {
+    public Post createPost(String userEmail,PostRequest request) {
+        AppUser appUser = appUserService.getUserByEmail(userEmail);
+        ArrayList<String> email = new ArrayList<>();
+        email.add(userEmail);
         Post post = new Post();
         post.setType(request.getType());
-        post.setEmail(request.getEmail());
-        post.setAuthor(request.getAuthor());
+        post.setEmail(email);
+        post.setAuthor(appUser.getName());
         post.setDepartment(request.getDepartment());
         post.setSubject(request.getSubject());
+        post.setSchool(request.getSchool());
+        post.setProfessor(request.getProfessor());
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
-        post.setDate(request.getDate());
-        post.setPublic(request.getPublic());
+        post.setDate();
         post.setPrice(request.getPrice());
-        post.setComments(request.getComments());
-        post.setAnswers(request.getAnswers());
-        post.setWantEnterUsersEmail(request.getWantEnterUsersEmail());
+        post.setBestPrice(request.getBestPrice());
+        post.setReferencePrice(request.getReferencePrice());
+        post.setReferenceNumber(request.getReferenceNumber());
+        post.setPublic(request.getPublic());
+        post.setComments(new ArrayList<Comment>());
+        post.setCommentCount(0);
+        post.setAnswers(new ArrayList<String>());
+        post.setWantEnterUsersEmail(new ArrayList<String>());
+        post.setPublishDate(request.getPublishDate());
+        post.setVote(new ArrayList<Vote>());
         if(request.getType().equals("collaboration")){//若為共筆貼文，須建立共筆筆記
             Note note = new Note();
             note.setPrice(request.getPrice());
 //            note.setCreatedAt(request.getCreatedAt());
-            note.setTitle(null);
+            note.setTitle(request.getTitle());
             note.setType(request.getType());
             note.setPublic(false);
-            Note createdNote = noteService.createNote(note,request.getEmail().get(0));
+            note.setDepartment(request.getDepartment());
+            note.setSubject(request.getSubject());
+            note.setSchool(request.getSchool());
+            note.setProfessor(request.getProfessor());
+            note.setPrice(request.getPrice());
+            note.setDownloadable(false);
+            note.setPublic(false);
+            note.setQuotable(false);
+            Note createdNote = noteService.createNote(note,userEmail);
             ArrayList<String> answers = new ArrayList<String>();//把新增的共筆筆記ID存到共筆貼文內的answer
             answers.add(createdNote.getId());
             post.setAnswers(answers);
-            Post newPost =postRepository.insert(post);
+            Post newPost = postRepository.insert(post);
             noteService.collaborationNoteSetPostID(createdNote.getId(),newPost.getId());
             return newPost;
         }
@@ -94,24 +117,23 @@ public class PostService {
         post.setAuthor(request.getAuthor());
         post.setDepartment(request.getDepartment());
         post.setSubject(request.getSubject());
+        post.setSchool(request.getSchool());
+        post.setProfessor(request.getProfessor());
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
-        post.setDate(request.getDate());
-        switch (request.getType()) {
-            case "QA":
-                post.setPrice(request.getPrice());
-                post.setComments(request.getComments());
-                break;
-            case "collaboration":
-                post.setWantEnterUsersEmail(request.getWantEnterUsersEmail());
-//                post.setTask(request.getTask());
-                post.setVote(request.getVote());
-                break;
-            case "reward":
-                post.setPrice(request.getPrice());
-                post.setAnswers(request.getAnswers());
-                break;
-        }
+        post.setDate();
+        post.setPrice(request.getPrice());
+        post.setBestPrice(request.getBestPrice());
+        post.setReferencePrice(request.getReferencePrice());
+        post.setReferenceNumber(request.getReferenceNumber());
+        post.setPublic(request.getPublic());
+        post.setComments(request.getComments());
+        post.setCommentCount(post.getComments().size());
+        post.setAnswers(request.getAnswers());
+        post.setWantEnterUsersEmail(request.getWantEnterUsersEmail());
+        post.setPublishDate(request.getDate());
+        post.setVote(request.getVote());
+
         return postRepository.save(post);
     }
     public void deletePost(String id) {
@@ -121,7 +143,8 @@ public class PostService {
     public void modifyPublishStatus(String id) {
         Post post = getPostById(id);
         post.setPublic(!post.getPublic());
-        postRepository.save(post);
+        replacePost(post.getId(), post);
+//        postRepository.save(post);
     }
 
     public void applyCollaboration(String id, String email) {
@@ -132,7 +155,8 @@ public class PostService {
         currentWantEnterUsersEmail.add(email);
         post.setWantEnterUsersEmail(currentWantEnterUsersEmail);
 
-        postRepository.save(post);
+        replacePost(post.getId(), post);
+//        postRepository.save(post);
     }
 
     // TODO: 記得要將email跟name(用email去拿user.name)加進note的author email,author name
@@ -144,7 +168,8 @@ public class PostService {
         post.setEmail(currentEmails);
         clearWantEnterUsersEmail(post, email);
 
-        postRepository.save(post);
+        replacePost(post.getId(), post);
+//        postRepository.save(post);
     }
 
     public void clearWantEnterUsersEmail(Post post, String email) {
@@ -162,7 +187,8 @@ public class PostService {
             task.setMonth(request.getMonth());
             task.setDay(request.getDay());
 //            post.setTask(task);
-            postRepository.save(post);
+            replacePost(post.getId(), post);
+//            postRepository.save(post);
             schedulingService.addSchedule(task);
             return task;
         }else{
@@ -173,7 +199,8 @@ public class PostService {
     public Task replacePublishTime (String postID, Task request){
         Post post = getPostById(postID);
 //        post.setTask(null);
-        postRepository.save(post);
+        replacePost(post.getId(), post);
+//        postRepository.save(post);
         return schedulerPublishTime(postID, request);
     }
 
@@ -197,7 +224,8 @@ public class PostService {
         ArrayList<Vote> voteArrayList = new ArrayList<Vote>();
         voteArrayList.add(vote);
         post.setVote(voteArrayList);
-        postRepository.save(post);
+        replacePost(post.getId(), post);
+//        postRepository.save(post);
         return vote;
     }
 
@@ -228,7 +256,8 @@ public class PostService {
             }
         }
         post.setVote(voteArrayList);
-        postRepository.save(post);
+        replacePost(post.getId(), post);
+//        postRepository.save(post);
         return newVote;
     }
 
@@ -240,13 +269,15 @@ public class PostService {
                     if(option.equals("agree")){//取消同意
                         v.getAgree().remove(email);
                         post.getVote().set(post.getVote().indexOf(v),v);
-                        postRepository.save(post);
+                        replacePost(post.getId(), post);
+//                        postRepository.save(post);
                         return true;
                     }else{//改投不同意
                         v.getAgree().remove(email);
                         v.getDisagree().add(email);
                         post.getVote().set(post.getVote().indexOf(v),v);
-                        postRepository.save(post);
+                        replacePost(post.getId(), post);
+//                        postRepository.save(post);
                         return true;
                     }
                 } else if (v.getDisagree().contains(email)) {//原本投不同意
@@ -254,24 +285,28 @@ public class PostService {
                         v.getDisagree().remove(email);
                         v.getAgree().add(email);
                         post.getVote().set(post.getVote().indexOf(v),v);
-                        postRepository.save(post);
+                        replacePost(post.getId(), post);
+//                        postRepository.save(post);
                         return true;
                     }else{//取消同意
                         v.getDisagree().remove(email);
                         post.getVote().set(post.getVote().indexOf(v),v);
-                        postRepository.save(post);
+                        replacePost(post.getId(), post);
+//                        postRepository.save(post);
                         return true;
                     }
                 }else{//尚未投票
                     if(option.equals("agree")){//投同意
                         v.getAgree().add(email);
                         post.getVote().set(post.getVote().indexOf(v),v);
-                        postRepository.save(post);
+                        replacePost(post.getId(), post);
+//                        postRepository.save(post);
                         return true;
                     }else{//投不同意
                         v.getDisagree().add(email);
                         post.getVote().set(post.getVote().indexOf(v),v);
-                        postRepository.save(post);
+                        replacePost(post.getId(), post);
+//                        postRepository.save(post);
                         return true;
                     }
                 }
@@ -299,13 +334,15 @@ public class PostService {
                     Comment bestComment = c;
                     bestComment.setBest(true);
                     post.getComments().set(post.getComments().indexOf(c),bestComment);
-                    postRepository.save(post);
+                    replacePost(post.getId(), post);
+//                    postRepository.save(post);
                 }else{
                     if(c.getBest()){
                         Comment notBestComment = c;
                         notBestComment.setBest(false);
                         post.getComments().set(post.getComments().indexOf(c),notBestComment);
-                        postRepository.save(post);
+                        replacePost(post.getId(), post);
+//                        postRepository.save(post);
                     }
                 }
             }
@@ -324,7 +361,8 @@ public class PostService {
                     Comment referenceComment = c;
 //                    referenceComment.setReference(true);
                     post.getComments().set(post.getComments().indexOf(c),referenceComment);
-                    postRepository.save(post);
+                    replacePost(post.getId(), post);
+//                    postRepository.save(post);
                     return true;
                 }
             }

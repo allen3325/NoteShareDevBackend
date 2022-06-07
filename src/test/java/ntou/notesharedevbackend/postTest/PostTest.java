@@ -1,6 +1,7 @@
 package ntou.notesharedevbackend.postTest;
 
 import com.fasterxml.jackson.databind.*;
+import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.*;
 import ntou.notesharedevbackend.repository.*;
@@ -49,9 +50,9 @@ public class PostTest {
         post.setSubject("Operation System");
         post.setTitle("Interrupt vs trap");
         post.setContent("this is a post!");
-        post.setDate(new Date());
-        post.setPrice(null);
-        post.setComments(null);
+        post.setDate();
+        post.setPrice(300);
+        post.setComments(new ArrayList<Comment>());
         ArrayList<String> answers = new ArrayList<>();
         answers.add("note1's id");
         post.setAnswers(answers);
