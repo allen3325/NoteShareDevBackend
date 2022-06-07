@@ -59,6 +59,10 @@ public class PostService {
             note.setTitle(null);
             note.setType(request.getType());
             note.setPublic(false);
+            note.setDepartment(request.getDepartment());
+            note.setSubject(request.getSubject());
+            note.setProfessor(request.getProfessor());
+            note.setPrice(request.getPrice());
             Note createdNote = noteService.createNote(note,request.getEmail().get(0));
             ArrayList<String> answers = new ArrayList<String>();//把新增的共筆筆記ID存到共筆貼文內的answer
             answers.add(createdNote.getId());
@@ -94,24 +98,23 @@ public class PostService {
         post.setAuthor(request.getAuthor());
         post.setDepartment(request.getDepartment());
         post.setSubject(request.getSubject());
+        post.setSchool(request.getSchool());
+        post.setProfessor(request.getProfessor());
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setDate();
-        switch (request.getType()) {
-            case "QA":
-                post.setPrice(request.getPrice());
-                post.setComments(request.getComments());
-                break;
-            case "collaboration":
-                post.setWantEnterUsersEmail(request.getWantEnterUsersEmail());
-//                post.setTask(request.getTask());
-                post.setVote(request.getVote());
-                break;
-            case "reward":
-                post.setPrice(request.getPrice());
-                post.setAnswers(request.getAnswers());
-                break;
-        }
+        post.setPrice(request.getPrice());
+        post.setBestPrice(request.getBestPrice());
+        post.setReferencePrice(request.getReferencePrice());
+        post.setReferenceNumber(request.getReferenceNumber());
+        post.setPublic(request.getPublic());
+        post.setComments(request.getComments());
+        post.setCommentCount(post.getComments().size());
+        post.setAnswers(request.getAnswers());
+        post.setWantEnterUsersEmail(request.getWantEnterUsersEmail());
+        post.setPublishDate(request.getDate());
+        post.setVote(request.getVote());
+
         return postRepository.save(post);
     }
     public void deletePost(String id) {

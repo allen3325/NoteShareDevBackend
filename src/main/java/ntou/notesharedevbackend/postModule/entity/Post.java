@@ -49,8 +49,8 @@ public class Post {
         return publishDate;
     }
 
-    public void setPublishDate() {
-        this.publishDate = new Date();
+    public void setPublishDate(Date date) {
+        this.publishDate = date;
     }
 
     public String getSchool() {
