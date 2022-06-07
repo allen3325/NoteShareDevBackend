@@ -5,7 +5,9 @@ import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class PostRequest {
     // attributes
@@ -163,7 +165,8 @@ public class PostRequest {
     }
 
     public void setDate() {
-        this.date = new Date();
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
+        this.date = calendar.getTime();
     }
 
     public Integer getPrice() {

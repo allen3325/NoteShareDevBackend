@@ -34,9 +34,9 @@ public class PostController {
         return ResponseEntity.ok(post);
     }
 
-    @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody PostRequest request) {
-        Post post = postService.createPost(request);
+    @PostMapping("/{email}")
+    public ResponseEntity<Post> createPost(@PathVariable("email") String email,@RequestBody PostRequest request) {
+        Post post = postService.createPost(email,request);
         System.out.println("creat post");
         //create collaboration post and set collaboration note publish time
 //        if(post.getType().equals("collaboration")){

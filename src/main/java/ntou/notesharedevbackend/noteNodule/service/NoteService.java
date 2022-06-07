@@ -38,7 +38,7 @@ public class NoteService {
     public Note updateNoteVersion(String id, int version,VersionContent newVersionContent){
         Note note = getNote(id);
         ArrayList<VersionContent> oldVersionContent = note.getVersion();
-        if(oldVersionContent.size() > version+1) {
+        if(oldVersionContent.size() > version) {
             oldVersionContent.set(version, newVersionContent);
         }else{
             oldVersionContent.add(newVersionContent);
@@ -46,7 +46,9 @@ public class NoteService {
 
         note.setVersion(oldVersionContent);
 
-        return noteRepository.save(note);
+        return replaceNote(note,note.getId());
+
+//        return noteRepository.save(note);
     }
 
     public ArrayList<String> getNoteTags(String id) {
@@ -88,7 +90,7 @@ public class NoteService {
         note.setQuotable(request.getQuotable());
         note.setTag(new ArrayList<String>());
         note.setHiddenTag(new ArrayList<String>());
-        if(request.getVersion().isEmpty()){
+        if(request.getVersion() == null || request.getVersion().isEmpty()){
             note.setVersion(new ArrayList<VersionContent>());
         }else{
             note.setVersion(request.getVersion());
@@ -105,7 +107,8 @@ public class NoteService {
     public void setManager(String noteID, String email) {
         Note note = getNote(noteID);
         note.setManagerEmail(email);
-        noteRepository.save(note);
+        replaceNote(note,note.getId());
+//        noteRepository.save(note);
     }
 
     public void kickUserFromCollaboration(String noteId, String email) {
@@ -119,7 +122,8 @@ public class NoteService {
         note.setAuthorEmail(currentEmails);
         note.setAuthorName(currentNames);
 
-        noteRepository.save(note);
+        replaceNote(note,note.getId());
+//        noteRepository.save(note);
     }
 
     public void publishOrSubmit(String noteID){
@@ -131,7 +135,8 @@ public class NoteService {
         }else{
             note.setPublic(!note.getPublic());
         }
-        noteRepository.save(note);
+        replaceNote(note,note.getId());
+//        noteRepository.save(note);
     }
 
     public void rewardNoteBestAnswer(String noteID,String email){
@@ -142,13 +147,15 @@ public class NoteService {
         note.getAuthorEmail().add(email);
         String userName = appUserService.getUserByEmail(email).getName();
         note.getAuthorName().add(userName);
-        noteRepository.save(note);
+        replaceNote(note,note.getId());
+//        noteRepository.save(note);
     }
 
     public void collaborationNoteSetPostID(String noteID, String postID){
         Note note = getNote(noteID);
         note.setPostID(postID);
-        noteRepository.save(note);
+        replaceNote(note,note.getId());
+//        noteRepository.save(note);
     }
 
     public Note replaceNote(Note request, String id) {
@@ -170,12 +177,12 @@ public class NoteService {
         note.setLiker(request.getLiker());
         note.setBuyer(request.getBuyer());
         note.setFavoriter(request.getFavoriter());
-        note.setLikeCount(request.getLikeCount());
-        note.setFavoriteCount(request.getFavoriteCount());
-        note.setUnlockCount(request.getUnlockCount());
+        note.setFavoriteCount(note.getFavoriter().size());
+        note.setLikeCount(note.getLiker().size());
+        note.setUnlockCount(note.getBuyer().size());
         note.setDownloadable(request.getDownloadable());
-        note.setCommentCount(request.getCommentCount());
         note.setComments(request.getComments());
+        note.setCommentCount(request.getComments().size());
         note.setPrice(request.getPrice());
         note.setPublic(request.getPublic());
         note.setSubmit(request.getSubmit());
@@ -187,8 +194,11 @@ public class NoteService {
         note.setPostID(request.getPostID());
         note.setReference(request.getReference());
         note.setBest(request.getBest());
+        System.out.println(note.getLikeCount());
+        System.out.println(note.getFavoriteCount());
+        System.out.println(note.getUnlockCount());
 
-        return noteRepository.save(request);
+        return noteRepository.save(note);
     }
 
     public Folder copyNoteToFolder(String noteID, String folderID) {

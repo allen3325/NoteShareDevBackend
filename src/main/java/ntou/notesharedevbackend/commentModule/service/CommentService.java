@@ -98,11 +98,13 @@ public class CommentService {
         commentArrayList.add(comment);
         if(type.equals("note")){
             note.setComments(commentArrayList);
-            noteRepository.save(note);
+            noteService.replaceNote(note, note.getId());
+//            noteRepository.save(note);
         }else{
             post.setComments(commentArrayList);
-            post.setCommentCount(post.getComments().size());
-            postRepository.save(post);
+//            post.setCommentCount(post.getComments().size());
+            postService.replacePost(post.getId(), post);
+//            postRepository.save(post);
         }
         return comment;
     }
@@ -144,7 +146,8 @@ public class CommentService {
 //                }
 //            }
             note.setComments(commentArrayList);
-            noteRepository.save(note);
+            noteService.replaceNote(note, note.getId());
+//            noteRepository.save(note);
             return commentArrayList.get(floor);
         } else if (postRepository.findById(id).isPresent()) {
             Post post = postService.getPostById(id);
@@ -176,7 +179,8 @@ public class CommentService {
 //                }
 //            }
             post.setComments(commentArrayList);
-            postRepository.save(post);
+            postService.replacePost(post.getId(), post);
+//            postRepository.save(post);
             return commentArrayList.get(floor);
         }else{
             throw new NotFoundException("Can't find any note or post matched id");
@@ -200,7 +204,8 @@ public class CommentService {
 //            commentArrayList.get(floor).setReference(null);
             commentArrayList.get(floor).setBest(null);
             note.setComments(commentArrayList);
-            noteRepository.save(note);
+            noteService.replaceNote(note, note.getId());
+//            noteRepository.save(note);
             return true;
         } else if (postRepository.findById(id).isPresent()) {
             post = postService.getPostById(id);
@@ -215,7 +220,8 @@ public class CommentService {
 //            commentArrayList.get(floor).setReference(null);
             commentArrayList.get(floor).setBest(null);
             post.setComments(commentArrayList);
-            postRepository.save(post);
+            postService.replacePost(post.getId(), post);
+//            postRepository.save(post);
             return true;
         }
         else{

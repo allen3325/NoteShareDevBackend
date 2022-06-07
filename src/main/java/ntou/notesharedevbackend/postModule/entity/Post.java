@@ -6,7 +6,9 @@ import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 @Document(collection = "post")
 public class Post {
@@ -31,7 +33,6 @@ public class Post {
     private Boolean isPublic;
     private ArrayList<Comment> comments;
     private Integer commentCount;
-
     private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID
     private ArrayList<String> wantEnterUsersEmail;
 //    private Task task;
@@ -162,7 +163,8 @@ public class Post {
     }
 
     public void setDate() {
-        this.date = new Date();
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
+        this.date = calendar.getTime();
     }
 
     public Integer getPrice() {
