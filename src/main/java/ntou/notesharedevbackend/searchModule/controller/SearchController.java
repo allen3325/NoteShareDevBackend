@@ -31,7 +31,7 @@ public class SearchController {
 
     @Operation(summary = "Get notes by search", description = "找note名稱\n haveNormal, haveCollaboration, haveReward 想要得到的筆記的種類，三個都true代表三種類型的筆記都會找")
     @GetMapping("/note/{keyword}")
-    public ResponseEntity<Map<String, Note[]>> getSearchedNoteByKeyword(@PathVariable("keyword") String keyword, @RequestBody SearchNote request,
+    public ResponseEntity<Map<String, Note[]>> getSearchedNoteByKeyword(@PathVariable("keyword") String keyword, SearchNote request,
                                                                         @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
         Note[] notes = searchService.getSearchedNoteByKeyword(keyword, request, sortBy);
         Map<String, Note[]> map = new HashMap<>();
@@ -42,7 +42,7 @@ public class SearchController {
 
     @Operation(summary = "Get posts by search", description = "找post名稱\n haveQA, haveCollaboration, haveReward 想要得到的筆記的種類，三個都true代表三種類型的筆記都會找")
     @GetMapping("/post/{keyword}")
-    public ResponseEntity<Map<String, Post[]>> getSearchedPostByKeyword(@PathVariable("keyword") String keyword, @RequestBody SearchPost request,
+    public ResponseEntity<Map<String, Post[]>> getSearchedPostByKeyword(@PathVariable("keyword") String keyword, SearchPost request,
                                                                         @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
         Post[] posts = searchService.getSearchedPostByKeyword(keyword, request, sortBy);
         Map<String, Post[]> map = new HashMap<>();
