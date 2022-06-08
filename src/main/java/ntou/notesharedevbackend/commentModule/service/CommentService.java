@@ -91,18 +91,20 @@ public class CommentService {
         Comment comment = new Comment();
         comment.setAuthor(request.getAuthor());
         comment.setContent(request.getContent());
-        comment.setDate(new Date());
+        comment.setDate();
         comment.setEmail(request.getEmail());
         comment.setFloor(commentArrayList.size());
-        comment.setReferenceNotesURL(request.getReferenceNotesURL());
+//        comment.setReferenceNotesURL(request.getReferenceNotesURL());
         commentArrayList.add(comment);
         if(type.equals("note")){
             note.setComments(commentArrayList);
-            noteRepository.save(note);
+            noteService.replaceNote(note, note.getId());
+//            noteRepository.save(note);
         }else{
             post.setComments(commentArrayList);
-            post.setCommentCount(post.getComments().size());
-            postRepository.save(post);
+//            post.setCommentCount(post.getComments().size());
+            postService.replacePost(post.getId(), post);
+//            postRepository.save(post);
         }
         return comment;
     }
@@ -117,12 +119,12 @@ public class CommentService {
             Note note = noteService.getNote(id);
             commentArrayList = note.getComments();
             commentArrayList.get(floor).setBest(request.getBest());
-            commentArrayList.get(floor).setReference(request.getReference());
-            commentArrayList.get(floor).setReferenceNotesURL(request.getReferenceNotesURL());
+//            commentArrayList.get(floor).setReference(request.getReference());
+//            commentArrayList.get(floor).setReferenceNotesURL(request.getReferenceNotesURL());
             commentArrayList.get(floor).setLiker(request.getLiker());
             commentArrayList.get(floor).setLikeCount(request.getLikeCount());
             commentArrayList.get(floor).setContent(request.getContent());
-            commentArrayList.get(floor).setDate(date);//要用new date嗎 讀現在時間
+            commentArrayList.get(floor).setDate();//要用new date嗎 讀現在時間
 
 //            commentArrayList.get(floor).setAuthor(request.getAuthor());//不應該變
 //            commentArrayList.get(floor).setEmail(request.getEmail());//不應該變
@@ -144,18 +146,19 @@ public class CommentService {
 //                }
 //            }
             note.setComments(commentArrayList);
-            noteRepository.save(note);
+            noteService.replaceNote(note, note.getId());
+//            noteRepository.save(note);
             return commentArrayList.get(floor);
         } else if (postRepository.findById(id).isPresent()) {
             Post post = postService.getPostById(id);
             commentArrayList = post.getComments();
             commentArrayList.get(floor).setBest(request.getBest());
-            commentArrayList.get(floor).setReference(request.getReference());
-            commentArrayList.get(floor).setReferenceNotesURL(request.getReferenceNotesURL());
+//            commentArrayList.get(floor).setReference(request.getReference());
+//            commentArrayList.get(floor).setReferenceNotesURL(request.getReferenceNotesURL());
             commentArrayList.get(floor).setLiker(request.getLiker());
             commentArrayList.get(floor).setLikeCount(request.getLikeCount());
             commentArrayList.get(floor).setContent(request.getContent());
-            commentArrayList.get(floor).setDate(date);//要用new date嗎 讀現在時間
+            commentArrayList.get(floor).setDate();//要用new date嗎 讀現在時間
 //            commentArrayList.get(floor).setAuthor(request.getAuthor());//不應該變
 //            commentArrayList.get(floor).setEmail(request.getEmail());//不應該變
 
@@ -176,7 +179,8 @@ public class CommentService {
 //                }
 //            }
             post.setComments(commentArrayList);
-            postRepository.save(post);
+            postService.replacePost(post.getId(), post);
+//            postRepository.save(post);
             return commentArrayList.get(floor);
         }else{
             throw new NotFoundException("Can't find any note or post matched id");
@@ -192,30 +196,32 @@ public class CommentService {
             commentArrayList = note.getComments();
             commentArrayList.get(floor).setEmail(null);
             commentArrayList.get(floor).setAuthor(null);
-            commentArrayList.get(floor).setDate(null);
+            commentArrayList.get(floor).setDate();
             commentArrayList.get(floor).setContent(null);
             commentArrayList.get(floor).setLikeCount(null);
             commentArrayList.get(floor).setLiker(null);
-            commentArrayList.get(floor).setReferenceNotesURL(null);
-            commentArrayList.get(floor).setReference(null);
+//            commentArrayList.get(floor).setReferenceNotesURL(null);
+//            commentArrayList.get(floor).setReference(null);
             commentArrayList.get(floor).setBest(null);
             note.setComments(commentArrayList);
-            noteRepository.save(note);
+            noteService.replaceNote(note, note.getId());
+//            noteRepository.save(note);
             return true;
         } else if (postRepository.findById(id).isPresent()) {
             post = postService.getPostById(id);
             commentArrayList = post.getComments();
             commentArrayList.get(floor).setEmail(null);
             commentArrayList.get(floor).setAuthor(null);
-            commentArrayList.get(floor).setDate(null);
+            commentArrayList.get(floor).setDate();
             commentArrayList.get(floor).setContent(null);
             commentArrayList.get(floor).setLikeCount(null);
             commentArrayList.get(floor).setLiker(null);
-            commentArrayList.get(floor).setReferenceNotesURL(null);
-            commentArrayList.get(floor).setReference(null);
+//            commentArrayList.get(floor).setReferenceNotesURL(null);
+//            commentArrayList.get(floor).setReference(null);
             commentArrayList.get(floor).setBest(null);
             post.setComments(commentArrayList);
-            postRepository.save(post);
+            postService.replacePost(post.getId(), post);
+//            postRepository.save(post);
             return true;
         }
         else{

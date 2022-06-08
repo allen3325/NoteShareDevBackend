@@ -231,6 +231,16 @@ public class FolderService {
     }
 
     public Folder replaceFolder(Folder request) {
+        Folder newFolder = getFolderByID(request.getId());
+
+        newFolder.setFolderName(request.getFolderName());
+        newFolder.setNotes(request.getNotes());
+        newFolder.setPublic(request.getPublic());
+        newFolder.setFavorite(request.getFavorite());
+        newFolder.setPath(request.getPath());
+        newFolder.setParent(request.getParent());
+        newFolder.setChildren(request.getChildren());
+
         return folderRepository.save(request);
     }
 

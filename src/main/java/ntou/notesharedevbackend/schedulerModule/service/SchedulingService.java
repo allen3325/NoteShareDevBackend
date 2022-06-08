@@ -45,8 +45,8 @@ public class SchedulingService {
         try{
             JobDetail jobDetail = JobBuilder.newJob(TriggerJob.class).withIdentity(request.getId()).build();
             jobDetail.getJobDataMap().put("taskID", request.getId());
-            jobDetail.getJobDataMap().put("type", request.getType());
-            jobDetail.getJobDataMap().put("noteIDOrVoteID", request.getNoteIDOrVoteID());
+//            jobDetail.getJobDataMap().put("type", request.getType());
+            jobDetail.getJobDataMap().put("noteIDOrVoteID", request.getVoteID());
             jobDetail.getJobDataMap().put("postID", request.getPostID());
             //dateOf(hour,minute,second,day,month,year)
             SimpleTrigger trigger = (SimpleTrigger) newTrigger()
@@ -78,8 +78,8 @@ public class SchedulingService {
             return null;
         }
         //modify -> cancel old task first then add new task
-        String oldTaskID = postService.getPostById(postID).getTask().getId();
-        cancelSchedule(oldTaskID);
+//        String oldTaskID = postService.getPostById(postID).getTask().getId();
+//        cancelSchedule(oldTaskID);
         return postService.replacePublishTime(postID, request);
     }
 

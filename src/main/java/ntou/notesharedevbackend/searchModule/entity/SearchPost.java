@@ -4,7 +4,7 @@ public class SearchPost {
     private String subject;
     private String department;
     private String author;
-    private Integer price;
+    private Integer bestPrice;
     private Boolean haveQA;
     private Boolean haveCollaboration;
     private Boolean haveReward;
@@ -33,12 +33,12 @@ public class SearchPost {
         this.author = author;
     }
 
-    public Integer getPrice() {
-        return price;
+    public Integer getBestPrice() {
+        return bestPrice;
     }
 
-    public void setPrice(Integer price) {
-        this.price = price;
+    public void setBestPrice(Integer bestPrice) {
+        this.bestPrice = bestPrice;
     }
 
     public Boolean getHaveQA() {

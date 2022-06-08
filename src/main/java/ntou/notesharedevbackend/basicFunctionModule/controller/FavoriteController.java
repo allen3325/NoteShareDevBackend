@@ -10,6 +10,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+//TODO: favoriter in note update.
 public class FavoriteController {
     @Autowired
     private FavoriteService favoriteService;

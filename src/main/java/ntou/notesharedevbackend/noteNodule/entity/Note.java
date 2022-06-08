@@ -22,13 +22,9 @@ public class Note {
     // attributes
     private String id;
     private String type; // normal, reward, collaboration
-    private String name; // title
-    private String slug;
-    private Date createdAt;
-    private Date updatedAt;
-    private int __v;
     private String department;
     private String subject;
+    private String title; // title
     private String headerEmail; // 建立筆記者
     private String headerName; // 建立筆記者
     private ArrayList<String> authorEmail; // 所有作者
@@ -54,6 +50,7 @@ public class Note {
     private ArrayList<VersionContent> version; // 版本
     private ArrayList<String> contributors;
     private String postID; // 紀錄貼文ID用於投稿後存在哪
+    private Boolean isReference; // 是不是參考解
     private Boolean isBest; // 用於懸賞區看是否為最佳解
 
     // constructors
@@ -63,6 +60,14 @@ public class Note {
     // getter and setter
     public String getId() {
         return id;
+    }
+
+    public Boolean getReference() {
+        return isReference;
+    }
+
+    public void setReference(Boolean reference) {
+        isReference = reference;
     }
 
     public void setId(String id) {
@@ -279,44 +284,12 @@ public class Note {
         isBest = best;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public int get__v() {
-        return __v;
-    }
-
-    public void set__v(int __v) {
-        this.__v = __v;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public ArrayList<String> getLiker() {

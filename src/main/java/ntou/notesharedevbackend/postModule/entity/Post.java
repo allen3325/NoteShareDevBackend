@@ -1,25 +1,14 @@
-//貼文postSchema
-//        type* string //QA, reward, collaboration
-//        author* string
-//        email* String
-//        department* string
-//        subject* string
-//        title* string
-//        content* string
-//        date* date
-//        point* int
-//        comment [commentSchema]
-//        answer [NoteSchema]
 package ntou.notesharedevbackend.postModule.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
-import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 @Document(collection = "post")
 public class Post {
@@ -31,17 +20,24 @@ public class Post {
     private String author;
     private String department;
     private String subject;
+    private String school;
+    private String professor;
     private String title;
     private String content;
+    @JsonFormat(timezone = "GMT+08:00")
     private Date date;
-    private Integer price;//為共筆貼文時，為共筆筆記的金額
+    private Integer price; //為共筆貼文時，為共筆筆記的金額
+    private Integer bestPrice; //最佳解金額
+    private Integer referencePrice; //參考解金額
+    private Integer referenceNumber; //剩餘參考解數目
     private Boolean isPublic;
     private ArrayList<Comment> comments;
     private Integer commentCount;
-
     private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID
     private ArrayList<String> wantEnterUsersEmail;
-    private Task task;
+//    private Task task;
+    @JsonFormat(timezone = "GMT+08:00")
+    private Date publishDate;
     private ArrayList<Vote> vote;
 
     // constructors
@@ -49,6 +45,54 @@ public class Post {
     }
 
     // getter and setter
+
+    public Date getPublishDate() {
+        return publishDate;
+    }
+
+    public void setPublishDate(Date date) {
+        this.publishDate = date;
+    }
+
+    public String getSchool() {
+        return school;
+    }
+
+    public void setSchool(String school) {
+        this.school = school;
+    }
+
+    public String getProfessor() {
+        return professor;
+    }
+
+    public void setProfessor(String professor) {
+        this.professor = professor;
+    }
+
+    public Integer getBestPrice() {
+        return bestPrice;
+    }
+
+    public void setBestPrice(Integer bestPrice) {
+        this.bestPrice = bestPrice;
+    }
+
+    public Integer getReferencePrice() {
+        return referencePrice;
+    }
+
+    public void setReferencePrice(Integer referencePrice) {
+        this.referencePrice = referencePrice;
+    }
+
+    public Integer getReferenceNumber() {
+        return referenceNumber;
+    }
+
+    public void setReferenceNumber(Integer referenceNumber) {
+        this.referenceNumber = referenceNumber;
+    }
 
     public String getId() {
         return id;
@@ -118,16 +162,9 @@ public class Post {
         return date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
+    public void setDate() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
+        this.date = calendar.getTime();
     }
 
     public Boolean getPublic() {
@@ -162,13 +199,13 @@ public class Post {
         this.wantEnterUsersEmail = wantEnterUsersEmail;
     }
 
-    public Task getTask() {
-        return task;
-    }
-
-    public void setTask(Task task) {
-        this.task = task;
-    }
+//    public Task getTask() {
+//        return task;
+//    }
+//
+//    public void setTask(Task task) {
+//        this.task = task;
+//    }
 
     public ArrayList<Vote> getVote() {
         return vote;

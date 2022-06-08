@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping(value = "/coin",produces = MediaType.APPLICATION_JSON_VALUE)
+//TODO: buy note. Buyer update.
 public class CoinController {
 
     private final CoinService coinService;

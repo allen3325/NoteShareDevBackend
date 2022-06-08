@@ -14,6 +14,7 @@ import java.awt.*;
 
 @RestController
 @RequestMapping(value = "/schedule",produces = MediaType.APPLICATION_JSON_VALUE)
+//TODO: 提醒使用者投票
 public class ScheduleController {
     @Autowired
     private SchedulingService schedulingService;

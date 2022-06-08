@@ -16,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+// TODO: add modify headShotPhoto api
 public class AppUserController {
     @Autowired
     private AppUserService appUserService;

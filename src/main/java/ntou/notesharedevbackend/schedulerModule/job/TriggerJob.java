@@ -49,23 +49,30 @@ public class TriggerJob implements Job {
                 int totalVote = newVote.getAgree().size()+newVote.getDisagree().size();
                 int totalPerson = post.getEmail().size();
                 if(totalVote > (totalPerson/2)){
-                    if(newVote.getType().equals("kick")){//vote target kick
-                        if(newVote.getAgree().size()>newVote.getDisagree().size()) {//agree kick
-                            noteService.kickUserFromCollaboration(post.getAnswers().get(0),newVote.getKickTarget());
-                            newVote.setResult("agree kick ");
-                        } else {
-                            newVote.setResult("disagree kick");
-                        }
-                    }else{//vote target collaboration publish
-                        if(newVote.getAgree().size()>newVote.getDisagree().size()) {//agree publish
-                            noteService.publishOrSubmit(post.getAnswers().get(0));
-                            newVote.setResult("agree publish");
-                        }else{//add a week
-                            newVote.setResult("disagree, postpone");
-                            newVote.setTask(postponeTask(newVote.getTask(),7));
-                            schedulingService.modifyVoteSchedule(postID, voteID, newVote);
-                        }
+                    if(newVote.getAgree().size()>newVote.getDisagree().size()) {//agree kick
+                        noteService.kickUserFromCollaboration(post.getAnswers().get(0),newVote.getKickTarget());
+                        newVote.setResult("agree kick ");
+                    } else {
+                        newVote.setResult("disagree kick");
                     }
+//                    if(newVote.getType().equals("kick")){//vote target kick
+//                        if(newVote.getAgree().size()>newVote.getDisagree().size()) {//agree kick
+//                            noteService.kickUserFromCollaboration(post.getAnswers().get(0),newVote.getKickTarget());
+//                            newVote.setResult("agree kick ");
+//                        } else {
+//                            newVote.setResult("disagree kick");
+//                        }
+//                    }
+//                    else{//vote target collaboration publish
+//                        if(newVote.getAgree().size()>newVote.getDisagree().size()) {//agree publish
+//                            noteService.publishOrSubmit(post.getAnswers().get(0));
+//                            newVote.setResult("agree publish");
+//                        }else{//add a week
+//                            newVote.setResult("disagree, postpone");
+//                            newVote.setTask(postponeTask(newVote.getTask(),7));
+//                            schedulingService.modifyVoteSchedule(postID, voteID, newVote);
+//                        }
+//                    }
                 }
                 break;
             }
@@ -74,8 +81,8 @@ public class TriggerJob implements Job {
     }
     public Task postponeTask(Task request,int postponeDay) {
         Task task = new Task();
-        task.setType(request.getType());
-        task.setNoteIDOrVoteID(request.getNoteIDOrVoteID());
+//        task.setType(request.getType());
+        task.setVoteID(request.getVoteID());
         task.setPostID(request.getPostID());
         // input 改為 DataBase 讀取或是前端輸入
         int year = request.getYear();

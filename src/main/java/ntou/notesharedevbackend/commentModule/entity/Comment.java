@@ -13,7 +13,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Comment {
 
@@ -22,21 +24,22 @@ public class Comment {
     private String author;
     private String email;
     private String content;
-    private Boolean isBest; // 是不是最佳解
-    private Boolean isReference; // 是不是參考解
     private Integer likeCount; // 愛心數
     private ArrayList<String> liker; // 按愛心的人
-    private ArrayList<String> referenceNotesURL; // 參考筆記的URL
+//    private ArrayList<String> referenceNotesURL; // 參考筆記的URL
+    //    private Boolean isReference; // 是不是參考解
     private Integer floor; // 樓層數
     @JsonFormat(timezone = "GMT+08:00")
     private Date date;
+    private ArrayList<String> picURL; //截圖後引用筆記
+    private Boolean isBest; // 是不是最佳解
 
     // constructors
     public Comment() {
 
         this.id = new ObjectId().toString();
         this.isBest = false;
-        this.isReference = false;
+        this.picURL = new ArrayList<String>();
         this.likeCount = 0;
         this.liker = new ArrayList<String>();
     }
@@ -83,12 +86,20 @@ public class Comment {
         isBest = best;
     }
 
-    public Boolean getReference() {
-        return isReference;
+//    public Boolean getReference() {
+//        return isReference;
+//    }
+//
+//    public void setReference(Boolean reference) {
+//        isReference = reference;
+//    }
+
+    public ArrayList<String> getPicURL() {
+        return picURL;
     }
 
-    public void setReference(Boolean reference) {
-        isReference = reference;
+    public void setPicURL(ArrayList<String> picURL) {
+        this.picURL = picURL;
     }
 
     public Integer getLikeCount() {
@@ -107,13 +118,13 @@ public class Comment {
         this.liker = liker;
     }
 
-    public ArrayList<String> getReferenceNotesURL() {
-        return referenceNotesURL;
-    }
-
-    public void setReferenceNotesURL(ArrayList<String> referenceNotesURL) {
-        this.referenceNotesURL = referenceNotesURL;
-    }
+//    public ArrayList<String> getReferenceNotesURL() {
+//        return referenceNotesURL;
+//    }
+//
+//    public void setReferenceNotesURL(ArrayList<String> referenceNotesURL) {
+//        this.referenceNotesURL = referenceNotesURL;
+//    }
 
     public Integer getFloor() {
         return floor;
@@ -127,7 +138,8 @@ public class Comment {
         return date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
+        this.date = calendar.getTime();
     }
 }

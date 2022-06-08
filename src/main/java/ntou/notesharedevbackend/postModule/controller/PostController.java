@@ -16,6 +16,8 @@ import java.net.URI;
 
 @RestController
 @RequestMapping(value = "/post", produces = MediaType.APPLICATION_JSON_VALUE)
+//TODO: 懸賞選定最佳解 要怎麼關閉回答區 => 至少選定最佳解 才可關閉
+// 加封存api
 public class PostController {
     @Autowired
     private PostService postService;
@@ -32,15 +34,15 @@ public class PostController {
         return ResponseEntity.ok(post);
     }
 
-    @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody PostRequest request) {
-        Post post = postService.createPost(request);
+    @PostMapping("/{email}")
+    public ResponseEntity<Post> createPost(@PathVariable("email") String email,@RequestBody PostRequest request) {
+        Post post = postService.createPost(email,request);
         System.out.println("creat post");
         //create collaboration post and set collaboration note publish time
-        if(post.getType().equals("collaboration")){
-            System.out.println("create post and set task");
-          post.setTask(postService.schedulerPublishTime(post.getId(),request.getTask()));
-        }
+//        if(post.getType().equals("collaboration")){
+//            System.out.println("create post and set task");
+//          post.setTask(postService.schedulerPublishTime(post.getId(),request.getTask()));
+//        }
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{postID}")
