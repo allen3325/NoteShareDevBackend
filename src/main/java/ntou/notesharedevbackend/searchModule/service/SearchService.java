@@ -15,9 +15,6 @@ import java.util.stream.*;
 
 @Service
 public class SearchService {
-    private final int PAGE = 0;
-    private final int SIZE = 20;
-
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -27,8 +24,8 @@ public class SearchService {
     @Autowired
     private FolderRepository folderRepository;
 
-    public AppUser[] getSearchedUser(String userName) {
-        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by("name").descending());
+    public AppUser[] getSearchedUser(String userName, int offset, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(offset, pageSize, Sort.by("name").descending());
         Page<AppUser> appUserLikePage = userRepository.findByNameRegex(userName, pageRequest);
         List<AppUser> appUserList = appUserLikePage.getContent();
         return appUserList.toArray(new AppUser[0]);
@@ -40,13 +37,13 @@ public class SearchService {
 //      - price
 //      - unlockCount
 //      - favoriteCount
-    public Note[] getSearchedNoteByKeyword(String keyword, SearchNote searchNote, String sortBy) {
+    public Note[] getSearchedNoteByKeyword(String keyword, int offset, int pageSize, SearchNote searchNote, String sortBy) {
         // initial search, determine sort method
         if (sortBy.equals(""))
             sortBy = "name";
         else if (sortBy.equals("Date"))
             sortBy = "createAt";
-        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by(sortBy).descending());
+        PageRequest pageRequest = PageRequest.of(offset, pageSize, Sort.by(sortBy).descending());
         Page<Note> notesLikePage = noteRepository.findNoteByNameRegex(keyword, pageRequest);
         List<Note> noteList = notesLikePage.getContent();
         if (noteList.isEmpty())
@@ -153,11 +150,11 @@ public class SearchService {
 //      - commentCount
 //      - date
 //      - price
-    public Post[] getSearchedPostByKeyword(String keyword, SearchPost searchPost, String sortBy) {
+    public Post[] getSearchedPostByKeyword(String keyword, int offset, int pageSize, SearchPost searchPost, String sortBy) {
         //initial search, determine sort method
         if (sortBy.equals(""))
             sortBy = "title";
-        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by(sortBy).descending());
+        PageRequest pageRequest = PageRequest.of(offset, pageSize, Sort.by(sortBy).descending());
         Page<Post> postsLikePage = postRepository.findPostByTitleRegex(keyword, pageRequest);
         List<Post> postList = postsLikePage.getContent();
         if (postList.isEmpty())
@@ -208,8 +205,8 @@ public class SearchService {
         return copyOfPostList.toArray(new Post[0]);
     }
 
-    public Folder[] getSearchedFolderByKeyword(String keyword) {
-        PageRequest pageRequest = PageRequest.of(PAGE, SIZE, Sort.by("title").descending());
+    public Folder[] getSearchedFolderByKeyword(String keyword, int offset, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(offset, pageSize, Sort.by("title").descending());
         Page<Folder> foldersLikePage = folderRepository.findByFolderNameRegex(keyword, pageRequest);
         List<Folder> folderList = foldersLikePage.getContent();
         return folderList.toArray(new Folder[0]);
