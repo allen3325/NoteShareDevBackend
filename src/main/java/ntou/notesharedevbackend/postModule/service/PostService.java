@@ -56,7 +56,6 @@ public class PostService {
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setDate();
-        post.setPrice(request.getPrice());
         post.setBestPrice(request.getBestPrice());
         post.setReferencePrice(request.getReferencePrice());
         post.setReferenceNumber(request.getReferenceNumber());
@@ -122,7 +121,6 @@ public class PostService {
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setDate();
-        post.setPrice(request.getPrice());
         post.setBestPrice(request.getBestPrice());
         post.setReferencePrice(request.getReferencePrice());
         post.setReferenceNumber(request.getReferenceNumber());

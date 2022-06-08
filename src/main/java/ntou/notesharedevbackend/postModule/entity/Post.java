@@ -167,14 +167,6 @@ public class Post {
         this.date = calendar.getTime();
     }
 
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
-
     public Boolean getPublic() {
         return isPublic;
     }

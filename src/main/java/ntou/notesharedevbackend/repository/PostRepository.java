@@ -11,6 +11,7 @@ import java.util.*;
 @Repository
 public interface PostRepository extends MongoRepository<Post,String> {
     List<Post> findAllByType(String postType);
+
     @Query(value = "{'title': {$regex : ?0, $options: 'i'}}")
-    Page<Post> findPostByTitleRegex(String title, Pageable pageable);
+    List<Post> findPostByTitleRegex(String title);
 }

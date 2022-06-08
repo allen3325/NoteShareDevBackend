@@ -50,7 +50,7 @@ public class FavoriteTest {
         post.setTitle("Interrupt vs trap");
         post.setContent("this is a post!");
         post.setDate();
-        post.setPrice(null);
+        post.setBestPrice(null);
         ArrayList<String> answers = new ArrayList<>();
         answers.add("note1's id");
         post.setAnswers(answers);
