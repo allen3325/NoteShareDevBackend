@@ -23,7 +23,7 @@ public class PostRequest {
     private String content;
     @JsonFormat(timezone = "GMT+08:00")
     private Date date;
-    private Integer price; //為共筆貼文時，為共筆筆記的金額
+//    private Integer price; //為共筆貼文時，為共筆筆記的金額
     private Integer bestPrice; //最佳解金額
     private Integer referencePrice; //參考解金額
     private Integer referenceNumber; //剩餘參考解數目
@@ -169,13 +169,13 @@ public class PostRequest {
         this.date = calendar.getTime();
     }
 
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
+//    public Integer getPrice() {
+//        return price;
+//    }
+//
+//    public void setPrice(Integer price) {
+//        this.price = price;
+//    }
 
     public Boolean getPublic() {
         return isPublic;

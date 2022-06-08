@@ -68,7 +68,6 @@ public class PostService {
         post.setVote(new ArrayList<Vote>());
         if(request.getType().equals("collaboration")){//若為共筆貼文，須建立共筆筆記
             Note note = new Note();
-            note.setPrice(request.getPrice());
 //            note.setCreatedAt(request.getCreatedAt());
             note.setTitle(request.getTitle());
             note.setType(request.getType());
@@ -77,7 +76,7 @@ public class PostService {
             note.setSubject(request.getSubject());
             note.setSchool(request.getSchool());
             note.setProfessor(request.getProfessor());
-            note.setPrice(request.getPrice());
+            note.setPrice(request.getBestPrice());
             note.setDownloadable(false);
             note.setPublic(false);
             note.setQuotable(false);
