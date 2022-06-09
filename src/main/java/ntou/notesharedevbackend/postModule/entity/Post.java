@@ -6,7 +6,9 @@ import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 @Document(collection = "post")
 public class Post {
@@ -24,14 +26,13 @@ public class Post {
     private String content;
     @JsonFormat(timezone = "GMT+08:00")
     private Date date;
-    private Integer price; //為共筆貼文時，為共筆筆記的金額
+//    private Integer price; //為共筆貼文時，為共筆筆記的金額
     private Integer bestPrice; //最佳解金額
     private Integer referencePrice; //參考解金額
     private Integer referenceNumber; //剩餘參考解數目
     private Boolean isPublic;
     private ArrayList<Comment> comments;
     private Integer commentCount;
-
     private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID
     private ArrayList<String> wantEnterUsersEmail;
 //    private Task task;
@@ -49,8 +50,8 @@ public class Post {
         return publishDate;
     }
 
-    public void setPublishDate(Date publishDate) {
-        this.publishDate = publishDate;
+    public void setPublishDate(Date date) {
+        this.publishDate = date;
     }
 
     public String getSchool() {
@@ -161,16 +162,9 @@ public class Post {
         return date;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
+    public void setDate() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
+        this.date = calendar.getTime();
     }
 
     public Boolean getPublic() {

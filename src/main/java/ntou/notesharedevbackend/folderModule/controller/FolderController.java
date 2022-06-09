@@ -13,6 +13,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/folder", produces = MediaType.APPLICATION_JSON_VALUE )
@@ -27,59 +29,79 @@ public class FolderController {
 
     @Operation(summary = "Get All Folders From User.")
     @GetMapping("/{email}")
-    public ResponseEntity<ArrayList<Folder>> getAllFoldersFromUser(@PathVariable(name = "email")String email){
+    public ResponseEntity<Object> getAllFoldersFromUser(@PathVariable(name = "email")String email){
         ArrayList<Folder> folders = folderService.getAllFoldersFromUser(email);
 
-        return ResponseEntity.ok(folders);
+        Map<String,Object> res = new HashMap<>();
+        res.put("res",folders);
+
+        return ResponseEntity.ok(res);
     }
 
     @Operation(summary = "Get All Folders and Notes Under User's specific folder.")
     @GetMapping("/{email}/{folderID}")
-    public ResponseEntity<FolderReturn> getAllFoldersFromFolderID(@PathVariable(name = "email")String email, @PathVariable(name = "folderID")String folderID) {
+    public ResponseEntity<Object> getAllFoldersFromFolderID(@PathVariable(name = "email")String email, @PathVariable(name
+            = "folderID")String folderID) {
         FolderReturn folders = folderService.getAllContentUnderFolderID(folderID);
-        return ResponseEntity.ok(folders);
+
+        Map<String,Object> res = new HashMap<>();
+        res.put("res",folders);
+
+        return ResponseEntity.ok(res);
     }
 
     @Operation(summary = "Can easily rename folder name.",description = "設想可以用在主畫面，點擊進入資料夾前對資料夾做簡易的編輯。")
     @PutMapping("/rename/{email}/{folderID}/{name}")
-    public ResponseEntity<Folder> renameFolderByID(@PathVariable(name = "email")String email, @PathVariable(name = "folderID")String folderID,@PathVariable(name = "name")String name){
+    public ResponseEntity<Object> renameFolderByID(@PathVariable(name = "email")String email, @PathVariable(name =
+            "folderID")String folderID,@PathVariable(name = "name")String name){
         Folder folder = folderService.renameFolderByID(email,folderID,name);
-        return ResponseEntity.ok(folder);
+
+        Map<String,Object> res = new HashMap<>();
+        res.put("res",folder);
+
+        return ResponseEntity.ok(res);
     }
 
     @Operation(summary = "Change folder's path.(!!!!attention!!!!,path should be correct)")
     @PutMapping("/save/{email}/{folderID}")
-    public ResponseEntity<Folder> changePathByID(@PathVariable(name = "email")String email, @PathVariable(name =
+    public ResponseEntity<Object> changePathByID(@PathVariable(name = "email")String email, @PathVariable(name =
             "folderID")String folderID,@RequestBody Folder request){
         Folder folder = folderService.changePathByID(email,folderID,request);
-        return ResponseEntity.ok(folder);
+
+        Map<String,Object> res = new HashMap<>();
+        res.put("res",folder);
+
+        return ResponseEntity.ok(res);
     }
 
     @Operation(summary = "Change favorite state.")
     @PutMapping("/favorite/{email}/{folderID}")
-    public ResponseEntity favorite(@PathVariable(name = "email")String email, @PathVariable(name = "folderID")String folderID){
+    public ResponseEntity<Object> favorite(@PathVariable(name = "email")String email,
+    @PathVariable(name = "folderID")String folderID){
         folderService.setFavorite(email,folderID);
-        return ResponseEntity.status(201).build();
+
+        Map<String,Object> res = new HashMap<>();
+        res.put("msg","success");
+
+        return ResponseEntity.status(201).body(res);
     }
 
     @Operation(summary = "Create a new folder.")
     @PostMapping("/{email}")
-    public ResponseEntity<Folder> createFolder(@PathVariable(name = "email")String email,
+    public ResponseEntity<Object> createFolder(@PathVariable(name = "email")String email,
                                                @RequestBody FolderRequest request){
         Folder folder = folderService.createFolder(email,request);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{folderID}")
-                .buildAndExpand(folder.getId())
-                .toUri();
+        Map<String,Object> res = new HashMap<>();
+        res.put("res",folder);
 
-        return ResponseEntity.created(location).body(folder);
+        return ResponseEntity.status(201).body(res);
     }
 
     @Operation(summary = "Delete this folder and all children folder under this folder.")
     @DeleteMapping("/{email}/{folderID}")
-    public ResponseEntity<String> deleteFolder(@PathVariable(name = "email")String email, @PathVariable(name = "folderID")String folderID){
+    public ResponseEntity<Object> deleteFolder(@PathVariable(name = "email")String email,
+                                          @PathVariable(name = "folderID")String folderID){
         folderService.deleteFolderByID(email,folderID);
 
         return ResponseEntity.noContent().build();

@@ -1,6 +1,7 @@
 package ntou.notesharedevbackend.postTest;
 
 import com.fasterxml.jackson.databind.*;
+import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.*;
 import ntou.notesharedevbackend.repository.*;
@@ -49,9 +50,9 @@ public class PostTest {
         post.setSubject("Operation System");
         post.setTitle("Interrupt vs trap");
         post.setContent("this is a post!");
-        post.setDate(new Date());
-        post.setPrice(null);
-        post.setComments(null);
+        post.setDate();
+        post.setBestPrice(null);
+        post.setComments(new ArrayList<Comment>());
         ArrayList<String> answers = new ArrayList<>();
         answers.add("note1's id");
         post.setAnswers(answers);
@@ -87,7 +88,7 @@ public class PostTest {
                 .andExpect(jsonPath("$.title").value(post.getTitle()))
                 .andExpect(jsonPath("$.content").value(post.getContent()))
                 .andExpect(jsonPath("$.date").hasJsonPath())
-                .andExpect(jsonPath("$.price").value(post.getPrice()))
+                .andExpect(jsonPath("$.bestPrice").value(post.getBestPrice()))
                 .andExpect(jsonPath("$.answers").value(post.getAnswers()))
                 .andExpect(jsonPath("$.wantEnterUsersEmail").value(post.getWantEnterUsersEmail()))
                 .andExpect(jsonPath("$.public").value(post.getPublic()));
@@ -110,7 +111,7 @@ public class PostTest {
                 .andExpect(jsonPath("$[0].title").value(post.getTitle()))
                 .andExpect(jsonPath("$[0].content").value(post.getContent()))
                 .andExpect(jsonPath("$[0].date").hasJsonPath())
-                .andExpect(jsonPath("$[0].price").value(post.getPrice()))
+                .andExpect(jsonPath("$[0].bestPrice").value(post.getBestPrice()))
                 .andExpect(jsonPath("$[0].answers").value(post.getAnswers()))
                 .andExpect(jsonPath("$[0].wantEnterUsersEmail").value(post.getWantEnterUsersEmail()))
                 .andExpect(jsonPath("$[0].public").value(post.getPublic()));
