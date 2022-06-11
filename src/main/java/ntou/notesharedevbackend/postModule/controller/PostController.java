@@ -18,6 +18,7 @@ import java.net.URI;
 @RequestMapping(value = "/post", produces = MediaType.APPLICATION_JSON_VALUE)
 //TODO: 懸賞選定最佳解 要怎麼關閉回答區 => 至少選定最佳解 才可關閉
 // 加封存api
+// 放入對應QA答案
 public class PostController {
     @Autowired
     private PostService postService;

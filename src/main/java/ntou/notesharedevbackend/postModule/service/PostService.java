@@ -66,6 +66,7 @@ public class PostService {
         post.setWantEnterUsersEmail(new ArrayList<String>());
         post.setPublishDate(request.getPublishDate());
         post.setVote(new ArrayList<Vote>());
+        post.setCollabNoteAuthorNumber(post.getEmail().size());
         if(request.getType().equals("collaboration")){//若為共筆貼文，須建立共筆筆記
             Note note = new Note();
 //            note.setCreatedAt(request.getCreatedAt());
@@ -88,20 +89,6 @@ public class PostService {
             noteService.collaborationNoteSetPostID(createdNote.getId(),newPost.getId());
             return newPost;
         }
-//        switch (request.getType()) {
-//            case "QA":
-//                post.setPrice(request.getPrice());
-//                post.setComments(request.getComments());
-//                post.setAnswers(request.getAnswers());
-//                break;
-//            case "collaboration":
-//                post.setWantEnterUsersEmail(request.getWantEnterUsersEmail());
-//                break;
-//            case "reward":
-//                post.setPrice(request.getPrice());
-//                post.setAnswers(request.getAnswers());
-//                break;
-//        }
         return postRepository.insert(post);
     }
 
@@ -130,6 +117,7 @@ public class PostService {
         post.setWantEnterUsersEmail(request.getWantEnterUsersEmail());
         post.setPublishDate(request.getDate());
         post.setVote(request.getVote());
+        post.setCollabNoteAuthorNumber(post.getEmail().size());
 
         return postRepository.save(post);
     }
@@ -156,17 +144,30 @@ public class PostService {
 //        postRepository.save(post);
     }
 
-    // TODO: 記得要將email跟name(用email去拿user.name)加進note的author email,author name
-    //  將id加進此post裡的answer裡存的筆記的author
     public void approveCollaboration(String id, String email) {
+        // get author's name by email
+        String name = appUserService.getUserByEmail(email).getName();
+        // update post
         Post post = getPostById(id);
         ArrayList<String> currentEmails = post.getEmail();
         currentEmails.add(email);
         post.setEmail(currentEmails);
+        // update note's author name and author email
+        String noteID = post.getAnswers().get(0);
+        Note note = noteService.getNote(noteID);
+        // update author email
+        ArrayList<String> authorEmail = note.getAuthorEmail();
+        authorEmail.add(email);
+        note.setAuthorEmail(authorEmail);
+        // update author name
+        ArrayList<String> authorName = note.getAuthorName();
+        authorName.add(name);
+        note.setAuthorName(authorName);
+        // update note
+        noteService.replaceNote(note,note.getId());
+        // update want enter queue
         clearWantEnterUsersEmail(post, email);
-
         replacePost(post.getId(), post);
-//        postRepository.save(post);
     }
 
     public void clearWantEnterUsersEmail(Post post, String email) {
