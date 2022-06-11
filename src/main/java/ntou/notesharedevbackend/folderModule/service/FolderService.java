@@ -113,7 +113,8 @@ public class FolderService {
         childrenList.add(childrenID);
         parent.setChildren(childrenList);
 
-        folderRepository.save(parent);
+        replaceFolder(parent);
+//        folderRepository.save(parent);
     }
 
     public Folder createFolder(String email, FolderRequest request) {
@@ -170,7 +171,8 @@ public class FolderService {
             ArrayList<String> parentFolderIDList = parentFolder.getChildren();
             parentFolderIDList.remove(folderID);
             parentFolder.setChildren(parentFolderIDList);
-            folderRepository.save(parentFolder);
+            replaceFolder(parentFolder);
+//            folderRepository.save(parentFolder);
         }
         // delete folder
         folderRepository.deleteById(folderID);
@@ -201,14 +203,16 @@ public class FolderService {
                 }
                 // update and write to its children
                 folder.setPath(newDirection);
-                folderRepository.save(folder);
+                replaceFolder(folder);
+//                folderRepository.save(folder);
             }
         }
 
         // change its name
         Folder folder = getFolderByID(folderID);
         folder.setFolderName(wannaChangeName);
-        folderRepository.save(folder);
+        replaceFolder(folder);
+//        folderRepository.save(folder);
 
         return folder;
     }
@@ -225,7 +229,8 @@ public class FolderService {
             if (path.contains(oldPath) && !path.equals(oldPath)) {
                 path = path.replace(oldPath, newPath);
                 tmpFolder.setPath(path);
-                folderRepository.save(tmpFolder);
+                replaceFolder(tmpFolder);
+//                folderRepository.save(tmpFolder);
             }
         }
     }
@@ -251,7 +256,8 @@ public class FolderService {
         ArrayList<String> oldChildren = oldParent.getChildren();
         oldChildren.remove(folderID);
         oldParent.setChildren(oldChildren);
-        folderRepository.save(oldParent);
+        replaceFolder(oldParent);
+//        folderRepository.save(oldParent);
     }
 
     public Folder changePathByID(String email, String folderID, Folder request) {
@@ -270,13 +276,16 @@ public class FolderService {
         // update own parent and path
         folder.setPath(newPath);
         folder.setParent(newParentID);
+        replaceFolder(folder);
         folderRepository.save(folder);
-        // update new parent's children
-        Folder newParent = getFolderByID(newParentID);
-        ArrayList<String> newParentChildrenList = newParent.getChildren();
-        newParentChildrenList.add(folderID);
-        folderRepository.save(newParent);
-
+        // update new parent's children if it has new parent
+        if(newParentID!=null){
+            Folder newParent = getFolderByID(newParentID);
+            ArrayList<String> newParentChildrenList = newParent.getChildren();
+            newParentChildrenList.add(folderID);
+            replaceFolder(newParent);
+//            folderRepository.save(newParent);
+        }
         return folder;
     }
 
@@ -301,7 +310,8 @@ public class FolderService {
         }
         // update tmpFolder and save to repo.
         favoriteFolder.setChildren(favoriteFolderChildren);
-        folderRepository.save(favoriteFolder);
+        replaceFolder(favoriteFolder);
+//        folderRepository.save(favoriteFolder);
     }
 
     // (/folder).length == 2

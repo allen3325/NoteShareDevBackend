@@ -28,7 +28,7 @@ public class FolderController {
     }
 
     @Operation(summary = "Get All Folders From User.")
-    @GetMapping("/{email}")
+    @GetMapping("/all/{email}")
     public ResponseEntity<Object> getAllFoldersFromUser(@PathVariable(name = "email")String email){
         ArrayList<Folder> folders = folderService.getAllFoldersFromUser(email);
 
@@ -50,8 +50,8 @@ public class FolderController {
     }
 
     @Operation(summary = "Get All Folders and Notes Under User's specific folder.")
-    @GetMapping("/{email}/{folderID}")
-    public ResponseEntity<Object> getAllFoldersFromFolderID(@PathVariable(name = "email")String email, @PathVariable(name
+    @GetMapping("/{folderID}")
+    public ResponseEntity<Object> getAllFoldersFromFolderID(@PathVariable(name
             = "folderID")String folderID) {
         FolderReturn folders = folderService.getAllContentUnderFolderID(folderID);
 
