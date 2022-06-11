@@ -16,8 +16,8 @@ public class MailController {
     @Autowired
     private MailService mailService;
 
-    @PostMapping("/randomPassword")
-    public ResponseEntity<String> randomPassword( @RequestParam (name = "email" , required = false) String email) {
+    @PostMapping("/randomPassword/email")
+    public ResponseEntity<String> randomPassword( @PathVariable (name = "email" ) String email) {
         mailService.randomPasswordMail(email);
         return ResponseEntity.ok("Success");
     }
@@ -29,7 +29,7 @@ public class MailController {
     }
 
     @PostMapping("/resendCode")
-    public ResponseEntity<String>  resendCodeMail(@RequestParam (name = "email" , required = false) String email) {
+    public ResponseEntity<String>  resendCodeMail(@PathVariable (name = "email" ) String email) {
         mailService.resendCodeMail(email);
         return ResponseEntity.ok("Success");
     }

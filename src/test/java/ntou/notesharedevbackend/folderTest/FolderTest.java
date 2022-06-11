@@ -1,14 +1,12 @@
 package ntou.notesharedevbackend.folderTest;
 
 
-import io.opencensus.internal.DefaultVisibilityForTesting;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.repository.FolderRepository;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
-import org.checkerframework.checker.units.qual.A;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -358,7 +356,8 @@ public class FolderTest {
 //            throw new Exception("Folder Change Path: childrenFolder's path does not change."+ childrenFolder.getPath());
 //        }
 //    }
-    //TODO:改變收藏狀態 會移出嗎
+
+    //TODO:改變收藏狀態 會移出嗎，Response $.res.msg?
     @Test
     public void testChangeFavoriteStateOfFolder() throws Exception{
         //建User
@@ -397,6 +396,10 @@ public class FolderTest {
         folder.getChildren().add(childrenFolder.getId());
         folder.getChildren().add(children2Folder.getId());
         folderRepository.save(folder);
+        //放到Favorite folder
+        Folder favoriteFolder = folderRepository.findById(appUser.getFolders().get(1)).get();
+        favoriteFolder.getChildren().add(folder.getId());
+        folderRepository.save(favoriteFolder);
         appUser.getFolders().add(folder.getId());
         appUser.getFolders().add(childrenFolder.getId());
         appUser.getFolders().add(children2Folder.getId());
@@ -405,18 +408,29 @@ public class FolderTest {
         mockMvc.perform(delete("/folder/"+appUser.getEmail()+"/"+folder.getId())
                 .headers(httpHeaders))
                 .andExpect(status().isNoContent());
+        //檢查
+        //folder
         if(folderRepository.findById(folder.getId()).isPresent()){
             throw new Exception("Delete Folder: folder doesn't not delete");
         }
+        //children folder
         if(folderRepository.findById(childrenFolder.getId()).isPresent()){
             throw new Exception("Delete Folder: children folder doesn't not delete");
         }
+        //children folder
         if(folderRepository.findById(children2Folder.getId()).isPresent()){
             throw new Exception("Delete Folder: children folder doesn't not delete");
         }
+        //parent folder's children
         if(folderRepository.findById(folder.getParent()).get().getChildren().contains(folder.getId())){
             throw new Exception("Delete Folder: parent folder's children doesn't not remove folder's id");
         }
+        //favorite
+        //TODO : 跟張哲瑋說要檢查favorite的folder
+//        if(folderRepository.findById(appUser.getFolders().get(1)).get().getChildren().contains(folder.getId())){
+//            throw new Exception("Delete Folder: favorite folder's children doesn't not remove folder's id");
+//        }
+
     }
     @AfterEach
     public void clear(){
