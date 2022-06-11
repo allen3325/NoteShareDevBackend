@@ -19,9 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/post", produces = MediaType.APPLICATION_JSON_VALUE)
-//TODO: 懸賞選定最佳解 要怎麼關閉回答區 => 至少選定最佳解 才可關閉
-// 加封存api
-// 放入對應QA答案
+
 public class PostController {
     @Autowired
     private PostService postService;
@@ -46,7 +44,7 @@ public class PostController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "create post.")
+    @Operation(summary = "create post(QA, reward, collaboration).")
     @PostMapping("/{email}")
     public ResponseEntity<Object> createPost(@PathVariable("email") String email, @RequestBody PostRequest request) {
         Post post = postService.createPost(email, request);
@@ -82,12 +80,15 @@ public class PostController {
 
     @Operation(summary = "modify post is public.")
     @PutMapping("/publish/{postID}")
-    public ResponseEntity<Object> modifyPublishStatus(@PathVariable("postID") String id) {
-        postService.modifyPublishStatus(id);
+    public ResponseEntity<Object> modifyPublishStatus(@PathVariable("postID") String id) throws Exception {
+        Post post = postService.modifyPublishStatus(id);
         Map<String, Object> res = new HashMap<>();
 
-        res.put("msg", "Success");
-
+        if(post != null) {
+            res.put("res", post);
+        }else{
+            res.put("msg","can't change publish state before you got best answer.");
+        }
         return ResponseEntity.ok(res);
     }
 
@@ -144,14 +145,13 @@ public class PostController {
     @Operation(summary = "qa choose best answer(comment)")
     @PutMapping("/qa/best/{postID}/{commentID}")
     public ResponseEntity<Object> QAChooseBestAnswer(@PathVariable("postID") String postID,
-    @PathVariable("commentID") String commentID, @RequestBody String email) {
+    @PathVariable("commentID") String commentID) {
         Map<String,Object> res = new HashMap<>();
-        if (postService.QAChooseBestAnswer(postID, commentID, email)) {
+        if (postService.QAChooseBestAnswer(postID, commentID)) {
             res.put("msg","Success");
             return ResponseEntity.ok(res);
         } else {
-            res.put("msg","Fail");
-            throw new NotFoundException("Can't not choose best answer");
+            throw new NotFoundException("This post has best answer already.");
         }
     }
 
