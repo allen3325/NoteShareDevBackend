@@ -303,4 +303,17 @@ public class FolderService {
         favoriteFolder.setChildren(favoriteFolderChildren);
         folderRepository.save(favoriteFolder);
     }
+
+    // (/folder).length == 2
+    // [0][1]
+    public ArrayList<Folder> getRootFoldersFromUser(String email) {
+        ArrayList<Folder> allFolders = getAllFoldersFromUser(email);
+        ArrayList<Folder> res = new ArrayList<Folder>();
+        for(Folder folder:allFolders){
+            if(folder.getPath().split("/").length==2){
+                res.add(folder);
+            }
+        }
+        return res;
+    }
 }

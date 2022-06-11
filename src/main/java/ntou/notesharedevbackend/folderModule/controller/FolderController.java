@@ -38,6 +38,17 @@ public class FolderController {
         return ResponseEntity.ok(res);
     }
 
+    @Operation(summary = "Get Root Folder from a User.")
+    @GetMapping("/root/{email}")
+    public ResponseEntity<Object> getRootFolderFromUser(@PathVariable(name = "email")String email){
+        ArrayList<Folder> folders = folderService.getRootFoldersFromUser(email);
+
+        Map<String,Object> res = new HashMap<>();
+        res.put("res",folders);
+
+        return ResponseEntity.ok(res);
+    }
+
     @Operation(summary = "Get All Folders and Notes Under User's specific folder.")
     @GetMapping("/{email}/{folderID}")
     public ResponseEntity<Object> getAllFoldersFromFolderID(@PathVariable(name = "email")String email, @PathVariable(name
