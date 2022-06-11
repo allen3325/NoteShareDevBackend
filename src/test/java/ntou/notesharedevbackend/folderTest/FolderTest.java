@@ -1,6 +1,7 @@
 package ntou.notesharedevbackend.folderTest;
 
 
+import io.opencensus.internal.DefaultVisibilityForTesting;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.repository.FolderRepository;
@@ -25,8 +26,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -139,6 +139,7 @@ public class FolderTest {
         userRepository.insert(appUser);
 
         //檢查回傳
+        //TODO: url: folder/all/{email}
         mockMvc.perform(get("/folder/"+appUser.getEmail())
                 .headers(httpHeaders))
                 .andExpect(status().isOk())
@@ -184,6 +185,7 @@ public class FolderTest {
         AppUser appUser = createUser();
         appUser.getFolders().add(parentFolder.getId());
         userRepository.insert(appUser);
+        //TODO:remove email
         mockMvc.perform(get("/folder/"+appUser.getEmail()+"/"+parentFolder.getId())
                 .headers(httpHeaders))
                 .andExpect(status().isOk())
@@ -233,6 +235,9 @@ public class FolderTest {
         Folder folder = createFolder("Ting","/Buy/Ting",appUser.getFolders().get(0));
         Folder childrenFolder = createFolder("Alan","/Buy/Ting/Alan", folder.getId());
         Folder children2Folder = createFolder("Eva","/Buy/Ting/Eva", folder.getId());
+        folder.getChildren().add(childrenFolder.getId());
+        folder.getChildren().add(children2Folder.getId());
+        folderRepository.save(folder);
         appUser.getFolders().add(folder.getId());
         appUser.getFolders().add(childrenFolder.getId());
         appUser.getFolders().add(children2Folder.getId());
@@ -308,9 +313,111 @@ public class FolderTest {
         if(!folderRepository.findById(childrenFolder.getId()).get().getPath().equals("/Buy/Alan/Eva")){
             throw new Exception("Folder Change Path: childrenFolder's path does not change."+ childrenFolder.getPath());
         }
-
+    }
+    //TODO: testChangePathToTopByID
+//    @Test
+//    public void testChangePathToTopByID () throws Exception{
+//        //建立user
+//        AppUser appUser = createUser();
+//        //建立folder
+//        Folder parentFolder = createFolder("Ting","/Buy/Ting",appUser.getFolders().get(0));
+//        Folder folder = createFolder("Alan","/Buy/Ting/Alan", parentFolder.getId());
+//        parentFolder.getChildren().add(folder.getId());
+//        folderRepository.save(parentFolder);
+//        Folder childrenFolder = createFolder("Eva","/Buy/Ting/Alan/Eva", folder.getId());
+//        folder.getChildren().add(childrenFolder.getId());
+//        folderRepository.save(folder);
+//        appUser.getFolders().add(parentFolder.getId());
+//        appUser.getFolders().add(folder.getId());
+//        appUser.getFolders().add(childrenFolder.getId());
+//        //儲存user
+//        userRepository.insert(appUser);
+//        //修改位置
+//        JSONObject request = new JSONObject()
+//                .put("path","/Buy/Alan")
+//                .put("parent",null);
+//        mockMvc.perform(put("/folder/save/"+appUser.getEmail()+"/"+folder.getId())
+//                        .headers(httpHeaders)
+//                        .content(request.toString()))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.res.id").value(folder.getId()))
+//                .andExpect(jsonPath("$.res.folderName").value(folder.getFolderName()))
+//                .andExpect(jsonPath("$.res.path").value("/Alan"))
+//                .andExpect(jsonPath("$.res.parent").doesNotExist());
+//        //檢查
+//        if(folderRepository.findById(parentFolder.getId()).get().getChildren().contains(folder.getId())){
+//            throw new Exception("Folder Change Path: parentFolder's children does not remove folder");
+//        }
+//        if(!folderRepository.findById(folder.getId()).get().getPath().equals("/Buy/Alan")){
+//            throw new Exception("Folder Change Path: target folder's path does not change");
+//        }
+//        if(!folderRepository.findById(folder.getId()).get().getParent().equals(appUser.getFolders().get(0))){
+//            throw new Exception("Folder Change Path: target folder's parent does not change");
+//        }
+//        if(!folderRepository.findById(childrenFolder.getId()).get().getPath().equals("/Buy/Alan/Eva")){
+//            throw new Exception("Folder Change Path: childrenFolder's path does not change."+ childrenFolder.getPath());
+//        }
+//    }
+    //TODO:改變收藏狀態 會移出嗎
+    @Test
+    public void testChangeFavoriteStateOfFolder() throws Exception{
+        //建User
+        AppUser appUser = createUser();
+        //建folder
+        Folder folder = createFolder("Ting","/Buy/Ting",appUser.getFolders().get(0));
+        Folder childrenFolder = createFolder("Alan","/Buy/Ting/Alan", folder.getId());
+        Folder children2Folder = createFolder("Eva","/Buy/Ting/Eva", folder.getId());
+        folder.getChildren().add(childrenFolder.getId());
+        folder.getChildren().add(children2Folder.getId());
+        folderRepository.save(folder);
+        appUser.getFolders().add(folder.getId());
+        appUser.getFolders().add(childrenFolder.getId());
+        appUser.getFolders().add(children2Folder.getId());
+        userRepository.insert(appUser);
+        //收藏
+        mockMvc.perform(put("/folder/favorite/"+appUser.getEmail()+"/"+folder.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.msg").value("success"));
+        //檢查
+        String favoriteFolderID =userRepository.findByEmail("yitingwu.1030@gmail.com").getFolders().get(1);
+        if(!folderRepository.findById(favoriteFolderID).get().getChildren().contains(folder.getId())){
+            throw new Exception("Folder Change Favorite State : folder does not put into favorite folder's children");
+        }
     }
 
+    @Test
+    public void testDeleteFolderByID () throws Exception{
+        //建User
+        AppUser appUser = createUser();
+        //建folder
+        Folder folder = createFolder("Ting","/Buy/Ting",appUser.getFolders().get(0));
+        Folder childrenFolder = createFolder("Alan","/Buy/Ting/Alan", folder.getId());
+        Folder children2Folder = createFolder("Eva","/Buy/Ting/Eva", folder.getId());
+        folder.getChildren().add(childrenFolder.getId());
+        folder.getChildren().add(children2Folder.getId());
+        folderRepository.save(folder);
+        appUser.getFolders().add(folder.getId());
+        appUser.getFolders().add(childrenFolder.getId());
+        appUser.getFolders().add(children2Folder.getId());
+        userRepository.insert(appUser);
+
+        mockMvc.perform(delete("/folder/"+appUser.getEmail()+"/"+folder.getId())
+                .headers(httpHeaders))
+                .andExpect(status().isNoContent());
+        if(folderRepository.findById(folder.getId()).isPresent()){
+            throw new Exception("Delete Folder: folder doesn't not delete");
+        }
+        if(folderRepository.findById(childrenFolder.getId()).isPresent()){
+            throw new Exception("Delete Folder: children folder doesn't not delete");
+        }
+        if(folderRepository.findById(children2Folder.getId()).isPresent()){
+            throw new Exception("Delete Folder: children folder doesn't not delete");
+        }
+        if(folderRepository.findById(folder.getParent()).get().getChildren().contains(folder.getId())){
+            throw new Exception("Delete Folder: parent folder's children doesn't not remove folder's id");
+        }
+    }
     @AfterEach
     public void clear(){
         folderRepository.deleteAll();
