@@ -26,7 +26,7 @@ public class CoinController {
     public ResponseEntity changeCoin(@PathVariable String email, @RequestBody Coin request){
         AppUser user = coinService.changeCoin(email,request);
         if(user==null){
-            return ResponseEntity.status(412).body("money is not enough.");
+            return ResponseEntity.status(412).body("money is not enough. so set this user's money to 0.");
         }
         return ResponseEntity.status(201).body(user);
     }
