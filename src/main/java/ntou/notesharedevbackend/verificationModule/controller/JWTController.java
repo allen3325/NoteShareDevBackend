@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -20,20 +21,28 @@ public class JWTController {
     private JWTService jwtService;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@RequestBody AppUser request){
+    public ResponseEntity<Object> signUp(@RequestBody AppUser request){
+        Map<String,Object> res = new HashMap<>();
+
         if(jwtService.signUp(request)){
-            return ResponseEntity.status(201).body("Successful.");
+            res.put("msg","Success");
+            return ResponseEntity.status(201).body(res);
         }else{
-            return ResponseEntity.status(409).body("Has the same email registered!");
+            res.put("msg","Has the same email registered!");
+            return ResponseEntity.status(409).body(res);
         }
     }
 
     @PutMapping("/verify/{email}/{code}")
-    public ResponseEntity<String> verify(@PathVariable String email,@PathVariable String code){
+    public ResponseEntity<Object> verify(@PathVariable String email,@PathVariable String code){
+        Map<String,Object> res = new HashMap<>();
+
         if(jwtService.verifyCode(email,code)){
-            return ResponseEntity.ok("Successful.");
+            res.put("msg","Success");
+            return ResponseEntity.ok(res);
         }else{
-            return ResponseEntity.status(418).body("Verification code error.");
+            res.put("msg","Verification code error.");
+            return ResponseEntity.status(418).body(res);
         }
     }
 

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -23,23 +25,32 @@ public class AppUserController {
 
     @Operation(summary = "Get all users", description = "前端應該不會用到這個")
     @GetMapping
-    public ResponseEntity<AppUser[]> getAllUsers() {
+    public ResponseEntity<Object> getAllUsers() {
         AppUser[] appUsers = appUserService.getAllUsers();
-        return ResponseEntity.ok(appUsers);
+        Map<String,Object> res = new HashMap<>();
+
+        res.put("res",appUsers);
+        return ResponseEntity.ok(res);
     }
 
     @Operation(summary = "Get a user by id")
     @GetMapping("/id/{id}")
-    public ResponseEntity<AppUser> getUserByID(@PathVariable("id") String id) {
+    public ResponseEntity<Object> getUserByID(@PathVariable("id") String id) {
         AppUser appUser = appUserService.getUserById(id);
-        return ResponseEntity.ok(appUser);
+        Map<String,Object> res = new HashMap<>();
+
+        res.put("res",appUser);
+        return ResponseEntity.ok(res);
     }
 
     @Operation(summary = "Get a user by email")
     @GetMapping("/{email}")
-    public ResponseEntity<AppUser> getUserByEmail(@PathVariable("email") String email) {
+    public ResponseEntity<Object> getUserByEmail(@PathVariable("email") String email) {
         AppUser appUser = appUserService.getUserByEmail(email);
-        return ResponseEntity.ok(appUser);
+        Map<String,Object> res = new HashMap<>();
+
+        res.put("res",appUser);
+        return ResponseEntity.ok(res);
     }
 
 //    @PostMapping
@@ -57,26 +68,35 @@ public class AppUserController {
 //        return ResponseEntity.created(location).body(appUser);
 //    }
 
-    @Operation(summary = "Edit user information by email", description = "所有資料皆可編輯")
-    @PutMapping("/{email}")
-    public ResponseEntity<AppUser> replaceUser(@RequestBody AppUser request) {
-        AppUser appUser = appUserService.replaceUser(request);
-        return ResponseEntity.ok(appUser);
-    }
+//    @Operation(summary = "Edit user information by email", description = "所有資料皆可編輯")
+//    @PutMapping("/{email}")
+//    public ResponseEntity<Object> replaceUser(@RequestBody AppUser request) {
+//        AppUser appUser = appUserService.replaceUser(request);
+//        Map<String,Object> res = new HashMap<>();
+//
+//        res.put("res",appUser);
+//        return ResponseEntity.ok(res);
+//    }
 
     @Operation(summary = "Edit user's strength by email", description = "只能編輯strength")
     @PutMapping("/strength/{email}")
-    public ResponseEntity<AppUser> modifyUserStrength(@PathVariable("email") String email,
+    public ResponseEntity<Object> modifyUserStrength(@PathVariable("email") String email,
                                                       @RequestBody ModifyUser request) {
         appUserService.modifyStrength(email, request.getStrength());
-        return ResponseEntity.ok().build();
+        Map<String,Object> res = new HashMap<>();
+
+        res.put("msg","Success");
+        return ResponseEntity.status(200).body(res);
     }
 
     @Operation(summary = "Edit user's Profile by email", description = "只能編輯自我介紹")
     @PutMapping("/profile/{email}")
-    public ResponseEntity<AppUser> modifyUserProfile(@PathVariable("email") String email,
+    public ResponseEntity<Object> modifyUserProfile(@PathVariable("email") String email,
                                                      @RequestBody ModifyUser request) {
         appUserService.modifyProfile(email, request.getProfile());
-        return ResponseEntity.ok().build();
+        Map<String,Object> res = new HashMap<>();
+
+        res.put("msg","Success");
+        return ResponseEntity.status(200).body(res);
     }
 }

@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/verification", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -16,22 +18,28 @@ public class MailController {
     @Autowired
     private MailService mailService;
 
-    @PostMapping("/randomPassword/email")
-    public ResponseEntity<String> randomPassword( @PathVariable (name = "email" ) String email) {
+    @PostMapping("/randomPassword/{email}")
+    public ResponseEntity<Object> randomPassword( @PathVariable (name = "email" ) String email) {
+        Map<String,Object> res = new HashMap<>();
         mailService.randomPasswordMail(email);
-        return ResponseEntity.ok("Success");
+        res.put("msg","Success");
+        return ResponseEntity.ok(res);
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody AuthRequest request) {
+    public ResponseEntity<Object> resetPassword(@Valid @RequestBody AuthRequest request) {
+        Map<String,Object> res = new HashMap<>();
         mailService.resetPasswordMail(request);
-        return ResponseEntity.ok("Success");
+        res.put("msg","Success");
+        return ResponseEntity.ok(res);
     }
 
-    @PostMapping("/resendCode")
-    public ResponseEntity<String>  resendCodeMail(@PathVariable (name = "email" ) String email) {
+    @PostMapping("/resendCode/{email}")
+    public ResponseEntity<Object>  resendCodeMail(@PathVariable (name = "email" ) String email) {
+        Map<String,Object> res = new HashMap<>();
         mailService.resendCodeMail(email);
-        return ResponseEntity.ok("Success");
+        res.put("msg","Success");
+        return ResponseEntity.ok(res);
     }
 
 }

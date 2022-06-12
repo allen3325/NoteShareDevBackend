@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -40,13 +41,14 @@ public class UserTest {
     private MockMvc mockMvc;
     @Autowired
     private UserRepository userRepository;
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private AppUser createUser(){
         AppUser appUser = new AppUser();
         appUser.setEmail("yitingwu.1030@gmail.com");
         appUser.setActivate(true);
         appUser.setName("Ting");
-        appUser.setPassword("1234");
+        appUser.setPassword(passwordEncoder.encode("1234"));
         appUser.setVerifyCode("1111");
 //        Folder buyFolder = createFolder("Buy","/Buy",null);
 //        Folder favoriteFolder = createFolder("Favorite","/Favorite",null);
@@ -103,7 +105,8 @@ public class UserTest {
     public void testVerifyCode() throws Exception{
         mockMvc.perform(MockMvcRequestBuilders.put("/verification/verify/yitingwu.1030@gmail.com/1111")
                         .headers(httpHeaders))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
         //TODO:response 格式
     }
 
@@ -113,26 +116,32 @@ public class UserTest {
                         .headers(httpHeaders))
                 .andExpect(status().isIAmATeapot());
     }
-    //@Test
+    @Test
     public void testRandomPassword() throws Exception{
         mockMvc.perform(MockMvcRequestBuilders.post("/verification/randomPassword/yitingwu.1030@gmail.com")
                         .headers(httpHeaders))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
     }
-    //TODO: mail can not send
-    //@Test
+//    @Test
     public void testResetPassword() throws Exception{
+        JSONObject request = new JSONObject()
+                .put("email","yitingwu.1030@gmail.com")
+                        .put("password","1234")
+                                .put("newPassword","1111");
         mockMvc.perform(MockMvcRequestBuilders.post("/verification/randomPassword/yitingwu.1030@gmail.com")
                         .headers(httpHeaders))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
     }
-    //@Test
+    @Test
     public void testResendCode() throws Exception{
         mockMvc.perform(MockMvcRequestBuilders.post("/verification/resendCode/yitingwu.1030@gmail.com")
                         .headers(httpHeaders))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
     }
-    //@Test
+    @Test
     public void testLogin() throws Exception{
         JSONObject request = new JSONObject()
                 .put("email","yitingwu.1030@gmail.com")
@@ -142,8 +151,6 @@ public class UserTest {
                 .content(request.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").exists());
-        //TODO: response $.res.token?
-        //TODO: ERROR Encoded password does not look like BCrypt
     }
 
     @Test
@@ -153,21 +160,21 @@ public class UserTest {
         mockMvc.perform(get("/user/id/"+id)
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.email").value(appUser.getEmail()))
-                .andExpect(jsonPath("$.name").value(appUser.getName()))
-                .andExpect(jsonPath("$.verifyCode").value(appUser.getVerifyCode()))
-                .andExpect(jsonPath("$.password").hasJsonPath())
-                .andExpect(jsonPath("$.profile").value(appUser.getProfile()))
-                .andExpect(jsonPath("$.strength").value(appUser.getStrength()))
-                .andExpect(jsonPath("$.folders").value(appUser.getFolders()))
-                .andExpect(jsonPath("$.subscribe").value(appUser.getSubscribe()))
-                .andExpect(jsonPath("$.bell").value(appUser.getBell()))
-                .andExpect(jsonPath("$.fans").value(appUser.getFans()))
-                .andExpect(jsonPath("$.coin").value(appUser.getCoin()))
-                .andExpect(jsonPath("$.headshotPhoto").value(appUser.getHeadshotPhoto()))
-                .andExpect(jsonPath("$.admin").value(appUser.isAdmin()))
-                .andExpect(jsonPath("$.activate").value(appUser.isActivate()));
+                .andExpect(jsonPath("$.res.id").value(id))
+                .andExpect(jsonPath("$.res.email").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.name").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.verifyCode").value(appUser.getVerifyCode()))
+                .andExpect(jsonPath("$.res.password").hasJsonPath())
+                .andExpect(jsonPath("$.res.profile").value(appUser.getProfile()))
+                .andExpect(jsonPath("$.res.strength").value(appUser.getStrength()))
+                .andExpect(jsonPath("$.res.folders").value(appUser.getFolders()))
+                .andExpect(jsonPath("$.res.subscribe").value(appUser.getSubscribe()))
+                .andExpect(jsonPath("$.res.bell").value(appUser.getBell()))
+                .andExpect(jsonPath("$.res.fans").value(appUser.getFans()))
+                .andExpect(jsonPath("$.res.coin").value(appUser.getCoin()))
+                .andExpect(jsonPath("$.res.headshotPhoto").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.admin").value(appUser.isAdmin()))
+                .andExpect(jsonPath("$.res.activate").value(appUser.isActivate()));
     }
     @Test
     public void testGetUserByEmail() throws Exception{
@@ -175,46 +182,21 @@ public class UserTest {
         mockMvc.perform(get("/user/"+appUser.getEmail())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(appUser.getId()))
-                .andExpect(jsonPath("$.email").value(appUser.getEmail()))
-                .andExpect(jsonPath("$.name").value(appUser.getName()))
-                .andExpect(jsonPath("$.verifyCode").value(appUser.getVerifyCode()))
-                .andExpect(jsonPath("$.password").hasJsonPath())
-                .andExpect(jsonPath("$.profile").value(appUser.getProfile()))
-                .andExpect(jsonPath("$.strength").value(appUser.getStrength()))
-                .andExpect(jsonPath("$.folders").value(appUser.getFolders()))
-                .andExpect(jsonPath("$.subscribe").value(appUser.getSubscribe()))
-                .andExpect(jsonPath("$.bell").value(appUser.getBell()))
-                .andExpect(jsonPath("$.fans").value(appUser.getFans()))
-                .andExpect(jsonPath("$.coin").value(appUser.getCoin()))
-                .andExpect(jsonPath("$.headshotPhoto").value(appUser.getHeadshotPhoto()))
-                .andExpect(jsonPath("$.admin").value(appUser.isAdmin()))
-                .andExpect(jsonPath("$.activate").value(appUser.isActivate()));
-    }
-
-    //TODO:使用者可以編輯的資料
-    //@Test
-    public void testReplaceUser() throws Exception{
-        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        String newName = "TestNewName";
-        String newPassword = "TestNewPassword";
-        String newProfile = "Test Profile"; //自我介紹
-        JSONArray newStrength=new JSONArray();//擅長科目
-        newStrength.put("Operating System");
-        newStrength.put("Java");
-        newStrength.put("Discrete mathematics");
-        JSONArray newSubscribe=new JSONArray();
-        JSONArray newBell=new JSONArray();
-        JSONArray newFans=new JSONArray();
-        Integer coin;
-        String headshotPhoto;
-        ArrayList<String> newStrengthArray = new ArrayList<>(); //擅長科目
-        newStrengthArray.add("Operating System");
-        newStrengthArray.add("Java");
-        newStrengthArray.add("Discrete mathematics");
-        ArrayList<String> newSubscribeArray= new ArrayList<>();
-        ArrayList<String> newBellArray = new ArrayList<>();
-        ArrayList<String> newFansArray = new ArrayList<>();
+                .andExpect(jsonPath("$.res.id").value(appUser.getId()))
+                .andExpect(jsonPath("$.res.email").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.name").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.verifyCode").value(appUser.getVerifyCode()))
+                .andExpect(jsonPath("$.res.password").hasJsonPath())
+                .andExpect(jsonPath("$.res.profile").value(appUser.getProfile()))
+                .andExpect(jsonPath("$.res.strength").value(appUser.getStrength()))
+                .andExpect(jsonPath("$.res.folders").value(appUser.getFolders()))
+                .andExpect(jsonPath("$.res.subscribe").value(appUser.getSubscribe()))
+                .andExpect(jsonPath("$.res.bell").value(appUser.getBell()))
+                .andExpect(jsonPath("$.res.fans").value(appUser.getFans()))
+                .andExpect(jsonPath("$.res.coin").value(appUser.getCoin()))
+                .andExpect(jsonPath("$.res.headshotPhoto").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.admin").value(appUser.isAdmin()))
+                .andExpect(jsonPath("$.res.activate").value(appUser.isActivate()));
     }
 
     @Test
@@ -234,8 +216,8 @@ public class UserTest {
         mockMvc.perform(put("/user/strength/"+appUser.getEmail())
                         .headers(httpHeaders)
                         .content(request.toString()))
-                .andExpect(status().isOk());
-        //TODO:response 統一
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
 
 //                .andExpect(jsonPath("$.id").value(appUser.getId()))
 //                .andExpect(jsonPath("$.email").value(appUser.getEmail()))
@@ -267,7 +249,9 @@ public class UserTest {
         mockMvc.perform(put("/user/profile/"+appUser.getEmail())
                         .headers(httpHeaders)
                         .content(request.toString()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
+
 //                .andExpect(jsonPath("$.id").value(appUser.getId()))
 //                .andExpect(jsonPath("$.email").value(appUser.getEmail()))
 //                .andExpect(jsonPath("$.name").value(appUser.getName()))
@@ -283,7 +267,6 @@ public class UserTest {
 //                .andExpect(jsonPath("$.headshotPhoto").value(appUser.getHeadshotPhoto()))
 //                .andExpect(jsonPath("$.admin").value(appUser.isAdmin()))
 //                .andExpect(jsonPath("$.activate").value(appUser.isActivate()));
-        //TODO:response 統一
         if(!userRepository.findByEmail("yitingwu.1030@gmail.com").getProfile().equals(newProfile)){
             throw new Exception("Modify User Profile : profile does not change");
         }

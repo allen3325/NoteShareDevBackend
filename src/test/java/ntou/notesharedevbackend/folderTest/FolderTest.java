@@ -310,50 +310,50 @@ public class FolderTest {
             throw new Exception("Folder Change Path: childrenFolder's path does not change."+ childrenFolder.getPath());
         }
     }
-    //TODO: testChangePathToTopByID
-//    @Test
-//    public void testChangePathToTopByID () throws Exception{
-//        //建立user
-//        AppUser appUser = createUser();
-//        //建立folder
-//        Folder parentFolder = createFolder("Ting","/Buy/Ting",appUser.getFolders().get(0));
-//        Folder folder = createFolder("Alan","/Buy/Ting/Alan", parentFolder.getId());
-//        parentFolder.getChildren().add(folder.getId());
-//        folderRepository.save(parentFolder);
-//        Folder childrenFolder = createFolder("Eva","/Buy/Ting/Alan/Eva", folder.getId());
-//        folder.getChildren().add(childrenFolder.getId());
-//        folderRepository.save(folder);
-//        appUser.getFolders().add(parentFolder.getId());
-//        appUser.getFolders().add(folder.getId());
-//        appUser.getFolders().add(childrenFolder.getId());
-//        //儲存user
-//        userRepository.insert(appUser);
-//        //修改位置
-//        JSONObject request = new JSONObject()
-//                .put("path","/Buy/Alan")
-//                .put("parent",null);
-//        mockMvc.perform(put("/folder/save/"+appUser.getEmail()+"/"+folder.getId())
-//                        .headers(httpHeaders)
-//                        .content(request.toString()))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.res.id").value(folder.getId()))
-//                .andExpect(jsonPath("$.res.folderName").value(folder.getFolderName()))
-//                .andExpect(jsonPath("$.res.path").value("/Alan"))
-//                .andExpect(jsonPath("$.res.parent").doesNotExist());
-//        //檢查
-//        if(folderRepository.findById(parentFolder.getId()).get().getChildren().contains(folder.getId())){
-//            throw new Exception("Folder Change Path: parentFolder's children does not remove folder");
-//        }
-//        if(!folderRepository.findById(folder.getId()).get().getPath().equals("/Buy/Alan")){
-//            throw new Exception("Folder Change Path: target folder's path does not change");
-//        }
-//        if(!folderRepository.findById(folder.getId()).get().getParent().equals(appUser.getFolders().get(0))){
-//            throw new Exception("Folder Change Path: target folder's parent does not change");
-//        }
-//        if(!folderRepository.findById(childrenFolder.getId()).get().getPath().equals("/Buy/Alan/Eva")){
-//            throw new Exception("Folder Change Path: childrenFolder's path does not change."+ childrenFolder.getPath());
-//        }
-//    }
+    //TODO: testChangePathToTopByID 移到最上層 parent = null 會有問題
+    @Test
+    public void testChangePathToTopByID () throws Exception{
+        //建立user
+        AppUser appUser = createUser();
+        //建立folder
+        Folder parentFolder = createFolder("Ting","/Buy/Ting",appUser.getFolders().get(0));
+        Folder folder = createFolder("Alan","/Buy/Ting/Alan", parentFolder.getId());
+        parentFolder.getChildren().add(folder.getId());
+        folderRepository.save(parentFolder);
+        Folder childrenFolder = createFolder("Eva","/Buy/Ting/Alan/Eva", folder.getId());
+        folder.getChildren().add(childrenFolder.getId());
+        folderRepository.save(folder);
+        appUser.getFolders().add(parentFolder.getId());
+        appUser.getFolders().add(folder.getId());
+        appUser.getFolders().add(childrenFolder.getId());
+        //儲存user
+        userRepository.insert(appUser);
+        //修改位置
+        JSONObject request = new JSONObject()
+                .put("path","/Alan")
+                .put("parent",null);
+        mockMvc.perform(put("/folder/save/"+appUser.getEmail()+"/"+folder.getId())
+                        .headers(httpHeaders)
+                        .content(request.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(folder.getId()))
+                .andExpect(jsonPath("$.res.folderName").value(folder.getFolderName()))
+                .andExpect(jsonPath("$.res.path").value("/Alan"))
+                .andExpect(jsonPath("$.res.parent").doesNotExist());
+        //檢查
+        if(folderRepository.findById(parentFolder.getId()).get().getChildren().contains(folder.getId())){
+            throw new Exception("Folder Change Path: parentFolder's children does not remove folder");
+        }
+        if(!folderRepository.findById(folder.getId()).get().getPath().equals("/Alan")){
+            throw new Exception("Folder Change Path: target folder's path does not change");
+        }
+        if(!(folderRepository.findById(folder.getId()).get().getParent()==null)){
+            throw new Exception("Folder Change Path: target folder's parent does not change");
+        }
+        if(!folderRepository.findById(childrenFolder.getId()).get().getPath().equals("/Alan/Eva")){
+            throw new Exception("Folder Change Path: childrenFolder's path does not change."+ childrenFolder.getPath());
+        }
+    }
 
     //TODO:改變收藏狀態 會移出嗎，Response $.res.msg?
     @Test
