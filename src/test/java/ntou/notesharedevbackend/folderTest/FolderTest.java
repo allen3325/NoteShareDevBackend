@@ -137,8 +137,7 @@ public class FolderTest {
         userRepository.insert(appUser);
 
         //檢查回傳
-        //TODO: url: folder/all/{email}
-        mockMvc.perform(get("/folder/"+appUser.getEmail())
+        mockMvc.perform(get("/folder/all/"+appUser.getEmail())
                 .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.[0].id").value(appUser.getFolders().get(0)))
@@ -183,8 +182,7 @@ public class FolderTest {
         AppUser appUser = createUser();
         appUser.getFolders().add(parentFolder.getId());
         userRepository.insert(appUser);
-        //TODO:remove email
-        mockMvc.perform(get("/folder/"+appUser.getEmail()+"/"+parentFolder.getId())
+        mockMvc.perform(get("/folder/"+parentFolder.getId())
                 .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(parentFolder.getId()))
