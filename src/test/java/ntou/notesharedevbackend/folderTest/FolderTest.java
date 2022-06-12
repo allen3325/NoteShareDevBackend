@@ -359,7 +359,7 @@ public class FolderTest {
 
     //TODO:改變收藏狀態 會移出嗎，Response $.res.msg?
     @Test
-    public void testChangeFavoriteStateOfFolder() throws Exception{
+    public void testPutIntoFavoriteFolder() throws Exception{
         //建User
         AppUser appUser = createUser();
         //建folder
@@ -384,7 +384,38 @@ public class FolderTest {
             throw new Exception("Folder Change Favorite State : folder does not put into favorite folder's children");
         }
     }
+//TODO:merge後測試
 
+//    @Test
+//    public void testTakeOutFromFavoriteFolder() throws Exception{
+//        //建User
+//        AppUser appUser = createUser();
+//        //建folder
+//        Folder folder = createFolder("Ting","/Buy/Ting",appUser.getFolders().get(0));
+//        Folder childrenFolder = createFolder("Alan","/Buy/Ting/Alan", folder.getId());
+//        Folder children2Folder = createFolder("Eva","/Buy/Ting/Eva", folder.getId());
+//        folder.getChildren().add(childrenFolder.getId());
+//        folder.getChildren().add(children2Folder.getId());
+//        folderRepository.save(folder);
+//        //放進Favorite folder
+//        Folder favoriteFolder = folderRepository.findById(appUser.getFolders().get(1)).get();
+//        favoriteFolder.getChildren().add(folder.getId());
+//        folderRepository.save(favoriteFolder);
+//        appUser.getFolders().add(folder.getId());
+//        appUser.getFolders().add(childrenFolder.getId());
+//        appUser.getFolders().add(children2Folder.getId());
+//        userRepository.insert(appUser);
+//        //收藏
+//        mockMvc.perform(put("/folder/favorite/"+appUser.getEmail()+"/"+folder.getId())
+//                        .headers(httpHeaders))
+//                .andExpect(status().isCreated())
+//                .andExpect(jsonPath("$.msg").value("success"));
+//        //檢查
+//        String favoriteFolderID =userRepository.findByEmail("yitingwu.1030@gmail.com").getFolders().get(1);
+//        if(folderRepository.findById(favoriteFolderID).get().getChildren().contains(folder.getId())){
+//            throw new Exception("Folder Change Favorite State : folder does not put into favorite folder's children");
+//        }
+//    }
     @Test
     public void testDeleteFolderByID () throws Exception{
         //建User
