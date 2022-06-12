@@ -79,19 +79,19 @@ public class PostTest {
         mockMvc.perform(get("/post/" + post.getId())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(post.getId()))
-                .andExpect(jsonPath("$.type").value(post.getType()))
-                .andExpect(jsonPath("$.email").value(post.getEmail()))
-                .andExpect(jsonPath("$.author").value(post.getAuthor()))
-                .andExpect(jsonPath("$.department").value(post.getDepartment()))
-                .andExpect(jsonPath("$.subject").value(post.getSubject()))
-                .andExpect(jsonPath("$.title").value(post.getTitle()))
-                .andExpect(jsonPath("$.content").value(post.getContent()))
-                .andExpect(jsonPath("$.date").hasJsonPath())
-                .andExpect(jsonPath("$.bestPrice").value(post.getBestPrice()))
-                .andExpect(jsonPath("$.answers").value(post.getAnswers()))
-                .andExpect(jsonPath("$.wantEnterUsersEmail").value(post.getWantEnterUsersEmail()))
-                .andExpect(jsonPath("$.public").value(post.getPublic()));
+                .andExpect(jsonPath("$.res.id").value(post.getId()))
+                .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email").value(post.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(post.getAuthor()))
+                .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
+                .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
+                .andExpect(jsonPath("$.res.title").value(post.getTitle()))
+                .andExpect(jsonPath("$.res.content").value(post.getContent()))
+                .andExpect(jsonPath("$.res.date").hasJsonPath())
+                .andExpect(jsonPath("$.res.bestPrice").value(post.getBestPrice()))
+                .andExpect(jsonPath("$.res.answers").value(post.getAnswers()))
+                .andExpect(jsonPath("$.res.wantEnterUsersEmail").value(post.getWantEnterUsersEmail()))
+                .andExpect(jsonPath("$.res.public").value(post.getPublic()));
     }
 
     @Test
@@ -102,19 +102,19 @@ public class PostTest {
         mockMvc.perform(get("/post/postType/" + post.getType())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(post.getId()))
-                .andExpect(jsonPath("$[0].type").value(post.getType()))
-                .andExpect(jsonPath("$[0].email").value(post.getEmail()))
-                .andExpect(jsonPath("$[0].author").value(post.getAuthor()))
-                .andExpect(jsonPath("$[0].department").value(post.getDepartment()))
-                .andExpect(jsonPath("$[0].subject").value(post.getSubject()))
-                .andExpect(jsonPath("$[0].title").value(post.getTitle()))
-                .andExpect(jsonPath("$[0].content").value(post.getContent()))
-                .andExpect(jsonPath("$[0].date").hasJsonPath())
-                .andExpect(jsonPath("$[0].bestPrice").value(post.getBestPrice()))
-                .andExpect(jsonPath("$[0].answers").value(post.getAnswers()))
-                .andExpect(jsonPath("$[0].wantEnterUsersEmail").value(post.getWantEnterUsersEmail()))
-                .andExpect(jsonPath("$[0].public").value(post.getPublic()));
+                .andExpect(jsonPath("$.res[0].id").value(post.getId()))
+                .andExpect(jsonPath("$.res[0].type").value(post.getType()))
+                .andExpect(jsonPath("$.res[0].email").value(post.getEmail()))
+                .andExpect(jsonPath("$.res[0].author").value(post.getAuthor()))
+                .andExpect(jsonPath("$.res[0].department").value(post.getDepartment()))
+                .andExpect(jsonPath("$.res[0].subject").value(post.getSubject()))
+                .andExpect(jsonPath("$.res[0].title").value(post.getTitle()))
+                .andExpect(jsonPath("$.res[0].content").value(post.getContent()))
+                .andExpect(jsonPath("$.res[0].date").hasJsonPath())
+                .andExpect(jsonPath("$.res[0].bestPrice").value(post.getBestPrice()))
+                .andExpect(jsonPath("$.res[0].answers").value(post.getAnswers()))
+                .andExpect(jsonPath("$.res[0].wantEnterUsersEmail").value(post.getWantEnterUsersEmail()))
+                .andExpect(jsonPath("$.res[0].public").value(post.getPublic()));
     }
 
     // TODO: fix this.
@@ -152,8 +152,8 @@ public class PostTest {
                         .headers(httpHeaders)
                         .content(asJsonString(post)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(post.getTitle()))
-                .andExpect(jsonPath("$.content").value(post.getContent()));
+                .andExpect(jsonPath("$.res.title").value(post.getTitle()))
+                .andExpect(jsonPath("$.res.content").value(post.getContent()));
     }
 
     @Test
@@ -173,20 +173,10 @@ public class PostTest {
 
         mockMvc.perform(put("/post/publish/" + post.getId())
                         .headers(httpHeaders))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    public void testApplyCollaboration() throws Exception {
-        Post post = createPost();
-        postRepository.insert(post);
-
-        mockMvc.perform(put("/post/{postID}/{email}", post.getId(), "genewang7@gmail.com")
-                        .headers(httpHeaders))
                 .andExpect(status().isOk());
     }
 
-    //TODO: 需要先創建用戶再加(BeforeEach)，例如底下的genewang7@gmail.com，不然在post裡面會抓不到名字
+    //TODO: 需要先創建用戶再加(BeforeEach)，例如底下的genewang7@gmail.com，不然在post裡面會抓不到名字。
 //    @Test
 //    public void testApproveCollaboration() throws Exception {
 //        Post post = createPost();
