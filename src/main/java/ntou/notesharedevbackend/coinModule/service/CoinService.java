@@ -31,6 +31,8 @@ public class CoinService {
         Integer newCoin = Integer.valueOf(dealCoin.substring(1));
         if (dealCoin.charAt(0) == '-') {
             if (newCoin > oldCoin) {
+                appUser.setCoin(0);
+                appUserService.replaceUser(appUser);
                 return null;
             }
             newCoin *= -1;

@@ -33,18 +33,27 @@ public class Post {
     private Boolean isPublic;
     private ArrayList<Comment> comments;
     private Integer commentCount;
-    private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID
+    private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID，放入對應QA答案
     private ArrayList<String> wantEnterUsersEmail;
 //    private Task task;
     @JsonFormat(timezone = "GMT+08:00")
     private Date publishDate;
     private ArrayList<Vote> vote;
+    private Integer collabNoteAuthorNumber;
 
     // constructors
     public Post() {
     }
 
     // getter and setter
+
+    public Integer getCollabNoteAuthorNumber() {
+        return collabNoteAuthorNumber;
+    }
+
+    public void setCollabNoteAuthorNumber(Integer collabNoteAuthorNumber) {
+        this.collabNoteAuthorNumber = collabNoteAuthorNumber;
+    }
 
     public Date getPublishDate() {
         return publishDate;

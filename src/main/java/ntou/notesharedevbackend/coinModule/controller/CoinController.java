@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/coin",produces = MediaType.APPLICATION_JSON_VALUE)
@@ -23,11 +24,14 @@ public class CoinController {
     }
 
     @PutMapping("/{email}")
-    public ResponseEntity changeCoin(@PathVariable String email, @RequestBody Coin request){
+    public ResponseEntity<Object> changeCoin(@PathVariable String email, @RequestBody Coin request){
         AppUser user = coinService.changeCoin(email,request);
+        Map<String,Object> res = new HashMap<>();
         if(user==null){
-            return ResponseEntity.status(412).body("money is not enough.");
+            res.put("res","money is not enough. so set this user's money to 0.");
+            return ResponseEntity.status(412).body(res);
         }
+        res.put("res",user);
         return ResponseEntity.status(201).body(user);
     }
 
@@ -39,7 +43,7 @@ public class CoinController {
             res.put("msg","money is not enough or bought the note.");
             return ResponseEntity.status(412).body(res);
         }else{
-            res.put("note",note);
+            res.put("res",note);
             return ResponseEntity.ok(res);
         }
     }

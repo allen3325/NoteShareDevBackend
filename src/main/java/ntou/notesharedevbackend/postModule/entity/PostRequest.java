@@ -37,8 +37,16 @@ public class PostRequest {
     @JsonFormat(timezone = "GMT+08:00")
     private Date publishDate;
     private ArrayList<Vote> vote;
+    private Integer collabNoteAuthorNumber;
 
     // getter and setter
+    public Integer getCollabNoteAuthorNumber() {
+        return collabNoteAuthorNumber;
+    }
+
+    public void setCollabNoteAuthorNumber(Integer collabNoteAuthorNumber) {
+        this.collabNoteAuthorNumber = collabNoteAuthorNumber;
+    }
 
     public String getSchool() {
         return school;
