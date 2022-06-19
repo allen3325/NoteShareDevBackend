@@ -37,7 +37,7 @@ public class SearchService {
 //      - unlockCount
 //      - favoriteCount
     public Pages getSearchedNoteByKeyword(String keyword, int offset, int pageSize, SearchNote searchNote, String sortBy) {
-        List<Note> noteList = noteRepository.findNoteByNameRegex(keyword);
+        List<Note> noteList = noteRepository.findNoteByTitleRegex(keyword);
         if (noteList.isEmpty())
             return new Pages(null, 0);
 
@@ -137,7 +137,7 @@ public class SearchService {
 
         //determine sort method
         if (sortBy.equals(""))
-            sortBy = "name";
+            sortBy = "title";
         else if (sortBy.equals("Date"))
             sortBy = "createAt";
         Pageable paging = PageRequest.of(offset, pageSize, Sort.by(sortBy).descending());
