@@ -50,11 +50,6 @@ public class UserTest {
         appUser.setName("Ting");
         appUser.setPassword(passwordEncoder.encode("1234"));
         appUser.setVerifyCode("1111");
-//        Folder buyFolder = createFolder("Buy","/Buy",null);
-//        Folder favoriteFolder = createFolder("Favorite","/Favorite",null);
-//        ArrayList<String> folderList = new ArrayList<>();
-//        folderList.add(buyFolder.getId());
-//        folderList.add(favoriteFolder.getId());
         appUser.setFolders(new ArrayList<>());
         return appUser;
     }
@@ -72,8 +67,8 @@ public class UserTest {
     @Test
     public void testCreateUser() throws Exception {
         JSONObject request = new JSONObject()
-                .put("email","allen3325940072@gmail.com")
-                .put("name","allen")
+                .put("email","00853129@email.ntou.edu.tw")
+                .put("name","wu")
                 .put("password","1234");
 
         RequestBuilder requestBuilder = post("/verification/signup")
@@ -107,7 +102,6 @@ public class UserTest {
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
-        //TODO:response 格式
     }
 
     @Test
