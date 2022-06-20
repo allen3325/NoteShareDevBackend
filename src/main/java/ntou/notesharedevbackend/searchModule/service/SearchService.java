@@ -37,7 +37,10 @@ public class SearchService {
 //      - unlockCount
 //      - favoriteCount
     public Pages getSearchedNoteByKeyword(String keyword, int offset, int pageSize, SearchNote searchNote, String sortBy) {
-        List<Note> noteList = noteRepository.findNoteByTitleRegex(keyword);
+        //determine sort method
+        if (sortBy.equals(""))
+            sortBy = "title";
+        List<Note> noteList = noteRepository.findNoteByTitleRegex(keyword, Sort.by(sortBy).descending());
         if (noteList.isEmpty())
             return new Pages(null, 0);
 
@@ -135,11 +138,6 @@ public class SearchService {
                 copyOfNoteList.removeIf((Note n) -> (n.getType().equals("reward")));
         }
 
-        //determine sort method
-        if (sortBy.equals(""))
-            sortBy = "title";
-        else if (sortBy.equals("Date"))
-            sortBy = "createAt";
         Pageable paging = PageRequest.of(offset, pageSize, Sort.by(sortBy).descending());
         int start = Math.min((int)paging.getOffset(), copyOfNoteList.size());
         int end = Math.min((start + paging.getPageSize()), copyOfNoteList.size());
@@ -153,7 +151,10 @@ public class SearchService {
 //      - date
 //      - price
     public Pages getSearchedPostByKeyword(String keyword, int offset, int pageSize, SearchPost searchPost, String sortBy) {
-        List<Post> postList = postRepository.findPostByTitleRegex(keyword);
+        //determine sort method
+        if (sortBy.equals(""))
+            sortBy = "title";
+        List<Post> postList = postRepository.findPostByTitleRegex(keyword, Sort.by(sortBy).descending());
 
         if (postList.isEmpty())
             return new Pages(null, 0);
@@ -200,9 +201,6 @@ public class SearchService {
                 copyOfPostList.removeIf((Post p) -> (p.getType().equals("reward")));
         }
 
-        //determine sort method
-        if (sortBy.equals(""))
-            sortBy = "title";
         Pageable paging = PageRequest.of(offset, pageSize, Sort.by(sortBy).descending());
         int start = Math.min((int)paging.getOffset(), copyOfPostList.size());
         int end = Math.min((start + paging.getPageSize()), copyOfPostList.size());
