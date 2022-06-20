@@ -129,14 +129,20 @@ public class SearchService {
             if (!haveNormal)
                 copyOfNoteList.removeIf((Note n) -> (n.getType().equals("normal")));
         }
+        else
+            copyOfNoteList.removeIf((Note n) -> (n.getType().equals("normal")));
         if (haveCollaboration != null) {
             if (!haveCollaboration)
                 copyOfNoteList.removeIf((Note n) -> (n.getType().equals("collaboration")));
         }
+        else
+            copyOfNoteList.removeIf((Note n) -> (n.getType().equals("collaboration")));
         if (haveReward != null) {
             if (!haveReward)
                 copyOfNoteList.removeIf((Note n) -> (n.getType().equals("reward")));
         }
+        else
+            copyOfNoteList.removeIf((Note n) -> (n.getType().equals("reward")));
 
         Pageable paging = PageRequest.of(offset, pageSize, Sort.by(sortBy).descending());
         int start = Math.min((int)paging.getOffset(), copyOfNoteList.size());
@@ -192,14 +198,20 @@ public class SearchService {
             if (!haveQA)
                 copyOfPostList.removeIf((Post p) -> (p.getType().equals("QA")));
         }
+        else
+            copyOfPostList.removeIf((Post p) -> (p.getType().equals("QA")));
         if (haveCollaboration != null) {
             if (!haveCollaboration)
                 copyOfPostList.removeIf((Post p) -> (p.getType().equals("collaboration")));
         }
+        else
+            copyOfPostList.removeIf((Post p) -> (p.getType().equals("collaboration")));
         if (haveReward != null) {
             if (!haveReward)
                 copyOfPostList.removeIf((Post p) -> (p.getType().equals("reward")));
         }
+        else
+            copyOfPostList.removeIf((Post p) -> (p.getType().equals("reward")));
 
         Pageable paging = PageRequest.of(offset, pageSize, Sort.by(sortBy).descending());
         int start = Math.min((int)paging.getOffset(), copyOfPostList.size());
