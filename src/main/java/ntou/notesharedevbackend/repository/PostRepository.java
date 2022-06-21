@@ -13,5 +13,5 @@ public interface PostRepository extends MongoRepository<Post,String> {
     List<Post> findAllByType(String postType);
 
     @Query(value = "{'title': {$regex : ?0, $options: 'i'}}")
-    List<Post> findPostByTitleRegex(String title);
+    List<Post> findPostByTitleRegex(String title, Sort sort);
 }
