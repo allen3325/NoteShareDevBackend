@@ -124,7 +124,10 @@ public class CoinTest {
         folderRepository.deleteAll();
         AppUser appUser = createUser("yitingwu.1030@gmail.com","Ting",300);
         userRepository.insert(appUser);
-        createNote();
+        Note note = createNote();
+        Folder favoriteFolder = folderRepository.findById(userRepository.findByEmail("yitingwu.1030@gmail.com").getFolders().get(1)).get();
+        favoriteFolder.getNotes().add(note.getId());
+        folderRepository.save(favoriteFolder);
     }
 
     @Test
@@ -255,6 +258,10 @@ public class CoinTest {
 
         if(!userRepository.findByEmail(buyer.getEmail()).getCoin().equals(buyerNewCoin)){
             throw new Exception("Coin Test : buyer's coin does not decrease");
+        }
+
+        if(!folderRepository.findById(userRepository.findByEmail(buyer.getEmail()).getFolders().get(0)).get().getNotes().contains(note.getId())){
+            throw new Exception("Coin Test : buyer does not get note");
         }
     }
 

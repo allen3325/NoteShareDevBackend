@@ -117,14 +117,15 @@ public class UserTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
     }
-//    @Test
+    @Test
     public void testResetPassword() throws Exception{
         JSONObject request = new JSONObject()
                 .put("email","yitingwu.1030@gmail.com")
                         .put("password","1234")
                                 .put("newPassword","1111");
-        mockMvc.perform(MockMvcRequestBuilders.post("/verification/randomPassword/yitingwu.1030@gmail.com")
-                        .headers(httpHeaders))
+        mockMvc.perform(MockMvcRequestBuilders.post("/verification/resetPassword")
+                        .headers(httpHeaders)
+                        .content(request.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
     }
