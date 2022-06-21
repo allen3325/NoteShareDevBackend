@@ -52,6 +52,7 @@ public class Note {
     private String postID; // 紀錄貼文ID用於投稿後存在哪
     private Boolean isReference; // 是不是參考解
     private Boolean isBest; // 用於懸賞區看是否為最佳解
+    private Date publishDate;
 
     // constructors
     public Note() {}
@@ -314,5 +315,13 @@ public class Note {
 
     public void setFavoriter(ArrayList<String> favoriter) {
         this.favoriter = favoriter;
+    }
+
+    public Date getPublishDate() {
+        return publishDate;
+    }
+
+    public void setPublishDate(Date publishDate) {
+        this.publishDate = publishDate;
     }
 }
