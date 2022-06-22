@@ -14,10 +14,10 @@ public class NotificationService {
         this.messagingTemplate = messagingTemplate;
     }
 
-    public void sendGlobalNotification() {
+    public void sendGlobalNotification(String postID) {
         ResponseMessage message = new ResponseMessage("Global Notification");
 
-        messagingTemplate.convertAndSend("/topic/global-notifications", message);
+        messagingTemplate.convertAndSend("/topic/global-notifications/" + postID, message);
     }
 
     public void sendPrivateNotification(final String userId) {

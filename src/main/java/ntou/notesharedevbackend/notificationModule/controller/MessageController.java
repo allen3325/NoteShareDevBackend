@@ -15,11 +15,11 @@ public class MessageController {
     @Autowired
     private NotificationService notificationService;
 
-    @MessageMapping("/message")
-    @SendTo("/topic/messages")
-    public ResponseMessage getMessage(final Message message) throws InterruptedException {
+    @MessageMapping("/message/{postID}")
+    @SendTo("/topic/messages/{postID}")
+    public ResponseMessage getMessage(@DestinationVariable String postID, final Message message) throws InterruptedException {
         Thread.sleep(1000);
-        notificationService.sendGlobalNotification();
+        notificationService.sendGlobalNotification(postID);
         return new ResponseMessage(HtmlUtils.htmlEscape(message.getMessageContent()));
     }
 
