@@ -29,21 +29,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/topic");
         registry.setApplicationDestinationPrefixes("/ws");
     }
-
-//    @Override
-//    public void configureClientInboundChannel(ChannelRegistration registration) {
-//        registration.interceptors(new ChannelInterceptor() {
-//            @Override
-//            public Message<?> preSend(Message<?> message, MessageChannel channel) {
-//                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-//                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-////                    String authHeader = accessor.getFirstNativeHeader("Authorization");
-////                    System.out.println(authHeader);
-////                    Authentication user = ... ; // access authentication header(s)
-////                    accessor.setUser(user);
-//                }
-//                return message;
-//            }
-//        });
-//    }
 }

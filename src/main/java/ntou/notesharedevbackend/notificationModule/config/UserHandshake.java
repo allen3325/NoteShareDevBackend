@@ -1,25 +1,43 @@
 package ntou.notesharedevbackend.notificationModule.config;
 
 import com.sun.security.auth.UserPrincipal;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.*;
+import lombok.*;
+import ntou.notesharedevbackend.verificationModule.entity.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
-import java.security.Principal;
-import java.util.Map;
-import java.util.UUID;
+import java.security.*;
+import java.util.*;
 
 
 public class UserHandshake extends DefaultHandshakeHandler {
-    private final Logger LOG = LoggerFactory.getLogger(UserHandshake.class);
+    private final String WEBSOCKET_KEY = "NoteShareBackendAndItsShouldHaveVeryLongString";
 
     @Override
-    protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        final String randomId = UUID.randomUUID().toString();
-        LOG.info("User with ID '{}' opened the page", randomId);
+    protected Principal determineUser(@NonNull ServerHttpRequest request,@NonNull WebSocketHandler wsHandler, @NonNull Map<String, Object> attributes) {
+        String cookies = request.getHeaders().get("cookie").get(0);
+        String[] cookieList = cookies.split(";");
+        int tokenIndex = 0;
+        for (int i = 0; i < cookieList.length; i++) {
+            if (cookieList[i].contains("token"))
+                tokenIndex = i;
+        }
+        String token = cookieList[tokenIndex].split("=")[1];
 
-        return new UserPrincipal(randomId);
+        Key secretKey = Keys.hmacShaKeyFor(WEBSOCKET_KEY.getBytes());
+        JwtParser parser = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build();
+        Claims claims = parser
+                .parseClaimsJws(token)
+                .getBody();
+
+        return new UserPrincipal(claims.get("email").toString());
     }
 }
