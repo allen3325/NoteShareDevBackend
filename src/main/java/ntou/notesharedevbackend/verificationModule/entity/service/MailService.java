@@ -41,6 +41,7 @@ public class MailService {
         mailSender.setPort(mailConfig.getPort());
         mailSender.setUsername(mailConfig.getUsername());
         mailSender.setPassword(mailConfig.getPassword());
+        mailSender.setProtocol(mailConfig.getProtocol());
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.smtp.auth", mailConfig.isAuthEnabled());
