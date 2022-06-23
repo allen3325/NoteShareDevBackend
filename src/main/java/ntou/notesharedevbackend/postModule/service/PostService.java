@@ -131,7 +131,7 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-    public Post modifyPublishStatus(String id) throws Exception {
+    public Post modifyPublishStatus(String id) {
         Post post = getPostById(id);
         if (post.getPublic() && (post.getType().equals("reward") || post.getType().equals("QA"))) {
             if (!post.getAnswers().isEmpty()) {
@@ -143,6 +143,8 @@ public class PostService {
             }
         } else {
             post.setPublic(!post.getPublic());
+            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
+            post.setPublishDate(calendar.getTime());
         }
         replacePost(post.getId(), post);
         return getPostById(id);

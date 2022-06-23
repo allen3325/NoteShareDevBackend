@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.verificationModule.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.verificationModule.entity.AuthRequest;
 import ntou.notesharedevbackend.verificationModule.entity.service.JWTService;
@@ -20,6 +21,7 @@ public class JWTController {
     @Autowired
     private JWTService jwtService;
 
+    @Operation(summary = "sign up", description = "註冊,body裡，只需填email,name,password,headshotPhoto")
     @PostMapping("/signup")
     public ResponseEntity<Object> signUp(@RequestBody AppUser request){
         Map<String,Object> res = new HashMap<>();
@@ -33,6 +35,7 @@ public class JWTController {
         }
     }
 
+    @Operation(summary = "驗證", description = "")
     @PutMapping("/verify/{email}/{code}")
     public ResponseEntity<Object> verify(@PathVariable String email,@PathVariable String code){
         Map<String,Object> res = new HashMap<>();
@@ -46,6 +49,7 @@ public class JWTController {
         }
     }
 
+    @Operation(summary = "登入", description = "")
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> issueToken(@Valid @RequestBody AuthRequest request) {
         String token = jwtService.generateToken(request);
@@ -54,6 +58,7 @@ public class JWTController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "前端用不到", description = "")
     @PostMapping("/parse")
     public ResponseEntity<Map<String, Object>> parseToken(@RequestBody Map<String, String> request) {
         String token = request.get("token");

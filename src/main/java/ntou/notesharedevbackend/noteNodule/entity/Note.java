@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.noteNodule.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -52,12 +53,24 @@ public class Note {
     private String postID; // 紀錄貼文ID用於投稿後存在哪
     private Boolean isReference; // 是不是參考解
     private Boolean isBest; // 用於懸賞區看是否為最佳解
+    @JsonFormat(timezone = "GMT+08:00")
+    private Date publishDate; // publish 後更新，預設為 NULL
+    private String description;
 
     // constructors
     public Note() {}
 
 
     // getter and setter
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getId() {
         return id;
     }
@@ -314,5 +327,13 @@ public class Note {
 
     public void setFavoriter(ArrayList<String> favoriter) {
         this.favoriter = favoriter;
+    }
+
+    public Date getPublishDate() {
+        return publishDate;
+    }
+
+    public void setPublishDate(Date publishDate) {
+        this.publishDate = publishDate;
     }
 }

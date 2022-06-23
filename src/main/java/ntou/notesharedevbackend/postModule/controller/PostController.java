@@ -24,7 +24,7 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @Operation(summary = "get all post by type.")
+    @Operation(summary = "get all post by type.(QA, reward, collaboration)")
     @GetMapping("/postType/{postType}")
     public ResponseEntity<Object> getAllTypeOfPost(@PathVariable("postType") String postType) {
         Post[] posts = postService.getAllTypeOfPost(postType);
@@ -44,7 +44,8 @@ public class PostController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "create post(QA, reward, collaboration).")
+    @Operation(summary = "create post(QA, reward, collaboration).",description = "id,date,comments,commentCount," +
+            "answers,wantEnterUserEmail,publishDate,vote,collabNoteAuthorNumber都不用填。若為共筆貼文，則會自動創建筆記放在此貼文的answer裡")
     @PostMapping("/{email}")
     public ResponseEntity<Object> createPost(@PathVariable("email") String email, @RequestBody PostRequest request) {
         Post post = postService.createPost(email, request);
@@ -67,7 +68,7 @@ public class PostController {
         return ResponseEntity.status(201).body(res);
     }
 
-    @Operation(summary = "update post.")
+    @Operation(summary = "update post.",description = "body should full complete.")
     @PutMapping("/{postID}")
     public ResponseEntity<Object> replacePost(
             @PathVariable("postID") String id, @RequestBody Post request) {
@@ -80,7 +81,7 @@ public class PostController {
 
     @Operation(summary = "modify post is public.")
     @PutMapping("/publish/{postID}")
-    public ResponseEntity<Object> modifyPublishStatus(@PathVariable("postID") String id) throws Exception {
+    public ResponseEntity<Object> modifyPublishStatus(@PathVariable("postID") String id) {
         Post post = postService.modifyPublishStatus(id);
         Map<String, Object> res = new HashMap<>();
 
@@ -92,7 +93,7 @@ public class PostController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "apply become one of collaboration note's author.")
+    @Operation(summary = "apply become one of collaboration note's author.",description = "email為申請者")
     @PutMapping("/{postID}/{email}")
     public ResponseEntity<Object> applyCollaboration(@PathVariable("postID") String id, @PathVariable("email") String email) {
         postService.applyCollaboration(id, email);
@@ -103,7 +104,7 @@ public class PostController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "approve become one of collaboration note's author.")
+    @Operation(summary = "approve become one of collaboration note's author.",description = "email為申請通過者")
     @PutMapping("/add/{postID}/{email}")
     public ResponseEntity<Object> approveCollaboration(@PathVariable("postID") String id, @PathVariable("email") String email) {
         postService.approveCollaboration(id, email);
@@ -114,7 +115,7 @@ public class PostController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "vote.")
+    @Operation(summary = "user vote.",description = "第一個ID為postID,第二個ID為voteID,email為投票者")
     @PutMapping("/vote/{postID}/{voteID}/{email}")
     public ResponseEntity<Object> voteCollaborationVote(@PathVariable("postID") String postID,
     @PathVariable("voteID") String voteID, @PathVariable("email") String email, @RequestBody String option) {
@@ -128,7 +129,7 @@ public class PostController {
         }
     }
 
-    @Operation(summary = "reward choose best answer(note).")
+    @Operation(summary = "reward choose best answer(note).",description = "填入postID,最佳解筆記ID")
     @PutMapping("/reward/best/{postID}/{answerID}")
     public ResponseEntity<Object> rewardChooseBestAnswer(@PathVariable("postID") String postID,
     @PathVariable("answerID") String answerID, @RequestBody String email) {
@@ -142,7 +143,7 @@ public class PostController {
         }
     }
 
-    @Operation(summary = "qa choose best answer(comment)")
+    @Operation(summary = "qa choose best answer(comment)",description = "填入postID,最佳解留言ID")
     @PutMapping("/qa/best/{postID}/{commentID}")
     public ResponseEntity<Object> QAChooseBestAnswer(@PathVariable("postID") String postID,
     @PathVariable("commentID") String commentID) {
@@ -156,7 +157,7 @@ public class PostController {
     }
 
     //TODO: 改成 reward
-    @Operation(summary = "reward choose reference answer.")
+    @Operation(summary = "reward choose reference answer.",description = "填入postID,最佳解留言ID")
     @PutMapping("/qa/reference/{postID}/{commentID}")
     public ResponseEntity<Object> QAChooseReferenceAnswer(@PathVariable("postID") String postID,
     @PathVariable("commentID") String commentID, @RequestBody String email) {

@@ -63,6 +63,7 @@ public class AppUserService {
         appUser.setVerifyCode(randomCode());
         appUser.setAdmin(false);
         appUser.setActivate(false);
+        appUser.setHeadshotPhoto(request.getHeadshotPhoto());
 //        appUser.setProfile(request.getProfile());
 //        appUser.setStrength(request.getStrength());
 //        appUser.setFolders();

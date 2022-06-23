@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.commentModule.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.commentModule.service.CommentService;
 import ntou.notesharedevbackend.exception.NotFoundException;
@@ -23,6 +24,7 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping("/{ID}")
+    @Operation(summary = "get all comments by note or post id.", description = "ID填筆記或是貼文的都可以")
     public ResponseEntity<Object> getAllCommentByID(@PathVariable("ID") String id){
         ArrayList<Comment> commentArrayList = commentService.getAllCommentsByID(id);
         Map<String,Object> res = new HashMap<>();
@@ -36,6 +38,7 @@ public class CommentController {
     }
 
     @GetMapping("/{ID}/{floor}")
+    @Operation(summary = "get comment by floor in the note or post", description = "ID填筆記或是貼文的都可以")
     public ResponseEntity<Object> getCommentByFloor(@PathVariable("ID") String id ,@PathVariable("floor") int floor){
         Comment comment = commentService.getCommentByFloor(id,floor);
         Map<String,Object> res = new HashMap<>();
@@ -44,6 +47,8 @@ public class CommentController {
     }
 
     @PostMapping("/{ID}")
+    @Operation(summary = "create comment in the note or post", description = "ID填筆記或是貼文的都可以，body傳入一個author,email," +
+            "content,picURL")
     public ResponseEntity<Object> createComment(@PathVariable("ID") String id, @RequestBody Comment request){
         Comment comment = commentService.createComment(id, request);
         Map<String,Object> res = new HashMap<>();
@@ -52,6 +57,7 @@ public class CommentController {
     }
 
     @PutMapping("{ID}/{floor}")
+    @Operation(summary = "update comment by floor in the note or post", description = "ID為筆記或是貼文的，在傳入幾樓想要修改")
     public ResponseEntity<Object> updateComment(@PathVariable("ID") String id, @PathVariable("floor") Integer floor, @RequestBody Comment request){
         Comment comment = commentService.updateComment(id, floor, request);
         Map<String,Object> res = new HashMap<>();
@@ -60,6 +66,7 @@ public class CommentController {
     }
 
     @DeleteMapping("{ID}/{floor}")
+    @Operation(summary = "delete comment by floor in the note or post", description = "ID為筆記或是貼文的，在傳入幾樓想要刪除")
     public ResponseEntity<Object> deleteComment(@PathVariable("ID") String id, @PathVariable("floor") Integer floor){
         Map<String,Object> res = new HashMap<>();
         if(commentService.deleteComment(id,floor)){

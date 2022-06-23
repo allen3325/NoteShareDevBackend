@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.verificationModule.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.verificationModule.entity.AuthRequest;
 import ntou.notesharedevbackend.verificationModule.entity.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ public class MailController {
     @Autowired
     private MailService mailService;
 
+    @Operation(summary = "忘記密碼", description = "")
     @PostMapping("/randomPassword/{email}")
     public ResponseEntity<Object> randomPassword( @PathVariable (name = "email" ) String email) {
         Map<String,Object> res = new HashMap<>();
@@ -26,6 +28,7 @@ public class MailController {
         return ResponseEntity.ok(res);
     }
 
+    @Operation(summary = "重設密碼", description = "")
     @PostMapping("/resetPassword")
     public ResponseEntity<Object> resetPassword(@Valid @RequestBody AuthRequest request) {
         Map<String,Object> res = new HashMap<>();
@@ -34,6 +37,7 @@ public class MailController {
         return ResponseEntity.ok(res);
     }
 
+    @Operation(summary = "重寄驗證碼", description = "")
     @PostMapping("/resendCode/{email}")
     public ResponseEntity<Object>  resendCodeMail(@PathVariable (name = "email" ) String email) {
         Map<String,Object> res = new HashMap<>();

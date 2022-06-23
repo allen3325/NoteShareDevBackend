@@ -1,6 +1,7 @@
 package ntou.notesharedevbackend.noteNodule.service;
 
 import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.exception.BadRequestException;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
@@ -99,6 +100,7 @@ public class NoteService {
         note.setPostID(request.getPostID());
         note.setReference(request.getReference());
         note.setBest(request.getBest());
+        note.setDescription("");
 
         return noteRepository.insert(note);
     }
@@ -135,6 +137,10 @@ public class NoteService {
         }else{
             note.setPublic(!note.getPublic());
         }
+        // update publish date
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
+        note.setPublishDate(calendar.getTime());
+        // update note
         replaceNote(note,note.getId());
 //        noteRepository.save(note);
     }
@@ -194,9 +200,8 @@ public class NoteService {
         note.setPostID(request.getPostID());
         note.setReference(request.getReference());
         note.setBest(request.getBest());
-        System.out.println(note.getLikeCount());
-        System.out.println(note.getFavoriteCount());
-        System.out.println(note.getUnlockCount());
+        note.setPublishDate(request.getPublishDate());
+        note.setDescription(request.getDescription());
 
         return noteRepository.save(note);
     }
@@ -226,5 +231,15 @@ public class NoteService {
         folderService.replaceFolder(folder);
 
         return folder;
+    }
+
+    public Note changeDescription(String noteID, Note request) {
+        Note note = getNote(noteID);
+        if(request.getDescription() == null){
+            throw new BadRequestException("Description should not be null!");
+        }
+        note.setDescription(request.getDescription());
+        replaceNote(note,note.getId());
+        return note;
     }
 }
