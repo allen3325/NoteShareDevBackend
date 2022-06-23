@@ -901,10 +901,6 @@ public class NoteTest {
         if(noteRepository.findById(note.getId()).get().getAuthorEmail().contains(kickTarget.getEmail())){
             throw new Exception("Note Test : Note's author's email still contain kickTarget");
         }
-        //TODO:要刪除KickTarget Folder內的note
-//        if(folderRepository.findById(kickTarget.getFolders().get(2)).get().getNotes().contains(note.getId())){
-//            throw new Exception("Note Test : KickTarget's note still be there");
-//        }
     }
 
     @Test

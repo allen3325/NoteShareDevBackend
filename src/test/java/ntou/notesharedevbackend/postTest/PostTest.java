@@ -1,18 +1,26 @@
 package ntou.notesharedevbackend.postTest;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.*;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.*;
 import ntou.notesharedevbackend.repository.*;
+import ntou.notesharedevbackend.schedulerModule.entity.Vote;
+import ntou.notesharedevbackend.userModule.entity.AppUser;
+import org.checkerframework.checker.units.qual.A;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.*;
@@ -30,28 +38,101 @@ public class PostTest {
     @Autowired
     private PostRepository postRepository;
     @Autowired
-    private PostService postService;
+    private UserRepository userRepository;
+    @Autowired
+    private FolderRepository folderRepository;
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @BeforeEach
     public void init() {
         postRepository.deleteAll();
+        userRepository.deleteAll();
+        folderRepository.deleteAll();
         httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
     }
 
+    private Folder createFolder(String folderName, String path, String parent){
+        Folder folder = new Folder();
+        folder.setFolderName(folderName);
+        folder.setFavorite(false);
+        folder.setParent(parent);
+        folder.setPath(path);
+        folder.setNotes(new ArrayList<String>());
+        folder.setChildren(new ArrayList<String>());
+        folder.setPublic(false);
+        folderRepository.insert(folder);
+        return folder;
+    }
+    private AppUser createUser(String email, String name){
+        AppUser appUser = new AppUser();
+        appUser.setEmail(email);
+        appUser.setActivate(true);
+        appUser.setName(name);
+        appUser.setPassword(passwordEncoder.encode("1234"));
+        Folder buyFolder = createFolder("Buy","/Buy",null);
+        Folder favoriteFolder = createFolder("Favorite","/Favorite",null);
+        Folder collaborationFolder = createFolder("Collaboration","/Collaboration",null);
+        Folder OSFolder = createFolder("OS","/OS",null);
+        ArrayList<String> folderList = new ArrayList<>();
+        folderList.add(buyFolder.getId());
+        folderList.add(favoriteFolder.getId());
+        folderList.add(collaborationFolder.getId());
+        folderList.add(OSFolder.getId());
+        appUser.setFolders(folderList);
+        appUser.setCoin(300);
+        return appUser;
+    }
+
+    public Post createQAPost(){
+        Post post = new Post();
+        post.setType("QA");
+        post.setPublic(true);
+        post.setAuthor("yitingwu.1030@gmail.com");
+        post.setTitle("Java Array");
+        post.setDepartment("CS");
+        post.setSubject("Java");
+        post.setSchool("NTOU");
+        post.setProfessor("Shang-Pin Ma");
+        post.setContent("ArrayList 跟 List 一樣嗎");
+        post.setBestPrice(20);
+        ArrayList<Comment> comments = new ArrayList<>();
+        post.setComments(comments);
+        post.setCommentCount(0);
+        post = postRepository.insert(post);
+        return post;
+    }
+
+    public Post createRewardPost(){
+        Post post = new Post();
+        post.setType("reward");
+        post.setAuthor("yitingwu.1030@gmail.com");
+        post.setDepartment("CS");
+        post.setSubject("Python");
+        post.setSchool("NTOU");
+        post.setProfessor("Chin-Chun Chang");
+        post.setTitle("Python iterator");
+        post.setContent("iterator詳細介紹");
+        post.setBestPrice(50);
+        post.setReferencePrice(10);
+        post.setReferenceNumber(2);
+        post.setPublic(true);
+        ArrayList<String> answers = new ArrayList<>();
+        post.setAnswers(answers);
+        post = postRepository.insert(post);
+        return post;
+    }
     public Post createPost() {
         Post post = new Post();
         post.setType("collaboration");
         ArrayList<String> email = new ArrayList<>();
-        email.add("allen3325940072@gmail.com");
+        email.add("yitingwu.1030@gmail.com");
         post.setEmail(email);
         post.setAuthor("Ting");
         post.setDepartment("Computer Science");
         post.setSubject("Operation System");
         post.setTitle("Interrupt vs trap");
         post.setContent("this is a post!");
-        post.setDate();
-        post.setBestPrice(null);
         post.setComments(new ArrayList<Comment>());
         ArrayList<String> answers = new ArrayList<>();
         answers.add("note1's id");
@@ -118,8 +199,8 @@ public class PostTest {
     }
 
     // TODO: fix this.
-//    @Test
-//    public void testCreatePost() throws Exception {
+    @Test
+    public void testCreatePost() throws Exception {
 //        Post post = createPost();
 //
 //        mockMvc.perform(post("/post")
@@ -138,7 +219,7 @@ public class PostTest {
 //                .andExpect(jsonPath("$.answers").value(post.getAnswers()))
 //                .andExpect(jsonPath("$.wantEnterUsersEmail").value(post.getWantEnterUsersEmail()))
 //                .andExpect(jsonPath("$.public").value(post.getPublic()));
-//    }
+    }
 
     @Test
     public void testPutPost() throws Exception {
@@ -154,6 +235,36 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.title").value(post.getTitle()))
                 .andExpect(jsonPath("$.res.content").value(post.getContent()));
+    }
+
+    @Test
+    public void testApplyCollaboration() throws Exception{
+
+    }
+
+    @Test
+    public void testApproveCollaboration() throws Exception{
+
+    }
+
+    @Test
+    public void testVoteCollaborationVote() throws Exception{
+
+    }
+
+    @Test
+    public void testRewardChooseBestAnswer() throws Exception{
+
+    }
+
+    @Test
+    public void testRewardChooseReferenceAnswer() throws Exception{
+
+    }
+
+    @Test
+    public void testQAChooseBestAnswer() throws Exception{
+
     }
 
     @Test
@@ -186,4 +297,9 @@ public class PostTest {
 //                        .headers(httpHeaders))
 //                .andExpect(status().isOk());
 //    }
+
+    @AfterEach
+    public void clear(){
+
+    }
 }
