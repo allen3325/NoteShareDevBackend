@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.noteNodule.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -52,7 +53,8 @@ public class Note {
     private String postID; // 紀錄貼文ID用於投稿後存在哪
     private Boolean isReference; // 是不是參考解
     private Boolean isBest; // 用於懸賞區看是否為最佳解
-    private Date publishDate;
+    @JsonFormat(timezone = "GMT+08:00")
+    private Date publishDate; // publish 後更新，預設為 NULL
 
     // constructors
     public Note() {}

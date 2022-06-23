@@ -135,6 +135,10 @@ public class NoteService {
         }else{
             note.setPublic(!note.getPublic());
         }
+        // update publish date
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
+        note.setPublishDate(calendar.getTime());
+        // update note
         replaceNote(note,note.getId());
 //        noteRepository.save(note);
     }
@@ -194,9 +198,7 @@ public class NoteService {
         note.setPostID(request.getPostID());
         note.setReference(request.getReference());
         note.setBest(request.getBest());
-        System.out.println(note.getLikeCount());
-        System.out.println(note.getFavoriteCount());
-        System.out.println(note.getUnlockCount());
+        note.setPublishDate(request.getPublishDate());
 
         return noteRepository.save(note);
     }
