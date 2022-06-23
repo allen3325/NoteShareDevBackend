@@ -120,6 +120,15 @@ public class NoteController {
         return ResponseEntity.ok(res);
     }
 
+    @Operation(summary = "modify the description.",description = "body傳入description")
+    @PutMapping("/description/{noteID}")
+    public ResponseEntity<Object> changeDescription(@PathVariable("noteID")String noteID,@RequestBody Note request) {
+        Map<String,Object> res = new HashMap<>();
+        Note note = noteService.changeDescription(noteID,request);
+        res.put("res",note);
+        return ResponseEntity.ok(res);
+    }
+
     @Operation(summary = "delete note from folder.")
     @PutMapping("/delete/{noteID}/{folderID}")
     public ResponseEntity<Object> deleteNoteToFolder(@PathVariable("noteID") String noteID,

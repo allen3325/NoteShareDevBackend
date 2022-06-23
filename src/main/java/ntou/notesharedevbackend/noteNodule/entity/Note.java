@@ -55,12 +55,22 @@ public class Note {
     private Boolean isBest; // 用於懸賞區看是否為最佳解
     @JsonFormat(timezone = "GMT+08:00")
     private Date publishDate; // publish 後更新，預設為 NULL
+    private String description;
 
     // constructors
     public Note() {}
 
 
     // getter and setter
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getId() {
         return id;
     }
