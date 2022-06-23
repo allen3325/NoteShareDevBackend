@@ -30,7 +30,7 @@ public class NoteController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "get a note content by note version")
+    @Operation(summary = "get a note content by note version",description = "version為0~5")
     @GetMapping("/{noteID}/{version}")
     public ResponseEntity<Object> getNoteVersion(@PathVariable("noteID") String id, @PathVariable("version") int version) {
 
@@ -79,8 +79,7 @@ public class NoteController {
     @Operation(summary = "save note content by version 0~5")
     @PutMapping("/{noteID}/{version}")
     public ResponseEntity<Object> updateNoteContent(@RequestBody VersionContent versionContent,@PathVariable("noteID")String id,
-                                            @PathVariable(
-            "version")int version){
+                                            @PathVariable("version")int version){
         Map<String,Object> res = new HashMap<>();
 
         Note note = noteService.updateNoteVersion(id,version,versionContent);
@@ -90,7 +89,7 @@ public class NoteController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "set manager in the collaboration note.")
+    @Operation(summary = "set manager in the collaboration note.",description = "email為要加為管理員的人")
     @PutMapping("/admin/{noteID}/{email}")
     public ResponseEntity<Object> setManager(@PathVariable("noteID") String noteID, @PathVariable("email") String email) {
         noteService.setManager(noteID, email);
@@ -99,7 +98,7 @@ public class NoteController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "kick someone from collaboration note.")
+    @Operation(summary = "kick someone from collaboration note.",description = "email為想要踢掉的人")
     @PutMapping("/kick/{noteID}/{email}")
     public ResponseEntity<Object> kickUserFromCollaboration(@PathVariable("noteID") String noteID, @PathVariable("email") String email) {
         noteService.kickUserFromCollaboration(noteID, email);
@@ -108,7 +107,7 @@ public class NoteController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "copy note to folder.")
+    @Operation(summary = "copy note to folder.",description = "第一個ID為noteID，第二個ID為folderID")
     @PutMapping("/save/{noteID}/{folderID}")
     public ResponseEntity<Object> copyNoteToFolder(@PathVariable("noteID") String noteID,
                                                    @PathVariable("folderID") String folderID){
@@ -129,7 +128,7 @@ public class NoteController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "delete note from folder.")
+    @Operation(summary = "delete note from folder.",description = "第一個ID為noteID，第二個ID為folderID")
     @PutMapping("/delete/{noteID}/{folderID}")
     public ResponseEntity<Object> deleteNoteToFolder(@PathVariable("noteID") String noteID,
                                                    @PathVariable("folderID") String folderID){

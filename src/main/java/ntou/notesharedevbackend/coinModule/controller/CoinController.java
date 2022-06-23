@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.coinModule.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.coinModule.entity.Coin;
 import ntou.notesharedevbackend.coinModule.service.CoinService;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
@@ -24,6 +25,7 @@ public class CoinController {
     }
 
     @PutMapping("/{email}")
+    @Operation(summary = "change user's coin.", description = "body需傳入+500或是-500這樣的+-號加上數字")
     public ResponseEntity<Object> changeCoin(@PathVariable String email, @RequestBody Coin request){
         AppUser user = coinService.changeCoin(email,request);
         Map<String,Object> res = new HashMap<>();
@@ -36,6 +38,7 @@ public class CoinController {
     }
 
     @PutMapping("/note/{email}/{noteID}")
+    @Operation(summary = "購買筆記，錢會自動扣跟加，不用在call changeCoin了", description = "填入購買者的email跟欲購買筆記的ID")
     public ResponseEntity<Object> buyNote(@PathVariable String email,@PathVariable String noteID){
         Note note = coinService.buyNote(email,noteID);
         HashMap<String,Object> res = new HashMap<>();
