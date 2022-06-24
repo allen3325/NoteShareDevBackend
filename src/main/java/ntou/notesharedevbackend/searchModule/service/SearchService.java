@@ -144,10 +144,14 @@ public class SearchService {
         else
             copyOfNoteList.removeIf((Note n) -> (n.getType().equals("reward")));
 
+        List<NoteBasicReturn> noteBasicReturn = new ArrayList<>();
+        for (Note note : copyOfNoteList)
+            noteBasicReturn.add(new NoteBasicReturn(note));
+
         Pageable paging = PageRequest.of(offset, pageSize, Sort.by(sortBy).descending());
-        int start = Math.min((int)paging.getOffset(), copyOfNoteList.size());
-        int end = Math.min((start + paging.getPageSize()), copyOfNoteList.size());
-        Page<Note> page = new PageImpl<>(copyOfNoteList.subList(start, end), paging, copyOfNoteList.size());
+        int start = Math.min((int)paging.getOffset(), noteBasicReturn.size());
+        int end = Math.min((start + paging.getPageSize()), noteBasicReturn.size());
+        Page<NoteBasicReturn> page = new PageImpl<>(noteBasicReturn.subList(start, end), paging, noteBasicReturn.size());
 
         return new Pages(page.getContent(), page.getTotalPages());
     }
