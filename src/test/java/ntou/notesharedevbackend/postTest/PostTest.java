@@ -400,9 +400,11 @@ public class PostTest {
         post.setWantEnterUsersEmail(wantEnterUsersEmail);
         post.setPublic(true);
         post.setCollabNoteAuthorNumber(1);
+        post.setComments(new ArrayList<>());
         post = postRepository.insert(post);
         return post;
     }
+
 
     public static String asJsonString(final Object obj) {
         try {
@@ -616,27 +618,43 @@ public class PostTest {
 
     }
 
-    // TODO: fix this.
     @Test
     public void testCreatePost() throws Exception {
-//        Post post = createPost();
-//
-//        mockMvc.perform(post("/post")
-//                        .headers(httpHeaders)
-//                        .content(asJsonString(post)))
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.type").value(post.getType()))
-//                .andExpect(jsonPath("$.email").value(post.getEmail()))
-//                .andExpect(jsonPath("$.author").value(post.getAuthor()))
-//                .andExpect(jsonPath("$.department").value(post.getDepartment()))
-//                .andExpect(jsonPath("$.subject").value(post.getSubject()))
-//                .andExpect(jsonPath("$.title").value(post.getTitle()))
-//                .andExpect(jsonPath("$.content").value(post.getContent()))
-//                .andExpect(jsonPath("$.date").hasJsonPath())
-//                .andExpect(jsonPath("$.price").value(post.getPrice()))
-//                .andExpect(jsonPath("$.answers").value(post.getAnswers()))
-//                .andExpect(jsonPath("$.wantEnterUsersEmail").value(post.getWantEnterUsersEmail()))
-//                .andExpect(jsonPath("$.public").value(post.getPublic()));
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        JSONArray email = new JSONArray()
+                .put("yitingwu.1030@gmail.com");
+        JSONObject request = new JSONObject()
+                .put("type","QA")
+                .put("email",email)
+                .put("author","Ting")
+                .put("department","CS")
+                .put("subject","Java")
+                .put("school","NTOU")
+                .put("professor","NoteShare")
+                .put("title","Java Array")
+                .put("content","Content")
+                .put("bestPrice",5)
+                .put("public",true);
+
+        mockMvc.perform(post("/post/" + appUser.getEmail())
+                        .headers(httpHeaders)
+                        .content(request.toString()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.res.id").hasJsonPath())
+                .andExpect(jsonPath("$.res.type").value(request.get("type")))
+                .andExpect(jsonPath("$.res.email").value(email.get(0)))
+                .andExpect(jsonPath("$.res.author").value(request.get("author")))
+                .andExpect(jsonPath("$.res.department").value(request.get("department")))
+                .andExpect(jsonPath("$.res.subject").value(request.get("subject")))
+                .andExpect(jsonPath("$.res.school").value(request.get("school")))
+                .andExpect(jsonPath("$.res.professor").value(request.get("professor")))
+                .andExpect(jsonPath("$.res.title").value(request.get("title")))
+                .andExpect(jsonPath("$.res.content").value(request.get("content")))
+                .andExpect(jsonPath("$.res.date").hasJsonPath())
+                .andExpect(jsonPath("$.res.bestPrice").value(request.get("bestPrice")))
+                .andExpect(jsonPath("$.res.public").value(request.get("public")))
+                .andExpect(jsonPath("$.res.comments").isEmpty())
+                .andExpect(jsonPath("$.res.commentCount").value(0));
     }
 
     @Test
@@ -775,7 +793,22 @@ public class PostTest {
 
     @Test
     public void testVoteCollaborationVote() throws Exception{
-
+        Post post = createCollaborationPost();
+        Vote vote = new Vote();
+        ArrayList<Vote> voteArrayList = new ArrayList<>();
+        voteArrayList.add(vote);
+        post.setVote(voteArrayList);
+        postRepository.save(post);
+        AppUser appUser = userRepository.findByEmail("user1@gmail.com");
+        mockMvc.perform(put("/post/vote/"+post.getId()+"/"+vote.getId()+"/"+appUser.getEmail())
+                .headers(httpHeaders)
+                .content("agree"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
+        post = postRepository.findById(post.getId()).get();
+        if(!post.getVote().get(0).getAgree().contains(appUser.getEmail())){
+            throw new Exception("Post Test : voter does not enter queue");
+        }
     }
 
     @Test
