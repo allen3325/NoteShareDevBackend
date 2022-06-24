@@ -30,6 +30,7 @@
 //        fans string//發文通知粉絲 存email或是userName
 //        coin * int default 初始點數
 package ntou.notesharedevbackend.userModule.entity;
+import ntou.notesharedevbackend.notificationModule.entity.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -54,6 +55,8 @@ public class AppUser {
     private ArrayList<String> fans;
     private Integer coin;
     private String headshotPhoto;
+    private ArrayList<Message> notification;
+    private Integer unreadMessageCount;
 
     // constructor
     public AppUser() {
@@ -184,5 +187,21 @@ public class AppUser {
 
     public void setCoin(Integer coin) {
         this.coin = coin;
+    }
+
+    public ArrayList<Message> getNotification() {
+        return notification;
+    }
+
+    public void setNotification(ArrayList<Message> notification) {
+        this.notification = notification;
+    }
+
+    public Integer getUnreadMessageCount() {
+        return unreadMessageCount;
+    }
+
+    public void setUnreadMessageCount(Integer unreadMessageCount) {
+        this.unreadMessageCount = unreadMessageCount;
     }
 }
