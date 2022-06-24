@@ -34,7 +34,7 @@ public class CoinController {
             return ResponseEntity.status(412).body(res);
         }
         res.put("res",user);
-        return ResponseEntity.status(201).body(user);
+        return ResponseEntity.status(201).body(res);
     }
 
     @PutMapping("/note/{email}/{noteID}")
