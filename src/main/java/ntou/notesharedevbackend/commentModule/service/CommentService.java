@@ -28,31 +28,30 @@ public class CommentService {
     private PostService postService;
 
 
+    public ArrayList<Comment> getAllCommentsByID(String id) {
 
-    public ArrayList<Comment> getAllCommentsByID(String id){
-
-        if(noteRepository.findById(id).isPresent()){
+        if (noteRepository.findById(id).isPresent()) {
             Note note = noteService.getNote(id);
             return note.getComments();
         } else if (postRepository.findById(id).isPresent()) {
             Post post = postService.getPostById(id);
-            if(post.getType().equals("QA")) {
-                return post.getComments();
-            }else{
-                throw new NotFoundException("Wrong post type");
-            }
-        }
-        else{
-             throw new NotFoundException("Can't find any note or post matched id");
+//            if(post.getType().equals("QA")) {
+//                return post.getComments();
+//            }else{
+//                throw new NotFoundException("Wrong post type");
+//            }
+            return post.getComments();
+        } else {
+            throw new NotFoundException("Can't find any note or post matched id");
         }
     }
 
-    public Comment getCommentByFloor(String id, int floor){
+    public Comment getCommentByFloor(String id, int floor) {
         ArrayList<Comment> commentArrayList = getAllCommentsByID(id);
         Comment comment = commentArrayList.get(floor);
-        if(comment.getFloor()!=floor){//check floor
-            for(Comment c:commentArrayList){
-                if(c.getFloor()==floor){
+        if (comment.getFloor() != floor) {//check floor
+            for (Comment c : commentArrayList) {
+                if (c.getFloor() == floor) {
                     comment = c;
                 }
             }
@@ -60,22 +59,21 @@ public class CommentService {
         return comment;
     }//需要去檢查每個comment中的floor嗎
 
-    public Comment createComment(String id, Comment request){
+    public Comment createComment(String id, Comment request) {
         Note note = new Note();
         Post post = new Post();
-        String type="";
+        String type = "";
 
         ArrayList<Comment> commentArrayList;
-        if(noteRepository.findById(id).isPresent()){
-            type="note";
+        if (noteRepository.findById(id).isPresent()) {
+            type = "note";
             note = noteService.getNote(id);
             commentArrayList = note.getComments();
         } else if (postRepository.findById(id).isPresent()) {
-            type="post";
+            type = "post";
             post = postService.getPostById(id);
             commentArrayList = post.getComments();
-        }
-        else{
+        } else {
             throw new NotFoundException("Can't find any note or post matched id");
         }
 
@@ -87,20 +85,20 @@ public class CommentService {
         comment.setFloor(commentArrayList.size());
 
         commentArrayList.add(comment);
-        if(type.equals("note")){
+        if (type.equals("note")) {
             note.setComments(commentArrayList);
             noteService.replaceNote(note, note.getId());
-        }else{
+        } else {
             post.setComments(commentArrayList);
             postService.replacePost(post.getId(), post);
         }
         return comment;
     }
 
-    public Comment updateComment(String id, Integer floor, Comment request){
-        ArrayList<Comment> commentArrayList= new ArrayList<Comment>();
+    public Comment updateComment(String id, Integer floor, Comment request) {
+        ArrayList<Comment> commentArrayList = new ArrayList<Comment>();
 
-        if(noteRepository.findById(id).isPresent()){
+        if (noteRepository.findById(id).isPresent()) {
             Note note = noteService.getNote(id);
             commentArrayList = note.getComments();
             commentArrayList.get(floor).setBest(request.getBest());
@@ -126,16 +124,16 @@ public class CommentService {
             postService.replacePost(post.getId(), post);
 
             return commentArrayList.get(floor);
-        }else{
+        } else {
             throw new NotFoundException("Can't find any note or post matched id");
         }
     }
 
-    public Boolean deleteComment(String id, Integer floor){
+    public Boolean deleteComment(String id, Integer floor) {
         Note note = new Note();
         Post post = new Post();
-        ArrayList<Comment> commentArrayList= new ArrayList<Comment>();
-        if(noteRepository.findById(id).isPresent()){
+        ArrayList<Comment> commentArrayList = new ArrayList<Comment>();
+        if (noteRepository.findById(id).isPresent()) {
             note = noteService.getNote(id);
             commentArrayList = note.getComments();
             commentArrayList.get(floor).setEmail(null);
@@ -161,8 +159,7 @@ public class CommentService {
             post.setComments(commentArrayList);
             postService.replacePost(post.getId(), post);
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
