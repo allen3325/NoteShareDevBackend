@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +43,16 @@ public class PostController {
         Map<String, Object> res = new HashMap<>();
 
         res.put("res", post);
+        return ResponseEntity.ok(res);
+    }
+
+    @Operation(summary = "get user's all post by type", description = "type為(QA, reward, collaboration)")
+    @GetMapping("/{email}/{postType}")
+    public ResponseEntity<Object> getUserAllPostByType(@PathVariable("email") String email, @PathVariable("postType") String postType) {
+        ArrayList<Post> allPost = postService.getUserAllPostByType(email,postType);
+        Map<String, Object> res = new HashMap<>();
+
+        res.put("res", allPost);
         return ResponseEntity.ok(res);
     }
 

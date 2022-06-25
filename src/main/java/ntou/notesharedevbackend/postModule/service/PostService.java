@@ -44,7 +44,7 @@ public class PostService {
 
     public Post getPostById(String id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Can't find product."));
+                .orElseThrow(() -> new NotFoundException("Can't find post."));
     }
 
     public Post createPost(String userEmail, PostRequest request) {
@@ -395,5 +395,10 @@ public class PostService {
             }
         }
         return false;
+    }
+
+    public ArrayList<Post> getUserAllPostByType(String email, String postType) {
+        List<Post> allPost = postRepository.findAllByAuthorAndType(email,postType);
+        return new ArrayList<Post>(allPost);
     }
 }
