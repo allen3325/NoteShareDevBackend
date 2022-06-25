@@ -122,7 +122,7 @@ public class FolderService {
         Folder folder = new Folder(request);
         ArrayList<String> tmpFoldersList = new ArrayList<>();
         // check users has folders
-        if (appUser.getFolders() == null) {
+        if (appUser.getFolders() == null || appUser.getFolders().isEmpty()) {
             tmpFoldersList.add(folder.getId());
             appUser.setFolders(tmpFoldersList);
         } else {
