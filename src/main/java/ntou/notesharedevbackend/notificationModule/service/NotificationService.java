@@ -39,12 +39,9 @@ public class NotificationService {
 
     public ArrayList<Message> getNotification(String email) {
         AppUser appUser = userRepository.findByEmail(email);
-        return appUser.getNotification();
-    }
-
-    public void clearUnreadMessageCount(String email) {
-        AppUser appUser = userRepository.findByEmail(email);
         appUser.setUnreadMessageCount(0);
         userRepository.save(appUser);
+
+        return appUser.getNotification();
     }
 }
