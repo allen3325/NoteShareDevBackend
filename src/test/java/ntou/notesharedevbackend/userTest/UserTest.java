@@ -1,8 +1,5 @@
 package ntou.notesharedevbackend.userTest;
 
-import com.google.gson.JsonArray;
-import ntou.notesharedevbackend.folderModule.entity.Folder;
-import ntou.notesharedevbackend.folderTest.FolderTest;
 import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import org.json.JSONArray;
@@ -17,15 +14,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -214,21 +208,6 @@ public class UserTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
-//                .andExpect(jsonPath("$.id").value(appUser.getId()))
-//                .andExpect(jsonPath("$.email").value(appUser.getEmail()))
-//                .andExpect(jsonPath("$.name").value(appUser.getName()))
-//                .andExpect(jsonPath("$.verifyCode").value(appUser.getVerifyCode()))
-//                .andExpect(jsonPath("$.password").hasJsonPath())
-//                .andExpect(jsonPath("$.profile").value(appUser.getProfile()))
-//                .andExpect(jsonPath("$.strength").value(newStrength))
-//                .andExpect(jsonPath("$.folders").value(appUser.getFolders()))
-//                .andExpect(jsonPath("$.subscribe").value(appUser.getSubscribe()))
-//                .andExpect(jsonPath("$.bell").value(appUser.getBell()))
-//                .andExpect(jsonPath("$.fans").value(appUser.getFans()))
-//                .andExpect(jsonPath("$.coin").value(appUser.getCoin()))
-//                .andExpect(jsonPath("$.headshotPhoto").value(appUser.getHeadshotPhoto()))
-//                .andExpect(jsonPath("$.admin").value(appUser.isAdmin()))
-//                .andExpect(jsonPath("$.activate").value(appUser.isActivate()));
         if(!userRepository.findByEmail("yitingwu.1030@gmail.com").getStrength().equals(newStrengthArray)){
             throw new Exception("Modify User Strength : strength does not change");
         }
@@ -247,21 +226,6 @@ public class UserTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
-//                .andExpect(jsonPath("$.id").value(appUser.getId()))
-//                .andExpect(jsonPath("$.email").value(appUser.getEmail()))
-//                .andExpect(jsonPath("$.name").value(appUser.getName()))
-//                .andExpect(jsonPath("$.verifyCode").value(appUser.getVerifyCode()))
-//                .andExpect(jsonPath("$.password").hasJsonPath())
-//                .andExpect(jsonPath("$.profile").value(newProfile))
-//                .andExpect(jsonPath("$.strength").value(appUser.getStrength()))
-//                .andExpect(jsonPath("$.folders").value(appUser.getFolders()))
-//                .andExpect(jsonPath("$.subscribe").value(appUser.getSubscribe()))
-//                .andExpect(jsonPath("$.bell").value(appUser.getBell()))
-//                .andExpect(jsonPath("$.fans").value(appUser.getFans()))
-//                .andExpect(jsonPath("$.coin").value(appUser.getCoin()))
-//                .andExpect(jsonPath("$.headshotPhoto").value(appUser.getHeadshotPhoto()))
-//                .andExpect(jsonPath("$.admin").value(appUser.isAdmin()))
-//                .andExpect(jsonPath("$.activate").value(appUser.isActivate()));
         if(!userRepository.findByEmail("yitingwu.1030@gmail.com").getProfile().equals(newProfile)){
             throw new Exception("Modify User Profile : profile does not change");
         }
