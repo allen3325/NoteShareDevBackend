@@ -391,7 +391,7 @@ public class PostTest {
         ArrayList<String> email = new ArrayList<>();
         email.add("yitingwu.1030@gmail.com");
         post.setEmail(email);
-        post.setAuthor("Ting");
+        post.setAuthor("yitingwu.1030@gmail.com");
         post.setDepartment("Computer Science");
         post.setSubject("Operation System");
         post.setSchool("NTOU");
@@ -636,7 +636,7 @@ public class PostTest {
         JSONObject request = new JSONObject()
                 .put("type", "QA")
                 .put("email", email)
-                .put("author", "Ting")
+                .put("author", "yitingwu.1030@gmail.com")
                 .put("department", "CS")
                 .put("subject", "Java")
                 .put("school", "NTOU")
