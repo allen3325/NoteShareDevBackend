@@ -51,6 +51,28 @@ public class FolderController {
         return ResponseEntity.ok(res);
     }
 
+    @Operation(summary = "Get Favorite from a User.",description = "email填入使用者email")
+    @GetMapping("/favorite/{email}")
+    public ResponseEntity<Object> getFavoriteFromUser(@PathVariable(name = "email")String email){
+        Folder folders = folderService.getFavoriteFolderByUserEmail(email);
+
+        Map<String,Object> res = new HashMap<>();
+        res.put("res",folders);
+
+        return ResponseEntity.ok(res);
+    }
+
+    @Operation(summary = "Get Buy from a User.",description = "email填入使用者email")
+    @GetMapping("/buy/{email}")
+    public ResponseEntity<Object> getBuyFromUser(@PathVariable(name = "email")String email){
+        Folder folders = folderService.getBuyFolderByUserEmail(email);
+
+        Map<String,Object> res = new HashMap<>();
+        res.put("res",folders);
+
+        return ResponseEntity.ok(res);
+    }
+
     @Operation(summary = "Get All Folders and Notes Under User's specific folder.",description = "ID填入folderID")
     @GetMapping("/{folderID}")
     public ResponseEntity<Object> getAllFoldersFromFolderID(@PathVariable(name

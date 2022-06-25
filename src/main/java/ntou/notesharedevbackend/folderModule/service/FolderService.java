@@ -149,13 +149,19 @@ public class FolderService {
         Folder folder = getFolderByID(folderID);
         AppUser user = appUserService.getUserByEmail(email);
         ArrayList<String> foldersIDList = user.getFolders();
-
         // fetch all folders under user and check its direction has contains wannaDelete folder's name
         ArrayList<Folder> folders = getAllFoldersFromUser(email);
+        // fetch user's Favorite
+        Folder favorite = getFavoriteFolderByUserEmail(email);
+        ArrayList<String> foldersInFavorite = favorite.getChildren();
+
         for (Folder tmpFolder : folders) {
             if (tmpFolder.getPath().contains(folder.getFolderName())) {
                 // update AppUser schema's folders
                 foldersIDList.remove(tmpFolder.getId());
+                // update user's favorite
+                foldersInFavorite.remove(tmpFolder.getId());
+                // delete from DB
                 folderRepository.deleteById(tmpFolder.getId());
             }
         }
@@ -164,7 +170,10 @@ public class FolderService {
         foldersIDList.remove(folderID);
         user.setFolders(foldersIDList);
         appUserService.replaceUser(user);
-
+        // write update to Folder Schema
+        foldersInFavorite.remove(folderID);
+        favorite.setChildren(foldersInFavorite);
+        replaceFolder(favorite);
         // update parent's folders and write to Folder's schema
         if (folder.getParent() != null) {
             Folder parentFolder = getFolderByID(folder.getParent());
