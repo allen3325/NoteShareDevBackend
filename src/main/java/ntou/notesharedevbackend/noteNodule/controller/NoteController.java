@@ -98,6 +98,7 @@ public class NoteController {
         return ResponseEntity.ok(res);
     }
 
+    // TODO: 要改post裡的總人數跟email，檢查是不是管理員。
     @Operation(summary = "kick someone from collaboration note.",description = "email為想要踢掉的人")
     @PutMapping("/kick/{noteID}/{email}")
     public ResponseEntity<Object> kickUserFromCollaboration(@PathVariable("noteID") String noteID, @PathVariable("email") String email) {

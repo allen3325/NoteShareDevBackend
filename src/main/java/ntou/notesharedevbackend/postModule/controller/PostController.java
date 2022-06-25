@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +43,16 @@ public class PostController {
         Map<String, Object> res = new HashMap<>();
 
         res.put("res", post);
+        return ResponseEntity.ok(res);
+    }
+
+    @Operation(summary = "get user's all post by type", description = "type為(QA, reward, collaboration)")
+    @GetMapping("/{email}/{postType}")
+    public ResponseEntity<Object> getUserAllPostByType(@PathVariable("email") String email, @PathVariable("postType") String postType) {
+        ArrayList<Post> allPost = postService.getUserAllPostByType(email,postType);
+        Map<String, Object> res = new HashMap<>();
+
+        res.put("res", allPost);
         return ResponseEntity.ok(res);
     }
 
@@ -129,6 +140,7 @@ public class PostController {
         }
     }
 
+    // TODO: 點數增減
     @Operation(summary = "reward choose best answer(note).", description = "填入postID,最佳解筆記ID")
     @PutMapping("/reward/best/{postID}/{answerID}")
     public ResponseEntity<Object> rewardChooseBestAnswer(@PathVariable("postID") String postID,
@@ -156,7 +168,7 @@ public class PostController {
         }
     }
 
-    //TODO: 改成 reward
+    //TODO: 改成 reward，點數增減
     @Operation(summary = "reward choose reference answer.", description = "填入postID,最佳解留言ID")
     @PutMapping("/qa/reference/{postID}/{commentID}")
     public ResponseEntity<Object> QAChooseReferenceAnswer(@PathVariable("postID") String postID,

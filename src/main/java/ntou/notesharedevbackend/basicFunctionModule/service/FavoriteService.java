@@ -44,7 +44,8 @@ public class FavoriteService {
             }
         }
         note.setComments(comments);
-        noteRepository.save(note);
+        noteService.replaceNote(note,note.getId());
+//        noteRepository.save(note);
     }
 
     public void favoritePostComment(String postID, String commentID, String email) {

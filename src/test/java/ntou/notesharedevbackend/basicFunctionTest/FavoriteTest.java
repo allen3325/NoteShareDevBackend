@@ -35,6 +35,14 @@ public class FavoriteTest {
         note.setType("collaboration");
         note.setHeaderEmail("allen3325940072@gmail.com");
         note.setHeaderName("allen");
+        note.setLiker(new ArrayList<String>());
+        note.setBuyer(new ArrayList<String>());
+        note.setFavoriter(new ArrayList<String>());
+        note.setComments(new ArrayList<Comment>());
+        note.setTag(new ArrayList<String>());
+        note.setHiddenTag(new ArrayList<String>());
+        note.setVersion(new ArrayList<VersionContent>());
+        note.setContributors(new ArrayList<String>());
         return note;
     }
 

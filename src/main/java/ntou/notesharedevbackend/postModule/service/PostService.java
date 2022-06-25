@@ -44,7 +44,7 @@ public class PostService {
 
     public Post getPostById(String id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Can't find product."));
+                .orElseThrow(() -> new NotFoundException("Can't find post."));
     }
 
     public Post createPost(String userEmail, PostRequest request) {
@@ -132,6 +132,7 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
+    // TODO: reward 的 answers 裡有沒有最佳解
     public Post modifyPublishStatus(String id) {
         Post post = getPostById(id);
         if (post.getPublic() && (post.getType().equals("reward") || post.getType().equals("QA"))) {
@@ -394,5 +395,10 @@ public class PostService {
             }
         }
         return false;
+    }
+
+    public ArrayList<Post> getUserAllPostByType(String email, String postType) {
+        List<Post> allPost = postRepository.findAllByAuthorAndType(email,postType);
+        return new ArrayList<Post>(allPost);
     }
 }

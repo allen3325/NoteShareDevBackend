@@ -27,9 +27,9 @@ public class AppUserController {
     @GetMapping
     public ResponseEntity<Object> getAllUsers() {
         AppUser[] appUsers = appUserService.getAllUsers();
-        Map<String,Object> res = new HashMap<>();
+        Map<String, Object> res = new HashMap<>();
 
-        res.put("res",appUsers);
+        res.put("res", appUsers);
         return ResponseEntity.ok(res);
     }
 
@@ -37,9 +37,9 @@ public class AppUserController {
     @GetMapping("/id/{id}")
     public ResponseEntity<Object> getUserByID(@PathVariable("id") String id) {
         AppUser appUser = appUserService.getUserById(id);
-        Map<String,Object> res = new HashMap<>();
+        Map<String, Object> res = new HashMap<>();
 
-        res.put("res",appUser);
+        res.put("res", appUser);
         return ResponseEntity.ok(res);
     }
 
@@ -47,9 +47,29 @@ public class AppUserController {
     @GetMapping("/{email}")
     public ResponseEntity<Object> getUserByEmail(@PathVariable("email") String email) {
         AppUser appUser = appUserService.getUserByEmail(email);
-        Map<String,Object> res = new HashMap<>();
+        Map<String, Object> res = new HashMap<>();
 
-        res.put("res",appUser);
+        res.put("res", appUser);
+        return ResponseEntity.ok(res);
+    }
+
+    @Operation(summary = "Get user's headshotPhoto")
+    @GetMapping("/head/{email}")
+    public ResponseEntity<Object> getUserHeadshotPhoto(@PathVariable("email") String email) {
+        String headshotPhoto = appUserService.getUserHeadshotPhoto(email);
+        Map<String, Object> res = new HashMap<>();
+
+        res.put("res", headshotPhoto);
+        return ResponseEntity.ok(res);
+    }
+
+    @Operation(summary = "Get user's headshotPhoto")
+    @PutMapping("/head/{email}/{headshotPhoto}")
+    public ResponseEntity<Object> updateUserHeadshotPhoto(@PathVariable("email") String email, @PathVariable("headshotPhoto") String headshotPhoto) {
+        AppUser appUser = appUserService.updateUserHeadshotPhoto(email,headshotPhoto);
+        Map<String, Object> res = new HashMap<>();
+
+        res.put("res", appUser);
         return ResponseEntity.ok(res);
     }
 
@@ -81,22 +101,22 @@ public class AppUserController {
     @Operation(summary = "Edit user's strength by email", description = "只能編輯strength")
     @PutMapping("/strength/{email}")
     public ResponseEntity<Object> modifyUserStrength(@PathVariable("email") String email,
-                                                      @RequestBody ModifyUser request) {
+                                                     @RequestBody ModifyUser request) {
         appUserService.modifyStrength(email, request.getStrength());
-        Map<String,Object> res = new HashMap<>();
+        Map<String, Object> res = new HashMap<>();
 
-        res.put("msg","Success");
+        res.put("msg", "Success");
         return ResponseEntity.status(200).body(res);
     }
 
     @Operation(summary = "Edit user's Profile by email", description = "只能編輯自我介紹")
     @PutMapping("/profile/{email}")
     public ResponseEntity<Object> modifyUserProfile(@PathVariable("email") String email,
-                                                     @RequestBody ModifyUser request) {
+                                                    @RequestBody ModifyUser request) {
         appUserService.modifyProfile(email, request.getProfile());
-        Map<String,Object> res = new HashMap<>();
+        Map<String, Object> res = new HashMap<>();
 
-        res.put("msg","Success");
+        res.put("msg", "Success");
         return ResponseEntity.status(200).body(res);
     }
 }
