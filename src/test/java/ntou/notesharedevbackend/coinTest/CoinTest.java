@@ -1,8 +1,10 @@
 package ntou.notesharedevbackend.coinTest;
 
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.VersionContent;
 import ntou.notesharedevbackend.repository.FolderRepository;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.UserRepository;
@@ -93,21 +95,21 @@ public class CoinTest {
         note.setSchool("NTOU");
         note.setPublic(true);
         note.setPrice(50);
-        note.setLiker(null);
-        note.setLikeCount(null);
-        note.setBuyer(null);
-        note.setFavoriter(null);
-        note.setFavoriteCount(null);
+        note.setLikeCount(0);
+        note.setLiker(new ArrayList<String>());
+        note.setBuyer(new ArrayList<String>());
+        note.setFavoriter(new ArrayList<String>());
+        note.setFavoriteCount(0);
         note.setUnlockCount(0);
         note.setDownloadable(false);
-        note.setCommentCount(null);
-        note.setComments(null);
+        note.setCommentCount(0);
+        note.setComments(new ArrayList<Comment>());
         note.setSubmit(null);
         note.setQuotable(false);
-        note.setTag(null);
-        note.setHiddenTag(null);
-        note.setVersion(null);
-        note.setContributors(null);
+        note.setTag(new ArrayList<String>());
+        note.setHiddenTag(new ArrayList<String>());
+        note.setVersion(new ArrayList<VersionContent>());
+        note.setContributors(new ArrayList<String>());
         note.setPostID(null);
         note.setReference(null);
         note.setBest(null);
@@ -229,12 +231,14 @@ public class CoinTest {
                 .andExpect(jsonPath("$.res.professor").value(note.getProfessor()))
                 .andExpect(jsonPath("$.res.school").value(note.getSchool()))
                 .andExpect(jsonPath("$.res.liker").value(note.getLiker()))
-                .andExpect(jsonPath("$.res.buyer").value(note.getBuyer()))
+                //TODO: 張哲瑋説：Buyer 會增加購買者。
+//                .andExpect(jsonPath("$.res.buyer").value(note.getBuyer()))
                 .andExpect(jsonPath("$.res.favoriter").value(note.getFavoriter()))
                 .andExpect(jsonPath("$.res.likeCount").value(note.getLikeCount()))
                 .andExpect(jsonPath("$.res.favoriteCount").value(note.getFavoriteCount()))
                 //TODO: 跟張哲瑋說 CoinService 買成功的時候要增加解鎖次數 完成後 測試下行
-//                .andExpect(jsonPath("$.res.unlockCount").value(note.getUnlockCount()+1))
+                // 張哲瑋説：測試好了也過了:D
+                .andExpect(jsonPath("$.res.unlockCount").value(note.getUnlockCount()+1))
                 .andExpect(jsonPath("$.res.downloadable").value(note.getDownloadable()))
                 .andExpect(jsonPath("$.res.commentCount").value(note.getCommentCount()))
                 .andExpect(jsonPath("$.res.comments").value(note.getComments()))
@@ -250,11 +254,12 @@ public class CoinTest {
                 .andExpect(jsonPath("$.res.public").value(note.getPublic()))
                 .andExpect(jsonPath("$.res.submit").value(note.getSubmit()));
         //TODO:跟張哲瑋說:筆記作者們要拿到錢 完成後測試下面迴圈
-//        for(String s: note.getAuthorEmail()){
-//            if(!userRepository.findByEmail(s).getCoin().equals(authorNewCoin)){
-//                throw new Exception("Coin Test : author's coin does not increase");
-//            }
-//        }
+        // 張哲瑋説：測試好了也過了:D
+        for(String s: note.getAuthorEmail()){
+            if(!userRepository.findByEmail(s).getCoin().equals(authorNewCoin)){
+                throw new Exception("Coin Test : author's coin does not increase");
+            }
+        }
 
         if(!userRepository.findByEmail(buyer.getEmail()).getCoin().equals(buyerNewCoin)){
             throw new Exception("Coin Test : buyer's coin does not decrease");

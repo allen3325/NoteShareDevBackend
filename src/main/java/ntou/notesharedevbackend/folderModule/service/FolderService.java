@@ -189,7 +189,6 @@ public class FolderService {
     }
 
     public Folder renameFolderByID(String email, String folderID, String wannaChangeName) {
-        System.out.println("wannaChangeName = " + wannaChangeName);
         // get all folders and check its contains folder's name and change it.
         Folder wannaChangeFolder = getFolderByID(folderID);
         ArrayList<Folder> allFolders = getAllFoldersFromUser(email);

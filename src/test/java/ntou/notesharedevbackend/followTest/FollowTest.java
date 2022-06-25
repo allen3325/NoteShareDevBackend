@@ -50,6 +50,12 @@ public class FollowTest {
     private AppUser createInitUser(){
         AppUser appUser = new AppUser();
         appUser.setEmail("yitingwu.1030@gmail.com");
+        // 張哲瑋：因為我把appUser的建構子修改過，以下空陣列為原本建構子裡做的事情
+        appUser.setStrength(new ArrayList<String>());
+        appUser.setSubscribe(new ArrayList<String>());
+        appUser.setBell(new ArrayList<String>());
+        appUser.setFans(new ArrayList<String>());
+        appUser.setHeadshotPhoto(null);
         appUser.setActivate(true);
         appUser.setName("Ting");
         appUser.setPassword(passwordEncoder.encode("1234"));
@@ -83,6 +89,12 @@ public class FollowTest {
         appUser.setPassword(passwordEncoder.encode("1234"));
         appUser.setVerifyCode("1111");
         appUser.setFolders(new ArrayList<>());
+        // 張哲瑋：因為我把appUser的建構子修改過，以下空陣列為原本建構子裡做的事情
+        appUser.setStrength(new ArrayList<String>());
+        appUser.setSubscribe(new ArrayList<String>());
+        appUser.setBell(new ArrayList<String>());
+        appUser.setFans(new ArrayList<String>());
+        appUser.setHeadshotPhoto(null);
         return appUser;
     }
     @Test

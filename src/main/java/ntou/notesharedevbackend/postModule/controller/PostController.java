@@ -45,7 +45,7 @@ public class PostController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "create post(QA, reward, collaboration).",description = "id,date,comments,commentCount," +
+    @Operation(summary = "create post(QA, reward, collaboration).", description = "id,date,comments,commentCount," +
             "answers,wantEnterUserEmail,publishDate,vote,collabNoteAuthorNumber,collabApply都不用填。若為共筆貼文，則會自動創建筆記放在此貼文的answer裡")
     @PostMapping("/{email}")
     public ResponseEntity<Object> createPost(@PathVariable("email") String email, @RequestBody PostRequest request) {
@@ -69,10 +69,9 @@ public class PostController {
         return ResponseEntity.status(201).body(res);
     }
 
-    @Operation(summary = "update post.",description = "body should full complete.")
+    @Operation(summary = "update post.", description = "body should full complete.")
     @PutMapping("/{postID}")
-    public ResponseEntity<Object> replacePost(
-            @PathVariable("postID") String id, @RequestBody Post request) {
+    public ResponseEntity<Object> replacePost(@PathVariable("postID") String id, @RequestBody Post request) {
         Post post = postService.replacePost(id, request);
         Map<String, Object> res = new HashMap<>();
 
@@ -86,15 +85,15 @@ public class PostController {
         Post post = postService.modifyPublishStatus(id);
         Map<String, Object> res = new HashMap<>();
 
-        if(post != null) {
+        if (post != null) {
             res.put("res", post);
-        }else{
-            res.put("msg","can't change publish state before you got best answer.");
+        } else {
+            res.put("msg", "can't change publish state before you got best answer.");
         }
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "apply become one of collaboration note's author.",description = "wantEnterUsersEmail為申請者,commentFromApplicant為留言")
+    @Operation(summary = "apply become one of collaboration note's author.", description = "wantEnterUsersEmail為申請者,commentFromApplicant為留言")
     @PutMapping("/apply/{postID}")
     public ResponseEntity<Object> applyCollaboration(@PathVariable("postID") String id, @RequestBody Apply applicant) {
         postService.applyCollaboration(id, applicant);
@@ -105,7 +104,7 @@ public class PostController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "approve become one of collaboration note's author.",description = "email為申請通過者")
+    @Operation(summary = "approve become one of collaboration note's author.", description = "email為申請通過者")
     @PutMapping("/add/{postID}/{email}")
     public ResponseEntity<Object> approveCollaboration(@PathVariable("postID") String id, @PathVariable("email") String email) {
         postService.approveCollaboration(id, email);
@@ -116,41 +115,41 @@ public class PostController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "user vote.",description = "第一個ID為postID,第二個ID為voteID,email為投票者")
+    @Operation(summary = "user vote.", description = "第一個ID為postID,第二個ID為voteID,email為投票者")
     @PutMapping("/vote/{postID}/{voteID}/{email}")
     public ResponseEntity<Object> voteCollaborationVote(@PathVariable("postID") String postID,
-    @PathVariable("voteID") String voteID, @PathVariable("email") String email, @RequestBody String option) {
-        Map<String,Object> res = new HashMap<>();
+                                                        @PathVariable("voteID") String voteID, @PathVariable("email") String email, @RequestBody String option) {
+        Map<String, Object> res = new HashMap<>();
         if (postService.voteCollaborationVote(postID, voteID, email, option)) {
-            res.put("msg","Success");
+            res.put("msg", "Success");
             return ResponseEntity.ok(res);
         } else {
-            res.put("msg","Fail");
+            res.put("msg", "Fail");
             throw new NotFoundException("Can not vote");
         }
     }
 
-    @Operation(summary = "reward choose best answer(note).",description = "填入postID,最佳解筆記ID")
+    @Operation(summary = "reward choose best answer(note).", description = "填入postID,最佳解筆記ID")
     @PutMapping("/reward/best/{postID}/{answerID}")
     public ResponseEntity<Object> rewardChooseBestAnswer(@PathVariable("postID") String postID,
-    @PathVariable("answerID") String answerID, @RequestBody String email) {
-            Map<String,Object> res = new HashMap<>();
+                                                         @PathVariable("answerID") String answerID, @RequestBody String email) {
+        Map<String, Object> res = new HashMap<>();
         if (postService.rewardChooseBestAnswer(postID, answerID, email)) {
-            res.put("msg","Success");
+            res.put("msg", "Success");
             return ResponseEntity.ok(res);
         } else {
-            res.put("msg","Fail");
+            res.put("msg", "Fail");
             throw new NotFoundException("Can't not choose best answer");
         }
     }
 
-    @Operation(summary = "qa choose best answer(comment)",description = "填入postID,最佳解留言ID")
+    @Operation(summary = "qa choose best answer(comment)", description = "填入postID,最佳解留言ID")
     @PutMapping("/qa/best/{postID}/{commentID}")
     public ResponseEntity<Object> QAChooseBestAnswer(@PathVariable("postID") String postID,
-    @PathVariable("commentID") String commentID) {
-        Map<String,Object> res = new HashMap<>();
+                                                     @PathVariable("commentID") String commentID) {
+        Map<String, Object> res = new HashMap<>();
         if (postService.QAChooseBestAnswer(postID, commentID)) {
-            res.put("msg","Success");
+            res.put("msg", "Success");
             return ResponseEntity.ok(res);
         } else {
             throw new NotFoundException("This post has best answer already.");
@@ -158,16 +157,16 @@ public class PostController {
     }
 
     //TODO: 改成 reward
-    @Operation(summary = "reward choose reference answer.",description = "填入postID,最佳解留言ID")
+    @Operation(summary = "reward choose reference answer.", description = "填入postID,最佳解留言ID")
     @PutMapping("/qa/reference/{postID}/{commentID}")
     public ResponseEntity<Object> QAChooseReferenceAnswer(@PathVariable("postID") String postID,
-    @PathVariable("commentID") String commentID, @RequestBody String email) {
-            Map<String,Object> res = new HashMap<>();
+                                                          @PathVariable("commentID") String commentID, @RequestBody String email) {
+        Map<String, Object> res = new HashMap<>();
         if (postService.QAChooseReferenceAnswer(postID, commentID, email)) {
-            res.put("msg","Success");
+            res.put("msg", "Success");
             return ResponseEntity.ok(res);
         } else {
-            res.put("msg","Fail");
+            res.put("msg", "Fail");
             throw new NotFoundException("Can't not choose reference answer");
         }
     }
@@ -176,8 +175,8 @@ public class PostController {
     @DeleteMapping("/{postID}")
     public ResponseEntity<Object> deletePost(@PathVariable("postID") String id) {
         postService.deletePost(id);
-        Map<String,Object> res = new HashMap<>();
-        res.put("msg","Success");
+        Map<String, Object> res = new HashMap<>();
+        res.put("msg", "Success");
         return ResponseEntity.status(204).body(res);
     }
 }

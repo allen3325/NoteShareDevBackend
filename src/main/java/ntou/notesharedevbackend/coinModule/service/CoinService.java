@@ -45,8 +45,8 @@ public class CoinService {
 
     public Note buyNote(String email, String noteID) {
         AppUser buyer = appUserService.getUserByEmail(email);
-        AppUser notesAuthor = appUserService.getUserByEmail(email);
         Note note = noteService.getNote(noteID);
+        AppUser notesAuthor = appUserService.getUserByEmail(note.getHeaderEmail());
         Integer price = note.getPrice();
         Integer buyersCoin = buyer.getCoin();
         Integer noteAuthorCoin = notesAuthor.getCoin();
@@ -74,8 +74,7 @@ public class CoinService {
             noteBuyerList.add(email);
             note.setBuyer(noteBuyerList);
             noteService.replaceNote(note,note.getId()); // update unlockCount in replace.
-
-            return note;
+            return noteService.getNote(noteID);
         }
     }
 }

@@ -8,10 +8,10 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:mail.properties")
 public class MailConfig {
 
-    @Value("${mail.yahoo.host}")
+    @Value("${mail.gmail.host}")
     private String host;
 
-    @Value("${mail.yahoo.port}") // 使用「:」符號可以加上預設值
+    @Value("${mail.gmail.port}") // 使用「:」符號可以加上預設值
     private int port;
 
     @Value("${mail.auth.enabled}")
@@ -23,10 +23,10 @@ public class MailConfig {
     @Value("${mail.protocol}")
     private String protocol;
 
-    @Value("${mail.yahoo.username}")
+    @Value("${mail.gmail.username}")
     private String username;
 
-    @Value("${mail.yahoo.password}")
+    @Value("${mail.gmail.password}")
     private String password;
 
     public String getHost() {

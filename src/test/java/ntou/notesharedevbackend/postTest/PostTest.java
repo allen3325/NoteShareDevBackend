@@ -28,7 +28,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+
 import java.util.*;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,15 +60,15 @@ public class PostTest {
         noteRepository.deleteAll();
         httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        AppUser appUser = createUser("yitingwu.1030@gmail.com","Ting");
-        AppUser appUser1 = createUser("user1@gmail.com","User1");
-        AppUser appUser2 = createUser("user2@gmail.com","User2");
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
+        AppUser appUser1 = createUser("user1@gmail.com", "User1");
+        AppUser appUser2 = createUser("user2@gmail.com", "User2");
         userRepository.insert(appUser);
         userRepository.insert(appUser1);
         userRepository.insert(appUser2);
     }
 
-    private Folder createFolder(String folderName, String path, String parent){
+    private Folder createFolder(String folderName, String path, String parent) {
         Folder folder = new Folder();
         folder.setFolderName(folderName);
         folder.setFavorite(false);
@@ -78,16 +80,17 @@ public class PostTest {
         folderRepository.insert(folder);
         return folder;
     }
-    private AppUser createUser(String email, String name){
+
+    private AppUser createUser(String email, String name) {
         AppUser appUser = new AppUser();
         appUser.setEmail(email);
         appUser.setActivate(true);
         appUser.setName(name);
         appUser.setPassword(passwordEncoder.encode("1234"));
-        Folder buyFolder = createFolder("Buy","/Buy",null);
-        Folder favoriteFolder = createFolder("Favorite","/Favorite",null);
-        Folder collaborationFolder = createFolder("Collaboration","/Collaboration",null);
-        Folder OSFolder = createFolder("OS","/OS",null);
+        Folder buyFolder = createFolder("Buy", "/Buy", null);
+        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null);
+        Folder collaborationFolder = createFolder("Collaboration", "/Collaboration", null);
+        Folder OSFolder = createFolder("OS", "/OS", null);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());
@@ -98,7 +101,7 @@ public class PostTest {
         return appUser;
     }
 
-    public Post createQAPost(){
+    public Post createQAPost() {
         Post post = new Post();
         post.setType("QA");
         post.setPublic(true);
@@ -134,7 +137,7 @@ public class PostTest {
         return post;
     }
 
-    private Note createRewardNote(String email, String name){
+    private Note createRewardNote(String email, String name) {
         Note note = new Note();
         note.setType("reward");
         note.setDepartment("CS");
@@ -241,7 +244,8 @@ public class PostTest {
         noteRepository.insert(note);
         return note;
     }
-    public Post createRewardPost(){
+
+    public Post createRewardPost() {
         Post post = new Post();
         post.setType("reward");
         post.setAuthor("yitingwu.1030@gmail.com");
@@ -260,15 +264,16 @@ public class PostTest {
         post.setPublic(true);
         post.setComments(new ArrayList<Comment>());
         ArrayList<String> answers = new ArrayList<>();
-        Note note = createRewardNote("user1@gmail.com","User1");
-        Note note1 = createRewardNote("user2@gmail.com","User2");
+        Note note = createRewardNote("user1@gmail.com", "User1");
+        Note note1 = createRewardNote("user2@gmail.com", "User2");
         answers.add(note.getId());
         answers.add(note1.getId());
         post.setAnswers(answers);
         post = postRepository.insert(post);
         return post;
     }
-    private Note createCollaborationNote(){
+
+    private Note createCollaborationNote() {
         Note note = new Note();
         note.setType("collaboration");
         note.setDepartment("CS");
@@ -376,9 +381,10 @@ public class PostTest {
         note.setReference(null);
         note.setBest(null);
         note.setManagerEmail(null);
-        note=noteRepository.insert(note);
+        note = noteRepository.insert(note);
         return note;
     }
+
     public Post createCollaborationPost() {
         Post post = new Post();
         post.setType("collaboration");
@@ -392,15 +398,18 @@ public class PostTest {
         post.setProfessor("professor");
         post.setTitle("Interrupt vs trap");
         post.setContent("this is a post!");
+        post.setCollabNoteAuthorNumber(post.getEmail().size());
         ArrayList<String> answers = new ArrayList<>();
         Note note = createCollaborationNote();
         answers.add(note.getId());
         post.setAnswers(answers);
-        ArrayList<String> wantEnterUsersEmail = new ArrayList<>();
-        post.setWantEnterUsersEmail(wantEnterUsersEmail);
+//        ArrayList<String> wantEnterUsersEmail = new ArrayList<>();
+//        post.setWantEnterUsersEmail(wantEnterUsersEmail);
+        post.setCollabApply(new ArrayList<Apply>());
         post.setPublic(true);
         post.setCollabNoteAuthorNumber(1);
-        post.setComments(new ArrayList<>());
+        post.setComments(new ArrayList<Comment>());
+        post.setCommentCount(0);
         post = postRepository.insert(post);
         return post;
     }
@@ -502,9 +511,10 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.date").hasJsonPath())
                 .andExpect(jsonPath("$.res.collabNoteAuthorNumber").value(post.getCollabNoteAuthorNumber()))
                 .andExpect(jsonPath("$.res.answers").value(post.getAnswers()))
-                .andExpect(jsonPath("$.res.wantEnterUsersEmail").value(post.getWantEnterUsersEmail()))
+//                .andExpect(jsonPath("$.res.wantEnterUsersEmail").value(post.getWantEnterUsersEmail()))
                 .andExpect(jsonPath("$.res.public").value(post.getPublic()));
     }
+
     @Test
     public void testGetAllTypesOfPost() throws Exception {
         Post post1 = createQAPost();
@@ -624,17 +634,17 @@ public class PostTest {
         JSONArray email = new JSONArray()
                 .put("yitingwu.1030@gmail.com");
         JSONObject request = new JSONObject()
-                .put("type","QA")
-                .put("email",email)
-                .put("author","Ting")
-                .put("department","CS")
-                .put("subject","Java")
-                .put("school","NTOU")
-                .put("professor","NoteShare")
-                .put("title","Java Array")
-                .put("content","Content")
-                .put("bestPrice",5)
-                .put("public",true);
+                .put("type", "QA")
+                .put("email", email)
+                .put("author", "Ting")
+                .put("department", "CS")
+                .put("subject", "Java")
+                .put("school", "NTOU")
+                .put("professor", "NoteShare")
+                .put("title", "Java Array")
+                .put("content", "Content")
+                .put("bestPrice", 5)
+                .put("public", true);
 
         mockMvc.perform(post("/post/" + appUser.getEmail())
                         .headers(httpHeaders)
@@ -666,45 +676,45 @@ public class PostTest {
         post.setTitle("TITLE");
 
         JSONArray comments = new JSONArray();
-        for(Comment c : post.getComments()){
+        for (Comment c : post.getComments()) {
             JSONArray likers = new JSONArray();
-            for(String s : c.getLiker()){
+            for (String s : c.getLiker()) {
                 likers.put(s);
             }
             JSONArray picURLs = new JSONArray();
-            for(String s : c.getPicURL()){
+            for (String s : c.getPicURL()) {
                 picURLs.put(s);
             }
             JSONObject comment = new JSONObject()
-                    .put("id",c.getId())
-                    .put("author",c.getAuthor())
-                    .put("email",c.getEmail())
-                    .put("likeCount",c.getLikeCount())
-                    .put("liker",likers)
-                    .put("floor",c.getFloor())
-                    .put("date",c.getDate())
-                    .put("picURL",picURLs)
-                    .put("best",c.getBest())
-                    .put("content",c.getContent());
+                    .put("id", c.getId())
+                    .put("author", c.getAuthor())
+                    .put("email", c.getEmail())
+                    .put("likeCount", c.getLikeCount())
+                    .put("liker", likers)
+                    .put("floor", c.getFloor())
+                    .put("date", c.getDate())
+                    .put("picURL", picURLs)
+                    .put("best", c.getBest())
+                    .put("content", c.getContent());
             comments.put(comment);
         }
 
 
         JSONObject request = new JSONObject()
-                .put("id",post.getId())
-                .put("type",post.getType())
-                .put("author",post.getAuthor())
-                .put("department",post.getDepartment())
-                .put("subject",post.getSubject())
-                .put("professor",post.getProfessor())
-                .put("title",post.getTitle())
-                .put("content",post.getContent())
-                .put("date",post.getDate())
-                .put("comments",comments)
-                .put("commentCount",post.getCommentCount())
-                .put("public",true)
+                .put("id", post.getId())
+                .put("type", post.getType())
+                .put("author", post.getAuthor())
+                .put("department", post.getDepartment())
+                .put("subject", post.getSubject())
+                .put("professor", post.getProfessor())
+                .put("title", post.getTitle())
+                .put("content", post.getContent())
+                .put("date", post.getDate())
+                .put("comments", comments)
+                .put("commentCount", post.getCommentCount())
+                .put("public", true)
                 //TODO:非此type需要的，會為null，replace function會有問題
-                .put("email",new JSONArray().put("yitingwu.1030@gmail.com"));
+                .put("email", new JSONArray().put("yitingwu.1030@gmail.com"));
 
         mockMvc.perform(put("/post/" + post.getId())
                         .headers(httpHeaders)
@@ -744,55 +754,60 @@ public class PostTest {
     }
 
     @Test
-    public void testApplyCollaboration() throws Exception{
-        AppUser applicant = createUser("user@email.com","user");
+    public void testApplyCollaboration() throws Exception {
+        AppUser applicant = createUser("user@email.com", "user");
         userRepository.insert(applicant);
-        Post post =createCollaborationPost();
-        post.setComments(new ArrayList<Comment>());
-        postRepository.save(post);
+        Post post = createCollaborationPost();
 
-        mockMvc.perform(put("/post/"+post.getId()+"/"+applicant.getEmail())
-                .headers(httpHeaders))
+
+        JSONObject request = new JSONObject();
+//      "wantEnterUsersEmail": "genewang7@gmail.com",
+//      "commentFromApplicant": "我想加入口以嗎？二"
+        request.put("wantEnterUsersEmail",applicant.getEmail());
+        request.put("commentFromApplicant","我是留言");
+
+        mockMvc.perform(put("/post/apply/" + post.getId())
+                        .headers(httpHeaders)
+                        .content(request.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
-        if(!postRepository.findById(post.getId()).get().getWantEnterUsersEmail().contains(applicant.getEmail())){
-            throw new Exception("Post Test : applicant does not enter want enter list");
-        }
+//        if(!postRepository.findById(post.getId()).get().getWantEnterUsersEmail().contains(applicant.getEmail())){
+//            throw new Exception("Post Test : applicant does not enter want enter list");
+//        }
     }
 
     @Test
-    public void testApproveCollaboration() throws Exception{
-        AppUser applicant = createUser("user@email.com","user");
+    public void testApproveCollaboration() throws Exception {
+        AppUser applicant = createUser("user@email.com", "user");
         userRepository.insert(applicant);
-        Post post =createCollaborationPost();
-        post.getWantEnterUsersEmail().add(applicant.getEmail());
+        Post post = createCollaborationPost();
+        post.getCollabApply().add(new Apply(applicant.getEmail(), "comment"));
         post.setComments(new ArrayList<>());
         postRepository.save(post);
 
-        mockMvc.perform(put("/post/add/"+post.getId()+"/"+applicant.getEmail())
-                .headers(httpHeaders))
+        mockMvc.perform(put("/post/add/" + post.getId() + "/" + applicant.getEmail())
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
-        if(postRepository.findById(post.getId()).get().getWantEnterUsersEmail().contains(applicant.getEmail())){
-            throw new Exception("Post Test : applicant still in want enter list.");
-        }
-        if(!postRepository.findById(post.getId()).get().getCollabNoteAuthorNumber().equals(post.getCollabNoteAuthorNumber()+1)){
+//        if(postRepository.findById(post.getId()).get().getWantEnterUsersEmail().contains(applicant.getEmail())){
+//            throw new Exception("Post Test : applicant still in want enter list.");
+//        }
+        if (!postRepository.findById(post.getId()).get().getCollabNoteAuthorNumber().equals(post.getCollabNoteAuthorNumber() + 1)) {
             throw new Exception("Post Test : collabNoteAuthorNumber does not plus one");
         }
 
-        if(!noteRepository.findById(post.getAnswers().get(0)).get().getAuthorEmail().contains(applicant.getEmail())){
+        if (!noteRepository.findById(post.getAnswers().get(0)).get().getAuthorEmail().contains(applicant.getEmail())) {
             throw new Exception("Post Test : applicant email does not enter note author email");
         }
-        if(!noteRepository.findById(post.getAnswers().get(0)).get().getAuthorName().contains(applicant.getName())){
+        if (!noteRepository.findById(post.getAnswers().get(0)).get().getAuthorName().contains(applicant.getName())) {
             throw new Exception("Post Test : applicant email does not enter note author email");
         }
-
 
 
     }
 
     @Test
-    public void testVoteCollaborationVote() throws Exception{
+    public void testVoteCollaborationVote() throws Exception {
         Post post = createCollaborationPost();
         Vote vote = new Vote();
         ArrayList<Vote> voteArrayList = new ArrayList<>();
@@ -800,29 +815,29 @@ public class PostTest {
         post.setVote(voteArrayList);
         postRepository.save(post);
         AppUser appUser = userRepository.findByEmail("user1@gmail.com");
-        mockMvc.perform(put("/post/vote/"+post.getId()+"/"+vote.getId()+"/"+appUser.getEmail())
-                .headers(httpHeaders)
-                .content("agree"))
+        mockMvc.perform(put("/post/vote/" + post.getId() + "/" + vote.getId() + "/" + appUser.getEmail())
+                        .headers(httpHeaders)
+                        .content("agree"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
         post = postRepository.findById(post.getId()).get();
-        if(!post.getVote().get(0).getAgree().contains(appUser.getEmail())){
+        if (!post.getVote().get(0).getAgree().contains(appUser.getEmail())) {
             throw new Exception("Post Test : voter does not enter queue");
         }
     }
 
     @Test
-    public void testRewardChooseBestAnswer() throws Exception{
+    public void testRewardChooseBestAnswer() throws Exception {
         AppUser contributor = userRepository.findByEmail("user2@gmail.com");
         Post post = createRewardPost();
         String answerID = post.getAnswers().get(1);
         AppUser postAuthor = userRepository.findByEmail(post.getAuthor());
-        mockMvc.perform(put("/post/reward/best/"+post.getId()+"/"+answerID)
-                .content(postAuthor.getEmail()))
+        mockMvc.perform(put("/post/reward/best/" + post.getId() + "/" + answerID)
+                        .content(postAuthor.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
-        if(!noteRepository.findById(answerID).get().getBest().equals(true)){
+        if (!noteRepository.findById(answerID).get().getBest().equals(true)) {
             throw new Exception("Post Test : note isBest does not change to true");
         }
         //TODO:確認點數增減
@@ -863,24 +878,24 @@ public class PostTest {
 //    }
 
     @Test
-    public void testQAChooseBestAnswer() throws Exception{
+    public void testQAChooseBestAnswer() throws Exception {
         Post post = createQAPost();
         String bestCommentID = post.getComments().get(1).getId();
         AppUser commentAuthor = userRepository.findByEmail(post.getComments().get(1).getEmail());
         AppUser postAuthor = userRepository.findByEmail(post.getAuthor());
-        mockMvc.perform(put("/post/qa/best/"+post.getId()+"/"+bestCommentID)
-                .headers(httpHeaders))
+        mockMvc.perform(put("/post/qa/best/" + post.getId() + "/" + bestCommentID)
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
-        if(!postRepository.findById(post.getId()).get().getComments().get(1).getBest().equals(true)){
+        if (!postRepository.findById(post.getId()).get().getComments().get(1).getBest().equals(true)) {
             throw new Exception("Post Test : QA post best comment's isBest does not set true");
         }
         //點數增減
-        if(!userRepository.findById(commentAuthor.getId()).get().getCoin().equals(commentAuthor.getCoin()+post.getBestPrice())){
+        if (!userRepository.findById(commentAuthor.getId()).get().getCoin().equals(commentAuthor.getCoin() + post.getBestPrice())) {
             throw new Exception("Post Test : best answer author's coin does not get");
         }
-        if(!userRepository.findById(postAuthor.getId()).get().getCoin().equals(postAuthor.getCoin()-post.getBestPrice())){
+        if (!userRepository.findById(postAuthor.getId()).get().getCoin().equals(postAuthor.getCoin() - post.getBestPrice())) {
             throw new Exception("Post Test : post author's coin does not reduce");
         }
 
@@ -936,13 +951,13 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.referenceNumber").value(post.getReferenceNumber()))
                 .andExpect(jsonPath("$.res.answers").value(post.getAnswers()))
                 .andExpect(jsonPath("$.res.public").value(false));
-        if(postRepository.findById(post.getId()).get().getPublic().equals(true)){
+        if (postRepository.findById(post.getId()).get().getPublic().equals(true)) {
             throw new Exception("Post Test: post is still public");
         }
     }
 
     @AfterEach
-    public void clear(){
+    public void clear() {
 
     }
 }

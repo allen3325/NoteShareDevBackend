@@ -72,8 +72,8 @@ public class PostService {
         post.setCollabApply(new ArrayList<Apply>());
         post.setPublishDate(request.getPublishDate());
         post.setVote(new ArrayList<Vote>());
-        post.setCollabNoteAuthorNumber(post.getEmail().size());
         if (request.getType().equals("collaboration")) {//若為共筆貼文，須建立共筆筆記
+            post.setCollabNoteAuthorNumber(post.getEmail().size());
             Note note = new Note();
 //            note.setCreatedAt(request.getCreatedAt());
             note.setTitle(request.getTitle());
