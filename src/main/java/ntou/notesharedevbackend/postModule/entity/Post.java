@@ -17,7 +17,7 @@ public class Post {
     private String id;
     private String type; // QA, reward, collaboration
     private ArrayList<String> email; // 共筆發起人以及管理員，用來核准加入共筆queue的
-    private String author;
+    private String author; // 貼文發起人email
     private String department;
     private String subject;
     private String school;

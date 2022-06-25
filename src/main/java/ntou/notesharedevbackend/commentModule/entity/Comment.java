@@ -36,7 +36,6 @@ public class Comment {
 
     // constructors
     public Comment() {
-
         this.id = new ObjectId().toString();
         this.isBest = false;
         this.picURL = new ArrayList<String>();

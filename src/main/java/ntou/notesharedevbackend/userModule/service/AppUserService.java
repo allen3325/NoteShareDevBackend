@@ -94,39 +94,44 @@ public class AppUserService {
 
     public AppUser replaceUser(AppUser request){
         AppUser user = new AppUser();
-        user.setActivate(request.isActivate());
-        user.setAdmin(request.isAdmin());
-        user.setBell(request.getBell());
-        user.setCoin(request.getCoin());
+
+        user.setId(request.getId());
         user.setEmail(request.getEmail());
-        user.setFolders(request.getFolders());
-        user.setFans(request.getFans());
-        user.setPassword(request.getPassword());
         user.setName(request.getName());
+        user.setPassword(request.getPassword());
+        user.setVerifyCode(request.getVerifyCode());
+        user.setAdmin(request.isAdmin());
+        user.setActivate(request.isActivate());
         user.setProfile(request.getProfile());
         user.setStrength(request.getStrength());
+        user.setFolders(request.getFolders());
         user.setSubscribe(request.getSubscribe());
-        user.setVerifyCode(request.getVerifyCode());
-        user.setId(request.getId());
+        user.setBell(request.getBell());
+        user.setFans(request.getFans());
+        user.setCoin(request.getCoin());
+        user.setHeadshotPhoto(request.getHeadshotPhoto());
+        user.setNotification(request.getNotification());
+        user.setUnreadMessageCount(request.getUnreadMessageCount());
+
         return userRepository.save(user);
     }
 
     public void modifyStrength(String email, ArrayList<String> strength) {
         AppUser user = getUserByEmail(email);
         user.setStrength(strength);
-        userRepository.save(user);
+        replaceUser(user);
     }
 
     public void modifyProfile(String email, String profile) {
         AppUser user = getUserByEmail(email);
         user.setProfile(profile);
-        userRepository.save(user);
+        replaceUser(user);
     }
 
     public void replacePassword(String email, String genRandomPassword) {
         AppUser user = getUserByEmail(email);
         user.setPassword(passwordEncoder.encode(genRandomPassword));
-        userRepository.save(user);
+        replaceUser(user);
     }
 
     public static String randomCode(){
@@ -136,5 +141,16 @@ public class AppUserService {
             chars[i]=(char)('0'+rnd.nextInt(10));
         }
         return new String(chars);
+    }
+
+    public String getUserHeadshotPhoto(String email) {
+        return getUserByEmail(email).getHeadshotPhoto();
+    }
+
+    public AppUser updateUserHeadshotPhoto(String email, String headshotPhoto) {
+        AppUser appUser = getUserByEmail(email);
+        appUser.setHeadshotPhoto(headshotPhoto);
+
+        return replaceUser(appUser);
     }
 }
