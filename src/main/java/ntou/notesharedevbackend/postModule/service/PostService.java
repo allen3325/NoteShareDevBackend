@@ -132,6 +132,7 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
+    // TODO: reward 的 answers 裡有沒有最佳解
     public Post modifyPublishStatus(String id) {
         Post post = getPostById(id);
         if (post.getPublic() && (post.getType().equals("reward") || post.getType().equals("QA"))) {
