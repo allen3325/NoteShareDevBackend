@@ -5,6 +5,7 @@ import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.entity.FolderRequest;
 import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.NoteFolderReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.repository.FolderRepository;
 import ntou.notesharedevbackend.searchModule.entity.NoteBasicReturn;
@@ -77,12 +78,12 @@ public class FolderService {
         return folders;
     }
 
-    public ArrayList<NoteBasicReturn> getAllNotesByFolderID(String folderID) {
+    public ArrayList<NoteFolderReturn> getAllNotesByFolderID(String folderID) {
         ArrayList<String> noteIDList = getFolderByID(folderID).getNotes();
-        ArrayList<NoteBasicReturn> notes = new ArrayList<>();
+        ArrayList<NoteFolderReturn> notes = new ArrayList<NoteFolderReturn>();
         for (String noteID : noteIDList) {
             Note noteTmp = noteService.getNote(noteID);
-            NoteBasicReturn noteBasicReturn = new NoteBasicReturn(noteTmp);
+            NoteFolderReturn noteBasicReturn = new NoteFolderReturn(noteTmp);
             notes.add(noteBasicReturn);
         }
 
@@ -92,7 +93,7 @@ public class FolderService {
     public FolderReturn getAllContentUnderFolderID(String folderID) {
         Folder folder = getFolderByID(folderID);
         FolderReturn folderReturn = new FolderReturn(folder);
-        ArrayList<NoteBasicReturn> notes = getAllNotesByFolderID(folderID);
+        ArrayList<NoteFolderReturn> notes = getAllNotesByFolderID(folderID);
         ArrayList<Folder> folders = getAllFoldersByFolderID(folderID);
 
         folderReturn.setChildren(folders);
@@ -334,5 +335,17 @@ public class FolderService {
             }
         }
         return res;
+    }
+
+    public ArrayList<FolderReturn> turnAllFolderToFolderReturn(ArrayList<Folder> folders){
+        ArrayList<FolderReturn> folderReturns = new ArrayList<>();
+        for(Folder folder:folders){
+            folderReturns.add(getAllContentUnderFolderID(folder.getId()));
+        }
+        return folderReturns;
+    }
+
+    public FolderReturn turnFolderToFolderReturn(Folder folder) {
+        return getAllContentUnderFolderID(folder.getId());
     }
 }

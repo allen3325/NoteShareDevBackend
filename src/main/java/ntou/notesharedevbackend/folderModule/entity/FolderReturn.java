@@ -1,6 +1,7 @@
 package ntou.notesharedevbackend.folderModule.entity;
 
 import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.NoteFolderReturn;
 import ntou.notesharedevbackend.searchModule.entity.NoteBasicReturn;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ public class FolderReturn {
     private String id;
     private String folderName;
 //    private ArrayList<Folder> folders; // folder
-    private ArrayList<NoteBasicReturn> notes; // note
+    private ArrayList<NoteFolderReturn> notes; // note
     private Boolean isPublic;
     private Boolean isFavorite; // 收藏區
     private String path; // 路徑
@@ -53,11 +54,11 @@ public class FolderReturn {
 //        this.folders = folders;
 //    }
 
-    public ArrayList<NoteBasicReturn> getNotes() {
+    public ArrayList<NoteFolderReturn> getNotes() {
         return notes;
     }
 
-    public void setNotes(ArrayList<NoteBasicReturn> notes) {
+    public void setNotes(ArrayList<NoteFolderReturn> notes) {
         this.notes = notes;
     }
 
