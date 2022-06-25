@@ -18,8 +18,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/folder", produces = MediaType.APPLICATION_JSON_VALUE )
-// TODO: 資料夾的favorite也要拔掉
-//  跟張哲瑋說deleteFolder要檢查favorite的children folder
 public class FolderController {
 
     private final FolderService folderService;

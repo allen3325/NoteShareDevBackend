@@ -7,6 +7,7 @@ import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.repository.FolderRepository;
+import ntou.notesharedevbackend.searchModule.entity.NoteBasicReturn;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,11 +77,13 @@ public class FolderService {
         return folders;
     }
 
-    public ArrayList<Note> getAllNotesByFolderID(String folderID) {
+    public ArrayList<NoteBasicReturn> getAllNotesByFolderID(String folderID) {
         ArrayList<String> noteIDList = getFolderByID(folderID).getNotes();
-        ArrayList<Note> notes = new ArrayList<Note>();
+        ArrayList<NoteBasicReturn> notes = new ArrayList<>();
         for (String noteID : noteIDList) {
-            notes.add(noteService.getNote(noteID));
+            Note noteTmp = noteService.getNote(noteID);
+            NoteBasicReturn noteBasicReturn = new NoteBasicReturn(noteTmp);
+            notes.add(noteBasicReturn);
         }
 
         return notes;
@@ -88,21 +91,18 @@ public class FolderService {
 
     public FolderReturn getAllContentUnderFolderID(String folderID) {
         Folder folder = getFolderByID(folderID);
-        ArrayList<String> noteIDList = folder.getNotes();
-        ArrayList<String> folderIDList = folder.getChildren();
         FolderReturn folderReturn = new FolderReturn(folder);
-        ArrayList<Note> notes = new ArrayList<Note>();
-        ArrayList<Folder> folders = new ArrayList<Folder>();
-
-        for (String noteID : noteIDList) {
-            notes.add(noteService.getNote(noteID));
-        }
-        for (String tmpFolderID : folderIDList) {
-            folders.add(getFolderByID(tmpFolderID));
-        }
+        ArrayList<NoteBasicReturn> notes = getAllNotesByFolderID(folderID);
+        ArrayList<Folder> folders = getAllFoldersByFolderID(folderID);
 
         folderReturn.setChildren(folders);
         folderReturn.setNotes(notes);
+        folderReturn.setFolderName(folder.getFolderName());
+        folderReturn.setFavorite(folder.getFavorite());
+        folderReturn.setId(folder.getId());
+        folderReturn.setParent(folder.getParent());
+        folderReturn.setPath(folder.getPath());
+        folderReturn.setPublic(folder.getPublic());
 
         return folderReturn;
     }
