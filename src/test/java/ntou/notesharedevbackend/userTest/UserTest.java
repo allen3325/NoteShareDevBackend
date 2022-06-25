@@ -1,5 +1,7 @@
 package ntou.notesharedevbackend.userTest;
 
+import ntou.notesharedevbackend.folderModule.entity.Folder;
+import ntou.notesharedevbackend.repository.FolderRepository;
 import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import org.json.JSONArray;
@@ -35,8 +37,22 @@ public class UserTest {
     private MockMvc mockMvc;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private FolderRepository folderRepository;
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    private Folder createFolder(String folderName, String path, String parent) {
+        Folder folder = new Folder();
+        folder.setFolderName(folderName);
+        folder.setFavorite(false);
+        folder.setParent(parent);
+        folder.setPath(path);
+        folder.setNotes(new ArrayList<String>());
+        folder.setChildren(new ArrayList<String>());
+        folder.setPublic(false);
+        folderRepository.insert(folder);
+        return folder;
+    }
     private AppUser createUser(){
         AppUser appUser = new AppUser();
         appUser.setEmail("yitingwu.1030@gmail.com");
@@ -44,7 +60,14 @@ public class UserTest {
         appUser.setName("Ting");
         appUser.setPassword(passwordEncoder.encode("1234"));
         appUser.setVerifyCode("1111");
-        appUser.setFolders(new ArrayList<>());
+        Folder buyFolder = createFolder("Buy", "/Buy", null);
+        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null);
+        Folder folderFolder = createFolder("Folder","/Folder",null);
+        ArrayList<String> folderList = new ArrayList<>();
+        folderList.add(buyFolder.getId());
+        folderList.add(favoriteFolder.getId());
+        folderList.add(folderFolder.getId());
+        appUser.setFolders(folderList);
         return appUser;
     }
 
@@ -156,7 +179,9 @@ public class UserTest {
                 .andExpect(jsonPath("$.res.password").hasJsonPath())
                 .andExpect(jsonPath("$.res.profile").value(appUser.getProfile()))
                 .andExpect(jsonPath("$.res.strength").value(appUser.getStrength()))
-                .andExpect(jsonPath("$.res.folders").value(appUser.getFolders()))
+                .andExpect(jsonPath("$.res.folders.[0]").value(appUser.getFolders().get(0)))
+                .andExpect(jsonPath("$.res.folders.[1]").value(appUser.getFolders().get(1)))
+                .andExpect(jsonPath("$.res.folders.[2]").value(appUser.getFolders().get(2)))
                 .andExpect(jsonPath("$.res.subscribe").value(appUser.getSubscribe()))
                 .andExpect(jsonPath("$.res.bell").value(appUser.getBell()))
                 .andExpect(jsonPath("$.res.fans").value(appUser.getFans()))
