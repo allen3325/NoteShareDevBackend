@@ -21,11 +21,12 @@ public class MessageController {
         this.messagingTemplate = messagingTemplate;
     }
 
-    @MessageMapping("/message/{postID}")
-    public void getMessage(@DestinationVariable String postID, final Message message, final Principal principal) throws InterruptedException {
+    @MessageMapping("/message/{noteID}")
+    public void getMessage(@DestinationVariable String noteID, final Message message, final Principal principal) throws InterruptedException {
         Thread.sleep(1000);
-        messagingTemplate.convertAndSend("/topic/messages/" + postID, message);
-        //TODO: saveNotificationPublic -> 每一個共筆群組成員接收到訊息後皆儲存
+        System.out.println(principal.getName());
+        messagingTemplate.convertAndSend("/topic/messages/" + noteID, message);
+        notificationService.saveNotificationPublic(noteID, message);
     }
 
     @MessageMapping("/private-message")

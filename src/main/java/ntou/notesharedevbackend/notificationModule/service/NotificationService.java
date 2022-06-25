@@ -1,5 +1,7 @@
 package ntou.notesharedevbackend.notificationModule.service;
 
+import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.noteNodule.service.*;
 import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.repository.*;
 import ntou.notesharedevbackend.userModule.entity.*;
@@ -12,6 +14,15 @@ import java.util.*;
 public class NotificationService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private NoteService noteService;
+
+    public void saveNotificationPublic(String noteID, Message message) {
+        Note note = noteService.getNote(noteID);
+        ArrayList<String> authorEmail = note.getAuthorEmail();
+        for (String email: authorEmail)
+            saveNotificationPrivate(email, message);
+    }
 
     public void saveNotificationPrivate(String email, Message message) {
         AppUser appUser = userRepository.findByEmail(email);

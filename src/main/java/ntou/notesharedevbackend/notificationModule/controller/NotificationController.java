@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.notificationModule.controller;
 
+import io.swagger.v3.oas.annotations.*;
 import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.notificationModule.service.*;
 import org.springframework.beans.factory.annotation.*;
@@ -14,6 +15,7 @@ public class NotificationController {
     @Autowired
     private NotificationService notificationService;
 
+    @Operation(summary = "get a user's all notifications")
     @GetMapping("/{email}")
     public ResponseEntity<Object> getNotification(@PathVariable("email") String email) {
         ArrayList<Message> notification = notificationService.getNotification(email);
@@ -22,6 +24,7 @@ public class NotificationController {
         return ResponseEntity.ok(map);
     }
 
+    @Operation(summary = "clear unread notifications")
     @PutMapping("/unreadMessageCount/{email}")
     public ResponseEntity<Object> clearUnreadMessageCount(@PathVariable("email") String email) {
         notificationService.clearUnreadMessageCount(email);
