@@ -59,13 +59,7 @@ public class AppUser {
     private Integer unreadMessageCount;
 
     // constructor
-    public AppUser() {
-        this.strength = new ArrayList<String>();
-        this.subscribe = new ArrayList<String>();
-        this.bell = new ArrayList<String>();
-        this.fans = new ArrayList<String>();
-        this.headshotPhoto = null;
-    }
+    public AppUser() {}
 
     // getter and setter
 

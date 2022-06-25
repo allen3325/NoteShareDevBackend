@@ -32,14 +32,24 @@ public class PostRequest {
     private Integer commentCount;
 
     private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID
-    private ArrayList<String> wantEnterUsersEmail;
+//    private ArrayList<String> wantEnterUsersEmail;
     //    private Task task;
     @JsonFormat(timezone = "GMT+08:00")
     private Date publishDate;
     private ArrayList<Vote> vote;
     private Integer collabNoteAuthorNumber;
+    private Apply collabApply;
 
     // getter and setter
+
+    public Apply getCollabApply() {
+        return collabApply;
+    }
+
+    public void setCollabApply(Apply collabApply) {
+        this.collabApply = collabApply;
+    }
+
     public Integer getCollabNoteAuthorNumber() {
         return collabNoteAuthorNumber;
     }
@@ -209,13 +219,13 @@ public class PostRequest {
         this.answers = answers;
     }
 
-    public ArrayList<String> getWantEnterUsersEmail() {
-        return wantEnterUsersEmail;
-    }
-
-    public void setWantEnterUsersEmail(ArrayList<String> wantEnterUsersEmail) {
-        this.wantEnterUsersEmail = wantEnterUsersEmail;
-    }
+//    public ArrayList<String> getWantEnterUsersEmail() {
+//        return wantEnterUsersEmail;
+//    }
+//
+//    public void setWantEnterUsersEmail(ArrayList<String> wantEnterUsersEmail) {
+//        this.wantEnterUsersEmail = wantEnterUsersEmail;
+//    }
 //
 //    public Task getTask() {
 //        return task;

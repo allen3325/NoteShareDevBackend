@@ -54,9 +54,10 @@ public class FavoriteTest {
         ArrayList<String> answers = new ArrayList<>();
         answers.add("note1's id");
         post.setAnswers(answers);
-        ArrayList<String> wantEnterUsersEmail = new ArrayList<>();
-        wantEnterUsersEmail.add("noteshare1030@gmail.com");
-        post.setWantEnterUsersEmail(wantEnterUsersEmail);
+//        ArrayList<String> wantEnterUsersEmail = new ArrayList<>();
+//        wantEnterUsersEmail.add("noteshare1030@gmail.com");
+//        post.setWantEnterUsersEmail(wantEnterUsersEmail);
+        Apply apply = new Apply("noteshare1030@gmail.com","comment");
         post.setPublic(true);
         return post;
     }

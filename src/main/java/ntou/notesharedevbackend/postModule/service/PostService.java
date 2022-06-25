@@ -5,6 +5,7 @@ import ntou.notesharedevbackend.coinModule.service.CoinService;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
+import ntou.notesharedevbackend.postModule.entity.Apply;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.postModule.entity.PostRequest;
@@ -68,11 +69,11 @@ public class PostService {
         post.setComments(new ArrayList<Comment>());
         post.setCommentCount(0);
         post.setAnswers(new ArrayList<String>());
-        post.setWantEnterUsersEmail(new ArrayList<String>());
+        post.setCollabApply(new ArrayList<Apply>());
         post.setPublishDate(request.getPublishDate());
         post.setVote(new ArrayList<Vote>());
-        post.setCollabNoteAuthorNumber(post.getEmail().size());
         if (request.getType().equals("collaboration")) {//若為共筆貼文，須建立共筆筆記
+            post.setCollabNoteAuthorNumber(post.getEmail().size());
             Note note = new Note();
 //            note.setCreatedAt(request.getCreatedAt());
             note.setTitle(request.getTitle());
@@ -119,7 +120,7 @@ public class PostService {
         post.setComments(request.getComments());
         post.setCommentCount(post.getComments().size());
         post.setAnswers(request.getAnswers());
-        post.setWantEnterUsersEmail(request.getWantEnterUsersEmail());
+        post.setCollabApply(request.getCollabApply());
         post.setPublishDate(request.getDate());
         post.setVote(request.getVote());
         post.setCollabNoteAuthorNumber(post.getEmail().size());
@@ -151,13 +152,13 @@ public class PostService {
 //        postRepository.save(post);
     }
 
-    public void applyCollaboration(String id, String email) {
+    public void applyCollaboration(String id, Apply applicant) {
         Post post = getPostById(id);
-        ArrayList<String> currentWantEnterUsersEmail = post.getWantEnterUsersEmail();
-        if (currentWantEnterUsersEmail == null)
-            currentWantEnterUsersEmail = new ArrayList<>();
-        currentWantEnterUsersEmail.add(email);
-        post.setWantEnterUsersEmail(currentWantEnterUsersEmail);
+        // get all apply
+        ArrayList<Apply> allApply = post.getCollabApply();
+        allApply.add(applicant);
+        // update apply in post
+        post.setCollabApply(allApply);
 
         replacePost(post.getId(), post);
 //        postRepository.save(post);
@@ -190,8 +191,12 @@ public class PostService {
     }
 
     public void clearWantEnterUsersEmail(Post post, String email) {
-        ArrayList<String> currentWantEnterUsersEmail = post.getWantEnterUsersEmail();
-        currentWantEnterUsersEmail.remove(email);
+        // get current all applicant and remove the target
+        ArrayList<Apply> currentApplicant = post.getCollabApply();
+        currentApplicant.removeIf(applicant -> applicant.getWantEnterUsersEmail().equals(email));
+        // update apply in post
+        post.setCollabApply(currentApplicant);
+        replacePost(post.getId(), post);
     }
 
     public Task schedulerPublishTime(String postID, Task request) {

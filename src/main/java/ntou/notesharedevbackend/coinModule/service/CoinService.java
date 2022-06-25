@@ -1,6 +1,7 @@
 package ntou.notesharedevbackend.coinModule.service;
 
 import ntou.notesharedevbackend.coinModule.entity.Coin;
+import ntou.notesharedevbackend.exception.BadRequestException;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
@@ -42,28 +43,38 @@ public class CoinService {
         return appUser;
     }
 
-    // TODO: 忘記幫作者加點數
     public Note buyNote(String email, String noteID) {
-        AppUser appUser = appUserService.getUserByEmail(email);
+        AppUser buyer = appUserService.getUserByEmail(email);
         Note note = noteService.getNote(noteID);
+        AppUser notesAuthor = appUserService.getUserByEmail(note.getHeaderEmail());
         Integer price = note.getPrice();
-        Integer coin = appUser.getCoin();
-        if (price > coin) {
+        Integer buyersCoin = buyer.getCoin();
+        Integer noteAuthorCoin = notesAuthor.getCoin();
+        if (price > buyersCoin) {
             return null;
         } else {
-            appUser.setCoin(coin - price);
+            // update buyer's coin
+            buyer.setCoin(buyersCoin - price);
+            // update note's author's coin
+            notesAuthor.setCoin(noteAuthorCoin + price);
+            appUserService.replaceUser(notesAuthor);
+            // check does this user bought the note and update folder and buyer
             Folder buyFolder = folderService.getBuyFolderByUserEmail(email);
             ArrayList<String> folderNotes = buyFolder.getNotes();
-            // check does this user bought the note
             if (!folderNotes.contains(noteID)) {
                 folderNotes.add(noteID);
                 buyFolder.setNotes(folderNotes);
                 folderService.replaceFolder(buyFolder);
-                appUserService.replaceUser(appUser);
+                appUserService.replaceUser(buyer);
             } else {
                 return null;
             }
-            return note;
+            // update note's unlockCount and Buyer
+            ArrayList<String> noteBuyerList = note.getBuyer();
+            noteBuyerList.add(email);
+            note.setBuyer(noteBuyerList);
+            noteService.replaceNote(note,note.getId()); // update unlockCount in replace.
+            return noteService.getNote(noteID);
         }
     }
 }

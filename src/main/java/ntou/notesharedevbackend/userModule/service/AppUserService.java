@@ -3,6 +3,7 @@ package ntou.notesharedevbackend.userModule.service;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.entity.FolderRequest;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
+import ntou.notesharedevbackend.notificationModule.entity.Message;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.UserRepository;
@@ -63,31 +64,32 @@ public class AppUserService {
         appUser.setVerifyCode(randomCode());
         appUser.setAdmin(false);
         appUser.setActivate(false);
-        appUser.setHeadshotPhoto(request.getHeadshotPhoto());
-//        appUser.setProfile(request.getProfile());
-//        appUser.setStrength(request.getStrength());
-//        appUser.setFolders();
-//        appUser.setSubscribe(request.getSubscribe());
-//        appUser.setBell(request.getBell());
-//        appUser.setFans(request.getFans());
+        appUser.setProfile("");
+        appUser.setStrength(new ArrayList<String>());
+        appUser.setFolders(new ArrayList<String>());
+        appUser.setSubscribe(new ArrayList<String>());
+        appUser.setBell(new ArrayList<String>());
+        appUser.setFans(new ArrayList<String>());
         appUser.setCoin(300);
+        appUser.setHeadshotPhoto(request.getHeadshotPhoto());
+        appUser.setNotification(new ArrayList<Message>());
+        appUser.setUnreadMessageCount(0);
         mailService.sendEmailToUser(request.getEmail(),"Your Verification Code",appUser.getVerifyCode());
         userRepository.insert(appUser);
-        // create Buy and Favorite folder
-        FolderRequest buy = new FolderRequest();
-        FolderRequest favorite = new FolderRequest();
-        buy.setParent(null);
-        buy.setFolderName("Buy");
-        buy.setPublic(false);
-        buy.setPath("/Buy");
-        favorite.setParent(null);
-        favorite.setFolderName("Favorite");
-        favorite.setPublic(false);
-        favorite.setPath("/Favorite");
-        folderService.createFolder(appUser.getEmail(), buy);
-        folderService.createFolder(appUser.getEmail(), favorite);
+        // create Buy and Favorite and default folder
+        createFolderAtRoot(appUser.getEmail(), "Buy");
+        createFolderAtRoot(appUser.getEmail(), "Favorite");
+        createFolderAtRoot(appUser.getEmail(), "Folder");
         appUser = getUserById(appUser.getId());
         return appUser;
+    }
+    public void createFolderAtRoot(String email,String name){
+        FolderRequest folder = new FolderRequest();
+        folder.setParent(null);
+        folder.setFolderName(name);
+        folder.setPublic(false);
+        folder.setPath("/"+name);
+        folderService.createFolder(email,folder);
     }
 
     public AppUser replaceUser(AppUser request){

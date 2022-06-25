@@ -5,8 +5,10 @@ import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.entity.FolderRequest;
 import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.NoteFolderReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.repository.FolderRepository;
+import ntou.notesharedevbackend.searchModule.entity.NoteBasicReturn;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,11 +78,13 @@ public class FolderService {
         return folders;
     }
 
-    public ArrayList<Note> getAllNotesByFolderID(String folderID) {
+    public ArrayList<NoteFolderReturn> getAllNotesByFolderID(String folderID) {
         ArrayList<String> noteIDList = getFolderByID(folderID).getNotes();
-        ArrayList<Note> notes = new ArrayList<Note>();
+        ArrayList<NoteFolderReturn> notes = new ArrayList<NoteFolderReturn>();
         for (String noteID : noteIDList) {
-            notes.add(noteService.getNote(noteID));
+            Note noteTmp = noteService.getNote(noteID);
+            NoteFolderReturn noteBasicReturn = new NoteFolderReturn(noteTmp);
+            notes.add(noteBasicReturn);
         }
 
         return notes;
@@ -88,21 +92,18 @@ public class FolderService {
 
     public FolderReturn getAllContentUnderFolderID(String folderID) {
         Folder folder = getFolderByID(folderID);
-        ArrayList<String> noteIDList = folder.getNotes();
-        ArrayList<String> folderIDList = folder.getChildren();
         FolderReturn folderReturn = new FolderReturn(folder);
-        ArrayList<Note> notes = new ArrayList<Note>();
-        ArrayList<Folder> folders = new ArrayList<Folder>();
-
-        for (String noteID : noteIDList) {
-            notes.add(noteService.getNote(noteID));
-        }
-        for (String tmpFolderID : folderIDList) {
-            folders.add(getFolderByID(tmpFolderID));
-        }
+        ArrayList<NoteFolderReturn> notes = getAllNotesByFolderID(folderID);
+        ArrayList<Folder> folders = getAllFoldersByFolderID(folderID);
 
         folderReturn.setChildren(folders);
         folderReturn.setNotes(notes);
+        folderReturn.setFolderName(folder.getFolderName());
+        folderReturn.setFavorite(folder.getFavorite());
+        folderReturn.setId(folder.getId());
+        folderReturn.setParent(folder.getParent());
+        folderReturn.setPath(folder.getPath());
+        folderReturn.setPublic(folder.getPublic());
 
         return folderReturn;
     }
@@ -122,7 +123,7 @@ public class FolderService {
         Folder folder = new Folder(request);
         ArrayList<String> tmpFoldersList = new ArrayList<>();
         // check users has folders
-        if (appUser.getFolders() == null) {
+        if (appUser.getFolders() == null || appUser.getFolders().isEmpty()) {
             tmpFoldersList.add(folder.getId());
             appUser.setFolders(tmpFoldersList);
         } else {
@@ -149,13 +150,19 @@ public class FolderService {
         Folder folder = getFolderByID(folderID);
         AppUser user = appUserService.getUserByEmail(email);
         ArrayList<String> foldersIDList = user.getFolders();
-
         // fetch all folders under user and check its direction has contains wannaDelete folder's name
         ArrayList<Folder> folders = getAllFoldersFromUser(email);
+        // fetch user's Favorite
+        Folder favorite = getFavoriteFolderByUserEmail(email);
+        ArrayList<String> foldersInFavorite = favorite.getChildren();
+
         for (Folder tmpFolder : folders) {
             if (tmpFolder.getPath().contains(folder.getFolderName())) {
                 // update AppUser schema's folders
                 foldersIDList.remove(tmpFolder.getId());
+                // update user's favorite
+                foldersInFavorite.remove(tmpFolder.getId());
+                // delete from DB
                 folderRepository.deleteById(tmpFolder.getId());
             }
         }
@@ -164,7 +171,10 @@ public class FolderService {
         foldersIDList.remove(folderID);
         user.setFolders(foldersIDList);
         appUserService.replaceUser(user);
-
+        // write update to Folder Schema
+        foldersInFavorite.remove(folderID);
+        favorite.setChildren(foldersInFavorite);
+        replaceFolder(favorite);
         // update parent's folders and write to Folder's schema
         if (folder.getParent() != null) {
             Folder parentFolder = getFolderByID(folder.getParent());
@@ -179,7 +189,6 @@ public class FolderService {
     }
 
     public Folder renameFolderByID(String email, String folderID, String wannaChangeName) {
-        System.out.println("wannaChangeName = " + wannaChangeName);
         // get all folders and check its contains folder's name and change it.
         Folder wannaChangeFolder = getFolderByID(folderID);
         ArrayList<Folder> allFolders = getAllFoldersFromUser(email);
@@ -325,5 +334,17 @@ public class FolderService {
             }
         }
         return res;
+    }
+
+    public ArrayList<FolderReturn> turnAllFolderToFolderReturn(ArrayList<Folder> folders){
+        ArrayList<FolderReturn> folderReturns = new ArrayList<>();
+        for(Folder folder:folders){
+            folderReturns.add(getAllContentUnderFolderID(folder.getId()));
+        }
+        return folderReturns;
+    }
+
+    public FolderReturn turnFolderToFolderReturn(Folder folder) {
+        return getAllContentUnderFolderID(folder.getId());
     }
 }
