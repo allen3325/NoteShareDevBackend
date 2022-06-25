@@ -2,6 +2,7 @@ package ntou.notesharedevbackend.postModule.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.exception.NotFoundException;
+import ntou.notesharedevbackend.postModule.entity.Apply;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.entity.PostRequest;
 import ntou.notesharedevbackend.postModule.service.PostService;
@@ -45,7 +46,7 @@ public class PostController {
     }
 
     @Operation(summary = "create post(QA, reward, collaboration).",description = "id,date,comments,commentCount," +
-            "answers,wantEnterUserEmail,publishDate,vote,collabNoteAuthorNumber都不用填。若為共筆貼文，則會自動創建筆記放在此貼文的answer裡")
+            "answers,wantEnterUserEmail,publishDate,vote,collabNoteAuthorNumber,collabApply都不用填。若為共筆貼文，則會自動創建筆記放在此貼文的answer裡")
     @PostMapping("/{email}")
     public ResponseEntity<Object> createPost(@PathVariable("email") String email, @RequestBody PostRequest request) {
         Post post = postService.createPost(email, request);
@@ -93,10 +94,10 @@ public class PostController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "apply become one of collaboration note's author.",description = "email為申請者")
-    @PutMapping("/{postID}/{email}")
-    public ResponseEntity<Object> applyCollaboration(@PathVariable("postID") String id, @PathVariable("email") String email) {
-        postService.applyCollaboration(id, email);
+    @Operation(summary = "apply become one of collaboration note's author.",description = "wantEnterUsersEmail為申請者,commentFromApplicant為留言")
+    @PutMapping("/apply/{postID}")
+    public ResponseEntity<Object> applyCollaboration(@PathVariable("postID") String id, @RequestBody Apply applicant) {
+        postService.applyCollaboration(id, applicant);
 
         Map<String, Object> res = new HashMap<>();
 
