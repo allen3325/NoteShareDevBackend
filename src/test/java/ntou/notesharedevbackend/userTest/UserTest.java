@@ -76,6 +76,7 @@ public class UserTest {
         httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         userRepository.deleteAll();
+        folderRepository.deleteAll();
         AppUser appUser = createUser();
         userRepository.insert(appUser);
     }
@@ -258,5 +259,6 @@ public class UserTest {
     @AfterEach
     public void clear(){
         userRepository.deleteAll();
+        folderRepository.deleteAll();
     }
 }
