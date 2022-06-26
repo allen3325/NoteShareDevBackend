@@ -226,8 +226,17 @@ public class SearchService {
     }
 
     public Pages getSearchedFolderByKeyword(String keyword, int offset, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(offset, pageSize, Sort.by("title").descending());
-        Page<Folder> foldersLikePage = folderRepository.findByFolderNameRegex(keyword, pageRequest);
-        return new Pages(foldersLikePage.getContent(), foldersLikePage.getTotalPages());
+        List<Folder> foldersLikePage = folderRepository.findByFolderNameRegex(keyword);
+        List<Folder> copyFolderList = new ArrayList<>(foldersLikePage);
+        copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Buy")));
+        copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Favorite")));
+        copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Folder")));
+
+        Pageable paging = PageRequest.of(offset, pageSize, Sort.by("folderName").descending());
+        int start = Math.min((int)paging.getOffset(), copyFolderList.size());
+        int end = Math.min((start + paging.getPageSize()), copyFolderList.size());
+        Page<Folder> page = new PageImpl<>(copyFolderList.subList(start, end), paging, copyFolderList.size());
+
+        return new Pages(page.getContent(), page.getTotalPages());
     }
 }

@@ -10,5 +10,5 @@ import java.util.*;
 @Repository
 public interface FolderRepository extends MongoRepository<Folder,String> {
     @Query(value = "{'folderName': {$regex : ?0, $options: 'i'}}")
-    Page<Folder> findByFolderNameRegex(String title, Pageable pageable);
+    List<Folder> findByFolderNameRegex(String title);
 }
