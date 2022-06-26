@@ -51,6 +51,16 @@ public class NoteController {
         return ResponseEntity.ok(map);
     }
 
+    @Operation(summary = "get user's all notes by email.")
+    @GetMapping("/all/{email}")
+    public ResponseEntity<Object> getUserAllNotes(@PathVariable("email")String email){
+        ArrayList<NoteFolderReturn> notes = noteService.getUserAllNote(email);
+        HashMap<String,Object> res = new HashMap<>();
+
+        res.put("res",notes);
+        return ResponseEntity.ok(res);
+    }
+
     @Operation(summary = "create a note under the user's folder")
     @PostMapping("/{email}/{folderID}")
     public ResponseEntity<Object> createNote(@PathVariable("email") String email,
