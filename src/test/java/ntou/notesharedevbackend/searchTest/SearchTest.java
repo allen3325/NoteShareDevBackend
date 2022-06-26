@@ -29,6 +29,7 @@ import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.ArrayList;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -65,6 +66,7 @@ public class SearchTest {
         userRepository.insert(appUser1);
         userRepository.insert(appUser2);
     }
+
     private Folder createFolder(String folderName, String path, String parent) {
         Folder folder = new Folder();
         folder.setFolderName(folderName);
@@ -73,9 +75,8 @@ public class SearchTest {
         folder.setPath(path);
         folder.setNotes(new ArrayList<String>());
         folder.setChildren(new ArrayList<String>());
-        folder.setPublic(false);
-        folderRepository.insert(folder);
-        return folder;
+        folder.setPublic(true);
+        return folderRepository.insert(folder);
     }
 
     private AppUser createUser(String email, String name) {
@@ -86,16 +87,122 @@ public class SearchTest {
         appUser.setPassword(passwordEncoder.encode("1234"));
         Folder buyFolder = createFolder("Buy", "/Buy", null);
         Folder favoriteFolder = createFolder("Favorite", "/Favorite", null);
-        Folder collaborationFolder = createFolder("Collaboration", "/Collaboration", null);
         Folder OSFolder = createFolder("OS", "/OS", null);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());
-        folderList.add(collaborationFolder.getId());
         folderList.add(OSFolder.getId());
         appUser.setFolders(folderList);
         appUser.setCoin(300);
         return appUser;
+    }
+
+    private Note createNormalNote(){
+        Note note = new Note();
+        note.setType("normal");
+        note.setDepartment("CS");
+        note.setSubject("OS");
+        note.setTitle("Interrupt");
+        note.setHeaderEmail("yitingwu.1030@gmail.com");
+        note.setHeaderName("Ting");
+        ArrayList<String> authorEmails = new ArrayList<>();
+        authorEmails.add("yitingwu.1030@gmail.com");
+        note.setAuthorEmail(authorEmails);
+        ArrayList<String> authorNames = new ArrayList<>();
+        authorNames.add("Ting");
+        note.setAuthorName(authorNames);
+        note.setProfessor("NoteShare");
+        note.setSchool("NTOU");
+        note.setPublic(true);
+        note.setPrice(50);
+        note.setLiker(new ArrayList<>());
+        note.setLikeCount(null);
+        note.setBuyer(new ArrayList<>());
+        note.setFavoriter(new ArrayList<>());
+        note.setFavoriteCount(0);
+        note.setUnlockCount(3);
+        note.setDownloadable(false);
+        note.setCommentCount(null);
+        note.setComments(new ArrayList<>());
+        note.setSubmit(null);
+        note.setQuotable(false);
+        ArrayList<String> tags = new ArrayList<>();
+        tags.add("tag1");
+        tags.add("tag2");
+        tags.add("tag3");
+        note.setTag(tags);
+        note.setHiddenTag(new ArrayList<>());
+        ArrayList<VersionContent> versionContents = new ArrayList<>();
+        VersionContent v1 = new VersionContent();
+        v1.setName("v1");
+        v1.setSlug("string");
+        ArrayList<String> fileURLs = new ArrayList<>();
+        fileURLs.add("fileURL1");
+        fileURLs.add("fileURL2");
+        fileURLs.add("fileURL3");
+        v1.setFileURL(fileURLs);
+        ArrayList<String> picURLs = new ArrayList<>();
+        picURLs.add("picURL1");
+        picURLs.add("picURL2");
+        picURLs.add("picURL3");
+        v1.setPicURL(picURLs);
+        v1.setTemp(true);
+        Content content1 = new Content();
+        content1.setMycustom_assets("string");
+        content1.setMycustom_components("string");
+        content1.setMycustom_css("string");
+        content1.setMycustom_html("string");
+        content1.setMycustom_styles("string");
+        Content content2 = new Content();
+        content2.setMycustom_assets("string");
+        content2.setMycustom_components("string");
+        content2.setMycustom_css("string");
+        content2.setMycustom_html("string");
+        content2.setMycustom_styles("string");
+        Content content3 = new Content();
+        content3.setMycustom_assets("string");
+        content3.setMycustom_components("string");
+        content3.setMycustom_css("string");
+        content3.setMycustom_html("string");
+        content3.setMycustom_styles("string");
+        ArrayList<Content> contents = new ArrayList<>();
+        contents.add(content1);
+        contents.add(content2);
+        contents.add(content3);
+        v1.setContent(contents);
+        VersionContent v2 = new VersionContent();
+        v2.setSlug("String");
+        v2.setFileURL(fileURLs);
+        v2.setPicURL(picURLs);
+        v2.setContent(contents);
+        v2.setName("v2");
+        v2.setTemp(false);
+        VersionContent v3 = new VersionContent();
+        v3.setSlug("String");
+        v3.setFileURL(fileURLs);
+        v3.setPicURL(picURLs);
+        v3.setContent(contents);
+        v3.setTemp(true);
+        v3.setName("v3");
+        VersionContent v4 = new VersionContent();
+        v4.setSlug("String");
+        v4.setFileURL(fileURLs);
+        v4.setPicURL(picURLs);
+        v4.setContent(contents);
+        v4.setName("v4");
+        v4.setTemp(false);
+        versionContents.add(v1);
+        versionContents.add(v2);
+        versionContents.add(v3);
+        versionContents.add(v4);
+        note.setVersion(versionContents);
+        note.setContributors(new ArrayList<>());
+        note.setPostID(null);
+        note.setReference(null);
+        note.setBest(null);
+        note.setManagerEmail(null);
+        noteRepository.insert(note);
+        return note;
     }
 
     public Post createQAPost() {
@@ -157,7 +264,7 @@ public class SearchTest {
         note.setLikeCount(null);
         note.setBuyer(new ArrayList<>());
         note.setFavoriter(new ArrayList<>());
-        note.setFavoriteCount(null);
+        note.setFavoriteCount(0);
         note.setUnlockCount(0);
         note.setDownloadable(false);
         note.setCommentCount(null);
@@ -298,8 +405,8 @@ public class SearchTest {
         note.setLikeCount(null);
         note.setBuyer(new ArrayList<>());
         note.setFavoriter(new ArrayList<>());
-        note.setFavoriteCount(null);
-        note.setUnlockCount(0);
+        note.setFavoriteCount(0);
+        note.setUnlockCount(2);
         note.setDownloadable(false);
         note.setCommentCount(null);
         note.setComments(new ArrayList<>());
@@ -403,8 +510,6 @@ public class SearchTest {
         Note note = createCollaborationNote();
         answers.add(note.getId());
         post.setAnswers(answers);
-//        ArrayList<String> wantEnterUsersEmail = new ArrayList<>();
-//        post.setWantEnterUsersEmail(wantEnterUsersEmail);
         post.setCollabApply(new ArrayList<Apply>());
         post.setPublic(true);
         post.setCollabNoteAuthorNumber(1);
@@ -416,11 +521,11 @@ public class SearchTest {
     }
 
     @Test
-    public void testSearchUser() throws Exception{
+    public void testSearchUser() throws Exception {
         AppUser user1 = userRepository.findByEmail("user1@gmail.com");
         AppUser user2 = userRepository.findByEmail("user2@gmail.com");
         mockMvc.perform(get("/search/user/user/0/5")
-                .headers(httpHeaders))
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.search.items.[0].id").value(user2.getId()))
                 .andExpect(jsonPath("$.search.items.[0].email").value(user2.getEmail()))
@@ -462,10 +567,104 @@ public class SearchTest {
     }
 
     @Test
-    public void testSearchNote() throws Exception{}
+    public void testSearchNote() throws Exception {
+        Post rewardPost = createRewardPost();
+        Note rewardNote1 = noteRepository.findById(rewardPost.getAnswers().get(0)).get();
+        Note rewardNote2 = noteRepository.findById(rewardPost.getAnswers().get(1)).get();
+        rewardNote2.setQuotable(true);
+        noteRepository.save(rewardNote2);
+        Post collaborationPost = createCollaborationPost();
+        Note collaborationNote = noteRepository.findById(collaborationPost.getAnswers().get(0)).get();
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        Folder folder = folderRepository.findById(appUser.getFolders().get(2)).get();
+        Note normalNote = createNormalNote();
+        folder.getNotes().add(normalNote.getId());
+
+        String keyword = "Interrupt";
+        int offset = 0;
+        int pageSize = 10;
+
+        mockMvc.perform(get("/search/note/"+keyword+"/"+offset+"/"+pageSize)
+                .headers(httpHeaders)
+                .param("school","NTOU")
+                .param("subject","OS")
+                .param("department","CS")
+                .param("professor","NoteShare")
+                .param("haveNormal","true")
+                .param("haveCollaboration","true")
+                .param("haveReward","true")
+                .param("favoriteCount","0")
+                .param("price","50")
+                .param("quotable","false")
+                .param("sortBy","unlockCount")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.search.items.[0].id").value(normalNote.getId()))
+                .andExpect(jsonPath("$.search.items.[0].type").value(normalNote.getType()))
+                .andExpect(jsonPath("$.search.items.[0].department").value(normalNote.getDepartment()))
+                .andExpect(jsonPath("$.search.items.[0].subject").value(normalNote.getSubject()))
+                .andExpect(jsonPath("$.search.items.[0].title").value(normalNote.getTitle()))
+                .andExpect(jsonPath("$.search.items.[0].email").value(normalNote.getHeaderEmail()))
+                .andExpect(jsonPath("$.search.items.[0].author.[0]").value(normalNote.getAuthorName().get(0)))
+                .andExpect(jsonPath("$.search.items.[0].professor").value(normalNote.getProfessor()))
+                .andExpect(jsonPath("$.search.items.[0].school").value(normalNote.getSchool()))
+                .andExpect(jsonPath("$.search.items.[0].likeCount").value(normalNote.getLikeCount()))
+                .andExpect(jsonPath("$.search.items.[0].favoriteCount").value(normalNote.getFavoriteCount()))
+                .andExpect(jsonPath("$.search.items.[0].unlockCount").value(normalNote.getUnlockCount()))
+                .andExpect(jsonPath("$.search.items.[0].downloadable").value(normalNote.getDownloadable()))
+                .andExpect(jsonPath("$.search.items.[0].commentCount").value(normalNote.getCommentCount()))
+                .andExpect(jsonPath("$.search.items.[0].price").value(normalNote.getPrice()))
+                //TODO: 需要顯示嗎
+//                .andExpect(jsonPath("$.search.items.[0].quotable").value(normalNote.getQuotable()))
+                .andExpect(jsonPath("$.search.items.[0].tag.[0]").value(normalNote.getTag().get(0)))
+                .andExpect(jsonPath("$.search.items.[0].tag.[1]").value(normalNote.getTag().get(1)))
+                .andExpect(jsonPath("$.search.items.[0].tag.[2]").value(normalNote.getTag().get(2)))
+                .andExpect(jsonPath("$.search.items.[1].id").value(collaborationNote.getId()))
+                .andExpect(jsonPath("$.search.items.[1].type").value(collaborationNote.getType()))
+                .andExpect(jsonPath("$.search.items.[1].department").value(collaborationNote.getDepartment()))
+                .andExpect(jsonPath("$.search.items.[1].subject").value(collaborationNote.getSubject()))
+                .andExpect(jsonPath("$.search.items.[1].title").value(collaborationNote.getTitle()))
+                .andExpect(jsonPath("$.search.items.[1].email").value(collaborationNote.getHeaderEmail()))
+                .andExpect(jsonPath("$.search.items.[1].author.[0]").value(collaborationNote.getAuthorName().get(0)))
+                .andExpect(jsonPath("$.search.items.[1].author.[1]").value(collaborationNote.getAuthorName().get(1)))
+                .andExpect(jsonPath("$.search.items.[1].author.[2]").value(collaborationNote.getAuthorName().get(2)))
+                .andExpect(jsonPath("$.search.items.[1].professor").value(collaborationNote.getProfessor()))
+                .andExpect(jsonPath("$.search.items.[1].school").value(collaborationNote.getSchool()))
+                .andExpect(jsonPath("$.search.items.[1].likeCount").value(collaborationNote.getLikeCount()))
+                .andExpect(jsonPath("$.search.items.[1].favoriteCount").value(collaborationNote.getFavoriteCount()))
+                .andExpect(jsonPath("$.search.items.[1].unlockCount").value(collaborationNote.getUnlockCount()))
+                .andExpect(jsonPath("$.search.items.[1].downloadable").value(collaborationNote.getDownloadable()))
+                .andExpect(jsonPath("$.search.items.[1].commentCount").value(collaborationNote.getCommentCount()))
+                .andExpect(jsonPath("$.search.items.[1].price").value(collaborationNote.getPrice()))
+                //TODO: 需要顯示嗎
+//                .andExpect(jsonPath("$.search.items.[0].quotable").value(normalNote.getQuotable()))
+                .andExpect(jsonPath("$.search.items.[1].tag.[0]").value(collaborationNote.getTag().get(0)))
+                .andExpect(jsonPath("$.search.items.[1].tag.[1]").value(collaborationNote.getTag().get(1)))
+                .andExpect(jsonPath("$.search.items.[1].tag.[2]").value(collaborationNote.getTag().get(2)))
+                .andExpect(jsonPath("$.search.items.[2].id").value(rewardNote1.getId()))
+                .andExpect(jsonPath("$.search.items.[2].type").value(rewardNote1.getType()))
+                .andExpect(jsonPath("$.search.items.[2].department").value(rewardNote1.getDepartment()))
+                .andExpect(jsonPath("$.search.items.[2].subject").value(rewardNote1.getSubject()))
+                .andExpect(jsonPath("$.search.items.[2].title").value(rewardNote1.getTitle()))
+                .andExpect(jsonPath("$.search.items.[2].email").value(rewardNote1.getHeaderEmail()))
+                .andExpect(jsonPath("$.search.items.[2].professor").value(rewardNote1.getProfessor()))
+                .andExpect(jsonPath("$.search.items.[2].school").value(rewardNote1.getSchool()))
+                .andExpect(jsonPath("$.search.items.[2].likeCount").value(rewardNote1.getLikeCount()))
+                .andExpect(jsonPath("$.search.items.[2].favoriteCount").value(rewardNote1.getFavoriteCount()))
+                .andExpect(jsonPath("$.search.items.[2].unlockCount").value(rewardNote1.getUnlockCount()))
+                .andExpect(jsonPath("$.search.items.[2].downloadable").value(rewardNote1.getDownloadable()))
+                .andExpect(jsonPath("$.search.items.[2].commentCount").value(rewardNote1.getCommentCount()))
+                .andExpect(jsonPath("$.search.items.[2].price").value(rewardNote1.getPrice()))
+                //TODO: 需要顯示嗎
+//                .andExpect(jsonPath("$.search.items.[0].quotable").value(normalNote.getQuotable()))
+                .andExpect(jsonPath("$.search.items.[2].tag.[0]").value(rewardNote1.getTag().get(0)))
+                .andExpect(jsonPath("$.search.items.[2].tag.[1]").value(rewardNote1.getTag().get(1)))
+                .andExpect(jsonPath("$.search.items.[2].tag.[2]").value(rewardNote1.getTag().get(2)));
+
+    }
 
     @Test
-    public void testSearchPost() throws Exception{
+    public void testSearchPost() throws Exception {
         Post QAPost = createQAPost();
         Post rewardPost = createRewardPost();
         Post collaborationPost = createCollaborationPost();
@@ -474,17 +673,17 @@ public class SearchTest {
         int offset = 0;
         int pageSize = 10;
 
-                ;
+        ;
 
-        mockMvc.perform(get("/search/post/"+keyword+"/"+offset+"/"+pageSize)
-                .headers(httpHeaders)
-                        .param("sortBy","bestPrice")
-                                .param("subject","Operation System")
-                                .param("department","CS")
-                                .param("author","yitingwu.1030@gmail.com")
-                                .param("haveQA","true")
-                                .param("haveCollaboration","true")
-                                .param("haveReward","true")
+        mockMvc.perform(get("/search/post/" + keyword + "/" + offset + "/" + pageSize)
+                        .headers(httpHeaders)
+                        .param("sortBy", "bestPrice")
+                        .param("subject", "Operation System")
+                        .param("department", "CS")
+                        .param("author", "yitingwu.1030@gmail.com")
+                        .param("haveQA", "true")
+                        .param("haveCollaboration", "true")
+                        .param("haveReward", "true")
 
                 )
                 .andExpect(status().isOk())
@@ -559,11 +758,59 @@ public class SearchTest {
     }
 
     @Test
-    public void testSearchFolder() throws Exception{
+    public void testSearchFolder() throws Exception {
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        Folder folder1 = createFolder("taldskfgjaldfjk", "/taldskfgjaldfjk", null);
 
+        Folder folder2 = createFolder("taldskfgjaldfjk1111", "/taldskfgjaldfjk1111", null);
+
+        Folder folder11 = createFolder("tSecond", "/taldskfgjaldfjk/tSecond", folder1.getId());
+
+        Folder folder111 = createFolder("tThird", "/taldskfgjaldfjk/tSecond/Third", folder11.getId());
+
+        String keyword = "t";
+        int offset =0;
+        int pageSize = 10;
+        mockMvc.perform(get("/search/folder/"+keyword+"/"+offset+"/"+pageSize)
+                .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.search.items.[0].id").value(folder1.getId()))
+                .andExpect(jsonPath("$.search.items.[0].folderName").value(folder1.getFolderName()))
+                .andExpect(jsonPath("$.search.items.[0].notes").value(folder1.getNotes()))
+                .andExpect(jsonPath("$.search.items.[0].path").value(folder1.getPath()))
+                .andExpect(jsonPath("$.search.items.[0].parent").value(folder1.getParent()))
+                .andExpect(jsonPath("$.search.items.[0].children").value(folder1.getChildren()))
+                .andExpect(jsonPath("$.search.items.[0].public").value(folder1.getPublic()))
+                .andExpect(jsonPath("$.search.items.[0].favorite").value(folder1.getFavorite()))
+                .andExpect(jsonPath("$.search.items.[1].id").value(folder2.getId()))
+                .andExpect(jsonPath("$.search.items.[1].folderName").value(folder2.getFolderName()))
+                .andExpect(jsonPath("$.search.items.[1].notes").value(folder2.getNotes()))
+                .andExpect(jsonPath("$.search.items.[1].path").value(folder2.getPath()))
+                .andExpect(jsonPath("$.search.items.[1].parent").value(folder2.getParent()))
+                .andExpect(jsonPath("$.search.items.[1].children").value(folder2.getChildren()))
+                .andExpect(jsonPath("$.search.items.[1].public").value(folder2.getPublic()))
+                .andExpect(jsonPath("$.search.items.[1].favorite").value(folder2.getFavorite()))
+                .andExpect(jsonPath("$.search.items.[2].id").value(folder11.getId()))
+                .andExpect(jsonPath("$.search.items.[2].folderName").value(folder11.getFolderName()))
+                .andExpect(jsonPath("$.search.items.[2].notes").value(folder11.getNotes()))
+                .andExpect(jsonPath("$.search.items.[2].path").value(folder11.getPath()))
+                .andExpect(jsonPath("$.search.items.[2].parent").value(folder11.getParent()))
+                .andExpect(jsonPath("$.search.items.[2].children").value(folder11.getChildren()))
+                .andExpect(jsonPath("$.search.items.[2].public").value(folder11.getPublic()))
+                .andExpect(jsonPath("$.search.items.[2].favorite").value(folder11.getFavorite()))
+                .andExpect(jsonPath("$.search.items.[3].id").value(folder111.getId()))
+                .andExpect(jsonPath("$.search.items.[3].folderName").value(folder111.getFolderName()))
+                .andExpect(jsonPath("$.search.items.[3].notes").value(folder111.getNotes()))
+                .andExpect(jsonPath("$.search.items.[3].path").value(folder111.getPath()))
+                .andExpect(jsonPath("$.search.items.[3].parent").value(folder111.getParent()))
+                .andExpect(jsonPath("$.search.items.[3].children").value(folder111.getChildren()))
+                .andExpect(jsonPath("$.search.items.[3].public").value(folder111.getPublic()))
+                .andExpect(jsonPath("$.search.items.[3].favorite").value(folder111.getFavorite()));
     }
+
     @AfterEach
     public void clear() {
+        //TODO:打開
 //        postRepository.deleteAll();
 //        userRepository.deleteAll();
 //        folderRepository.deleteAll();
