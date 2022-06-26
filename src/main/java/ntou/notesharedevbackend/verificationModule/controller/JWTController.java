@@ -2,9 +2,11 @@ package ntou.notesharedevbackend.verificationModule.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
+import ntou.notesharedevbackend.userModule.service.AppUserService;
 import ntou.notesharedevbackend.verificationModule.entity.AuthRequest;
 import ntou.notesharedevbackend.verificationModule.entity.service.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,9 @@ public class JWTController {
 
     @Autowired
     private JWTService jwtService;
+    @Autowired
+    @Lazy
+    private AppUserService appUserService;
 
     @Operation(summary = "sign up", description = "註冊,body裡，只需填email,name,password,headshotPhoto")
     @PostMapping("/signup")
@@ -51,9 +56,13 @@ public class JWTController {
 
     @Operation(summary = "登入", description = "")
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> issueToken(@Valid @RequestBody AuthRequest request) {
+    public ResponseEntity<Map<String, Object>> issueToken(@Valid @RequestBody AuthRequest request) {
         String token = jwtService.generateToken(request);
-        Map<String, String> response = Collections.singletonMap("token", token);
+        Map<String, Object> response = new HashMap<>(Collections.singletonMap("token", token));
+
+        Map<String, Object> user = jwtService.parseToken(response.get("token").toString());
+        String userEmail = user.get("email").toString();
+        response.put("activate",appUserService.getUserByEmail(userEmail).isActivate());
 
         return ResponseEntity.ok(response);
     }

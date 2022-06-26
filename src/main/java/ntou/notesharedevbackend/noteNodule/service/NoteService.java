@@ -242,4 +242,13 @@ public class NoteService {
         replaceNote(note,note.getId());
         return note;
     }
+
+    public ArrayList<NoteFolderReturn> getUserAllNote(String email) {
+        List<Note> tmp = noteRepository.findAllByHeaderEmail(email);
+        ArrayList<NoteFolderReturn> res = new ArrayList<>();
+        for(Note note:tmp){
+            res.add(new NoteFolderReturn(note));
+        }
+        return res;
+    }
 }
