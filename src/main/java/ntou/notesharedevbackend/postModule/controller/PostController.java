@@ -56,8 +56,10 @@ public class PostController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "create post(QA, reward, collaboration).", description = "id,date,comments,commentCount," +
-            "answers,wantEnterUserEmail,publishDate,vote,collabNoteAuthorNumber,collabApply都不用填。若為共筆貼文，則會自動創建筆記放在此貼文的answer裡")
+    @Operation(summary = "create post(QA, reward, collaboration).", description = "id, date, authorName, comments, " +
+            "commentCount," +
+            " answers, wantEnterUserEmail, publishDate, vote, collabNoteAuthorNumber," +
+            " collabApply都不用填，author填Email，authorName我們會抓。若為共筆貼文，則會自動創建筆記放在此貼文的answer裡")
     @PostMapping("/{email}")
     public ResponseEntity<Object> createPost(@PathVariable("email") String email, @RequestBody PostRequest request) {
         Post post = postService.createPost(email, request);

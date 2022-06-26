@@ -654,6 +654,7 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.type").value(request.get("type")))
                 .andExpect(jsonPath("$.res.email").value(email.get(0)))
                 .andExpect(jsonPath("$.res.author").value(request.get("author")))
+                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.department").value(request.get("department")))
                 .andExpect(jsonPath("$.res.subject").value(request.get("subject")))
                 .andExpect(jsonPath("$.res.school").value(request.get("school")))

@@ -15,6 +15,7 @@ public class PostRequest {
     private String type; // QA, reward, collaboration
     private ArrayList<String> email; // 共筆發起人以及管理員，用來核准加入共筆queue的
     private String author;
+    private String authorName;
     private String department;
     private String subject;
     private String school;
@@ -41,6 +42,14 @@ public class PostRequest {
     private Apply collabApply;
 
     // getter and setter
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
 
     public Apply getCollabApply() {
         return collabApply;

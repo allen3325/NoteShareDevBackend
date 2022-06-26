@@ -54,7 +54,8 @@ public class PostService {
         Post post = new Post();
         post.setType(request.getType());
         post.setEmail(email);
-        post.setAuthor(appUser.getName());
+        post.setAuthor(userEmail);
+        post.setAuthorName(appUser.getName());
         post.setDepartment(request.getDepartment());
         post.setSubject(request.getSubject());
         post.setSchool(request.getSchool());
@@ -106,6 +107,7 @@ public class PostService {
         post.setType(request.getType());
         post.setEmail(request.getEmail());
         post.setAuthor(request.getAuthor());
+        post.setAuthorName(request.getAuthorName());
         post.setDepartment(request.getDepartment());
         post.setSubject(request.getSubject());
         post.setSchool(request.getSchool());
