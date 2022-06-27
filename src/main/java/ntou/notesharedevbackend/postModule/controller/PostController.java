@@ -142,7 +142,6 @@ public class PostController {
         }
     }
 
-    // TODO: 點數增減
     @Operation(summary = "reward choose best answer(note).", description = "填入postID,最佳解筆記ID")
     @PutMapping("/reward/best/{postID}/{answerID}")
     public ResponseEntity<Object> rewardChooseBestAnswer(@PathVariable("postID") String postID,
@@ -170,13 +169,13 @@ public class PostController {
         }
     }
 
-    //TODO: 改成 reward，點數增減
+
     @Operation(summary = "reward choose reference answer.", description = "填入postID,最佳解留言ID")
-    @PutMapping("/qa/reference/{postID}/{commentID}")
+    @PutMapping("/reward/reference/{postID}/{answerID}")
     public ResponseEntity<Object> QAChooseReferenceAnswer(@PathVariable("postID") String postID,
-                                                          @PathVariable("commentID") String commentID, @RequestBody String email) {
+                                                          @PathVariable("answerID") String answerID, @RequestBody String email) {
         Map<String, Object> res = new HashMap<>();
-        if (postService.QAChooseReferenceAnswer(postID, commentID, email)) {
+        if (postService.rewardChooseReferenceAnswer(postID, answerID, email)) {
             res.put("msg", "Success");
             return ResponseEntity.ok(res);
         } else {

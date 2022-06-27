@@ -326,7 +326,7 @@ public class NoteTest {
         note.setContributors(new ArrayList<>());
         note.setReference(null);
         note.setBest(null);
-        note.setManagerEmail(null);
+        note.setManagerEmail("user1@gmail.com");
         Post post = createCollaborationPost();
         note.setPostID(post.getId());
         noteRepository.insert(note);
@@ -932,10 +932,17 @@ public class NoteTest {
         if(noteRepository.findById(note.getId()).get().getAuthorEmail().contains(kickTarget.getEmail())){
             throw new Exception("Note Test : Note's author's email still contain kickTarget");
         }
-        //TODO : 踢人之後 共筆筆記作者人數要減一
-//        if(!postRepository.findById(post.getId()).get().getCollabNoteAuthorNumber().equals(post.getCollabNoteAuthorNumber()-1)){
-//            throw new Exception("Note Test : Post's collabNoteAuthorNumber does not -1");
-//        }
+        if(noteRepository.findById(note.getId()).get().getAuthorName().contains(kickTarget.getName())){
+            throw new Exception("Note Test : Note's author's email still contain kickTarget");
+        }
+        //踢人之後 共筆貼文的作者人數要減一
+        if(!postRepository.findById(post.getId()).get().getCollabNoteAuthorNumber().equals(post.getCollabNoteAuthorNumber()-1)){
+            throw new Exception("Note Test : Post's collabNoteAuthorNumber does not -1");
+        }
+        //若為管理員，note要移除管理員˙
+        if(!(noteRepository.findById(note.getId()).get().getManagerEmail()==null)){
+            throw new Exception("Note Test : Note's manager email does not clear");
+        }
     }
 
     @Test

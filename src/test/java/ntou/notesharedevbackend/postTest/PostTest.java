@@ -840,42 +840,38 @@ public class PostTest {
         if (!noteRepository.findById(answerID).get().getBest().equals(true)) {
             throw new Exception("Post Test : note isBest does not change to true");
         }
-        //TODO:確認點數增減
-//        if(!userRepository.findById(contributor.getId()).get().getCoin().equals(contributor.getCoin()+post.getBestPrice())){
-//            throw new Exception("Post Test : best answer author's coin does not get");
-//        }
-//        if(!userRepository.findById(postAuthor.getId()).get().getCoin().equals(postAuthor.getCoin()-post.getBestPrice())){
-//            throw new Exception("Post Test : post author's coin does not reduce");
-//        }
+        if(!userRepository.findById(contributor.getId()).get().getCoin().equals(contributor.getCoin()+post.getBestPrice())){
+            throw new Exception("Post Test : best answer author's coin does not get");
+        }
+        if(!userRepository.findById(postAuthor.getId()).get().getCoin().equals(postAuthor.getCoin()-post.getBestPrice())){
+            throw new Exception("Post Test : post author's coin does not reduce");
+        }
     }
 
-    //TODO:改成reward之後 測試
-//    @Test
-//    public void testRewardChooseReferenceAnswer() throws Exception{
-//        AppUser contributor = userRepository.findByEmail("user2@gmail.com");
-//        Post post = createRewardPost();
-//        String answerID = post.getAnswers().get(1);
-//        AppUser postAuthor = userRepository.findByEmail(post.getAuthor());
-//        mockMvc.perform(put("/post/reward/reference/"+post.getId()+"/"+answerID)
-//                        .content(postAuthor.getEmail()))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.msg").value("Success"));
-//
-//        if(!noteRepository.findById(answerID).get().getReference().equals(true)){
-//            throw new Exception("Post Test : note isBest does not change to true");
-//        }
-//        //TODO:確認點數增減
-//        if(!userRepository.findById(contributor.getId()).get().getCoin().equals(contributor.getCoin()+post.getReferencePrice())){
-//            throw new Exception("Post Test : best answer author's coin does not get");
-//        }
-//        if(!userRepository.findById(postAuthor.getId()).get().getCoin().equals(postAuthor.getCoin()-post.getReferencePrice())){
-//            throw new Exception("Post Test : post author's coin does not reduce");
-//        }
-////        TODO:要扣除reference number
-//        if(!postRepository.findById(post.getId()).get().getReferenceNumber().equals(post.getReferenceNumber()-1)){
-//            throw new Exception("Post Test : post reference number does not reduce");
-//        }
-//    }
+    @Test
+    public void testRewardChooseReferenceAnswer() throws Exception{
+        AppUser contributor = userRepository.findByEmail("user2@gmail.com");
+        Post post = createRewardPost();
+        String answerID = post.getAnswers().get(1);
+        AppUser postAuthor = userRepository.findByEmail(post.getAuthor());
+        mockMvc.perform(put("/post/reward/reference/"+post.getId()+"/"+answerID)
+                        .content(postAuthor.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
+
+        if(!noteRepository.findById(answerID).get().getReference().equals(true)){
+            throw new Exception("Post Test : note isBest does not change to true");
+        }
+        if(!userRepository.findById(contributor.getId()).get().getCoin().equals(contributor.getCoin()+post.getReferencePrice())){
+            throw new Exception("Post Test : best answer author's coin does not get");
+        }
+        if(!userRepository.findById(postAuthor.getId()).get().getCoin().equals(postAuthor.getCoin()-post.getReferencePrice())){
+            throw new Exception("Post Test : post author's coin does not reduce");
+        }
+        if(!postRepository.findById(post.getId()).get().getReferenceNumber().equals(post.getReferenceNumber()-1)){
+            throw new Exception("Post Test : post reference number does not reduce");
+        }
+    }
 
     @Test
     public void testQAChooseBestAnswer() throws Exception {
@@ -912,25 +908,37 @@ public class PostTest {
                 .andExpect(jsonPath("$.msg").value("Success"));
     }
 
-//TODO:若為QA post 檢查要看comment 而非answer ， QA post之answer會為null
-    //TODO:service function 應判斷是否選解 不是有沒有人回答
-//    @Test
-//    public void testModifyPublishStatusBeforeChooseBestAnswer() throws Exception {
-//        Post post = createRewardPost();
-//
-//        mockMvc.perform(put("/post/publish/" + post.getId())
-//                        .headers(httpHeaders))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.msg").value("can't change publish state before you got best answer."));
-//
-//        if(postRepository.findById(post.getId()).get().getPublic().equals(false)){
-//            throw new Exception("Post Test : post's public should be true");
-//        }
-//    }
+    @Test
+    public void testRewardPostModifyPublishStatusBeforeChooseBestAnswer() throws Exception {
+        Post post = createRewardPost();
+
+        mockMvc.perform(put("/post/publish/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("can't change publish state before you got best answer."));
+
+        if(postRepository.findById(post.getId()).get().getPublic().equals(false)){
+            throw new Exception("Post Test : post's public should be true");
+        }
+    }
+
+    @Test
+    public void testQAPostModifyPublishStatusBeforeChooseBestAnswer() throws Exception {
+        Post post = createQAPost();
+
+        mockMvc.perform(put("/post/publish/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("can't change publish state before you got best answer."));
+
+        if(postRepository.findById(post.getId()).get().getPublic().equals(false)){
+            throw new Exception("Post Test : post's public should be true");
+        }
+    }
 
 
     @Test
-    public void testModifyPublishStatusAfterChooseBestAnswer() throws Exception {
+    public void testRewardPostModifyPublishStatusAfterChooseBestAnswer() throws Exception {
         Post post = createRewardPost();
         Note answerNote = noteRepository.findById(post.getAnswers().get(0)).get();
         answerNote.setBest(true);
@@ -956,6 +964,96 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.answers").value(post.getAnswers()))
                 .andExpect(jsonPath("$.res.public").value(false));
         if (postRepository.findById(post.getId()).get().getPublic().equals(true)) {
+            throw new Exception("Post Test: post is still public");
+        }
+    }
+
+    @Test
+    public void testQAPostModifyPublishStatusAfterChooseBestAnswer() throws Exception {
+        Post post = createQAPost();
+        post.getComments().get(0).setBest(true);
+        postRepository.save(post);
+
+        mockMvc.perform(put("/post/publish/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(post.getId()))
+                .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email").value(post.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(post.getAuthor()))
+                .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
+                .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
+                .andExpect(jsonPath("$.res.school").value(post.getSchool()))
+                .andExpect(jsonPath("$.res.professor").value(post.getProfessor()))
+                .andExpect(jsonPath("$.res.title").value(post.getTitle()))
+                .andExpect(jsonPath("$.res.content").value(post.getContent()))
+                .andExpect(jsonPath("$.res.date").hasJsonPath())
+                .andExpect(jsonPath("$.res.bestPrice").value(post.getBestPrice()))
+                .andExpect(jsonPath("$.res.referencePrice").value(post.getReferencePrice()))
+                .andExpect(jsonPath("$.res.referenceNumber").value(post.getReferenceNumber()))
+                .andExpect(jsonPath("$.res.answers").value(post.getAnswers()))
+                .andExpect(jsonPath("$.res.public").value(false));
+        if (postRepository.findById(post.getId()).get().getPublic().equals(true)) {
+            throw new Exception("Post Test: post is still public");
+        }
+    }
+
+    @Test
+    public void testRewardPostModifyPublishStatusToPublic() throws Exception {
+        Post post = createRewardPost();
+        post.setPublic(false);
+        postRepository.save(post);
+
+        mockMvc.perform(put("/post/publish/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(post.getId()))
+                .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email").value(post.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(post.getAuthor()))
+                .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
+                .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
+                .andExpect(jsonPath("$.res.school").value(post.getSchool()))
+                .andExpect(jsonPath("$.res.professor").value(post.getProfessor()))
+                .andExpect(jsonPath("$.res.title").value(post.getTitle()))
+                .andExpect(jsonPath("$.res.content").value(post.getContent()))
+                .andExpect(jsonPath("$.res.date").hasJsonPath())
+                .andExpect(jsonPath("$.res.bestPrice").value(post.getBestPrice()))
+                .andExpect(jsonPath("$.res.referencePrice").value(post.getReferencePrice()))
+                .andExpect(jsonPath("$.res.referenceNumber").value(post.getReferenceNumber()))
+                .andExpect(jsonPath("$.res.answers").value(post.getAnswers()))
+                .andExpect(jsonPath("$.res.public").value(true));
+        if (postRepository.findById(post.getId()).get().getPublic().equals(false)) {
+            throw new Exception("Post Test: post is still public");
+        }
+    }
+
+    @Test
+    public void testQAPostModifyPublishStatusToPublic() throws Exception {
+        Post post = createQAPost();
+        post.setPublic(false);
+        postRepository.save(post);
+
+        mockMvc.perform(put("/post/publish/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(post.getId()))
+                .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email").value(post.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(post.getAuthor()))
+                .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
+                .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
+                .andExpect(jsonPath("$.res.school").value(post.getSchool()))
+                .andExpect(jsonPath("$.res.professor").value(post.getProfessor()))
+                .andExpect(jsonPath("$.res.title").value(post.getTitle()))
+                .andExpect(jsonPath("$.res.content").value(post.getContent()))
+                .andExpect(jsonPath("$.res.date").hasJsonPath())
+                .andExpect(jsonPath("$.res.bestPrice").value(post.getBestPrice()))
+                .andExpect(jsonPath("$.res.referencePrice").value(post.getReferencePrice()))
+                .andExpect(jsonPath("$.res.referenceNumber").value(post.getReferenceNumber()))
+                .andExpect(jsonPath("$.res.answers").value(post.getAnswers()))
+                .andExpect(jsonPath("$.res.public").value(true));
+        if (postRepository.findById(post.getId()).get().getPublic().equals(false)) {
             throw new Exception("Post Test: post is still public");
         }
     }
