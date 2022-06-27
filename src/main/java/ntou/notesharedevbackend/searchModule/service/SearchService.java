@@ -60,6 +60,9 @@ public class SearchService {
         Integer price = searchNote.getPrice();
         Boolean quotable = searchNote.getQuotable();
 
+        noteList = noteList.stream()
+                .filter((Note n) -> n.getPublic().equals(true))
+                .collect(Collectors.toList());
         if (school != null)
             noteList = noteList.stream()
                     .filter((Note n) -> n.getSchool().contains(school))
@@ -178,6 +181,9 @@ public class SearchService {
         Boolean haveCollaboration = searchPost.getHaveCollaboration();
         Boolean haveReward = searchPost.getHaveReward();
 
+        postList = postList.stream()
+                .filter((Post n) -> n.getPublic().equals(true))
+                .collect(Collectors.toList());
         if (subject != null)
             postList = postList.stream()
                     .filter((Post p) -> p.getSubject().contains(subject))
