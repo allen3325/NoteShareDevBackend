@@ -575,10 +575,18 @@ public class SearchTest {
         noteRepository.save(rewardNote2);
         Post collaborationPost = createCollaborationPost();
         Note collaborationNote = noteRepository.findById(collaborationPost.getAnswers().get(0)).get();
+        Post collaborationPostUnPublic = createCollaborationPost();
+        Note collaborationNoteUnPublic = noteRepository.findById(collaborationPostUnPublic.getAnswers().get(0)).get();
+        collaborationNoteUnPublic.setPublic(false);
+        noteRepository.save(collaborationNoteUnPublic);
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         Folder folder = folderRepository.findById(appUser.getFolders().get(2)).get();
         Note normalNote = createNormalNote();
+        Note normalNote1 = createNormalNote();
+        normalNote1.setPublic(false);
+        noteRepository.save(normalNote1);
         folder.getNotes().add(normalNote.getId());
+        folder.getNotes().add(normalNote1.getId());
 
         String keyword = "Interrupt";
         int offset = 0;
@@ -614,8 +622,6 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[0].downloadable").value(normalNote.getDownloadable()))
                 .andExpect(jsonPath("$.search.items.[0].commentCount").value(normalNote.getCommentCount()))
                 .andExpect(jsonPath("$.search.items.[0].price").value(normalNote.getPrice()))
-                //TODO: 需要顯示嗎
-//                .andExpect(jsonPath("$.search.items.[0].quotable").value(normalNote.getQuotable()))
                 .andExpect(jsonPath("$.search.items.[0].tag.[0]").value(normalNote.getTag().get(0)))
                 .andExpect(jsonPath("$.search.items.[0].tag.[1]").value(normalNote.getTag().get(1)))
                 .andExpect(jsonPath("$.search.items.[0].tag.[2]").value(normalNote.getTag().get(2)))
@@ -636,8 +642,6 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[1].downloadable").value(collaborationNote.getDownloadable()))
                 .andExpect(jsonPath("$.search.items.[1].commentCount").value(collaborationNote.getCommentCount()))
                 .andExpect(jsonPath("$.search.items.[1].price").value(collaborationNote.getPrice()))
-                //TODO: 需要顯示嗎
-//                .andExpect(jsonPath("$.search.items.[0].quotable").value(normalNote.getQuotable()))
                 .andExpect(jsonPath("$.search.items.[1].tag.[0]").value(collaborationNote.getTag().get(0)))
                 .andExpect(jsonPath("$.search.items.[1].tag.[1]").value(collaborationNote.getTag().get(1)))
                 .andExpect(jsonPath("$.search.items.[1].tag.[2]").value(collaborationNote.getTag().get(2)))
@@ -655,8 +659,6 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[2].downloadable").value(rewardNote1.getDownloadable()))
                 .andExpect(jsonPath("$.search.items.[2].commentCount").value(rewardNote1.getCommentCount()))
                 .andExpect(jsonPath("$.search.items.[2].price").value(rewardNote1.getPrice()))
-                //TODO: 需要顯示嗎
-//                .andExpect(jsonPath("$.search.items.[0].quotable").value(normalNote.getQuotable()))
                 .andExpect(jsonPath("$.search.items.[2].tag.[0]").value(rewardNote1.getTag().get(0)))
                 .andExpect(jsonPath("$.search.items.[2].tag.[1]").value(rewardNote1.getTag().get(1)))
                 .andExpect(jsonPath("$.search.items.[2].tag.[2]").value(rewardNote1.getTag().get(2)));
@@ -666,9 +668,17 @@ public class SearchTest {
     @Test
     public void testSearchPost() throws Exception {
         Post QAPost = createQAPost();
+        Post QAPostUnPublic = createQAPost();
+        QAPostUnPublic.setPublic(false);
+        postRepository.save(QAPostUnPublic);
         Post rewardPost = createRewardPost();
+        Post rewardPostUnPublic = createRewardPost();
+        rewardPostUnPublic.setPublic(false);
+        postRepository.save(rewardPostUnPublic);
         Post collaborationPost = createCollaborationPost();
-
+        Post collaborationPostUnPublic = createCollaborationPost();
+        collaborationPostUnPublic.setPublic(false);
+        postRepository.save(collaborationPostUnPublic);
         String keyword = "trap";
         int offset = 0;
         int pageSize = 10;
@@ -763,10 +773,13 @@ public class SearchTest {
         Folder folder1 = createFolder("taldskfgjaldfjk", "/taldskfgjaldfjk", null);
 
         Folder folder2 = createFolder("taldskfgjaldfjk1111", "/taldskfgjaldfjk1111", null);
-
+        folder2.setPublic(false);
+        folderRepository.save(folder2);
         Folder folder11 = createFolder("tSecond", "/taldskfgjaldfjk/tSecond", folder1.getId());
 
         Folder folder111 = createFolder("tThird", "/taldskfgjaldfjk/tSecond/Third", folder11.getId());
+
+        Folder folder1111 = createFolder("tUnPublic", "/taldskfgjaldfjk/tSecond/Third/tUnPublic", folder111.getId());
 
         String keyword = "t";
         int offset =0;
@@ -782,38 +795,37 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[0].children").value(folder1.getChildren()))
                 .andExpect(jsonPath("$.search.items.[0].public").value(folder1.getPublic()))
                 .andExpect(jsonPath("$.search.items.[0].favorite").value(folder1.getFavorite()))
-                .andExpect(jsonPath("$.search.items.[1].id").value(folder2.getId()))
-                .andExpect(jsonPath("$.search.items.[1].folderName").value(folder2.getFolderName()))
-                .andExpect(jsonPath("$.search.items.[1].notes").value(folder2.getNotes()))
-                .andExpect(jsonPath("$.search.items.[1].path").value(folder2.getPath()))
-                .andExpect(jsonPath("$.search.items.[1].parent").value(folder2.getParent()))
-                .andExpect(jsonPath("$.search.items.[1].children").value(folder2.getChildren()))
-                .andExpect(jsonPath("$.search.items.[1].public").value(folder2.getPublic()))
-                .andExpect(jsonPath("$.search.items.[1].favorite").value(folder2.getFavorite()))
-                .andExpect(jsonPath("$.search.items.[2].id").value(folder11.getId()))
-                .andExpect(jsonPath("$.search.items.[2].folderName").value(folder11.getFolderName()))
-                .andExpect(jsonPath("$.search.items.[2].notes").value(folder11.getNotes()))
-                .andExpect(jsonPath("$.search.items.[2].path").value(folder11.getPath()))
-                .andExpect(jsonPath("$.search.items.[2].parent").value(folder11.getParent()))
-                .andExpect(jsonPath("$.search.items.[2].children").value(folder11.getChildren()))
-                .andExpect(jsonPath("$.search.items.[2].public").value(folder11.getPublic()))
-                .andExpect(jsonPath("$.search.items.[2].favorite").value(folder11.getFavorite()))
-                .andExpect(jsonPath("$.search.items.[3].id").value(folder111.getId()))
-                .andExpect(jsonPath("$.search.items.[3].folderName").value(folder111.getFolderName()))
-                .andExpect(jsonPath("$.search.items.[3].notes").value(folder111.getNotes()))
-                .andExpect(jsonPath("$.search.items.[3].path").value(folder111.getPath()))
-                .andExpect(jsonPath("$.search.items.[3].parent").value(folder111.getParent()))
-                .andExpect(jsonPath("$.search.items.[3].children").value(folder111.getChildren()))
-                .andExpect(jsonPath("$.search.items.[3].public").value(folder111.getPublic()))
-                .andExpect(jsonPath("$.search.items.[3].favorite").value(folder111.getFavorite()));
+                .andExpect(jsonPath("$.search.items.[1].id").value(folder11.getId()))
+                .andExpect(jsonPath("$.search.items.[1].folderName").value(folder11.getFolderName()))
+                .andExpect(jsonPath("$.search.items.[1].notes").value(folder11.getNotes()))
+                .andExpect(jsonPath("$.search.items.[1].path").value(folder11.getPath()))
+                .andExpect(jsonPath("$.search.items.[1].parent").value(folder11.getParent()))
+                .andExpect(jsonPath("$.search.items.[1].children").value(folder11.getChildren()))
+                .andExpect(jsonPath("$.search.items.[1].public").value(folder11.getPublic()))
+                .andExpect(jsonPath("$.search.items.[1].favorite").value(folder11.getFavorite()))
+                .andExpect(jsonPath("$.search.items.[2].id").value(folder111.getId()))
+                .andExpect(jsonPath("$.search.items.[2].folderName").value(folder111.getFolderName()))
+                .andExpect(jsonPath("$.search.items.[2].notes").value(folder111.getNotes()))
+                .andExpect(jsonPath("$.search.items.[2].path").value(folder111.getPath()))
+                .andExpect(jsonPath("$.search.items.[2].parent").value(folder111.getParent()))
+                .andExpect(jsonPath("$.search.items.[2].children").value(folder111.getChildren()))
+                .andExpect(jsonPath("$.search.items.[2].public").value(folder111.getPublic()))
+                .andExpect(jsonPath("$.search.items.[2].favorite").value(folder111.getFavorite()))
+                .andExpect(jsonPath("$.search.items.[3].id").value(folder1111.getId()))
+                .andExpect(jsonPath("$.search.items.[3].folderName").value(folder1111.getFolderName()))
+                .andExpect(jsonPath("$.search.items.[3].notes").value(folder1111.getNotes()))
+                .andExpect(jsonPath("$.search.items.[3].path").value(folder1111.getPath()))
+                .andExpect(jsonPath("$.search.items.[3].parent").value(folder1111.getParent()))
+                .andExpect(jsonPath("$.search.items.[3].children").value(folder1111.getChildren()))
+                .andExpect(jsonPath("$.search.items.[3].public").value(folder1111.getPublic()))
+                .andExpect(jsonPath("$.search.items.[3].favorite").value(folder1111.getFavorite()));
     }
 
     @AfterEach
     public void clear() {
-        //TODO:打開
-//        postRepository.deleteAll();
-//        userRepository.deleteAll();
-//        folderRepository.deleteAll();
-//        noteRepository.deleteAll();
+        postRepository.deleteAll();
+        userRepository.deleteAll();
+        folderRepository.deleteAll();
+        noteRepository.deleteAll();
     }
 }
