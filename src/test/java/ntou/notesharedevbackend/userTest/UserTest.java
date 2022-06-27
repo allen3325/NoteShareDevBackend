@@ -1,8 +1,7 @@
 package ntou.notesharedevbackend.userTest;
 
-import com.google.gson.JsonArray;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
-import ntou.notesharedevbackend.folderTest.FolderTest;
+import ntou.notesharedevbackend.repository.FolderRepository;
 import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import org.json.JSONArray;
@@ -17,15 +16,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -41,8 +37,22 @@ public class UserTest {
     private MockMvc mockMvc;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private FolderRepository folderRepository;
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    private Folder createFolder(String folderName, String path, String parent) {
+        Folder folder = new Folder();
+        folder.setFolderName(folderName);
+        folder.setFavorite(false);
+        folder.setParent(parent);
+        folder.setPath(path);
+        folder.setNotes(new ArrayList<String>());
+        folder.setChildren(new ArrayList<String>());
+        folder.setPublic(false);
+        folderRepository.insert(folder);
+        return folder;
+    }
     private AppUser createUser(){
         AppUser appUser = new AppUser();
         appUser.setEmail("yitingwu.1030@gmail.com");
@@ -50,7 +60,14 @@ public class UserTest {
         appUser.setName("Ting");
         appUser.setPassword(passwordEncoder.encode("1234"));
         appUser.setVerifyCode("1111");
-        appUser.setFolders(new ArrayList<>());
+        Folder buyFolder = createFolder("Buy", "/Buy", null);
+        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null);
+        Folder folderFolder = createFolder("Folder","/Folder",null);
+        ArrayList<String> folderList = new ArrayList<>();
+        folderList.add(buyFolder.getId());
+        folderList.add(favoriteFolder.getId());
+        folderList.add(folderFolder.getId());
+        appUser.setFolders(folderList);
         return appUser;
     }
 
@@ -59,6 +76,7 @@ public class UserTest {
         httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         userRepository.deleteAll();
+        folderRepository.deleteAll();
         AppUser appUser = createUser();
         userRepository.insert(appUser);
     }
@@ -162,7 +180,9 @@ public class UserTest {
                 .andExpect(jsonPath("$.res.password").hasJsonPath())
                 .andExpect(jsonPath("$.res.profile").value(appUser.getProfile()))
                 .andExpect(jsonPath("$.res.strength").value(appUser.getStrength()))
-                .andExpect(jsonPath("$.res.folders").value(appUser.getFolders()))
+                .andExpect(jsonPath("$.res.folders.[0]").value(appUser.getFolders().get(0)))
+                .andExpect(jsonPath("$.res.folders.[1]").value(appUser.getFolders().get(1)))
+                .andExpect(jsonPath("$.res.folders.[2]").value(appUser.getFolders().get(2)))
                 .andExpect(jsonPath("$.res.subscribe").value(appUser.getSubscribe()))
                 .andExpect(jsonPath("$.res.bell").value(appUser.getBell()))
                 .andExpect(jsonPath("$.res.fans").value(appUser.getFans()))
@@ -214,21 +234,6 @@ public class UserTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
-//                .andExpect(jsonPath("$.id").value(appUser.getId()))
-//                .andExpect(jsonPath("$.email").value(appUser.getEmail()))
-//                .andExpect(jsonPath("$.name").value(appUser.getName()))
-//                .andExpect(jsonPath("$.verifyCode").value(appUser.getVerifyCode()))
-//                .andExpect(jsonPath("$.password").hasJsonPath())
-//                .andExpect(jsonPath("$.profile").value(appUser.getProfile()))
-//                .andExpect(jsonPath("$.strength").value(newStrength))
-//                .andExpect(jsonPath("$.folders").value(appUser.getFolders()))
-//                .andExpect(jsonPath("$.subscribe").value(appUser.getSubscribe()))
-//                .andExpect(jsonPath("$.bell").value(appUser.getBell()))
-//                .andExpect(jsonPath("$.fans").value(appUser.getFans()))
-//                .andExpect(jsonPath("$.coin").value(appUser.getCoin()))
-//                .andExpect(jsonPath("$.headshotPhoto").value(appUser.getHeadshotPhoto()))
-//                .andExpect(jsonPath("$.admin").value(appUser.isAdmin()))
-//                .andExpect(jsonPath("$.activate").value(appUser.isActivate()));
         if(!userRepository.findByEmail("yitingwu.1030@gmail.com").getStrength().equals(newStrengthArray)){
             throw new Exception("Modify User Strength : strength does not change");
         }
@@ -247,21 +252,6 @@ public class UserTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
-//                .andExpect(jsonPath("$.id").value(appUser.getId()))
-//                .andExpect(jsonPath("$.email").value(appUser.getEmail()))
-//                .andExpect(jsonPath("$.name").value(appUser.getName()))
-//                .andExpect(jsonPath("$.verifyCode").value(appUser.getVerifyCode()))
-//                .andExpect(jsonPath("$.password").hasJsonPath())
-//                .andExpect(jsonPath("$.profile").value(newProfile))
-//                .andExpect(jsonPath("$.strength").value(appUser.getStrength()))
-//                .andExpect(jsonPath("$.folders").value(appUser.getFolders()))
-//                .andExpect(jsonPath("$.subscribe").value(appUser.getSubscribe()))
-//                .andExpect(jsonPath("$.bell").value(appUser.getBell()))
-//                .andExpect(jsonPath("$.fans").value(appUser.getFans()))
-//                .andExpect(jsonPath("$.coin").value(appUser.getCoin()))
-//                .andExpect(jsonPath("$.headshotPhoto").value(appUser.getHeadshotPhoto()))
-//                .andExpect(jsonPath("$.admin").value(appUser.isAdmin()))
-//                .andExpect(jsonPath("$.activate").value(appUser.isActivate()));
         if(!userRepository.findByEmail("yitingwu.1030@gmail.com").getProfile().equals(newProfile)){
             throw new Exception("Modify User Profile : profile does not change");
         }
@@ -269,5 +259,6 @@ public class UserTest {
     @AfterEach
     public void clear(){
         userRepository.deleteAll();
+        folderRepository.deleteAll();
     }
 }

@@ -312,7 +312,6 @@ public class FolderTest {
         }
     }
 
-    //TODO: testChangePathToTopByID 移到最上層 parent = null 會有問題
     @Test
     public void testChangePathToTopByID() throws Exception {
         //建立user
@@ -357,7 +356,6 @@ public class FolderTest {
         }
     }
 
-    //TODO:改變收藏狀態 會移出嗎，Response $.res.msg?
     @Test
     public void testPutIntoFavoriteFolder() throws Exception {
         //建User
@@ -384,7 +382,7 @@ public class FolderTest {
             throw new Exception("Folder Change Favorite State : folder does not put into favorite folder's children");
         }
     }
-//TODO:merge後測試
+
 
     @Test
     public void testTakeOutFromFavoriteFolder() throws Exception {
@@ -459,8 +457,6 @@ public class FolderTest {
             throw new Exception("Delete Folder: parent folder's children doesn't not remove folder's id");
         }
         //favorite
-        //TODO : 跟張哲瑋說要檢查favorite的folder
-        // 張哲瑋說：測試好了也過了:D
         if (folderRepository.findById(appUser.getFolders().get(1)).get().getChildren().contains(folder.getId())) {
             throw new Exception("Delete Folder: favorite folder's children doesn't not remove folder's id");
         }

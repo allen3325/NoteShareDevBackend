@@ -1,18 +1,17 @@
 package ntou.notesharedevbackend.noteTest;
 
-import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
-import com.google.gson.JsonArray;
-import net.minidev.json.parser.JSONParser;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.noteNodule.entity.Content;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.entity.VersionContent;
+import ntou.notesharedevbackend.postModule.entity.Apply;
+import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.repository.FolderRepository;
 import ntou.notesharedevbackend.repository.NoteRepository;
+import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
-import org.checkerframework.checker.units.qual.A;
 import org.hamcrest.core.IsNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.internal.matchers.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,6 +51,8 @@ public class NoteTest {
 
     @Autowired
     private FolderRepository folderRepository;
+    @Autowired
+    private PostRepository postRepository;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private Folder createFolder(String folderName, String path, String parent){
@@ -87,6 +87,31 @@ public class NoteTest {
         return appUser;
     }
 
+    public Post createCollaborationPost() {
+        Post post = new Post();
+        post.setType("collaboration");
+        ArrayList<String> email = new ArrayList<>();
+        email.add("yitingwu.1030@gmail.com");
+        email.add("user1@gmail.com");
+        email.add("user2@gmail.com");
+        post.setEmail(email);
+        post.setAuthor("Ting");
+        post.setDepartment("Computer Science");
+        post.setSubject("Operation System");
+        post.setSchool("NTOU");
+        post.setProfessor("professor");
+        post.setTitle("Interrupt vs trap");
+        post.setContent("this is a post!");
+        post.setCollabNoteAuthorNumber(post.getEmail().size());
+        ArrayList<String> answers = new ArrayList<>();
+        post.setAnswers(answers);
+        post.setCollabApply(new ArrayList<Apply>());
+        post.setPublic(true);
+        post.setComments(new ArrayList<Comment>());
+        post.setCommentCount(0);
+        post = postRepository.insert(post);
+        return post;
+    }
     private Note createNormalNote(){
         Note note = new Note();
         note.setType("normal");
@@ -299,10 +324,11 @@ public class NoteTest {
         versionContents.add(v4);
         note.setVersion(versionContents);
         note.setContributors(new ArrayList<>());
-        note.setPostID(null);
         note.setReference(null);
         note.setBest(null);
         note.setManagerEmail(null);
+        Post post = createCollaborationPost();
+        note.setPostID(post.getId());
         noteRepository.insert(note);
         return note;
     }
@@ -312,6 +338,7 @@ public class NoteTest {
         userRepository.deleteAll();
         noteRepository.deleteAll();
         folderRepository.deleteAll();
+        postRepository.deleteAll();
         httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         AppUser appUser = createUser("yitingwu.1030@gmail.com","Ting");
@@ -321,6 +348,9 @@ public class NoteTest {
         userRepository.insert(appUser1);
         userRepository.insert(appUser2);
         Note note = createCollaborationNote();
+        Post post = postRepository.findById(note.getPostID()).get();
+        post.getAnswers().add(note.getId());
+        postRepository.save(post);
         Folder appUserFolder = folderRepository.findById(userRepository.findByEmail("yitingwu.1030@gmail.com").getFolders().get(2)).get();
         Folder appUser1Folder = folderRepository.findById(userRepository.findByEmail("user1@gmail.com").getFolders().get(2)).get();
         Folder appUser2Folder = folderRepository.findById(userRepository.findByEmail("user2@gmail.com").getFolders().get(2)).get();
@@ -708,7 +738,7 @@ public class NoteTest {
                 .put("tag",tag)
                 .put("hiddenTag",hiddenTag)
                 .put("contributors",contributors)
-                .put("postID",note.getPostID()==null?null:note.getPostID())
+                .put("postID",note.getPostID())
                 .put("publishDate",note.getPublishDate()==null?null:note.getPublishDate())
                 .put("description",note.getDescription()==null?null:note.getDescription())
                 .put("reference",note.getReference()==null?null:note.getReference())
@@ -894,6 +924,7 @@ public class NoteTest {
         AppUser kickTarget = userRepository.findByEmail("user1@gmail.com");
         Folder folder = folderRepository.findById(appUser.getFolders().get(2)).get();
         Note note = noteRepository.findById(folder.getNotes().get(0)).get();
+        Post post = postRepository.findById(note.getPostID()).get();
         mockMvc.perform(put("/note/kick/"+note.getId()+"/"+kickTarget.getEmail())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
@@ -901,6 +932,10 @@ public class NoteTest {
         if(noteRepository.findById(note.getId()).get().getAuthorEmail().contains(kickTarget.getEmail())){
             throw new Exception("Note Test : Note's author's email still contain kickTarget");
         }
+        //TODO : 踢人之後 共筆筆記作者人數要減一
+//        if(!postRepository.findById(post.getId()).get().getCollabNoteAuthorNumber().equals(post.getCollabNoteAuthorNumber()-1)){
+//            throw new Exception("Note Test : Post's collabNoteAuthorNumber does not -1");
+//        }
     }
 
     @Test
@@ -971,8 +1006,9 @@ public class NoteTest {
     }
     @AfterEach
     public void clear(){
-//        userRepository.deleteAll();
-//        noteRepository.deleteAll();
-//        folderRepository.deleteAll();
+        userRepository.deleteAll();
+        noteRepository.deleteAll();
+        folderRepository.deleteAll();
+        postRepository.deleteAll();
     }
 }

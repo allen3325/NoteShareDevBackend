@@ -391,7 +391,7 @@ public class PostTest {
         ArrayList<String> email = new ArrayList<>();
         email.add("yitingwu.1030@gmail.com");
         post.setEmail(email);
-        post.setAuthor("Ting");
+        post.setAuthor("yitingwu.1030@gmail.com");
         post.setDepartment("Computer Science");
         post.setSubject("Operation System");
         post.setSchool("NTOU");
@@ -714,7 +714,6 @@ public class PostTest {
                 .put("comments", comments)
                 .put("commentCount", post.getCommentCount())
                 .put("public", true)
-                //TODO:非此type需要的，會為null，replace function會有問題
                 .put("email", new JSONArray().put("yitingwu.1030@gmail.com"));
 
         mockMvc.perform(put("/post/" + post.getId())
@@ -923,6 +922,10 @@ public class PostTest {
 //                        .headers(httpHeaders))
 //                .andExpect(status().isOk())
 //                .andExpect(jsonPath("$.msg").value("can't change publish state before you got best answer."));
+//
+//        if(postRepository.findById(post.getId()).get().getPublic().equals(false)){
+//            throw new Exception("Post Test : post's public should be true");
+//        }
 //    }
 
 
@@ -959,6 +962,9 @@ public class PostTest {
 
     @AfterEach
     public void clear() {
-
+        postRepository.deleteAll();
+        userRepository.deleteAll();
+        folderRepository.deleteAll();
+        noteRepository.deleteAll();
     }
 }

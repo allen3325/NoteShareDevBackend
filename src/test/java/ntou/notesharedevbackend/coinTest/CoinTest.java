@@ -1,6 +1,5 @@
 package ntou.notesharedevbackend.coinTest;
 
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
@@ -231,13 +230,10 @@ public class CoinTest {
                 .andExpect(jsonPath("$.res.professor").value(note.getProfessor()))
                 .andExpect(jsonPath("$.res.school").value(note.getSchool()))
                 .andExpect(jsonPath("$.res.liker").value(note.getLiker()))
-                //TODO: 張哲瑋説：Buyer 會增加購買者。
-//                .andExpect(jsonPath("$.res.buyer").value(note.getBuyer()))
+                .andExpect(jsonPath("$.res.buyer.[0]").value(buyer.getEmail()))
                 .andExpect(jsonPath("$.res.favoriter").value(note.getFavoriter()))
                 .andExpect(jsonPath("$.res.likeCount").value(note.getLikeCount()))
                 .andExpect(jsonPath("$.res.favoriteCount").value(note.getFavoriteCount()))
-                //TODO: 跟張哲瑋說 CoinService 買成功的時候要增加解鎖次數 完成後 測試下行
-                // 張哲瑋説：測試好了也過了:D
                 .andExpect(jsonPath("$.res.unlockCount").value(note.getUnlockCount()+1))
                 .andExpect(jsonPath("$.res.downloadable").value(note.getDownloadable()))
                 .andExpect(jsonPath("$.res.commentCount").value(note.getCommentCount()))
@@ -253,8 +249,6 @@ public class CoinTest {
                 .andExpect(jsonPath("$.res.best").value(note.getBest()))
                 .andExpect(jsonPath("$.res.public").value(note.getPublic()))
                 .andExpect(jsonPath("$.res.submit").value(note.getSubmit()));
-        //TODO:跟張哲瑋說:筆記作者們要拿到錢 完成後測試下面迴圈
-        // 張哲瑋説：測試好了也過了:D
         for(String s: note.getAuthorEmail()){
             if(!userRepository.findByEmail(s).getCoin().equals(authorNewCoin)){
                 throw new Exception("Coin Test : author's coin does not increase");
