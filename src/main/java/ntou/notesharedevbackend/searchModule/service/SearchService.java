@@ -233,6 +233,9 @@ public class SearchService {
 
     public Pages getSearchedFolderByKeyword(String keyword, int offset, int pageSize) {
         List<Folder> foldersLikePage = folderRepository.findByFolderNameRegex(keyword);
+        foldersLikePage = foldersLikePage.stream()
+                .filter((Folder n) -> n.getPublic().equals(true))
+                .collect(Collectors.toList());
         List<Folder> copyFolderList = new ArrayList<>(foldersLikePage);
         copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Buy")));
         copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Favorite")));
