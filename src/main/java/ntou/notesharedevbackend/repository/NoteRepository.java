@@ -11,4 +11,6 @@ import java.util.*;
 public interface NoteRepository extends MongoRepository<Note,String> {
     @Query(value = "{'title': {$regex : ?0, $options: 'i'}}")
     List<Note> findNoteByTitleRegex(String title, Sort sort);
+
+    List<Note> findAllByHeaderEmail(String email);
 }
