@@ -280,4 +280,13 @@ public class NoteService {
         }
         return res;
     }
+
+    public boolean rewardNoteHaveAnswer (ArrayList<String> answers){
+        for(String s : answers){
+            if(getNote(s).getBest()!=null){
+                if(getNote(s).getBest()) return true;
+            }
+        }
+        return false;
+    }
 }

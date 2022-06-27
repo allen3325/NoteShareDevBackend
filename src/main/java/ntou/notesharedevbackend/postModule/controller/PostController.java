@@ -142,7 +142,6 @@ public class PostController {
         }
     }
 
-    // TODO: 點數增減
     @Operation(summary = "reward choose best answer(note).", description = "填入postID,最佳解筆記ID")
     @PutMapping("/reward/best/{postID}/{answerID}")
     public ResponseEntity<Object> rewardChooseBestAnswer(@PathVariable("postID") String postID,
@@ -170,7 +169,7 @@ public class PostController {
         }
     }
 
-    //TODO: 改成 reward，點數增減
+
     @Operation(summary = "reward choose reference answer.", description = "填入postID,最佳解留言ID")
     @PutMapping("/reward/reference/{postID}/{answerID}")
     public ResponseEntity<Object> QAChooseReferenceAnswer(@PathVariable("postID") String postID,

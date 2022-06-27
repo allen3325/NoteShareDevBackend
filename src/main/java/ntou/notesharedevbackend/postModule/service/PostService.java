@@ -135,16 +135,24 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-    // TODO: reward 的 answers 裡有沒有最佳解
     public Post modifyPublishStatus(String id) {
         Post post = getPostById(id);
-        if (post.getPublic() && (post.getType().equals("reward") || post.getType().equals("QA"))) {
-            if (!post.getAnswers().isEmpty()) {
-                post.setPublic(!post.getPublic());
-            } else {
-                System.out.println("can't change publish state before you got best answer.");
-                return null;
-//                throw new Exception("can't change publish state before you got best answer.");
+        if (post.getPublic()) {
+            if (post.getType().equals("reward")) {
+                if (noteService.rewardNoteHaveAnswer(post.getAnswers())) {
+                    post.setPublic(!post.getPublic());
+                } else {
+                    System.out.println("can't change publish state before you got best answer.");
+                    return null;
+                }
+            } else if (post.getType().equals("QA")) {
+                if (QAhaveBestAnswer(post.getComments())) {
+                    post.setPublic(!post.getPublic());
+                } else {
+                    System.out.println("can't change publish state before you got best answer.");
+                    return null;
+                }
+
             }
         } else {
             post.setPublic(!post.getPublic());
@@ -154,6 +162,13 @@ public class PostService {
         replacePost(post.getId(), post);
         return getPostById(id);
 //        postRepository.save(post);
+    }
+
+    public boolean QAhaveBestAnswer(ArrayList<Comment> comments) {
+        for (Comment c : comments) {
+            if (c.getBest()) return true;
+        }
+        return false;
     }
 
     public void applyCollaboration(String id, Apply applicant) {
@@ -347,9 +362,9 @@ public class PostService {
         String bestPrice = String.valueOf(post.getBestPrice());
         if (post.getEmail().contains(email)) {//確認為貼文作者
             Coin postAuthorCoin = new Coin();
-            postAuthorCoin.setCoin('-'+bestPrice);
-            coinService.changeCoin(email,postAuthorCoin);
-            noteService.rewardNoteBestAnswer(answerID, email,bestPrice);
+            postAuthorCoin.setCoin('-' + bestPrice);
+            coinService.changeCoin(email, postAuthorCoin);
+            noteService.rewardNoteBestAnswer(answerID, email, bestPrice);
             return true;
         }
         return false;
@@ -360,62 +375,59 @@ public class PostService {
         Coin coin = new Coin();
         // change price to String
         String price = String.valueOf(post.getBestPrice());
-        if(post.getAnswers().isEmpty()){
+        if (post.getAnswers().isEmpty()) {
             ArrayList<String> answer = new ArrayList<>();
             ArrayList<Comment> allComments = post.getComments();
-            for(Comment comment:allComments){
-                if(comment.getId().equals(commentID)){
+            for (Comment comment : allComments) {
+                if (comment.getId().equals(commentID)) {
                     comment.setBest(true);
                     answer.add(commentID);
                     post.setAnswers(answer);
                     // add comment's author's money.
-                    coin.setCoin("+"+price);
-                    coinService.changeCoin(comment.getEmail(),coin);
+                    coin.setCoin("+" + price);
+                    coinService.changeCoin(comment.getEmail(), coin);
                     // minus post's author's money.
-                    coin.setCoin("-"+price);
-                    coinService.changeCoin(post.getEmail().get(0),coin);
+                    coin.setCoin("-" + price);
+                    coinService.changeCoin(post.getEmail().get(0), coin);
                 }
             }
             post.setComments(allComments);
-            replacePost(post.getId(),post);
-        }else{
+            replacePost(post.getId(), post);
+        } else {
             return false;
         }
         return true;
     }
 
     public boolean rewardChooseReferenceAnswer(String postID, String answerID, String email) {
-        //TODO 參考解數量
-        //TODO 點數增減
         Post post = getPostById(postID);
         String referencePrice = String.valueOf(post.getReferencePrice());
         if (post.getEmail().contains(email)) {//確認為貼文作者
-            if(post.getReferenceNumber()>0){
-                post.setReferenceNumber(post.getReferenceNumber()-1);
-                replacePost(postID,post);
+            if (post.getReferenceNumber() > 0) {
+                post.setReferenceNumber(post.getReferenceNumber() - 1);
+                replacePost(postID, post);
                 Coin postAuthorCoin = new Coin();
-                postAuthorCoin.setCoin('-'+referencePrice);
-                coinService.changeCoin(email,postAuthorCoin);//作者扣點
-                noteService.rewardNoteReferenceAnswer(answerID, email,referencePrice);
+                postAuthorCoin.setCoin('-' + referencePrice);
+                coinService.changeCoin(email, postAuthorCoin);//作者扣點
+                noteService.rewardNoteReferenceAnswer(answerID, email, referencePrice);
                 return true;
-            }
-            else return false;
+            } else return false;
         }
         return false;
     }
 
     public ArrayList<Post> getUserAllPostByType(String email, String postType) {
-        List<Post> allPost = postRepository.findAllByAuthorAndType(email,postType);
+        List<Post> allPost = postRepository.findAllByAuthorAndType(email, postType);
         return new ArrayList<Post>(allPost);
     }
 
-    public void kickUserFromCollaboration(String postID, String email){
+    public void kickUserFromCollaboration(String postID, String email) {
         Post post = getPostById(postID);
         ArrayList<String> emails = post.getEmail();
         int userIndex = emails.indexOf(email);
         emails.remove(userIndex);
         post.setEmail(emails);
-        post.setCollabNoteAuthorNumber(post.getCollabNoteAuthorNumber()-1);
-        replacePost(postID,post);
+        post.setCollabNoteAuthorNumber(post.getCollabNoteAuthorNumber() - 1);
+        replacePost(postID, post);
     }
 }
