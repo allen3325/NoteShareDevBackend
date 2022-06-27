@@ -83,6 +83,11 @@ public class CommentService {
         comment.setDate();
         comment.setEmail(request.getEmail());
         comment.setFloor(commentArrayList.size());
+        if(request.getPicURL()!=null){
+            comment.setPicURL(request.getPicURL());
+        }else{
+            comment.setPicURL(new ArrayList<String>());
+        }
 
         commentArrayList.add(comment);
         if (type.equals("note")) {
@@ -106,7 +111,7 @@ public class CommentService {
             commentArrayList.get(floor).setLikeCount(request.getLiker().size());
             commentArrayList.get(floor).setContent(request.getContent());
             commentArrayList.get(floor).setDate();
-
+            commentArrayList.get(floor).setPicURL(request.getPicURL());
             note.setComments(commentArrayList);
             noteService.replaceNote(note, note.getId());
 
@@ -119,7 +124,7 @@ public class CommentService {
             commentArrayList.get(floor).setLikeCount(request.getLiker().size());
             commentArrayList.get(floor).setContent(request.getContent());
             commentArrayList.get(floor).setDate();
-
+            commentArrayList.get(floor).setPicURL(request.getPicURL());
             post.setComments(commentArrayList);
             postService.replacePost(post.getId(), post);
 

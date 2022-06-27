@@ -348,10 +348,9 @@ public class CommentTest {
                 .andExpect(jsonPath("$.res.liker").isEmpty())
                 .andExpect(jsonPath("$.res.floor").value(post.getComments().size()))
                 .andExpect(jsonPath("$.res.date").hasJsonPath())
-                //TODO: Service 還沒寫
-//                .andExpect(jsonPath("$.res.picURL.[0]").value(picURLs.get(0)))
-//                .andExpect(jsonPath("$.res.picURL.[1]").value(picURLs.get(1)))
-//                .andExpect(jsonPath("$.res.picURL.[2]").value(picURLs.get(2)))
+                .andExpect(jsonPath("$.res.picURL.[0]").value(picURLs.get(0)))
+                .andExpect(jsonPath("$.res.picURL.[1]").value(picURLs.get(1)))
+                .andExpect(jsonPath("$.res.picURL.[2]").value(picURLs.get(2)))
                 .andExpect(jsonPath("$.res.best").value(false))
                 .andExpect(jsonPath("$.res.content").value(request.get("content")));
     }
@@ -360,8 +359,6 @@ public class CommentTest {
     public void testUpdateComment() throws Exception{
         Post post = createQAPost();
         Comment comment = post.getComments().get(0);
-        JSONArray picURLs = new JSONArray()
-                .put("picurl1");
         JSONObject request = new JSONObject()
                 .put("id",comment.getId())
                 .put("author",comment.getAuthor())
@@ -369,7 +366,7 @@ public class CommentTest {
                 .put("likerCount",comment.getLikeCount())
                 .put("liker",new JSONArray())
                 .put("floor",comment.getFloor())
-                .put("picURL",picURLs)
+                .put("picURL",null)
                 .put("content","NewContent")
                 .put("best",comment.getBest());
         mockMvc.perform(put("/comment/"+post.getId()+"/0")
@@ -383,10 +380,6 @@ public class CommentTest {
                 .andExpect(jsonPath("$.res.liker").isEmpty())
                 .andExpect(jsonPath("$.res.floor").value(request.get("floor")))
                 .andExpect(jsonPath("$.res.date").hasJsonPath())
-                //TODO: Service 還沒寫
-//                .andExpect(jsonPath("$.res.picURL.[0]").value(picURLs.get(0)))
-//                .andExpect(jsonPath("$.res.picURL.[1]").value(picURLs.get(1)))
-//                .andExpect(jsonPath("$.res.picURL.[2]").value(picURLs.get(2)))
                 .andExpect(jsonPath("$.res.best").value(request.get("best")))
                 .andExpect(jsonPath("$.res.content").value(request.get("content")));
     }
