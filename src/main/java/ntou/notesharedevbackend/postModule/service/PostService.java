@@ -26,6 +26,7 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
     @Autowired
+    @Lazy(value = true)
     private NoteService noteService;
     @Autowired
     @Lazy(value = true)
@@ -402,5 +403,15 @@ public class PostService {
     public ArrayList<Post> getUserAllPostByType(String email, String postType) {
         List<Post> allPost = postRepository.findAllByAuthorAndType(email,postType);
         return new ArrayList<Post>(allPost);
+    }
+
+    public void kickUserFromCollaboration(String postID, String email){
+        Post post = getPostById(postID);
+        ArrayList<String> emails = post.getEmail();
+        int userIndex = emails.indexOf(email);
+        emails.remove(userIndex);
+        post.setEmail(emails);
+        post.setCollabNoteAuthorNumber(post.getCollabNoteAuthorNumber()-1);
+        replacePost(postID,post);
     }
 }

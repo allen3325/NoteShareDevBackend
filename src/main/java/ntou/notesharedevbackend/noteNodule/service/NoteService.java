@@ -6,7 +6,9 @@ import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
+import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ public class NoteService {
     private NoteRepository noteRepository;
     @Autowired
     private AppUserService appUserService;
+    @Autowired
+    private PostService postService;
     @Autowired
     @Lazy
     private FolderService folderService;
@@ -123,8 +127,11 @@ public class NoteService {
         currentNames.remove(userIndex);
         note.setAuthorEmail(currentEmails);
         note.setAuthorName(currentNames);
-
+        if(note.getManagerEmail().equals(email)){
+            note.setManagerEmail(null);
+        }
         replaceNote(note,note.getId());
+        postService.kickUserFromCollaboration(note.getPostID(),email);
 //        noteRepository.save(note);
     }
 
