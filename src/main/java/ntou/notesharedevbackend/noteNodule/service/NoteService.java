@@ -1,5 +1,7 @@
 package ntou.notesharedevbackend.noteNodule.service;
 
+import ntou.notesharedevbackend.coinModule.entity.Coin;
+import ntou.notesharedevbackend.coinModule.service.CoinService;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.exception.BadRequestException;
 import ntou.notesharedevbackend.exception.NotFoundException;
@@ -11,6 +13,7 @@ import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,9 @@ public class NoteService {
     private NoteRepository noteRepository;
     @Autowired
     private AppUserService appUserService;
+    @Autowired
+    @Lazy(value = true)
+    private CoinService coinService;
     @Autowired
     private PostService postService;
     @Autowired
@@ -152,10 +158,26 @@ public class NoteService {
 //        noteRepository.save(note);
     }
 
-    public void rewardNoteBestAnswer(String noteID,String email){
+    public void rewardNoteBestAnswer(String noteID,String email, String bestPrice){
         Note note = getNote(noteID);
         note.setBest(true);
-        //TODO 新增點數
+        Coin bestAnswerCoin = new Coin();
+        bestAnswerCoin.setCoin('+'+bestPrice);
+        coinService.changeCoin(note.getAuthorEmail().get(0),bestAnswerCoin);
+        //TODO 位置，筆記移轉給懸賞人 移除投稿人擁有權
+        note.getAuthorEmail().add(email);
+        String userName = appUserService.getUserByEmail(email).getName();
+        note.getAuthorName().add(userName);
+        replaceNote(note,note.getId());
+//        noteRepository.save(note);
+    }
+
+    public void rewardNoteReferenceAnswer(String noteID,String email, String referencePrice){
+        Note note = getNote(noteID);
+        note.setReference(true);
+        Coin referenceAnswerCoin = new Coin();
+        referenceAnswerCoin.setCoin('+'+referencePrice);
+        coinService.changeCoin(note.getAuthorEmail().get(0),referenceAnswerCoin);//購買者增加點
         //TODO 位置，筆記移轉給懸賞人 移除投稿人擁有權
         note.getAuthorEmail().add(email);
         String userName = appUserService.getUserByEmail(email).getName();

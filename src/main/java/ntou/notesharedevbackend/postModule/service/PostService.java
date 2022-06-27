@@ -344,9 +344,12 @@ public class PostService {
 
     public boolean rewardChooseBestAnswer(String postID, String answerID, String email) {
         Post post = getPostById(postID);
+        String bestPrice = String.valueOf(post.getBestPrice());
         if (post.getEmail().contains(email)) {//確認為貼文作者
-            //TODO 可以更改最佳解嗎 => 可以 點數變動問題
-            noteService.rewardNoteBestAnswer(answerID, email);
+            Coin postAuthorCoin = new Coin();
+            postAuthorCoin.setCoin('-'+bestPrice);
+            coinService.changeCoin(email,postAuthorCoin);
+            noteService.rewardNoteBestAnswer(answerID, email,bestPrice);
             return true;
         }
         return false;
@@ -381,21 +384,22 @@ public class PostService {
         return true;
     }
 
-    public boolean QAChooseReferenceAnswer(String postID, String commentID, String email) {
+    public boolean rewardChooseReferenceAnswer(String postID, String answerID, String email) {
         //TODO 參考解數量
         //TODO 點數增減
         Post post = getPostById(postID);
-        if (post.getEmail().contains(email)) {
-            for (Comment c : post.getComments()) {
-                if (c.getId().equals(commentID)) {
-                    Comment referenceComment = c;
-//                    referenceComment.setReference(true);
-                    post.getComments().set(post.getComments().indexOf(c), referenceComment);
-                    replacePost(post.getId(), post);
-//                    postRepository.save(post);
-                    return true;
-                }
+        String referencePrice = String.valueOf(post.getReferencePrice());
+        if (post.getEmail().contains(email)) {//確認為貼文作者
+            if(post.getReferenceNumber()>0){
+                post.setReferenceNumber(post.getReferenceNumber()-1);
+                replacePost(postID,post);
+                Coin postAuthorCoin = new Coin();
+                postAuthorCoin.setCoin('-'+referencePrice);
+                coinService.changeCoin(email,postAuthorCoin);//作者扣點
+                noteService.rewardNoteReferenceAnswer(answerID, email,referencePrice);
+                return true;
             }
+            else return false;
         }
         return false;
     }
