@@ -661,7 +661,8 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[2].price").value(rewardNote1.getPrice()))
                 .andExpect(jsonPath("$.search.items.[2].tag.[0]").value(rewardNote1.getTag().get(0)))
                 .andExpect(jsonPath("$.search.items.[2].tag.[1]").value(rewardNote1.getTag().get(1)))
-                .andExpect(jsonPath("$.search.items.[2].tag.[2]").value(rewardNote1.getTag().get(2)));
+                .andExpect(jsonPath("$.search.items.[2].tag.[2]").value(rewardNote1.getTag().get(2)))
+                .andExpect(jsonPath("$.search.totalPages").value(1));
 
     }
 
@@ -818,7 +819,8 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[3].parent").value(folder1111.getParent()))
                 .andExpect(jsonPath("$.search.items.[3].children").value(folder1111.getChildren()))
                 .andExpect(jsonPath("$.search.items.[3].public").value(folder1111.getPublic()))
-                .andExpect(jsonPath("$.search.items.[3].favorite").value(folder1111.getFavorite()));
+                .andExpect(jsonPath("$.search.items.[3].favorite").value(folder1111.getFavorite()))
+                .andExpect(jsonPath("$.search.totalPages").value(1));
     }
 
     @AfterEach
