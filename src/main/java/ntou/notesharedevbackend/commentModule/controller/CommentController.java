@@ -46,7 +46,6 @@ public class CommentController {
         return ResponseEntity.ok().body(res);
     }
 
-    // TODO: picURL
     @PostMapping("/{ID}")
     @Operation(summary = "create comment in the note or post", description = "ID填筆記或是貼文的都可以，body傳入一個author,email," +
             "content,picURL")
@@ -57,7 +56,6 @@ public class CommentController {
         return ResponseEntity.ok().body(res);
     }
 
-    // TODO: picURL
     @PutMapping("{ID}/{floor}")
     @Operation(summary = "update comment by floor in the note or post", description = "ID為筆記或是貼文的，在傳入幾樓想要修改")
     public ResponseEntity<Object> updateComment(@PathVariable("ID") String id, @PathVariable("floor") Integer floor, @RequestBody Comment request){

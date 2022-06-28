@@ -7,16 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.ArrayList;
 import java.util.Date;
 
-//TODO:
-// 1. update schema by frontend V
-// 2. 喜歡筆記的人（前端判斷使用者是否按過喜歡）V
-// 3. 收藏（把isFavorite拔掉了）。因為改成 by reference 所以沒用 V
-// 4. a方案. favorite 前端判斷方法，應該是去看此 user 的 Favorite 資料夾有無此筆記？ X
-//    b方案. 我們有一個 favoriter（像是liker）V
-// 5. buyer？ -> 買筆記的時候要在這邊加購買者（解鎖的人，前端也需要判斷此筆記是否已購買。還是搜尋的時候要篩掉？）V
-// 6. 需要前端給他們的 versionContent 送什麼？（Date 後端建還是前端建）
-// 7. mycustom-components 是 Array 嗎？
-// 8. mycustom-components 的 - 改成 _ 的問題
 @Document(collection = "note")
 public class Note {
 
