@@ -1,7 +1,6 @@
 package ntou.notesharedevbackend.userModule.controller;
 
 import io.swagger.v3.oas.annotations.*;
-import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.entity.ModifyUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
@@ -9,16 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-// TODO: add modify headShotPhoto api
 public class AppUserController {
     @Autowired
     private AppUserService appUserService;
@@ -63,7 +59,47 @@ public class AppUserController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "Get user's headshotPhoto")
+    @Operation(summary = "Get user's profile")
+    @GetMapping("/profile/{email}")
+    public ResponseEntity<Object> getUserProfile(@PathVariable("email") String email) {
+        String profile = appUserService.getUserProfile(email);
+        Map<String, Object> res = new HashMap<>();
+
+        res.put("res", profile);
+        return ResponseEntity.ok(res);
+    }
+
+    @Operation(summary = "Get user's Strength")
+    @GetMapping("/strength/{email}")
+    public ResponseEntity<Object> getUserStrength(@PathVariable("email") String email) {
+        ArrayList<String> strength = appUserService.getUserStrength(email);
+        Map<String, Object> res = new HashMap<>();
+
+        res.put("res", strength);
+        return ResponseEntity.ok(res);
+    }
+
+    @Operation(summary = "Get user's name")
+    @GetMapping("/name/{email}")
+    public ResponseEntity<Object> getUserName(@PathVariable("email") String email) {
+        String name = appUserService.getUserName(email);
+        Map<String, Object> res = new HashMap<>();
+
+        res.put("res", name);
+        return ResponseEntity.ok(res);
+    }
+
+    @Operation(summary = "Modify user's name")
+    @PutMapping("/name/{email}/{newName}")
+    public ResponseEntity<Object> updateUserName(@PathVariable("email") String email, @PathVariable("newName")String newName) {
+        String name = appUserService.updateUserName(email,newName);
+        Map<String, Object> res = new HashMap<>();
+
+        res.put("res", name);
+        return ResponseEntity.ok(res);
+    }
+
+    @Operation(summary = "Modify user's headshotPhoto")
     @PutMapping("/head/{email}/{headshotPhoto}")
     public ResponseEntity<Object> updateUserHeadshotPhoto(@PathVariable("email") String email, @PathVariable("headshotPhoto") String headshotPhoto) {
         AppUser appUser = appUserService.updateUserHeadshotPhoto(email,headshotPhoto);

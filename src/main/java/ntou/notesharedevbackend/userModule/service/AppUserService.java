@@ -1,6 +1,5 @@
 package ntou.notesharedevbackend.userModule.service;
 
-import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.entity.FolderRequest;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.notificationModule.entity.Message;
@@ -152,5 +151,24 @@ public class AppUserService {
         appUser.setHeadshotPhoto(headshotPhoto);
 
         return replaceUser(appUser);
+    }
+
+    public String getUserProfile(String email) {
+        return getUserByEmail(email).getProfile();
+    }
+
+    public ArrayList<String> getUserStrength(String email) {
+        return getUserByEmail(email).getStrength();
+    }
+
+    public String getUserName(String email) {
+        return getUserByEmail(email).getName();
+    }
+
+    public String updateUserName(String email, String newName) {
+        AppUser appUser = getUserByEmail(email);
+        appUser.setName(newName);
+        replaceUser(appUser);
+        return appUser.getName();
     }
 }
