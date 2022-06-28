@@ -8,7 +8,6 @@ import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.entity.NoteFolderReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.repository.FolderRepository;
-import ntou.notesharedevbackend.searchModule.entity.NoteBasicReturn;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,6 +120,7 @@ public class FolderService {
     public Folder createFolder(String email, FolderRequest request) {
         AppUser appUser = appUserService.getUserByEmail(email);
         Folder folder = new Folder(request);
+        folder.setCreatorEmail(email);
         ArrayList<String> tmpFoldersList = new ArrayList<>();
         // check users has folders
         if (appUser.getFolders() == null || appUser.getFolders().isEmpty()) {

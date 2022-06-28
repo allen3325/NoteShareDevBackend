@@ -241,10 +241,18 @@ public class SearchService {
         copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Favorite")));
         copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Folder")));
 
+        List<FolderBasicReturn> folderBasicReturnList = new ArrayList<>();
+        for (Folder folder : copyFolderList) {
+            String creatorEmail = folder.getCreatorEmail();
+            AppUser appUser = userRepository.findByEmail(creatorEmail);
+            FolderBasicReturn folderBasicReturn = new FolderBasicReturn(folder, appUser);
+            folderBasicReturnList.add(folderBasicReturn);
+        }
+
         Pageable paging = PageRequest.of(offset, pageSize, Sort.by("folderName").descending());
-        int start = Math.min((int)paging.getOffset(), copyFolderList.size());
-        int end = Math.min((start + paging.getPageSize()), copyFolderList.size());
-        Page<Folder> page = new PageImpl<>(copyFolderList.subList(start, end), paging, copyFolderList.size());
+        int start = Math.min((int)paging.getOffset(), folderBasicReturnList.size());
+        int end = Math.min((start + paging.getPageSize()), folderBasicReturnList.size());
+        Page<FolderBasicReturn> page = new PageImpl<>(folderBasicReturnList.subList(start, end), paging, folderBasicReturnList.size());
 
         return new Pages(page.getContent(), page.getTotalPages());
     }
