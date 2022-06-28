@@ -62,9 +62,10 @@ public class SearchController {
     @Operation(summary = "Get folders by search", description = "找folder名稱")
     @GetMapping("/folder/{keyword}/{offset}/{pageSize}")
     public ResponseEntity<Map<String, Pages>> getSearchedFolderByKeyword(@PathVariable("keyword") String keyword,
-                                                                            @PathVariable("offset") int offset,
-                                                                            @PathVariable("pageSize") int pageSize) {
-        Pages folders = searchService.getSearchedFolderByKeyword(keyword, offset, pageSize);
+                                                                         @PathVariable("offset") int offset,
+                                                                         @PathVariable("pageSize") int pageSize,
+                                                                         @RequestParam(value = "creator", defaultValue = "") String creator) {
+        Pages folders = searchService.getSearchedFolderByKeyword(keyword, offset, pageSize, creator);
         Map<String, Pages> map = new HashMap<>();
         map.put("search", folders);
 

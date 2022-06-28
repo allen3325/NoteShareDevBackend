@@ -3,6 +3,7 @@ package ntou.notesharedevbackend.searchModule.entity;
 public class SearchPost {
     private String subject;
     private String department;
+    private String professor;
     private String author;
     private Integer bestPrice;
     private Boolean haveQA;
@@ -23,6 +24,14 @@ public class SearchPost {
 
     public void setDepartment(String department) {
         this.department = department;
+    }
+
+    public String getProfessor() {
+        return professor;
+    }
+
+    public void setProfessor(String professor) {
+        this.professor = professor;
     }
 
     public String getAuthor() {

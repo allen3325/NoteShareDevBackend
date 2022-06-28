@@ -176,6 +176,7 @@ public class SearchService {
         String subject = searchPost.getSubject();
         String department = searchPost.getDepartment();
         String author = searchPost.getAuthor();
+        String professor = searchPost.getProfessor();
         Integer bestPrice = searchPost.getBestPrice();
         Boolean haveQA = searchPost.getHaveQA();
         Boolean haveCollaboration = searchPost.getHaveCollaboration();
@@ -184,6 +185,7 @@ public class SearchService {
         postList = postList.stream()
                 .filter((Post n) -> n.getPublic().equals(true))
                 .collect(Collectors.toList());
+
         if (subject != null)
             postList = postList.stream()
                     .filter((Post p) -> p.getSubject().contains(subject))
@@ -195,6 +197,10 @@ public class SearchService {
         if (author != null)
             postList = postList.stream()
                     .filter((Post p) -> p.getAuthor().contains(author))
+                    .collect(Collectors.toList());
+        if (professor != null)
+            postList = postList.stream()
+                    .filter((Post p) -> p.getProfessor().contains(professor))
                     .collect(Collectors.toList());
         if (bestPrice != null)
             postList = postList.stream()
@@ -231,11 +237,16 @@ public class SearchService {
         return new Pages(page.getContent(), page.getTotalPages());
     }
 
-    public Pages getSearchedFolderByKeyword(String keyword, int offset, int pageSize) {
+    public Pages getSearchedFolderByKeyword(String keyword, int offset, int pageSize, String creator) {
         List<Folder> foldersLikePage = folderRepository.findByFolderNameRegex(keyword);
         foldersLikePage = foldersLikePage.stream()
                 .filter((Folder n) -> n.getPublic().equals(true))
                 .collect(Collectors.toList());
+        if (creator != null)
+            foldersLikePage = foldersLikePage.stream()
+                    .filter((Folder p) -> p.getCreatorEmail().contains(creator))
+                    .collect(Collectors.toList());
+
         List<Folder> copyFolderList = new ArrayList<>(foldersLikePage);
         copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Buy")));
         copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Favorite")));
