@@ -4,7 +4,7 @@ public class SearchPost {
     private String subject;
     private String department;
     private String professor;
-    private String author;
+    private String authorName;
     private Integer bestPrice;
     private Boolean haveQA;
     private Boolean haveCollaboration;
@@ -34,12 +34,12 @@ public class SearchPost {
         this.professor = professor;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getAuthorName() {
+        return authorName;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
     public Integer getBestPrice() {

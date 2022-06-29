@@ -32,8 +32,8 @@ public class FolderBasicReturn {
         setPath(folder.getPath());
         setParent(folder.getParent());
         setChildren(folder.getChildren());
-        setCreatorEmail(folder.getCreatorEmail());
-        setCreatorName(appUser.getName());
+        setCreatorName(folder.getCreatorName());
+        setCreatorEmail(appUser.getEmail());
         setHeadshotPhoto(appUser.getHeadshotPhoto());
     }
 
