@@ -681,6 +681,10 @@ public class SearchTest {
         Post rewardPostUnPublic = createRewardPost();
         rewardPostUnPublic.setPublic(false);
         postRepository.save(rewardPostUnPublic);
+        Post rewardPostAuthorNotTing = createRewardPost();
+        rewardPostAuthorNotTing.setAuthor("user1@gmail.com");
+        rewardPostAuthorNotTing.setAuthorName("User1");
+        postRepository.save(rewardPostAuthorNotTing);
         Post collaborationPost = createCollaborationPost();
         Post collaborationPostUnPublic = createCollaborationPost();
         collaborationPostUnPublic.setPublic(false);
@@ -696,7 +700,7 @@ public class SearchTest {
                         .param("sortBy", "bestPrice")
                         .param("subject", "Operation System")
                         .param("department", "CS")
-                        .param("author", "yitingwu.1030@gmail.com")
+                        .param("authorName", "Ting")
                         .param("haveQA", "true")
                         .param("haveCollaboration", "true")
                         .param("haveReward", "true")
