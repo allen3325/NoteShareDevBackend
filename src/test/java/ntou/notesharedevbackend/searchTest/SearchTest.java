@@ -67,7 +67,7 @@ public class SearchTest {
         userRepository.insert(appUser2);
     }
 
-    private Folder createFolder(String folderName, String path, String parent, String email) {
+    private Folder createFolder(String folderName, String path, String parent, String email, String name) {
         Folder folder = new Folder();
         folder.setFolderName(folderName);
         folder.setFavorite(false);
@@ -76,7 +76,7 @@ public class SearchTest {
         folder.setNotes(new ArrayList<String>());
         folder.setChildren(new ArrayList<String>());
         folder.setPublic(true);
-        folder.setCreatorEmail(email);
+        folder.setCreatorName(name);
         return folderRepository.insert(folder);
     }
 
@@ -86,9 +86,9 @@ public class SearchTest {
         appUser.setActivate(true);
         appUser.setName(name);
         appUser.setPassword(passwordEncoder.encode("1234"));
-        Folder buyFolder = createFolder("Buy", "/Buy", null, email);
-        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null, email);
-        Folder OSFolder = createFolder("OS", "/OS", null, email);
+        Folder buyFolder = createFolder("Buy", "/Buy", null, email, name);
+        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null, email, name);
+        Folder OSFolder = createFolder("OS", "/OS", null, email, name);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());
@@ -775,18 +775,19 @@ public class SearchTest {
     }
 
     @Test
-    public void testSearchFolder() throws Exception {
+    public void testSearchFolderCreatorIsUser1() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        Folder folder1 = createFolder("taldskfgjaldfjk", "/taldskfgjaldfjk", null,appUser.getEmail());
+        AppUser folderCreator = userRepository.findByEmail("user1@gmail.com");
+        Folder folder1 = createFolder("taldskfgjaldfjk", "/taldskfgjaldfjk", null,folderCreator.getEmail(), folderCreator.getName());
 
-        Folder folder2 = createFolder("taldskfgjaldfjk1111", "/taldskfgjaldfjk1111", null, appUser.getEmail());
+        Folder folder2 = createFolder("taldskfgjaldfjk1111", "/taldskfgjaldfjk1111", null, folderCreator.getEmail(), folderCreator.getName());
         folder2.setPublic(false);
         folderRepository.save(folder2);
-        Folder folder11 = createFolder("tSecond", "/taldskfgjaldfjk/tSecond", folder1.getId(),appUser.getEmail());
+        Folder folder11 = createFolder("tSecond", "/taldskfgjaldfjk/tSecond", folder1.getId(),folderCreator.getEmail(), folderCreator.getName());
 
-        Folder folder111 = createFolder("tThird", "/taldskfgjaldfjk/tSecond/Third", folder11.getId(),appUser.getEmail());
+        Folder folder111 = createFolder("tThird", "/taldskfgjaldfjk/tSecond/Third", folder11.getId(),folderCreator.getEmail(), folderCreator.getName());
 
-        Folder folder1111 = createFolder("tUnPublic", "/taldskfgjaldfjk/tSecond/Third/tUnPublic", folder111.getId(),appUser.getEmail());
+        Folder folder1111 = createFolder("tUnPublic", "/taldskfgjaldfjk/tSecond/Third/tUnPublic", folder111.getId(),folderCreator.getEmail(), folderCreator.getName());
 
         String keyword = "t";
         int offset =0;
@@ -802,9 +803,8 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[0].children").value(folder1.getChildren()))
                 .andExpect(jsonPath("$.search.items.[0].public").value(folder1.getPublic()))
                 .andExpect(jsonPath("$.search.items.[0].favorite").value(folder1.getFavorite()))
-                .andExpect(jsonPath("$.search.items.[0].creatorEmail").value(folder1.getCreatorEmail()))
-                .andExpect(jsonPath("$.search.items.[0].headshotPhoto").value(appUser.getHeadshotPhoto()))
-                .andExpect(jsonPath("$.search.items.[0].creatorName").value(appUser.getName()))
+                .andExpect(jsonPath("$.search.items.[0].headshotPhoto").value(folderCreator.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[0].creatorName").value(folderCreator.getName()))
                 .andExpect(jsonPath("$.search.items.[1].id").value(folder11.getId()))
                 .andExpect(jsonPath("$.search.items.[1].folderName").value(folder11.getFolderName()))
                 .andExpect(jsonPath("$.search.items.[1].notes").value(folder11.getNotes()))
@@ -813,9 +813,8 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[1].children").value(folder11.getChildren()))
                 .andExpect(jsonPath("$.search.items.[1].public").value(folder11.getPublic()))
                 .andExpect(jsonPath("$.search.items.[1].favorite").value(folder11.getFavorite()))
-                .andExpect(jsonPath("$.search.items.[1].creatorEmail").value(folder11.getCreatorEmail()))
-                .andExpect(jsonPath("$.search.items.[1].headshotPhoto").value(appUser.getHeadshotPhoto()))
-                .andExpect(jsonPath("$.search.items.[1].creatorName").value(appUser.getName()))
+                .andExpect(jsonPath("$.search.items.[1].headshotPhoto").value(folderCreator.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[1].creatorName").value(folderCreator.getName()))
                 .andExpect(jsonPath("$.search.items.[2].id").value(folder111.getId()))
                 .andExpect(jsonPath("$.search.items.[2].folderName").value(folder111.getFolderName()))
                 .andExpect(jsonPath("$.search.items.[2].notes").value(folder111.getNotes()))
@@ -824,9 +823,8 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[2].children").value(folder111.getChildren()))
                 .andExpect(jsonPath("$.search.items.[2].public").value(folder111.getPublic()))
                 .andExpect(jsonPath("$.search.items.[2].favorite").value(folder111.getFavorite()))
-                .andExpect(jsonPath("$.search.items.[2].creatorEmail").value(folder111.getCreatorEmail()))
-                .andExpect(jsonPath("$.search.items.[2].headshotPhoto").value(appUser.getHeadshotPhoto()))
-                .andExpect(jsonPath("$.search.items.[2].creatorName").value(appUser.getName()))
+                .andExpect(jsonPath("$.search.items.[2].headshotPhoto").value(folderCreator.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[2].creatorName").value(folderCreator.getName()))
                 .andExpect(jsonPath("$.search.items.[3].id").value(folder1111.getId()))
                 .andExpect(jsonPath("$.search.items.[3].folderName").value(folder1111.getFolderName()))
                 .andExpect(jsonPath("$.search.items.[3].notes").value(folder1111.getNotes()))
@@ -835,9 +833,53 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[3].children").value(folder1111.getChildren()))
                 .andExpect(jsonPath("$.search.items.[3].public").value(folder1111.getPublic()))
                 .andExpect(jsonPath("$.search.items.[3].favorite").value(folder1111.getFavorite()))
-                .andExpect(jsonPath("$.search.items.[3].creatorEmail").value(folder1111.getCreatorEmail()))
-                .andExpect(jsonPath("$.search.items.[3].headshotPhoto").value(appUser.getHeadshotPhoto()))
-                .andExpect(jsonPath("$.search.items.[3].creatorName").value(appUser.getName()))
+                .andExpect(jsonPath("$.search.items.[3].headshotPhoto").value(folderCreator.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[3].creatorName").value(folderCreator.getName()))
+                .andExpect(jsonPath("$.search.totalPages").value(1));
+    }
+
+    @Test
+    public void testSearchFolderCreatorIsTing() throws Exception {
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        AppUser folderCreator = userRepository.findByEmail("user1@gmail.com");
+        Folder folder1 = createFolder("tFirst", "/tFirst", null,appUser.getEmail(), appUser.getName());
+
+        Folder folder2 = createFolder("tFirst111", "/tFirst111", null, folderCreator.getEmail(), folderCreator.getName());
+        folder2.setPublic(false);
+        folderRepository.save(folder2);
+        Folder folder11 = createFolder("tSecond", "/tFirst/tSecond", folder1.getId(),folderCreator.getEmail(), folderCreator.getName());
+
+        Folder folder111 = createFolder("tThird", "/tFirst/tSecond/Third", folder11.getId(),appUser.getEmail(), appUser.getName());
+
+        Folder folder1111 = createFolder("tUnPublic", "/tFirst/tSecond/Third/tUnPublic", folder111.getId(),folderCreator.getEmail(), folderCreator.getName());
+
+        String keyword = "t";
+        int offset =0;
+        int pageSize = 10;
+        mockMvc.perform(get("/search/folder/"+keyword+"/"+offset+"/"+pageSize)
+                        .headers(httpHeaders)
+                        .param("creator","Ting"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.search.items.[0].id").value(folder1.getId()))
+                .andExpect(jsonPath("$.search.items.[0].folderName").value(folder1.getFolderName()))
+                .andExpect(jsonPath("$.search.items.[0].notes").value(folder1.getNotes()))
+                .andExpect(jsonPath("$.search.items.[0].path").value(folder1.getPath()))
+                .andExpect(jsonPath("$.search.items.[0].parent").value(folder1.getParent()))
+                .andExpect(jsonPath("$.search.items.[0].children").value(folder1.getChildren()))
+                .andExpect(jsonPath("$.search.items.[0].public").value(folder1.getPublic()))
+                .andExpect(jsonPath("$.search.items.[0].favorite").value(folder1.getFavorite()))
+                .andExpect(jsonPath("$.search.items.[0].headshotPhoto").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[0].creatorName").value(appUser.getName()))
+                .andExpect(jsonPath("$.search.items.[1].id").value(folder111.getId()))
+                .andExpect(jsonPath("$.search.items.[1].folderName").value(folder111.getFolderName()))
+                .andExpect(jsonPath("$.search.items.[1].notes").value(folder111.getNotes()))
+                .andExpect(jsonPath("$.search.items.[1].path").value(folder111.getPath()))
+                .andExpect(jsonPath("$.search.items.[1].parent").value(folder111.getParent()))
+                .andExpect(jsonPath("$.search.items.[1].children").value(folder111.getChildren()))
+                .andExpect(jsonPath("$.search.items.[1].public").value(folder111.getPublic()))
+                .andExpect(jsonPath("$.search.items.[1].favorite").value(folder111.getFavorite()))
+                .andExpect(jsonPath("$.search.items.[1].headshotPhoto").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[1].creatorName").value(appUser.getName()))
                 .andExpect(jsonPath("$.search.totalPages").value(1));
     }
 
