@@ -163,7 +163,7 @@ public class NoteService {
         Coin bestAnswerCoin = new Coin();
         bestAnswerCoin.setCoin('+'+bestPrice);
         coinService.changeCoin(note.getAuthorEmail().get(0),bestAnswerCoin);
-        //TODO 位置，筆記移轉給懸賞人 移除投稿人擁有權
+        //TODO 筆記移轉給懸賞人（放在Buy -> author），移除投稿人擁有權（投稿人可以看嗎？ -> contributor）
         note.getAuthorEmail().add(email);
         String userName = appUserService.getUserByEmail(email).getName();
         note.getAuthorName().add(userName);
@@ -177,7 +177,6 @@ public class NoteService {
         Coin referenceAnswerCoin = new Coin();
         referenceAnswerCoin.setCoin('+'+referencePrice);
         coinService.changeCoin(note.getAuthorEmail().get(0),referenceAnswerCoin);//購買者增加點
-        //TODO 位置，筆記移轉給懸賞人 移除投稿人擁有權
         note.getAuthorEmail().add(email);
         String userName = appUserService.getUserByEmail(email).getName();
         note.getAuthorName().add(userName);
