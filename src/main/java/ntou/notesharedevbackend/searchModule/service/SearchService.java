@@ -175,7 +175,7 @@ public class SearchService {
         // additional search condition
         String subject = searchPost.getSubject();
         String department = searchPost.getDepartment();
-        String author = searchPost.getAuthor();
+        String authorName = searchPost.getAuthorName();
         String professor = searchPost.getProfessor();
         Integer bestPrice = searchPost.getBestPrice();
         Boolean haveQA = searchPost.getHaveQA();
@@ -194,9 +194,9 @@ public class SearchService {
             postList = postList.stream()
                     .filter((Post p) -> p.getDepartment().contains(department))
                     .collect(Collectors.toList());
-        if (author != null)
+        if (authorName != null)
             postList = postList.stream()
-                    .filter((Post p) -> p.getAuthor().contains(author))
+                    .filter((Post p) -> p.getAuthorName().contains(authorName))
                     .collect(Collectors.toList());
         if (professor != null)
             postList = postList.stream()
@@ -244,7 +244,7 @@ public class SearchService {
                 .collect(Collectors.toList());
         if (creator != null)
             foldersLikePage = foldersLikePage.stream()
-                    .filter((Folder p) -> p.getCreatorEmail().contains(creator))
+                    .filter((Folder p) -> p.getCreatorName().contains(creator))
                     .collect(Collectors.toList());
 
         List<Folder> copyFolderList = new ArrayList<>(foldersLikePage);
@@ -254,8 +254,9 @@ public class SearchService {
 
         List<FolderBasicReturn> folderBasicReturnList = new ArrayList<>();
         for (Folder folder : copyFolderList) {
-            String creatorEmail = folder.getCreatorEmail();
-            AppUser appUser = userRepository.findByEmail(creatorEmail);
+            String creatorName = folder.getCreatorName();
+            System.out.println(creatorName);
+            AppUser appUser = userRepository.findByName(creatorName);
             FolderBasicReturn folderBasicReturn = new FolderBasicReturn(folder, appUser);
             folderBasicReturnList.add(folderBasicReturn);
         }
