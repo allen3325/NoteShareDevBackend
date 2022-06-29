@@ -42,7 +42,7 @@ public class Folder {
     private String path; // 路徑
     private String parent; // 父資料夾
     private ArrayList<String> children; // 子資料夾
-    private String creatorEmail; // 資料夾主人email
+    private String creatorName; // 資料夾主人name
 
     // constructors
     public Folder() {
@@ -135,11 +135,11 @@ public class Folder {
         this.children = children;
     }
 
-    public String getCreatorEmail() {
-        return creatorEmail;
+    public String getCreatorName() {
+        return creatorName;
     }
 
-    public void setCreatorEmail(String creatorEmail) {
-        this.creatorEmail = creatorEmail;
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
     }
 }
