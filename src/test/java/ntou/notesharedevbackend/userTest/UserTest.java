@@ -68,6 +68,13 @@ public class UserTest {
         folderList.add(favoriteFolder.getId());
         folderList.add(folderFolder.getId());
         appUser.setFolders(folderList);
+        appUser.setHeadshotPhoto("HeadshotPhoto");
+        appUser.setProfile("profile");
+        ArrayList<String> strengths = new ArrayList<>();
+        strengths.add("strength1");
+        strengths.add("strength2");
+        strengths.add("strength3");
+        appUser.setStrength(strengths);
         return appUser;
     }
 
@@ -214,6 +221,82 @@ public class UserTest {
                 .andExpect(jsonPath("$.res.activate").value(appUser.isActivate()));
     }
 
+
+    @Test
+    public void testGetUserHeadShotPhoto() throws Exception{
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        mockMvc.perform(get("/user/head/"+appUser.getEmail())
+                .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res").value(appUser.getHeadshotPhoto()));
+    }
+
+    @Test
+    public void testGetUserProfile() throws Exception{
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        mockMvc.perform(get("/user/profile/"+appUser.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res").value(appUser.getProfile()));
+    }
+
+    @Test
+    public void testGetUserStrength() throws Exception{
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        mockMvc.perform(get("/user/strength/"+appUser.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.[0]").value(appUser.getStrength().get(0)))
+                .andExpect(jsonPath("$.res.[1]").value(appUser.getStrength().get(1)))
+                .andExpect(jsonPath("$.res.[2]").value(appUser.getStrength().get(2)));
+    }
+
+    @Test
+    public void testGetUserName() throws Exception{
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        mockMvc.perform(get("/user/name/"+appUser.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res").value(appUser.getName()));
+    }
+
+    @Test
+    public void testUpdateUserName() throws Exception{
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        String newName = "newTime";
+        mockMvc.perform(put("/user/name/"+appUser.getEmail()+"/"+newName)
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res").value(newName));
+    }
+
+    @Test
+    public void testUpdateHeadshotPhoto() throws Exception{
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        String newHeadshotPhoto = "newHeadshotPhoto";
+        mockMvc.perform(put("/user/head/"+appUser.getEmail()+"/"+newHeadshotPhoto)
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(appUser.getId()))
+                .andExpect(jsonPath("$.res.email").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.name").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.verifyCode").value(appUser.getVerifyCode()))
+                .andExpect(jsonPath("$.res.password").hasJsonPath())
+                .andExpect(jsonPath("$.res.profile").value(appUser.getProfile()))
+                .andExpect(jsonPath("$.res.strength.[0]").value(appUser.getStrength().get(0)))
+                .andExpect(jsonPath("$.res.strength.[1]").value(appUser.getStrength().get(1)))
+                .andExpect(jsonPath("$.res.strength.[2]").value(appUser.getStrength().get(2)))
+                .andExpect(jsonPath("$.res.folders.[0]").value(appUser.getFolders().get(0)))
+                .andExpect(jsonPath("$.res.folders.[1]").value(appUser.getFolders().get(1)))
+                .andExpect(jsonPath("$.res.folders.[2]").value(appUser.getFolders().get(2)))
+                .andExpect(jsonPath("$.res.subscribe").value(appUser.getSubscribe()))
+                .andExpect(jsonPath("$.res.bell").value(appUser.getBell()))
+                .andExpect(jsonPath("$.res.fans").value(appUser.getFans()))
+                .andExpect(jsonPath("$.res.coin").value(appUser.getCoin()))
+                .andExpect(jsonPath("$.res.headshotPhoto").value(newHeadshotPhoto))
+                .andExpect(jsonPath("$.res.admin").value(appUser.isAdmin()))
+                .andExpect(jsonPath("$.res.activate").value(appUser.isActivate()));
+    }
     @Test
     public void testModifyUserStrength() throws Exception{
         AppUser appUser =userRepository.findByEmail("yitingwu.1030@gmail.com");
