@@ -15,7 +15,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping(value = "/note",produces = MediaType.APPLICATION_JSON_VALUE)
-//TODO: 缺少like筆記api -> update Liker
 public class NoteController {
     @Autowired
     private NoteService noteService;
@@ -108,7 +107,6 @@ public class NoteController {
         return ResponseEntity.ok(res);
     }
 
-    // TODO: 要改post裡的總人數跟email，檢查是不是管理員。
     @Operation(summary = "kick someone from collaboration note.",description = "email為想要踢掉的人")
     @PutMapping("/kick/{noteID}/{email}")
     public ResponseEntity<Object> kickUserFromCollaboration(@PathVariable("noteID") String noteID, @PathVariable("email") String email) {
