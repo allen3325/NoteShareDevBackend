@@ -100,9 +100,9 @@ public class AppUserController {
     }
 
     @Operation(summary = "Modify user's headshotPhoto")
-    @PutMapping("/head/{email}/{headshotPhoto}")
-    public ResponseEntity<Object> updateUserHeadshotPhoto(@PathVariable("email") String email, @PathVariable("headshotPhoto") String headshotPhoto) {
-        AppUser appUser = appUserService.updateUserHeadshotPhoto(email,headshotPhoto);
+    @PutMapping("/head/{email}")
+    public ResponseEntity<Object> updateUserHeadshotPhoto(@PathVariable("email") String email,  @RequestBody AppUser request) {
+        AppUser appUser = appUserService.updateUserHeadshotPhoto(email,request.getHeadshotPhoto());
         Map<String, Object> res = new HashMap<>();
 
         res.put("res", appUser);
