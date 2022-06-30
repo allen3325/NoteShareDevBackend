@@ -66,7 +66,7 @@ public class BetterJieba {
 
     public void addWordToDict(String word) {
         if (!dict.containsWord(word))
-            writeToDict("\n" + word + " 3");
+            writeToDict(word + " 3" + "\n");
         else
             modifyWordFreq(word);
 

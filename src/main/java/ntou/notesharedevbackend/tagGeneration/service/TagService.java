@@ -12,18 +12,18 @@ public class TagService {
     @Autowired
     private NoteService noteService;
 
-    public List<String> getWordSuggestion(String noteID) {
-        Note note = noteService.getNote(noteID);
-        ArrayList<VersionContent> versionContents = note.getVersion();
-        int latestVersion = versionContents.size() - 1;
-        VersionContent versionContent = versionContents.get(latestVersion);
-    }
+//    public List<String> getWordSuggestion(String noteID) {
+//        Note note = noteService.getNote(noteID);
+//        ArrayList<VersionContent> versionContents = note.getVersion();
+//        int latestVersion = versionContents.size() - 1;
+//        VersionContent versionContent = versionContents.get(latestVersion);
+//    }
 
-//    public List<String> getPossibleInputWord(String email, String noteID) {
+//    public List<String> getPossibleInputWord(String noteID) {
 //
 //    }
 //
-//    public void addWordToDict(String email, String noteID) {
-//
-//    }
+    public void addWordToDict(String word) {
+
+    }
 }

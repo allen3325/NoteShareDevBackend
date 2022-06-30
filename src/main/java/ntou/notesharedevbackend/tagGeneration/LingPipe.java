@@ -52,7 +52,7 @@ public class LingPipe {
         if (checkWordInDict(text))
             return;
 
-        text = "\n" + text;
+        text = text + "\n";
         myDict.addEntry(new DictionaryEntry<String>(text, this.CLASS_NAME, this.CHUNK_SCORE));
         recommendWords.add(text);
 
