@@ -594,8 +594,9 @@ public class SearchTest {
         int offset = 0;
         int pageSize = 10;
 
-        mockMvc.perform(get("/search/note/"+keyword+"/"+offset+"/"+pageSize)
+        mockMvc.perform(get("/search/note/"+offset+"/"+pageSize)
                 .headers(httpHeaders)
+                        .param("keyword", keyword)
                 .param("school","NTOU")
                 .param("subject","OS")
                 .param("department","CS")
@@ -695,8 +696,9 @@ public class SearchTest {
 
         ;
 
-        mockMvc.perform(get("/search/post/" + keyword + "/" + offset + "/" + pageSize)
+        mockMvc.perform(get("/search/post/" + offset + "/" + pageSize)
                         .headers(httpHeaders)
+                        .param("keyword", keyword)
                         .param("sortBy", "bestPrice")
                         .param("subject", "Operation System")
                         .param("department", "CS")
@@ -796,8 +798,10 @@ public class SearchTest {
         String keyword = "t";
         int offset =0;
         int pageSize = 10;
-        mockMvc.perform(get("/search/folder/"+keyword+"/"+offset+"/"+pageSize)
-                .headers(httpHeaders))
+        mockMvc.perform(get("/search/folder/"+offset+"/"+pageSize)
+                .headers(httpHeaders)
+                        .param("keyword", keyword)
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.search.items.[0].id").value(folder1.getId()))
                 .andExpect(jsonPath("$.search.items.[0].folderName").value(folder1.getFolderName()))
@@ -860,8 +864,9 @@ public class SearchTest {
         String keyword = "t";
         int offset =0;
         int pageSize = 10;
-        mockMvc.perform(get("/search/folder/"+keyword+"/"+offset+"/"+pageSize)
+        mockMvc.perform(get("/search/folder/"+offset+"/"+pageSize)
                         .headers(httpHeaders)
+                        .param("keyword", keyword)
                         .param("creator","Ting"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.search.items.[0].id").value(folder1.getId()))
