@@ -255,7 +255,6 @@ public class SearchService {
         List<FolderBasicReturn> folderBasicReturnList = new ArrayList<>();
         for (Folder folder : copyFolderList) {
             String creatorName = folder.getCreatorName();
-            System.out.println(creatorName);
             AppUser appUser = userRepository.findByName(creatorName);
             FolderBasicReturn folderBasicReturn = new FolderBasicReturn(folder, appUser);
             folderBasicReturnList.add(folderBasicReturn);
