@@ -32,11 +32,11 @@ public class SearchController {
     }
 
     @Operation(summary = "Get notes by search", description = "找note名稱\n haveNormal, haveCollaboration, haveReward 想要得到的筆記的種類，三個都true代表三種類型的筆記都會找")
-    @GetMapping("/note/{keyword}/{offset}/{pageSize}")
-    public ResponseEntity<Map<String, Pages>> getSearchedNoteByKeyword(@PathVariable("keyword") String keyword,
-                                                                        @PathVariable("offset") int offset,
+    @GetMapping("/note/{offset}/{pageSize}")
+    public ResponseEntity<Map<String, Pages>> getSearchedNoteByKeyword(@PathVariable("offset") int offset,
                                                                         @PathVariable("pageSize") int pageSize,
                                                                         SearchNote request,
+                                                                        @RequestParam(value = "keyword", defaultValue = "") String keyword,
                                                                         @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
         Pages notes = searchService.getSearchedNoteByKeyword(keyword, offset, pageSize, request, sortBy);
         Map<String, Pages> map = new HashMap<>();
@@ -46,11 +46,11 @@ public class SearchController {
     }
 
     @Operation(summary = "Get posts by search", description = "找post名稱\n haveQA, haveCollaboration, haveReward 想要得到的筆記的種類，三個都true代表三種類型的筆記都會找")
-    @GetMapping("/post/{keyword}/{offset}/{pageSize}")
-    public ResponseEntity<Map<String, Pages>> getSearchedPostByKeyword(@PathVariable("keyword") String keyword,
-                                                                        @PathVariable("offset") int offset,
+    @GetMapping("/post/{offset}/{pageSize}")
+    public ResponseEntity<Map<String, Pages>> getSearchedPostByKeyword(@PathVariable("offset") int offset,
                                                                         @PathVariable("pageSize") int pageSize,
                                                                         SearchPost request,
+                                                                        @RequestParam(value = "keyword", defaultValue = "") String keyword,
                                                                         @RequestParam(value = "sortBy", defaultValue = "") String sortBy) {
         Pages posts = searchService.getSearchedPostByKeyword(keyword, offset, pageSize, request, sortBy);
         Map<String, Pages> map = new HashMap<>();
@@ -60,10 +60,10 @@ public class SearchController {
     }
 
     @Operation(summary = "Get folders by search", description = "找folder名稱")
-    @GetMapping("/folder/{keyword}/{offset}/{pageSize}")
-    public ResponseEntity<Map<String, Pages>> getSearchedFolderByKeyword(@PathVariable("keyword") String keyword,
-                                                                         @PathVariable("offset") int offset,
+    @GetMapping("/folder/{offset}/{pageSize}")
+    public ResponseEntity<Map<String, Pages>> getSearchedFolderByKeyword(@PathVariable("offset") int offset,
                                                                          @PathVariable("pageSize") int pageSize,
+                                                                         @RequestParam(value = "keyword", defaultValue = "") String keyword,
                                                                          @RequestParam(value = "creator", defaultValue = "") String creator) {
         Pages folders = searchService.getSearchedFolderByKeyword(keyword, offset, pageSize, creator);
         Map<String, Pages> map = new HashMap<>();

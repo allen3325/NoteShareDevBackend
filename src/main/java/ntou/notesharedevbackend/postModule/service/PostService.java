@@ -424,10 +424,25 @@ public class PostService {
     public void kickUserFromCollaboration(String postID, String email) {
         Post post = getPostById(postID);
         ArrayList<String> emails = post.getEmail();
-        int userIndex = emails.indexOf(email);
-        emails.remove(userIndex);
+        emails.remove(email);
         post.setEmail(emails);
         post.setCollabNoteAuthorNumber(post.getCollabNoteAuthorNumber() - 1);
         replacePost(postID, post);
     }
+
+    public void denyCollaboration(String postID, String denyEmail) {
+        Post post = getPostById(postID);
+        ArrayList<Apply> allApply = post.getCollabApply();
+        // find deny in all apply
+        for(Apply applicant : allApply){
+            if(applicant.getWantEnterUsersEmail().equals(denyEmail)){
+                // find deny
+                allApply.remove(applicant);
+                break;
+            }
+        }
+        post.setCollabApply(allApply);
+        replacePost(postID,post);
+    }
+
 }

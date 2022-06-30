@@ -274,8 +274,11 @@ public class UserTest {
     public void testUpdateHeadshotPhoto() throws Exception{
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         String newHeadshotPhoto = "newHeadshotPhoto";
-        mockMvc.perform(put("/user/head/"+appUser.getEmail()+"/"+newHeadshotPhoto)
-                        .headers(httpHeaders))
+        JSONObject request = new JSONObject()
+                .put("headshotPhoto",newHeadshotPhoto);
+        mockMvc.perform(put("/user/head/"+appUser.getEmail())
+                        .headers(httpHeaders)
+                        .content(request.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(appUser.getId()))
                 .andExpect(jsonPath("$.res.email").value(appUser.getEmail()))

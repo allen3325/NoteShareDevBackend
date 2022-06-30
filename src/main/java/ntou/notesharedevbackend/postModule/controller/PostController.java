@@ -117,6 +117,16 @@ public class PostController {
         return ResponseEntity.ok(res);
     }
 
+    @Operation(summary = "deny someone become one of collaboration note's author.", description = "wantEnterUsersEmail為申請者,commentFromApplicant為留言")
+    @DeleteMapping("/apply/{postID}/{denyEmail}")
+    public ResponseEntity<Object> denyCollaboration(@PathVariable("postID") String id, @PathVariable("denyEmail") String denyEmail) {
+        postService.denyCollaboration(id, denyEmail);
+        Map<String, Object> res = new HashMap<>();
+
+        res.put("msg", "Success");
+        return ResponseEntity.status(204).body(res);
+    }
+
     @Operation(summary = "approve become one of collaboration note's author.", description = "email為申請通過者")
     @PutMapping("/add/{postID}/{email}")
     public ResponseEntity<Object> approveCollaboration(@PathVariable("postID") String id, @PathVariable("email") String email) {
