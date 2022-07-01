@@ -73,7 +73,6 @@ public class AppUserService {
         appUser.setHeadshotPhoto(request.getHeadshotPhoto());
         appUser.setNotification(new ArrayList<Message>());
         appUser.setUnreadMessageCount(0);
-        mailService.sendEmailToUser(request.getEmail(),"Your Verification Code",appUser.getVerifyCode());
         userRepository.insert(appUser);
         // create Buy and Favorite and default folder
         createFolderAtRoot(appUser.getEmail(), "Buy");
