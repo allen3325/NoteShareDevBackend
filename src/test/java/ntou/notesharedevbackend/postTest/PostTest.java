@@ -68,7 +68,7 @@ public class PostTest {
         userRepository.insert(appUser2);
     }
 
-    private Folder createFolder(String folderName, String path, String parent) {
+    private Folder createFolder(String folderName, String path, String parent, String name) {
         Folder folder = new Folder();
         folder.setFolderName(folderName);
         folder.setFavorite(false);
@@ -77,6 +77,7 @@ public class PostTest {
         folder.setNotes(new ArrayList<String>());
         folder.setChildren(new ArrayList<String>());
         folder.setPublic(false);
+        folder.setCreatorName(name);
         folderRepository.insert(folder);
         return folder;
     }
@@ -87,10 +88,10 @@ public class PostTest {
         appUser.setActivate(true);
         appUser.setName(name);
         appUser.setPassword(passwordEncoder.encode("1234"));
-        Folder buyFolder = createFolder("Buy", "/Buy", null);
-        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null);
-        Folder collaborationFolder = createFolder("Collaboration", "/Collaboration", null);
-        Folder OSFolder = createFolder("OS", "/OS", null);
+        Folder buyFolder = createFolder("Buy", "/Buy", null, name);
+        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null, name);
+        Folder collaborationFolder = createFolder("Collaboration", "/Collaboration", null, name);
+        Folder OSFolder = createFolder("OS", "/OS", null, name);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());
@@ -839,6 +840,9 @@ public class PostTest {
 
         if (!noteRepository.findById(answerID).get().getBest().equals(true)) {
             throw new Exception("Post Test : note isBest does not change to true");
+        }
+        if(!noteRepository.findById(answerID).get().getContributors().contains(contributor.getEmail())){
+            throw new Exception("Post Test : note's contributor does not add contributor");
         }
         if(!userRepository.findById(contributor.getId()).get().getCoin().equals(contributor.getCoin()+post.getBestPrice())){
             throw new Exception("Post Test : best answer author's coin does not get");
