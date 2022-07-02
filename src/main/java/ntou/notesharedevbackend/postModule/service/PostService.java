@@ -9,6 +9,7 @@ import ntou.notesharedevbackend.postModule.entity.Apply;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.postModule.entity.PostRequest;
+import ntou.notesharedevbackend.postModule.entity.VoteRequest;
 import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
@@ -303,12 +304,12 @@ public class PostService {
         return newVote;
     }
 
-    public boolean voteCollaborationVote(String postID, String voteID, String email, String option) {
+    public boolean voteCollaborationVote(String postID, String voteID, String email, VoteRequest request) {
         Post post = getPostById(postID);
         for (Vote v : post.getVote()) {
             if (v.getId().equals(voteID)) {
                 if (v.getAgree().contains(email)) {//原本投同意
-                    if (option.equals("agree")) {//取消同意
+                    if (request.getOption().equals("agree")) {//取消同意
                         v.getAgree().remove(email);
                         post.getVote().set(post.getVote().indexOf(v), v);
                         replacePost(post.getId(), post);
@@ -323,7 +324,7 @@ public class PostService {
                         return true;
                     }
                 } else if (v.getDisagree().contains(email)) {//原本投不同意
-                    if (option.equals("agree")) {//改投同意
+                    if (request.getOption().equals("agree")) {//改投同意
                         v.getDisagree().remove(email);
                         v.getAgree().add(email);
                         post.getVote().set(post.getVote().indexOf(v), v);
@@ -338,7 +339,7 @@ public class PostService {
                         return true;
                     }
                 } else {//尚未投票
-                    if (option.equals("agree")) {//投同意
+                    if (request.getOption().equals("agree")) {//投同意
                         v.getAgree().add(email);
                         post.getVote().set(post.getVote().indexOf(v), v);
                         replacePost(post.getId(), post);
