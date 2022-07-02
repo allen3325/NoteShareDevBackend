@@ -5,11 +5,9 @@ import java.util.*;
 public class TagGeneration {
     private final BetterJieba betterJieba;
     private final LingPipe lingPipe;
-    private String text;
 
-    public TagGeneration(String text) {
-        this.text = text;
-        betterJieba = new BetterJieba(this.text);
+    public TagGeneration() {
+        betterJieba = new BetterJieba();
         lingPipe = new LingPipe();
     }
 
@@ -34,13 +32,13 @@ public class TagGeneration {
 
     public void chunkDictionary(String text) {
         lingPipe.testChunkDictionary(text);
-        betterJieba.countAndSort();
+        betterJieba.countAndSort(text);
     }
 
-    public List<String> wordSuggestion() {
-        chunkDictionary(this.text);
+    public List<String> wordSuggestion(String text) {
+        chunkDictionary(text);
 
-        HashMap<String, Integer> chineseWordSuggestion = betterJieba.wordSuggestion();
+        HashMap<String, Integer> chineseWordSuggestion = betterJieba.wordSuggestion(text);
         HashMap<String, Integer> englishWordSuggestion = lingPipe.wordSuggestion();
         TreeMap<String, Integer> chineseAndEnglishWordSuggestion = new TreeMap<>();
         chineseAndEnglishWordSuggestion.putAll(chineseWordSuggestion);

@@ -20,25 +20,27 @@ public class TagConfiguration {
             String dictPath = "././././././dict";
             List<Dictionary> jieba = dictionaryRepository.findAllByType("jieba");
             List<Dictionary> lingpipe = dictionaryRepository.findAllByType("lingpipe");
-            Files.createDirectories(Paths.get(dictPath));
-            Files.createFile(Paths.get(dictPath + "/jieba.dict"));
-            Files.createFile(Paths.get(dictPath + "/lingpipe.dict"));
+            if (!Files.exists(Paths.get(dictPath))) {
+                Files.createDirectories(Paths.get(dictPath));
+                Files.createFile(Paths.get(dictPath + "/jieba.dict"));
+                Files.createFile(Paths.get(dictPath + "/lingpipe.dict"));
 
-            try {
-                for (Dictionary dictionary : jieba) {
-                    String word = dictionary.getWord() + " " + String.valueOf(dictionary.getFrequency()) + "\n";
-                    Files.write(Paths.get(dictPath + "/jieba.dict"), word.getBytes(), StandardOpenOption.APPEND);
+                try {
+                    for (Dictionary dictionary : jieba) {
+                        String word = dictionary.getWord() + " " + String.valueOf(dictionary.getFrequency()) + "\n";
+                        Files.write(Paths.get(dictPath + "/jieba.dict"), word.getBytes(), StandardOpenOption.APPEND);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                for (Dictionary dictionary : lingpipe) {
-                    String word = dictionary.getWord() + "\n";
-                    Files.write(Paths.get(dictPath + "/lingpipe.dict"), word.getBytes(), StandardOpenOption.APPEND);
+                try {
+                    for (Dictionary dictionary : lingpipe) {
+                        String word = dictionary.getWord() + "\n";
+                        Files.write(Paths.get(dictPath + "/lingpipe.dict"), word.getBytes(), StandardOpenOption.APPEND);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         };
     }

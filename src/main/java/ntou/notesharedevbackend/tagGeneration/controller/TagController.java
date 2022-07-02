@@ -17,26 +17,32 @@ public class TagController {
     @Autowired
     private DictionaryRepository dictionaryRepository;
 
-//    @PostMapping("/tmp")
-//    public void initData(@RequestBody Dictionary dictionary) {
-//        dictionaryRepository.insert(dictionary);
-//    }
-
 //    @GetMapping("/wordSuggestion/{noteID}")
-//    public ResponseEntity<Object> getWordSuggestion(@PathVariable("noteID") String noteID) {
-//        Map<String, Object> map = new HashMap<>();
+//    public ResponseEntity<Object> getWordSuggestion(@PathVariable("noteID") String noteID,
+//                                                    @RequestBody Map<String, String> request) {
 //
-//        return ResponseEntity.ok(map);
+//        Map<String, Object> res = new HashMap<>();
+//        res.put("generatedTags", possibleInputWord);
+//        return ResponseEntity.ok(res);
 //    }
 //
-//    @GetMapping("/showPossibleWord/{noteID}")
-//    public ResponseEntity<Object> getPossibleInputWord(@PathVariable("noteID") String noteID) {
+    @GetMapping("/showPossibleWord")
+    public ResponseEntity<Object> getPossibleInputWord(@RequestBody Map<String, String> request) {
+        String word = request.get("word");
+        List<String> possibleInputWord = tagService.getPossibleInputWord(word);
+        Map<String, Object> res = new HashMap<>();
+        res.put("possibleInputTags", possibleInputWord);
+        return ResponseEntity.ok(res);
+    }
 //
-//    }
-//
-//    @PutMapping("/addWordToDict")
-//    public ResponseEntity<Object> addWordToDict(@RequestBody String word) {
-//
-//    }
+    @PutMapping("/addWordToDict")
+    public ResponseEntity<Object> addWordToDict(@RequestBody Map<String, String> request) {
+        String word = request.get("word");
+        tagService.addWordToDict(word);
+
+        Map<String, Object> res = new HashMap<>();
+        res.put("msg", "Success");
+        return ResponseEntity.ok(res);
+    }
 
 }

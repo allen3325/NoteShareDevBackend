@@ -1,10 +1,14 @@
 package ntou.notesharedevbackend.tagGeneration;
 
 
+import ntou.notesharedevbackend.repository.*;
+import ntou.notesharedevbackend.tagGeneration.entity.Dictionary;
 import org.manlier.analysis.jieba.JiebaSegmenter;
 import org.manlier.analysis.jieba.SegToken;
 import org.manlier.analysis.jieba.WordDictionary;
 import org.manlier.analysis.jieba.dao.FileDictSource;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.*;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -18,11 +22,10 @@ public class BetterJieba {
     private WordDictionary dict;    //jieba字典
     private Map<String, Integer> sortedCountWordFreq;   //jieba切字結果
     private Map<String, Integer> dictWordMap;   //自身字典Hashmap
-    String dictPath = "./././././dict/jieba.dict";
-    String sentence;
+    String dictPath = "././././././dict/jieba.dict";
 
-    public BetterJieba(String sentence) {
-        this.sentence = removeAllMarks(sentence);
+    public BetterJieba() {
+//        this.sentence = removeAllMarks(sentence);
         segmenter = new JiebaSegmenter();
         dict = WordDictionary.getInstance();
         dictWordMap = new HashMap<>();
@@ -118,8 +121,8 @@ public class BetterJieba {
         return wordList;
     }
 
-    public void countAndSort() {
-        List<SegToken> newArr = segmenter.process(this.sentence, JiebaSegmenter.SegMode.INDEX);
+    public void countAndSort(String sentence) {
+        List<SegToken> newArr = segmenter.process(removeAllMarks(sentence), JiebaSegmenter.SegMode.INDEX);
         HashMap<String, Integer> countWordFreq = new HashMap<>();
         for (SegToken element : newArr) {
             String key = element.word;
@@ -153,12 +156,12 @@ public class BetterJieba {
         return false;
     }
 
-    public HashMap<String, Integer> wordSuggestion() {
+    public HashMap<String, Integer> wordSuggestion(String sentence) {
         HashMap<String, Integer> wordMap = new HashMap<>();
         final int TOP_FREQ = 5;
         int i = 0;
 
-        countAndSort();
+        countAndSort(sentence);
         for (Map.Entry<String, Integer> map : sortedCountWordFreq.entrySet()) {
             if (i == TOP_FREQ)  //找到前五名
                 break;

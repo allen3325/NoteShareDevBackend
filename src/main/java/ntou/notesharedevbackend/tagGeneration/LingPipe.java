@@ -6,6 +6,10 @@ import com.aliasi.dict.DictionaryEntry;
 import com.aliasi.dict.ExactDictionaryChunker;
 import com.aliasi.dict.MapDictionary;
 import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
+import ntou.notesharedevbackend.repository.*;
+import ntou.notesharedevbackend.tagGeneration.entity.Dictionary;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -20,7 +24,7 @@ public class LingPipe {
     private final MapDictionary<String> myDict = new MapDictionary<>();
     private Map<String, Integer> chunkResult;
     private HashSet<String> recommendWords;
-    private final String dictPath = "./././././dict/lingpipe.dict";
+    private final String dictPath = "././././././dict/lingpipe.dict";
     private final double CHUNK_SCORE = 1.0;
     private final String CLASS_NAME = "tags";
 
@@ -47,17 +51,16 @@ public class LingPipe {
         }
     }
 
-    public void addWordToDictionary(String text) {
+    public void addWordToDictionary(String word) {
         //check if the word is already in dictionary
-        if (checkWordInDict(text))
+        if (checkWordInDict(word))
             return;
 
-        text = text + "\n";
-        myDict.addEntry(new DictionaryEntry<String>(text, this.CLASS_NAME, this.CHUNK_SCORE));
-        recommendWords.add(text);
-
+        word = word + "\n";
+        myDict.addEntry(new DictionaryEntry<String>(word, this.CLASS_NAME, this.CHUNK_SCORE));
+        recommendWords.add(word);
         try {
-            Files.write(Paths.get(dictPath), text.getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get(dictPath), word.getBytes(), StandardOpenOption.APPEND);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,10 +74,10 @@ public class LingPipe {
         return false;
     }
 
-    public List<String> showPossibleWord(String text) {
+    public List<String> showPossibleWord(String word) {
         List<String> wordList = new ArrayList<>();
         for (String set : recommendWords) {
-            if (set.toLowerCase().contains(text.toLowerCase()))
+            if (set.toLowerCase().contains(word.toLowerCase()))
                 wordList.add(set);
         }
 
