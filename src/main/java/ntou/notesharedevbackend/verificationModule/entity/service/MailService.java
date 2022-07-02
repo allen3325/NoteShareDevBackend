@@ -56,20 +56,6 @@ public class MailService {
         userService.replacePassword(email,password);
 
         sendEmailToUser(user.getEmail(),"NoteShare Random Password",password);
-
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setFrom(mailConfig.getUsername());
-//        message.setTo(email);
-//        message.setSubject("NoteShare Random Password");
-//        message.setText(password);
-//
-//        try {
-//            mailSender.send(message);
-//        } catch (MailAuthenticationException e) {
-//            LOGGER.error(e.getMessage());
-//        } catch (Exception e) {
-//            LOGGER.warn(e.getMessage());
-//        }
     }
     public void resetPasswordMail(AuthRequest request) {
         AppUser user = userService.getUserByEmail(request.getEmail());
@@ -82,39 +68,13 @@ public class MailService {
         }
 
         sendEmailToUser(user.getEmail(),"NoteShare Password Reset Successfully" ,"Password reset Successfully!");
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setFrom(mailConfig.getUsername());
-//        message.setTo(user.getEmail());
-//        message.setSubject("NoteShare Password Reset Successfully");
-//        message.setText("Password reset Successfully!");
-//
-//        try {
-//            mailSender.send(message);
-//        } catch (MailAuthenticationException e) {
-//            LOGGER.error(e.getMessage());
-//        } catch (Exception e) {
-//            LOGGER.warn(e.getMessage());
-//        }
     }
-    public void resendCodeMail(String email) { //是否需要判斷已開通?
+    public void resendCodeMail(String email) {
         AppUser user = userService.getUserByEmail(email);
         user.setVerifyCode(randomCode());
         userService.replaceUser(user);
 
         sendEmailToUser(user.getEmail(),"NoteShare verification code" ,user.getVerifyCode());
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setFrom(mailConfig.getUsername());
-//        message.setTo(user.getEmail());
-//        message.setSubject("NoteShare verification code");
-//        message.setText(user.getVerifyCode());
-
-//        try {
-//            mailSender.send(message);
-//        } catch (MailAuthenticationException e) {
-//            LOGGER.error(e.getMessage());
-//        } catch (Exception e) {
-//            LOGGER.warn(e.getMessage());
-//        }
     }
 
     public void sendEmailToUser(String email,String subject,String content){
