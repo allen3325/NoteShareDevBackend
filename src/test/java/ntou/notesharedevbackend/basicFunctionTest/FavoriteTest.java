@@ -78,10 +78,7 @@ public class FavoriteTest {
         comment.setBest(false);
 //        comment.setReference(false);
         comment.setLikeCount(0);
-
         ArrayList<String> liker = new ArrayList<>();
-        if (!isFavorite)
-            liker.add("dna@gmail.com");
         comment.setLiker(liker);
         return comment;
     }
@@ -97,7 +94,7 @@ public class FavoriteTest {
     @Test
     public void testFavoriteNoteComment() throws Exception {
         Note note = createNote();
-        Comment comment = createComment(true);
+        Comment comment = createComment(false);
         ArrayList<Comment> comments = new ArrayList<>();
         comments.add(comment);
         note.setComments(comments);
@@ -107,13 +104,22 @@ public class FavoriteTest {
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
+
+        if(!noteRepository.findById(note.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")){
+            throw new Exception("Favorite Test : comment's liker does not update.");
+        }
+        if(!noteRepository.findById(note.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount()+1)){
+            throw new Exception("Favorite Test : comment's liker count does not update.");
+        }
     }
 
     @Test
     public void testUnFavoriteNoteComment() throws Exception {
         Note note = createNote();
-        Comment comment = createComment(false);
+        Comment comment = createComment(true);
         ArrayList<Comment> comments = new ArrayList<>();
+        comment.getLiker().add("dna@gmail.com");
+        comment.setLikeCount(comment.getLiker().size());
         comments.add(comment);
         note.setComments(comments);
         noteRepository.insert(note);
@@ -122,12 +128,19 @@ public class FavoriteTest {
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
+        if(noteRepository.findById(note.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")){
+            throw new Exception("Favorite Test : comment's liker does not update.");
+        }
+        if(!noteRepository.findById(note.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount()-1)){
+            throw new Exception("Favorite Test : comment's liker count does not update.");
+        }
+
     }
 
     @Test
     public void testFavoritePostComment() throws Exception {
         Post post = createPost();
-        Comment comment = createComment(true);
+        Comment comment = createComment(false);
         ArrayList<Comment> comments = new ArrayList<>();
         comments.add(comment);
         post.setComments(comments);
@@ -137,12 +150,22 @@ public class FavoriteTest {
                 .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
+
+        Comment responseComment = postRepository.findById(post.getId()).get().getComments().get(0);
+        if(!responseComment.getLiker().contains("dna@gmail.com")){
+            throw new Exception("Favorite Test : comment's liker does not update");
+        }
+        if(!responseComment.getLikeCount().equals(responseComment.getLiker().size())){
+            System.out.println(responseComment.getLiker().size());
+            System.out.println(responseComment.getLikeCount());
+            throw new Exception("Favorite Test : comment's like count does not update");
+        }
     }
 
     @Test
     public void testUnFavoritePostComment() throws Exception {
         Post post = createPost();
-        Comment comment = createComment(false);
+        Comment comment = createComment(true);
         ArrayList<Comment> comments = new ArrayList<>();
         comments.add(comment);
         post.setComments(comments);
@@ -152,6 +175,12 @@ public class FavoriteTest {
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
+        if(postRepository.findById(post.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")){
+            throw new Exception("Favorite Test : comment's liker does not update");
+        }
+        if(postRepository.findById(post.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount()+1)){
+            throw new Exception("Favorite Test : comment's like count does not update");
+        }
     }
 
 
