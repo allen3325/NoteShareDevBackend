@@ -24,36 +24,40 @@ public class TriggerJob implements Job {
     private SchedulingService schedulingService;
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        //JobExecutionContext include :執行此job的scheduler、觸發執行的trigger、jobDetail對象..
-        /* Get message id recorded by scheduler during scheduling */
+        //JobExecutionContext include :執行此job的scheduler、觸發執行的trigger、jobDetail對象
+        // Get message id recorded by scheduler during scheduling
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         String taskID = dataMap.getString("taskID");
-        String type = dataMap.getString("type");
-
-        if(dataMap.getString("type").equals("publish")){//publish noteID
-            publish(dataMap.getString("noteIDOrVoteID"));
-        }else{
-            vote(taskID, dataMap.getString("noteIDOrVoteID"), dataMap.getString("postID"));//vote result
-        }
-        System.out.println("Type of Executing job is "+type);
+//        String type = dataMap.getString("type");
+//        if(dataMap.getString("type").equals("publish")){//publish noteID
+//            publish(dataMap.getString("noteIDOrVoteID"));
+//        }else{
+//
+//        }
+        vote(dataMap.getString("voteID"), dataMap.getString("postID"));//vote result
+        System.out.println("job execution"+taskID);
     }
-    public void publish(String noteID){
-        noteService.publishOrSubmit(noteID);
-        System.out.println(" Publish "+noteID);
-    }
-    public void vote(String taskID, String voteID, String postID){//need post -> vote -> type ->result
+//    public void publish(String noteID){
+//        noteService.publishOrSubmit(noteID);
+//        System.out.println(" Publish "+noteID);
+//    }
+    public void vote( String voteID, String postID){//need post -> vote -> type ->result
         Post post = postService.getPostById(postID);
         for(Vote v : post.getVote()){//find target vote
             if(v.getId().equals(voteID)){
-                Vote newVote = v;
-                int totalVote = newVote.getAgree().size()+newVote.getDisagree().size();
+//                Vote newVote = v;
+                //總投票人數
+                int totalVote = v.getAgree().size()+v.getDisagree().size();
+                //共筆總人數
                 int totalPerson = post.getEmail().size();
+                //有效投票->總投票人數要大於共筆總人數
                 if(totalVote > (totalPerson/2)){
-                    if(newVote.getAgree().size()>newVote.getDisagree().size()) {//agree kick
-                        noteService.kickUserFromCollaboration(post.getAnswers().get(0),newVote.getKickTarget());
-                        newVote.setResult("agree kick ");
+                    //需要同意大於不同意才算同意
+                    if(v.getAgree().size()>v.getDisagree().size()) {//agree kick
+                        noteService.kickUserFromCollaboration(post.getAnswers().get(0),v.getKickTarget());
+                        v.setResult("agree kick");
                     } else {
-                        newVote.setResult("disagree kick");
+                        v.setResult("disagree kick");
                     }
 //                    if(newVote.getType().equals("kick")){//vote target kick
 //                        if(newVote.getAgree().size()>newVote.getDisagree().size()) {//agree kick
@@ -73,7 +77,11 @@ public class TriggerJob implements Job {
 //                            schedulingService.modifyVoteSchedule(postID, voteID, newVote);
 //                        }
 //                    }
+                }else{
+                    //無效投票
+                    v.setResult("invalid");
                 }
+                postService.replacePost(postID,post);
                 break;
             }
         }

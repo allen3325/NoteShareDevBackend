@@ -10,7 +10,7 @@ public class Vote {
     private Task task;
     private ArrayList<String> agree;//user's email
     private ArrayList<String> disagree;//user's email
-    private String kickTarget;//user's name
+    private String kickTarget;//user's email
     private String result;
 
     public Vote(){

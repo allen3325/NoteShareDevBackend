@@ -132,7 +132,7 @@ public class NoteService {
         currentNames.remove(userIndex);
         note.setAuthorEmail(currentEmails);
         note.setAuthorName(currentNames);
-        if(note.getManagerEmail().equals(email)){
+        if(note.getManagerEmail()!= null && note.getManagerEmail().equals(email)){//檢查踢除人是否為管理員
             note.setManagerEmail(null);
         }
         replaceNote(note,note.getId());

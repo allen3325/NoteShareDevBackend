@@ -39,7 +39,7 @@ public class Post {
 //    private Task task;
     @JsonFormat(timezone = "GMT+08:00")
     private Date publishDate;
-    private ArrayList<Vote> vote;
+    private ArrayList<Vote> vote = new ArrayList<Vote>();
     private Integer collabNoteAuthorNumber;
     private ArrayList<Apply> collabApply;
 
