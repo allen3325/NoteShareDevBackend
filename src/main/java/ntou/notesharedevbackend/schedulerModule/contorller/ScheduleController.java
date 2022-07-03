@@ -34,7 +34,7 @@ public class ScheduleController {
 //        }
 //    }
 
-    @Operation(summary = "creat vote")
+    @Operation(summary = "creat vote",description = "時間要是今天以後")
     @PostMapping("/vote/{postID}")
     public ResponseEntity<Object> addVote(@PathVariable(name = "postID") String postID, @RequestBody KickVoteRequest request) {
         Vote vote = schedulingService.newVoteSchedule(postID, request);
@@ -54,7 +54,7 @@ public class ScheduleController {
 //        Task task = schedulingService.modifyPublishSchedule(postID, request);
 //        return ResponseEntity.ok().body(task);
 //    }
-    @Operation(summary = "modify vote time", description = "year, month, day only")
+    @Operation(summary = "modify vote time", description = "year, month, day only,時間要是今天以後")
     @PutMapping("/modifyVote/{postID}/{voteID}")
     public ResponseEntity modifyVoteSchedule(@PathVariable(name = "postID") String postID, @PathVariable(name = "voteID") String voteID, @RequestBody KickVoteRequest request) {
         Vote vote = schedulingService.modifyVoteSchedule(postID, voteID, request);

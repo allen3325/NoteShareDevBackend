@@ -52,7 +52,7 @@ public class SchedulingService {
             //dateOf(hour,minute,second,day,month,year)
             SimpleTrigger trigger = (SimpleTrigger) newTrigger()
                     .withIdentity(request.getId())
-                    .startAt(DateBuilder.dateOf(18, 25,0,request.getDay(),request.getMonth(),request.getYear()))
+                    .startAt(DateBuilder.dateOf(23, 55,0,request.getDay(),request.getMonth(),request.getYear()))
                     .build();
             Scheduler scheduler = quartzConfig.schedulerFactoryBean().getScheduler();
             scheduler.scheduleJob(jobDetail,trigger);
@@ -89,6 +89,7 @@ public class SchedulingService {
         if(timeBeforeNow(request.getYear(), request.getMonth(), request.getDay())){
             return null;
         }
+
 //        Post post = postService.getPostById(postID);
 //        for(Vote v : post.getVote()){
 //            if(v.getId().equals(voteID)){
