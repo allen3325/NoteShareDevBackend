@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.coinModule.entity.Coin;
 import ntou.notesharedevbackend.coinModule.service.CoinService;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -45,8 +46,8 @@ public class CoinController {
             res.put("msg","money is not enough or bought the note.");
             return ResponseEntity.status(412).body(res);
         }else{
-            coinService.getUserinfo(note);
-            res.put("res",note);
+            NoteReturn noteReturn = coinService.getUserinfo(note);
+            res.put("res",noteReturn);
             return ResponseEntity.ok(res);
         }
     }

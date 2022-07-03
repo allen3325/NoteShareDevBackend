@@ -2,6 +2,7 @@ package ntou.notesharedevbackend.commentModule.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.commentModule.entity.CommentReturn;
 import ntou.notesharedevbackend.commentModule.service.CommentService;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import org.apache.coyote.Response;
@@ -32,7 +33,12 @@ public class CommentController {
             res.put("msg","comment is empty.");
             return ResponseEntity.status(404).body(res);
         }else {
-            res.put("res",commentArrayList);
+            ArrayList<CommentReturn> commentReturnArrayList = new ArrayList<>();
+            for(Comment comment : commentArrayList){
+                CommentReturn commentReturn = commentService.getUserInfo(comment);
+                commentReturnArrayList.add(commentReturn);
+            }
+            res.put("res",commentReturnArrayList);
             return ResponseEntity.ok().body(res);
         }
     }
@@ -42,7 +48,8 @@ public class CommentController {
     public ResponseEntity<Object> getCommentByFloor(@PathVariable("ID") String id ,@PathVariable("floor") int floor){
         Comment comment = commentService.getCommentByFloor(id,floor);
         Map<String,Object> res = new HashMap<>();
-        res.put("res",comment);
+        CommentReturn commentReturn = commentService.getUserInfo(comment);
+        res.put("res",commentReturn);
         return ResponseEntity.ok().body(res);
     }
 
@@ -52,7 +59,8 @@ public class CommentController {
     public ResponseEntity<Object> createComment(@PathVariable("ID") String id, @RequestBody Comment request){
         Comment comment = commentService.createComment(id, request);
         Map<String,Object> res = new HashMap<>();
-        res.put("res",comment);
+        CommentReturn commentReturn = commentService.getUserInfo(comment);
+        res.put("res",commentReturn);
         return ResponseEntity.ok().body(res);
     }
 
@@ -61,7 +69,8 @@ public class CommentController {
     public ResponseEntity<Object> updateComment(@PathVariable("ID") String id, @PathVariable("floor") Integer floor, @RequestBody Comment request){
         Comment comment = commentService.updateComment(id, floor, request);
         Map<String,Object> res = new HashMap<>();
-        res.put("res",comment);
+        CommentReturn commentReturn = commentService.getUserInfo(comment);
+        res.put("res",commentReturn);
         return ResponseEntity.ok().body(res);
     }
 

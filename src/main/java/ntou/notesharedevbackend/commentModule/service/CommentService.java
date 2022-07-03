@@ -1,6 +1,7 @@
 package ntou.notesharedevbackend.commentModule.service;
 
 import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.commentModule.entity.CommentReturn;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
@@ -8,6 +9,8 @@ import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.PostRepository;
+import ntou.notesharedevbackend.userModule.entity.UserObj;
+import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +29,8 @@ public class CommentService {
     private PostRepository postRepository;
     @Autowired
     private PostService postService;
+    @Autowired
+    private AppUserService appUserService;
 
 
     public ArrayList<Comment> getAllCommentsByID(String id) {
@@ -167,5 +172,30 @@ public class CommentService {
         } else {
             return false;
         }
+    }
+
+    public CommentReturn getUserInfo(Comment comment){
+        CommentReturn commentReturn = new CommentReturn();
+        commentReturn.setId(comment.getId());
+        commentReturn.setAuthor(comment.getAuthor());
+        commentReturn.setEmail(comment.getEmail());
+        commentReturn.setContent(comment.getContent());
+        commentReturn.setLikeCount(comment.getLikeCount());
+        commentReturn.setLiker(comment.getLiker());
+        commentReturn.setFloor(comment.getFloor());
+        commentReturn.setDate(comment.getDate());
+        commentReturn.setPicURL(comment.getPicURL());
+        commentReturn.setBest(comment.getBest());
+        UserObj userObj = appUserService.getUserInfo(comment.getEmail());
+        commentReturn.setUserObjEmail(userObj.getUserObjEmail());
+        commentReturn.setUserObjName(userObj.getUserObjName());
+        commentReturn.setUserObjAvatar(userObj.getUserObjAvatar());
+        ArrayList<UserObj> likerUserObj = new ArrayList<>();
+        for(String likerEmail : comment.getLiker()){
+            UserObj userObj1 = appUserService.getUserInfo(likerEmail);
+            likerUserObj.add(userObj1);
+        }
+        commentReturn.setLikerUserObj(likerUserObj);
+        return commentReturn;
     }
 }
