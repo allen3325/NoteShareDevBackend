@@ -7,13 +7,16 @@ import ntou.notesharedevbackend.postModule.entity.VoteRequest;
 import ntou.notesharedevbackend.schedulerModule.entity.KickVoteRequest;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
+import ntou.notesharedevbackend.schedulerModule.entity.VoteReturn;
 import ntou.notesharedevbackend.schedulerModule.service.SchedulingService;
+import ntou.notesharedevbackend.userModule.entity.UserObj;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +44,8 @@ public class ScheduleController {
         Map<String, Object> res = new HashMap<>();
 
         if(vote!=null){
-            res.put("res",vote);
+            VoteReturn voteReturn = schedulingService.getUserInfo(vote);
+            res.put("res",voteReturn);
             return ResponseEntity.ok().body(res);
         }else {
             res.put("msg","can't set past time");
@@ -61,7 +65,8 @@ public class ScheduleController {
         Map<String, Object> res = new HashMap<>();
 
         if(vote!=null){
-            res.put("res",vote);
+            VoteReturn voteReturn = schedulingService.getUserInfo(vote);
+            res.put("res",voteReturn);
             return ResponseEntity.ok().body(res);
         }else {
             res.put("msg","can't set past time");
