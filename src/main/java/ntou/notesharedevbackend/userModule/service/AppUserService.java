@@ -3,7 +3,7 @@ package ntou.notesharedevbackend.userModule.service;
 import ntou.notesharedevbackend.folderModule.entity.FolderRequest;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.notificationModule.entity.Message;
-import ntou.notesharedevbackend.userModule.entity.AppUser;
+import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.verificationModule.entity.service.MailService;
@@ -169,5 +169,15 @@ public class AppUserService {
         appUser.setName(newName);
         replaceUser(appUser);
         return appUser.getName();
+    }
+
+    public UserObj getUserInfo(String email) {
+        AppUser appUser = getUserByEmail(email);
+        UserObj userObj = new UserObj();
+        userObj.setUserObjEmail(email);
+        userObj.setUserObjName(appUser.getName());
+        userObj.setUserObjAvatar(appUser.getHeadshotPhoto());
+
+        return userObj;
     }
 }
