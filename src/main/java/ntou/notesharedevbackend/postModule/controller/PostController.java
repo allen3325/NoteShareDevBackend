@@ -5,6 +5,7 @@ import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.postModule.entity.Apply;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.entity.PostRequest;
+import ntou.notesharedevbackend.postModule.entity.VoteRequest;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,12 +139,12 @@ public class PostController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "user vote.", description = "第一個ID為postID,第二個ID為voteID,email為投票者")
+    @Operation(summary = "user vote.", description = "第一個ID為postID,第二個ID為voteID,email為投票者,body放agree/disagree")
     @PutMapping("/vote/{postID}/{voteID}/{email}")
     public ResponseEntity<Object> voteCollaborationVote(@PathVariable("postID") String postID,
-                                                        @PathVariable("voteID") String voteID, @PathVariable("email") String email, @RequestBody String option) {
+                                                        @PathVariable("voteID") String voteID, @PathVariable("email") String email, @RequestBody VoteRequest request) {
         Map<String, Object> res = new HashMap<>();
-        if (postService.voteCollaborationVote(postID, voteID, email, option)) {
+        if (postService.voteCollaborationVote(postID, voteID, email, request)) {
             res.put("msg", "Success");
             return ResponseEntity.ok(res);
         } else {

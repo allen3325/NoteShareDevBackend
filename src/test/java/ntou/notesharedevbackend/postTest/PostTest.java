@@ -816,9 +816,11 @@ public class PostTest {
         post.setVote(voteArrayList);
         postRepository.save(post);
         AppUser appUser = userRepository.findByEmail("user1@gmail.com");
+        JSONObject request = new JSONObject()
+                .put("option", "agree");
         mockMvc.perform(put("/post/vote/" + post.getId() + "/" + vote.getId() + "/" + appUser.getEmail())
                         .headers(httpHeaders)
-                        .content("agree"))
+                        .content(request.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
         post = postRepository.findById(post.getId()).get();
