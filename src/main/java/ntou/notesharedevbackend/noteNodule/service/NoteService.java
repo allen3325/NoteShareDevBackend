@@ -12,6 +12,7 @@ import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
+import ntou.notesharedevbackend.userModule.entity.UserObj;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -289,5 +290,75 @@ public class NoteService {
             }
         }
         return false;
+    }
+
+    public NoteReturn getUserinfo(Note note){
+        NoteReturn noteReturn = new NoteReturn();
+        noteReturn.setId(note.getId());
+        noteReturn.setType(note.getType());
+        noteReturn.setDepartment(note.getDepartment());
+        noteReturn.setSubject(note.getSubject());
+        noteReturn.setTitle(note.getTitle());
+        noteReturn.setHeaderEmail(note.getHeaderEmail());
+        noteReturn.setHeaderName(note.getHeaderName());
+        noteReturn.setAuthorEmail(note.getAuthorEmail());
+        noteReturn.setAuthorName(note.getAuthorName());
+        noteReturn.setManagerEmail(note.getManagerEmail());
+        noteReturn.setProfessor(note.getProfessor());
+        noteReturn.setSchool(note.getSchool());
+        noteReturn.setLiker(note.getLiker());
+        noteReturn.setBuyer(note.getBuyer());
+        noteReturn.setFavoriter(note.getFavoriter());
+        noteReturn.setLikeCount(note.getLikeCount());
+        noteReturn.setFavoriteCount(note.getFavoriteCount());
+        noteReturn.setUnlockCount(note.getUnlockCount());
+        noteReturn.setDownloadable(note.getDownloadable());
+        noteReturn.setCommentCount(note.getCommentCount());
+        noteReturn.setComments(note.getComments());
+        noteReturn.setPrice(note.getPrice());
+        noteReturn.setPublic(note.getPublic());
+        noteReturn.setSubmit(note.getSubmit());
+        noteReturn.setQuotable(note.getQuotable());
+        noteReturn.setTag(note.getTag());
+        noteReturn.setHiddenTag(note.getHiddenTag());
+        noteReturn.setVersion(note.getVersion());
+        noteReturn.setContributors(note.getContributors());
+        noteReturn.setPostID(note.getPostID());
+        noteReturn.setReference(note.getReference());
+        noteReturn.setBest(note.getBest());
+        noteReturn.setPublishDate(note.getPublishDate());
+        noteReturn.setDescription(note.getDescription());
+        noteReturn.setHeaderUserObj(appUserService.getUserInfo(note.getHeaderEmail()));
+        ArrayList<UserObj> authorUserObj = new ArrayList<>();
+        for(String authorEmail : note.getAuthorEmail()){
+            UserObj userObj = appUserService.getUserInfo(authorEmail);
+            authorUserObj.add(userObj);
+        }
+        noteReturn.setAuthorUserObj(authorUserObj);
+        ArrayList<UserObj> likerUserObj = new ArrayList<>();
+        for(String likerEmail : note.getLiker()){
+            UserObj userObj = appUserService.getUserInfo(likerEmail);
+            likerUserObj.add(userObj);
+        }
+        noteReturn.setLikerUserObj(likerUserObj);
+        ArrayList<UserObj> buyerUserObj = new ArrayList<>();
+        for(String buyerEmail : note.getBuyer()){
+            UserObj userObj = appUserService.getUserInfo(buyerEmail);
+            buyerUserObj.add(userObj);
+        }
+        noteReturn.setBuyerUserObj(buyerUserObj);
+        ArrayList<UserObj> favoriterUserObj = new ArrayList<>();
+        for(String favoriterEmail : note.getFavoriter()){
+            UserObj userObj = appUserService.getUserInfo(favoriterEmail);
+            favoriterUserObj.add(userObj);
+        }
+        noteReturn.setFavoriterUserObj(favoriterUserObj);
+        ArrayList<UserObj> contributorUserObj = new ArrayList<>();
+        for(String contributorEmail : note.getContributors()){
+            UserObj userObj = appUserService.getUserInfo(contributorEmail);
+            contributorUserObj.add(userObj);
+        }
+        noteReturn.setContributorUserObj(contributorUserObj);
+        return noteReturn;
     }
 }

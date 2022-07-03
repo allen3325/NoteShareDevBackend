@@ -45,6 +45,7 @@ public class CoinController {
             res.put("msg","money is not enough or bought the note.");
             return ResponseEntity.status(412).body(res);
         }else{
+            coinService.getUserinfo(note);
             res.put("res",note);
             return ResponseEntity.ok(res);
         }

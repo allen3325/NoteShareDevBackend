@@ -5,6 +5,7 @@ import ntou.notesharedevbackend.exception.BadRequestException;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
@@ -76,5 +77,10 @@ public class CoinService {
             noteService.replaceNote(note,note.getId()); // update unlockCount in replace.
             return noteService.getNote(noteID);
         }
+    }
+
+    public NoteReturn getUserinfo(Note note){
+        NoteReturn noteReturn = noteService.getUserinfo(note);
+        return noteReturn;
     }
 }
