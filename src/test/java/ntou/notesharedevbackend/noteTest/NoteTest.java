@@ -379,16 +379,8 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.department").value(note.getDepartment()))
                 .andExpect(jsonPath("$.res.subject").value(note.getSubject()))
                 .andExpect(jsonPath("$.res.title").value(note.getTitle()))
-                .andExpect(jsonPath("$.res.headerEmail").value(note.getHeaderEmail()))
-                .andExpect(jsonPath("$.res.headerName").value(note.getHeaderName()))
-                .andExpect(jsonPath("$.res.authorEmail").value(note.getAuthorEmail()))
-                .andExpect(jsonPath("$.res.authorName").value(note.getAuthorName()))
-                .andExpect(jsonPath("$.res.managerEmail").value(note.getManagerEmail()))
                 .andExpect(jsonPath("$.res.professor").value(note.getProfessor()))
                 .andExpect(jsonPath("$.res.school").value(note.getSchool()))
-                .andExpect(jsonPath("$.res.liker").value(note.getLiker()))
-                .andExpect(jsonPath("$.res.buyer").value(note.getBuyer()))
-                .andExpect(jsonPath("$.res.favoriter").value(note.getFavoriter()))
                 .andExpect(jsonPath("$.res.likeCount").value(note.getLikeCount()))
                 .andExpect(jsonPath("$.res.favoriteCount").value(note.getFavoriteCount()))
                 .andExpect(jsonPath("$.res.unlockCount").value(note.getUnlockCount()))
@@ -483,12 +475,20 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.version.[3].picURL").value(note.getVersion().get(3).getPicURL()))
                 .andExpect(jsonPath("$.res.version.[3].fileURL").value(note.getVersion().get(3).getFileURL()))
                 .andExpect(jsonPath("$.res.version.[3].temp").value(note.getVersion().get(3).getTemp()))
-                .andExpect(jsonPath("$.res.contributors").value(note.getContributors()))
                 .andExpect(jsonPath("$.res.postID").value(note.getPostID()))
                 .andExpect(jsonPath("$.res.reference").value(note.getReference()))
                 .andExpect(jsonPath("$.res.best").value(note.getBest()))
                 .andExpect(jsonPath("$.res.public").value(note.getPublic()))
-                .andExpect(jsonPath("$.res.submit").value(note.getSubmit()));
+                .andExpect(jsonPath("$.res.submit").value(note.getSubmit()))
+                .andExpect(jsonPath("$.res.headerUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.buyerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.contributorUserObj").isEmpty())
+        ;
     }
 
     @Test
@@ -593,16 +593,8 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.department").value(request.get("department")))
                 .andExpect(jsonPath("$.res.subject").value(request.get("subject")))
                 .andExpect(jsonPath("$.res.title").value(request.get("title")))
-                .andExpect(jsonPath("$.res.headerEmail").value(request.get("headerEmail")))
-                .andExpect(jsonPath("$.res.headerName").value(request.get("headerName")))
-                .andExpect(jsonPath("$.res.authorEmail").value(appUser.getEmail()))
-                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.managerEmail").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.professor").value(request.get("professor")))
                 .andExpect(jsonPath("$.res.school").value(request.get("school")))
-                .andExpect(jsonPath("$.res.liker").isEmpty())
-                .andExpect(jsonPath("$.res.buyer").isEmpty())
-                .andExpect(jsonPath("$.res.favoriter").isEmpty())
                 .andExpect(jsonPath("$.res.likeCount").value(0))
                 .andExpect(jsonPath("$.res.favoriteCount").value(0))
                 .andExpect(jsonPath("$.res.unlockCount").value(0))
@@ -628,12 +620,19 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.version.[0].fileURL[1]").value(fileURLs.get(1)))
                 .andExpect(jsonPath("$.res.version.[0].fileURL[2]").value(fileURLs.get(2)))
                 .andExpect(jsonPath("$.res.version.[0].temp").value(v1.get("temp")))
-                .andExpect(jsonPath("$.res.contributors").isEmpty())
                 .andExpect(jsonPath("$.res.postID").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.reference").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.best").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.public").value(request.get("public")))
-                .andExpect(jsonPath("$.res.submit").value(IsNull.nullValue()));
+                .andExpect(jsonPath("$.res.submit").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.headerUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.buyerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.contributorUserObj").isEmpty());
 
         if(folderRepository.findById(folder.getId()).get().getNotes().isEmpty()){
             throw new Exception("Note Test : new note does not add in folder");
@@ -760,16 +759,8 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.department").value(request.get("department")))
                 .andExpect(jsonPath("$.res.subject").value(request.get("subject")))
                 .andExpect(jsonPath("$.res.title").value(request.get("title")))
-                .andExpect(jsonPath("$.res.headerEmail").value(request.get("headerEmail")))
-                .andExpect(jsonPath("$.res.headerName").value(request.get("headerName")))
-                .andExpect(jsonPath("$.res.authorEmail").value(appUser.getEmail()))
-                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.managerEmail").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.professor").value(request.get("professor")))
                 .andExpect(jsonPath("$.res.school").value(request.get("school")))
-                .andExpect(jsonPath("$.res.liker").isEmpty())
-                .andExpect(jsonPath("$.res.buyer").isEmpty())
-                .andExpect(jsonPath("$.res.favoriter").isEmpty())
                 .andExpect(jsonPath("$.res.likeCount").value(0))
                 .andExpect(jsonPath("$.res.favoriteCount").value(0))
                 .andExpect(jsonPath("$.res.unlockCount").value(0))
@@ -791,12 +782,20 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.version.[0].picURL.[0]").value(picURLs.get(0)))
                 .andExpect(jsonPath("$.res.version.[0].fileURL[0]").value(fileURLs.get(0)))
                 .andExpect(jsonPath("$.res.version.[0].temp").value(v1.get("temp")))
-                .andExpect(jsonPath("$.res.contributors").isEmpty())
                 .andExpect(jsonPath("$.res.postID").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.reference").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.best").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.public").value(request.get("public")))
-                .andExpect(jsonPath("$.res.submit").value(IsNull.nullValue()));
+                .andExpect(jsonPath("$.res.submit").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.headerUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.buyerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.contributorUserObj").isEmpty())
+        ;
 
     }
 
@@ -929,6 +928,7 @@ public class NoteTest {
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
+
         if(noteRepository.findById(note.getId()).get().getAuthorEmail().contains(kickTarget.getEmail())){
             throw new Exception("Note Test : Note's author's email still contain kickTarget");
         }
