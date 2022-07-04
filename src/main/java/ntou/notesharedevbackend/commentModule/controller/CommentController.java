@@ -2,6 +2,7 @@ package ntou.notesharedevbackend.commentModule.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.commentModule.entity.CommentRequest;
 import ntou.notesharedevbackend.commentModule.entity.CommentReturn;
 import ntou.notesharedevbackend.commentModule.service.CommentService;
 import ntou.notesharedevbackend.exception.NotFoundException;
@@ -56,7 +57,7 @@ public class CommentController {
     @PostMapping("/{ID}")
     @Operation(summary = "create comment in the note or post", description = "ID填筆記或是貼文的都可以，body傳入一個author,email," +
             "content,picURL")
-    public ResponseEntity<Object> createComment(@PathVariable("ID") String id, @RequestBody Comment request){
+    public ResponseEntity<Object> createComment(@PathVariable("ID") String id, @RequestBody CommentRequest request){
         Comment comment = commentService.createComment(id, request);
         Map<String,Object> res = new HashMap<>();
         CommentReturn commentReturn = commentService.getUserInfo(comment);
@@ -66,7 +67,7 @@ public class CommentController {
 
     @PutMapping("{ID}/{floor}")
     @Operation(summary = "update comment by floor in the note or post", description = "ID為筆記或是貼文的，在傳入幾樓想要修改")
-    public ResponseEntity<Object> updateComment(@PathVariable("ID") String id, @PathVariable("floor") Integer floor, @RequestBody Comment request){
+    public ResponseEntity<Object> updateComment(@PathVariable("ID") String id, @PathVariable("floor") Integer floor, @RequestBody CommentRequest request){
         Comment comment = commentService.updateComment(id, floor, request);
         Map<String,Object> res = new HashMap<>();
         CommentReturn commentReturn = commentService.getUserInfo(comment);
