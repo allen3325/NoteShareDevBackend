@@ -113,10 +113,11 @@ public class PostController {
     @PutMapping("/publish/{postID}")
     public ResponseEntity<Object> modifyPublishStatus(@PathVariable("postID") String id) {
         Post post = postService.modifyPublishStatus(id);
-        PostReturn postReturn = postService.getUserInfo(post);
+
         Map<String, Object> res = new HashMap<>();
 
-        if (postReturn != null) {
+        if (post != null) {
+            PostReturn postReturn = postService.getUserInfo(post);
             res.put("res", postReturn);
         } else {
             res.put("msg", "can't change publish state before you got best answer.");
