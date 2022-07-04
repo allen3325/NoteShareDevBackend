@@ -144,8 +144,6 @@ public class SchedulingService {
         voteReturn.setResult(vote.getResult());
         voteReturn.setKickTarget(vote.getKickTarget());
         voteReturn.setTask(vote.getTask());
-        voteReturn.setAgree(vote.getAgree());
-        voteReturn.setDisagree(vote.getDisagree());
         ArrayList<UserObj> agreeUserList = new ArrayList<UserObj>();
         for(String agreeUser : vote.getAgree()){
             UserObj userObj = appUserService.getUserInfo(agreeUser);

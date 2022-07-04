@@ -7,8 +7,6 @@ import java.util.ArrayList;
 public class VoteReturn {
     private String id;
     private Task task;
-    private ArrayList<String> agree;//user's email
-    private ArrayList<String> disagree;//user's email
     private String kickTarget;//user's email
     private String result;
 
@@ -31,22 +29,6 @@ public class VoteReturn {
 
     public void setTask(Task task) {
         this.task = task;
-    }
-
-    public ArrayList<String> getAgree() {
-        return agree;
-    }
-
-    public void setAgree(ArrayList<String> agree) {
-        this.agree = agree;
-    }
-
-    public ArrayList<String> getDisagree() {
-        return disagree;
-    }
-
-    public void setDisagree(ArrayList<String> disagree) {
-        this.disagree = disagree;
     }
 
     public ArrayList<UserObj> getAgreeUserObj() {

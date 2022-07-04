@@ -5,6 +5,7 @@ import ntou.notesharedevbackend.noteNodule.service.*;
 import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.repository.*;
 import ntou.notesharedevbackend.userModule.entity.*;
+import ntou.notesharedevbackend.userModule.service.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
@@ -16,6 +17,8 @@ public class NotificationService {
     private UserRepository userRepository;
     @Autowired
     private NoteService noteService;
+    @Autowired
+    private AppUserService appUserService;
 
     public void saveNotificationPublic(String noteID, Message message) {
         Note note = noteService.getNote(noteID);
@@ -43,5 +46,16 @@ public class NotificationService {
         userRepository.save(appUser);
 
         return appUser.getNotification();
+    }
+
+    public MessageReturn getUserInfo(Message message) {
+        MessageReturn messageReturn = new MessageReturn();
+        messageReturn.setContent(messageReturn.getContent());
+        messageReturn.setTime(messageReturn.getTime());
+
+        UserObj userObj = appUserService.getUserInfo(message.getUser());
+        messageReturn.setMessageObj(userObj);
+
+        return messageReturn;
     }
 }
