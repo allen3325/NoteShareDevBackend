@@ -2,6 +2,7 @@ package ntou.notesharedevbackend.followModule.service;
 
 import ntou.notesharedevbackend.repository.*;
 import ntou.notesharedevbackend.userModule.entity.*;
+import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
@@ -11,6 +12,8 @@ import java.util.*;
 public class FollowService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AppUserService appUserService;
 
     public String[] getFollowers(String email) {
         AppUser appUser = userRepository.findByEmail(email);
@@ -52,5 +55,9 @@ public class FollowService {
             userRepository.save(user);
             userRepository.save(followingUser);
         }
+    }
+
+    public UserObj getUserInfo(String email){
+        return appUserService.getUserInfo(email);
     }
 }

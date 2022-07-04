@@ -2,11 +2,10 @@ package ntou.notesharedevbackend.postModule.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.exception.NotFoundException;
-import ntou.notesharedevbackend.postModule.entity.Apply;
-import ntou.notesharedevbackend.postModule.entity.Post;
-import ntou.notesharedevbackend.postModule.entity.PostRequest;
-import ntou.notesharedevbackend.postModule.entity.VoteRequest;
+import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.PostService;
+import ntou.notesharedevbackend.userModule.entity.*;
+import ntou.notesharedevbackend.userModule.service.*;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,14 +25,22 @@ import java.util.Map;
 public class PostController {
     @Autowired
     private PostService postService;
+    @Autowired
+    private AppUserService appUserService;
 
     @Operation(summary = "get all post by type.(QA, reward, collaboration)")
     @GetMapping("/postType/{postType}")
     public ResponseEntity<Object> getAllTypeOfPost(@PathVariable("postType") String postType) {
         Post[] posts = postService.getAllTypeOfPost(postType);
+        ArrayList<PostReturn> postReturns = new ArrayList<>();
+        for (Post post : posts) {
+            PostReturn postReturn = postService.getUserInfo(post);
+            postReturns.add(postReturn);
+        }
+
         Map<String, Object> res = new HashMap<>();
 
-        res.put("res", posts);
+        res.put("res", postReturns);
         return ResponseEntity.ok(res);
     }
 
@@ -41,9 +48,10 @@ public class PostController {
     @GetMapping("/{postID}")
     public ResponseEntity<Object> getPostById(@PathVariable("postID") String id) {
         Post post = postService.getPostById(id);
+        PostReturn postReturn = postService.getUserInfo(post);
         Map<String, Object> res = new HashMap<>();
 
-        res.put("res", post);
+        res.put("res", postReturn);
         return ResponseEntity.ok(res);
     }
 
@@ -51,9 +59,15 @@ public class PostController {
     @GetMapping("/{email}/{postType}")
     public ResponseEntity<Object> getUserAllPostByType(@PathVariable("email") String email, @PathVariable("postType") String postType) {
         ArrayList<Post> allPost = postService.getUserAllPostByType(email,postType);
+        ArrayList<PostReturn> postReturns = new ArrayList<>();
+        for (Post post : allPost) {
+            PostReturn postReturn = postService.getUserInfo(post);
+            postReturns.add(postReturn);
+        }
+
         Map<String, Object> res = new HashMap<>();
 
-        res.put("res", allPost);
+        res.put("res", postReturns);
         return ResponseEntity.ok(res);
     }
 
@@ -76,9 +90,10 @@ public class PostController {
 //                .buildAndExpand(post.getId())
 //                .toUri();
 
+        PostReturn postReturn = postService.getUserInfo(post);
         Map<String, Object> res = new HashMap<>();
 
-        res.put("res", post);
+        res.put("res", postReturn);
 
         return ResponseEntity.status(201).body(res);
     }
@@ -87,9 +102,10 @@ public class PostController {
     @PutMapping("/{postID}")
     public ResponseEntity<Object> replacePost(@PathVariable("postID") String id, @RequestBody Post request) {
         Post post = postService.replacePost(id, request);
+        PostReturn postReturn = postService.getUserInfo(post);
         Map<String, Object> res = new HashMap<>();
 
-        res.put("res", post);
+        res.put("res", postReturn);
         return ResponseEntity.ok(res);
     }
 
@@ -97,10 +113,12 @@ public class PostController {
     @PutMapping("/publish/{postID}")
     public ResponseEntity<Object> modifyPublishStatus(@PathVariable("postID") String id) {
         Post post = postService.modifyPublishStatus(id);
+
         Map<String, Object> res = new HashMap<>();
 
         if (post != null) {
-            res.put("res", post);
+            PostReturn postReturn = postService.getUserInfo(post);
+            res.put("res", postReturn);
         } else {
             res.put("msg", "can't change publish state before you got best answer.");
         }

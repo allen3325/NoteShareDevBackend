@@ -2,20 +2,18 @@ package ntou.notesharedevbackend.postModule.service;
 
 import ntou.notesharedevbackend.coinModule.entity.Coin;
 import ntou.notesharedevbackend.coinModule.service.CoinService;
-import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.commentModule.entity.*;
+import ntou.notesharedevbackend.commentModule.service.*;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
-import ntou.notesharedevbackend.postModule.entity.Apply;
-import ntou.notesharedevbackend.postModule.entity.Post;
+import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.exception.NotFoundException;
-import ntou.notesharedevbackend.postModule.entity.PostRequest;
-import ntou.notesharedevbackend.postModule.entity.VoteRequest;
 import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.schedulerModule.entity.KickVoteRequest;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import ntou.notesharedevbackend.schedulerModule.service.SchedulingService;
-import ntou.notesharedevbackend.userModule.entity.AppUser;
+import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -39,6 +37,9 @@ public class PostService {
     @Autowired
     @Lazy(value = true)
     private CoinService coinService;
+    @Autowired
+    @Lazy(value = true)
+    private CommentService commentService;
 
     public Post[] getAllTypeOfPost(String postType) {
         List<Post> postList = postRepository.findAllByType(postType);
@@ -459,5 +460,57 @@ public class PostService {
         }
         post.setVote(voteArrayList);
         replacePost(postID,post);
+    }
+
+    public PostReturn getUserInfo(Post post) {
+        PostReturn postReturn = new PostReturn();
+        postReturn.setId(post.getId());
+        postReturn.setType(post.getType());
+        postReturn.setDepartment(post.getDepartment());
+        postReturn.setSubject(post.getSubject());
+        postReturn.setSchool(post.getSchool());
+        postReturn.setProfessor(post.getProfessor());
+        postReturn.setTitle(post.getTitle());
+        postReturn.setContent(post.getContent());
+        postReturn.setDate(post.getDate());
+        postReturn.setBestPrice(post.getBestPrice());
+        postReturn.setReferencePrice(post.getReferencePrice());
+        postReturn.setReferenceNumber(post.getReferenceNumber());
+        postReturn.setPublic(post.getPublic());
+
+        ArrayList<CommentReturn> commentReturnArrayList = new ArrayList<>();
+        for(Comment comment : post.getComments()){
+            CommentReturn commentReturn = commentService.getUserInfo(comment);
+            commentReturnArrayList.add(commentReturn);
+        }
+        postReturn.setComments(commentReturnArrayList);
+
+        postReturn.setCommentCount(post.getCommentCount());
+        postReturn.setAnswers(post.getAnswers());
+        postReturn.setPublishDate(post.getPublishDate());
+        postReturn.setVote(post.getVote());
+        postReturn.setCollabNoteAuthorNumber(post.getCollabNoteAuthorNumber());
+        ArrayList<ApplyReturn> collabApplyArrayList =new ArrayList<>();
+        if(post.getCollabApply()!=null){
+            for(Apply apply : post.getCollabApply()){
+                ApplyReturn applyReturn = new ApplyReturn();
+                applyReturn.setUserObj(appUserService.getUserInfo(apply.getWantEnterUsersEmail()));
+                applyReturn.setCommentFromApplicant(apply.getCommentFromApplicant());
+                collabApplyArrayList.add(applyReturn);
+            }
+        }
+        postReturn.setCollabApply(collabApplyArrayList);
+
+        UserObj userObj = appUserService.getUserInfo(post.getAuthor());
+        postReturn.setAuthorUserObj(userObj);
+
+        ArrayList<UserObj> emailUserObj = new ArrayList<>();
+        for(String email : post.getEmail()){
+            UserObj userInfo = appUserService.getUserInfo(email);
+            emailUserObj.add(userInfo);
+        }
+        postReturn.setEmailUserObj(emailUserObj);
+
+        return postReturn;
     }
 }

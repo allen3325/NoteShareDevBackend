@@ -5,11 +5,13 @@ import ntou.notesharedevbackend.exception.BadRequestException;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 @Service
@@ -46,18 +48,21 @@ public class CoinService {
     public Note buyNote(String email, String noteID) {
         AppUser buyer = appUserService.getUserByEmail(email);
         Note note = noteService.getNote(noteID);
-        AppUser notesAuthor = appUserService.getUserByEmail(note.getHeaderEmail());
         Integer price = note.getPrice();
         Integer buyersCoin = buyer.getCoin();
-        Integer noteAuthorCoin = notesAuthor.getCoin();
         if (price > buyersCoin) {
             return null;
         } else {
             // update buyer's coin
             buyer.setCoin(buyersCoin - price);
             // update note's author's coin
-            notesAuthor.setCoin(noteAuthorCoin + price);
-            appUserService.replaceUser(notesAuthor);
+            ArrayList<String> authorEmails = note.getAuthorEmail();
+            for(String authorEmail : authorEmails){
+                AppUser noteAuthor = appUserService.getUserByEmail(authorEmail);
+                Integer noteAuthorCoin = noteAuthor.getCoin();
+                noteAuthor.setCoin(noteAuthorCoin + price);
+                appUserService.replaceUser(noteAuthor);
+            }
             // check does this user bought the note and update folder and buyer
             Folder buyFolder = folderService.getBuyFolderByUserEmail(email);
             ArrayList<String> folderNotes = buyFolder.getNotes();
@@ -76,5 +81,10 @@ public class CoinService {
             noteService.replaceNote(note,note.getId()); // update unlockCount in replace.
             return noteService.getNote(noteID);
         }
+    }
+
+    public NoteReturn getUserinfo(Note note){
+        NoteReturn noteReturn = noteService.getUserinfo(note);
+        return noteReturn;
     }
 }

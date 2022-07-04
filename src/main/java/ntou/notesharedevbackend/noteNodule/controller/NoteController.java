@@ -23,9 +23,10 @@ public class NoteController {
     @GetMapping("/{noteID}")
     public ResponseEntity<Object> getNoteById(@PathVariable("noteID") String id){
         Note note = noteService.getNote(id);
+        NoteReturn noteReturn = noteService.getUserinfo(note);
         Map<String,Object> res = new HashMap<>();
 
-        res.put("res",note);
+        res.put("res",noteReturn);
         return ResponseEntity.ok(res);
     }
 
@@ -69,8 +70,9 @@ public class NoteController {
         Map<String,Object> res = new HashMap<>();
         Note note = noteService.createNote(request,email);
         Folder folder = noteService.copyNoteToFolder(note.getId(), folderID);
+        NoteReturn noteReturn = noteService.getUserinfo(note);
 
-        res.put("res",note);
+        res.put("res",noteReturn);
 
         return ResponseEntity.status(201).body(res);
     }
@@ -80,8 +82,9 @@ public class NoteController {
     public ResponseEntity<Object> saveNote(@PathVariable("id") String id,@RequestBody Note request){
         Map<String,Object> res = new HashMap<>();
         Note note = noteService.replaceNote(request,id);
+        NoteReturn noteReturn = noteService.getUserinfo(note);
 
-        res.put("res",note);
+        res.put("res",noteReturn);
         return ResponseEntity.ok(res);
     }
 
@@ -133,7 +136,9 @@ public class NoteController {
     public ResponseEntity<Object> changeDescription(@PathVariable("noteID")String noteID,@RequestBody Note request) {
         Map<String,Object> res = new HashMap<>();
         Note note = noteService.changeDescription(noteID,request);
-        res.put("res",note);
+        NoteReturn noteReturn = noteService.getUserinfo(note);
+
+        res.put("res",noteReturn);
         return ResponseEntity.ok(res);
     }
 

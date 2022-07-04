@@ -1,6 +1,8 @@
 package ntou.notesharedevbackend.commentModule.service;
 
 import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.commentModule.entity.CommentRequest;
+import ntou.notesharedevbackend.commentModule.entity.CommentReturn;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
@@ -8,6 +10,9 @@ import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.PostRepository;
+import ntou.notesharedevbackend.userModule.entity.AppUser;
+import ntou.notesharedevbackend.userModule.entity.UserObj;
+import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +31,8 @@ public class CommentService {
     private PostRepository postRepository;
     @Autowired
     private PostService postService;
+    @Autowired
+    private AppUserService appUserService;
 
 
     public ArrayList<Comment> getAllCommentsByID(String id) {
@@ -59,10 +66,11 @@ public class CommentService {
         return comment;
     }//需要去檢查每個comment中的floor嗎
 
-    public Comment createComment(String id, Comment request) {
+    public Comment createComment(String id, CommentRequest request) {
         Note note = new Note();
         Post post = new Post();
         String type = "";
+        AppUser appUser = appUserService.getUserByEmail(request.getEmail());
 
         ArrayList<Comment> commentArrayList;
         if (noteRepository.findById(id).isPresent()) {
@@ -78,7 +86,7 @@ public class CommentService {
         }
 
         Comment comment = new Comment();
-        comment.setAuthor(request.getAuthor());
+        comment.setAuthor(appUser.getName());
         comment.setContent(request.getContent());
         comment.setDate();
         comment.setEmail(request.getEmail());
@@ -100,15 +108,15 @@ public class CommentService {
         return comment;
     }
 
-    public Comment updateComment(String id, Integer floor, Comment request) {
+    public Comment updateComment(String id, Integer floor, CommentRequest request) {
         ArrayList<Comment> commentArrayList = new ArrayList<Comment>();
 
         if (noteRepository.findById(id).isPresent()) {
             Note note = noteService.getNote(id);
             commentArrayList = note.getComments();
-            commentArrayList.get(floor).setBest(request.getBest());
-            commentArrayList.get(floor).setLiker(request.getLiker());
-            commentArrayList.get(floor).setLikeCount(request.getLiker().size());
+//            commentArrayList.get(floor).setBest(request.getBest());
+//            commentArrayList.get(floor).setLiker(request.getLiker());
+//            commentArrayList.get(floor).setLikeCount(request.getLiker().size());
             commentArrayList.get(floor).setContent(request.getContent());
             commentArrayList.get(floor).setDate();
             commentArrayList.get(floor).setPicURL(request.getPicURL());
@@ -119,9 +127,9 @@ public class CommentService {
         } else if (postRepository.findById(id).isPresent()) {
             Post post = postService.getPostById(id);
             commentArrayList = post.getComments();
-            commentArrayList.get(floor).setBest(request.getBest());
-            commentArrayList.get(floor).setLiker(request.getLiker());
-            commentArrayList.get(floor).setLikeCount(request.getLiker().size());
+//            commentArrayList.get(floor).setBest(request.getBest());
+//            commentArrayList.get(floor).setLiker(request.getLiker());
+//            commentArrayList.get(floor).setLikeCount(request.getLiker().size());
             commentArrayList.get(floor).setContent(request.getContent());
             commentArrayList.get(floor).setDate();
             commentArrayList.get(floor).setPicURL(request.getPicURL());
@@ -167,5 +175,25 @@ public class CommentService {
         } else {
             return false;
         }
+    }
+
+    public CommentReturn getUserInfo(Comment comment){
+        CommentReturn commentReturn = new CommentReturn();
+        commentReturn.setId(comment.getId());
+        commentReturn.setContent(comment.getContent());
+        commentReturn.setLikeCount(comment.getLikeCount());
+        commentReturn.setFloor(comment.getFloor());
+        commentReturn.setDate(comment.getDate());
+        commentReturn.setPicURL(comment.getPicURL());
+        commentReturn.setBest(comment.getBest());
+        UserObj userObj = appUserService.getUserInfo(comment.getEmail());
+        commentReturn.setUserObj(userObj);
+        ArrayList<UserObj> likerUserObj = new ArrayList<>();
+        for(String likerEmail : comment.getLiker()){
+            UserObj userObj1 = appUserService.getUserInfo(likerEmail);
+            likerUserObj.add(userObj1);
+        }
+        commentReturn.setLikerUserObj(likerUserObj);
+        return commentReturn;
     }
 }

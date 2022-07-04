@@ -17,20 +17,28 @@ public class FollowController {
 
     @Operation(summary = "Get a user's followers by email")
     @GetMapping("/followers/{email}")
-    public ResponseEntity<Map<String, String[]>> getFollowers(@PathVariable("email") String email) {
+    public ResponseEntity<Object> getFollowers(@PathVariable("email") String email) {
         String[] followers = followService.getFollowers(email);
-        Map<String, String[]> map = new HashMap<>();
-        map.put("followers", followers);
+        Map<String, Object> map = new HashMap<>();
+        ArrayList<UserObj> followUserObj = new ArrayList<>();
+        for(String followerEmail : followers){
+            followUserObj.add(followService.getUserInfo(followerEmail));
+        }
+        map.put("followers", followUserObj);
 
         return ResponseEntity.ok(map);
     }
 
     @Operation(summary = "Get a user's following by email")
     @GetMapping("/following/{email}")
-    public ResponseEntity<Map<String, String[]>> getFollowing(@PathVariable("email") String email) {
+    public ResponseEntity<Object> getFollowing(@PathVariable("email") String email) {
         String[] following = followService.getFollowing(email);
-        Map<String, String[]> map = new HashMap<>();
-        map.put("following", following);
+        Map<String, Object> map = new HashMap<>();
+        ArrayList<UserObj> followingUserObj = new ArrayList<>();
+        for(String followingEmail : following){
+            followingUserObj.add(followService.getUserInfo(followingEmail));
+        }
+        map.put("following", followingUserObj);
 
         return ResponseEntity.ok(map);
     }

@@ -6,7 +6,10 @@ import ntou.notesharedevbackend.schedulerModule.config.QuartzConfig;
 import ntou.notesharedevbackend.schedulerModule.entity.KickVoteRequest;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
+import ntou.notesharedevbackend.schedulerModule.entity.VoteReturn;
 import ntou.notesharedevbackend.schedulerModule.job.TriggerJob;
+import ntou.notesharedevbackend.userModule.entity.UserObj;
+import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 
 import static org.quartz.TriggerBuilder.newTrigger;
 
@@ -26,6 +30,9 @@ public class SchedulingService {
     @Autowired
     @Lazy(value = true)
     private PostService postService;
+
+    @Autowired
+    private AppUserService appUserService;
 
 //    public Task newPublishSchedule(String postID, Task request){
 //        if(timeBeforeNow(request)){
@@ -52,7 +59,7 @@ public class SchedulingService {
             //dateOf(hour,minute,second,day,month,year)
             SimpleTrigger trigger = (SimpleTrigger) newTrigger()
                     .withIdentity(request.getId())
-                    .startAt(DateBuilder.dateOf(23, 55,0,request.getDay(),request.getMonth(),request.getYear()))
+                    .startAt(DateBuilder.dateOf(0, 0,0,request.getDay(),request.getMonth(),request.getYear()))
                     .build();
             Scheduler scheduler = quartzConfig.schedulerFactoryBean().getScheduler();
             scheduler.scheduleJob(jobDetail,trigger);
@@ -129,5 +136,26 @@ public class SchedulingService {
             }
         }
         postService.deleteVote(postID, voteID);
+    }
+
+    public VoteReturn getUserInfo (Vote vote){
+        VoteReturn voteReturn = new VoteReturn();
+        voteReturn.setId(vote.getId());
+        voteReturn.setResult(vote.getResult());
+        voteReturn.setKickTarget(vote.getKickTarget());
+        voteReturn.setTask(vote.getTask());
+        ArrayList<UserObj> agreeUserList = new ArrayList<UserObj>();
+        for(String agreeUser : vote.getAgree()){
+            UserObj userObj = appUserService.getUserInfo(agreeUser);
+            agreeUserList.add(userObj);
+        }
+        ArrayList<UserObj> disagreeUserList = new ArrayList<UserObj>();
+        for(String disagreeUser : vote.getDisagree()){
+            UserObj userObj = appUserService.getUserInfo(disagreeUser);
+            disagreeUserList.add(userObj);
+        }
+        voteReturn.setAgreeUserObj(agreeUserList);
+        voteReturn.setDisagreeUserObj(agreeUserList);
+        return voteReturn;
     }
 }

@@ -100,19 +100,37 @@ public class FollowTest {
     @Test
     public void testGetAUserFollowersByEmail ()throws Exception{
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        AppUser fans1 = userRepository.findByEmail(appUser.getFans().get(0));
+        AppUser fans2 = userRepository.findByEmail(appUser.getFans().get(1));
+        AppUser fans3 = userRepository.findByEmail(appUser.getFans().get(2));
         mockMvc.perform(get("/followers/yitingwu.1030@gmail.com")
                 .headers(httpHeaders))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.followers").value(appUser.getFans()));
+                .andExpect(jsonPath("$.followers.[0].userObjEmail").value(fans1.getEmail()))
+                .andExpect(jsonPath("$.followers.[0].userObjName").value(fans1.getName()))
+                .andExpect(jsonPath("$.followers.[0].userObjAvatar").value(fans1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.followers.[1].userObjEmail").value(fans2.getEmail()))
+                .andExpect(jsonPath("$.followers.[1].userObjName").value(fans2.getName()))
+                .andExpect(jsonPath("$.followers.[1].userObjAvatar").value(fans2.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.followers.[2].userObjEmail").value(fans3.getEmail()))
+                .andExpect(jsonPath("$.followers.[2].userObjName").value(fans3.getName()))
+                .andExpect(jsonPath("$.followers.[2].userObjAvatar").value(fans3.getHeadshotPhoto()));
     }
 
     @Test
     public void testGetAUserFollowingByEmail() throws Exception{
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        AppUser following1= userRepository.findByEmail(appUser.getSubscribe().get(0));
+        AppUser following2 = userRepository.findByEmail(appUser.getSubscribe().get(1));
         mockMvc.perform(get("/following/yitingwu.1030@gmail.com")
                 .headers(httpHeaders))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.following").value(appUser.getSubscribe()));
+                .andExpect(jsonPath("$.following.[0].userObjEmail").value(following1.getEmail()))
+                .andExpect(jsonPath("$.following.[0].userObjName").value(following1.getName()))
+                .andExpect(jsonPath("$.following.[0].userObjAvatar").value(following1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.following.[1].userObjEmail").value(following2.getEmail()))
+                .andExpect(jsonPath("$.following.[1].userObjName").value(following2.getName()))
+                .andExpect(jsonPath("$.following.[1].userObjAvatar").value(following2.getHeadshotPhoto()));
     }
 
     @Test
