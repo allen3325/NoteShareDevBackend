@@ -126,6 +126,8 @@ public class CommentTest {
         Comment comment = new Comment();
         comment.setEmail("user1@gmail.com");
         comment.setAuthor("User1");
+        comment.getLiker().add("user2@gmail.com");
+        comment.getLiker().add("yitingwu.1030@gmail.com");
         comment.setFloor(0);
         comment.setContent("comment Content");
         Comment comment1 = new Comment();
@@ -256,7 +258,8 @@ public class CommentTest {
     public void testGetAllCommentByNoteID() throws Exception{
         Note note = createNormalNote();
         AppUser commentAuthor = userRepository.findByEmail("user1@gmail.com");
-        AppUser commentAuthor1 = userRepository.findByEmail("user2@gmail.com");
+        AppUser commentAuthor1 = userRepository.findByEmail("user2@gmail.com");//commentLiker
+        AppUser commentLiker = userRepository.findByEmail("yitingwu.1030@gmail.com");
         mockMvc.perform(get("/comment/"+note.getId())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
@@ -270,10 +273,15 @@ public class CommentTest {
                 .andExpect(jsonPath("$.res.[0].date").value(note.getComments().get(0).getDate()))
                 .andExpect(jsonPath("$.res.[0].picURL").value(note.getComments().get(0).getPicURL()))
                 .andExpect(jsonPath("$.res.[0].best").value(note.getComments().get(0).getBest()))
-                .andExpect(jsonPath("$.res.[0].userObjEmail").value(commentAuthor.getEmail()))
-                .andExpect(jsonPath("$.res.[0].userObjName").value(commentAuthor.getName()))
-                .andExpect(jsonPath("$.res.[0].userObjAvatar").value(commentAuthor.getHeadshotPhoto()))
-                .andExpect(jsonPath("$.res.[0].likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.[0].userObj.userObjEmail").value(commentAuthor.getEmail()))
+                .andExpect(jsonPath("$.res.[0].userObj.userObjName").value(commentAuthor.getName()))
+                .andExpect(jsonPath("$.res.[0].userObj.userObjAvatar").value(commentAuthor.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[0].likerUserObj.[0].userObjEmail").value(commentAuthor1.getEmail()))
+                .andExpect(jsonPath("$.res.[0].likerUserObj.[0].userObjName").value(commentAuthor1.getName()))
+                .andExpect(jsonPath("$.res.[0].likerUserObj.[0].userObjAvatar").value(commentAuthor1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[0].likerUserObj.[1].userObjEmail").value(commentLiker.getEmail()))
+                .andExpect(jsonPath("$.res.[0].likerUserObj.[1].userObjName").value(commentLiker.getName()))
+                .andExpect(jsonPath("$.res.[0].likerUserObj.[1].userObjAvatar").value(commentLiker.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.[1].id").value(note.getComments().get(1).getId()))
 //                .andExpect(jsonPath("$.res.[1].author").value(note.getComments().get(1).getAuthor()))
 //                .andExpect(jsonPath("$.res.[1].email").value(note.getComments().get(1).getEmail()))
@@ -284,9 +292,9 @@ public class CommentTest {
                 .andExpect(jsonPath("$.res.[1].date").value(note.getComments().get(1).getDate()))
                 .andExpect(jsonPath("$.res.[1].picURL").value(note.getComments().get(1).getPicURL()))
                 .andExpect(jsonPath("$.res.[1].best").value(note.getComments().get(1).getBest()))
-                .andExpect(jsonPath("$.res.[1].userObjEmail").value(commentAuthor1.getEmail()))
-                .andExpect(jsonPath("$.res.[1].userObjName").value(commentAuthor1.getName()))
-                .andExpect(jsonPath("$.res.[1].userObjAvatar").value(commentAuthor1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[1].userObj.userObjEmail").value(commentAuthor1.getEmail()))
+                .andExpect(jsonPath("$.res.[1].userObj.userObjName").value(commentAuthor1.getName()))
+                .andExpect(jsonPath("$.res.[1].userObj.userObjAvatar").value(commentAuthor1.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.[1].likerUserObj").isEmpty());;
     }
 
@@ -308,9 +316,9 @@ public class CommentTest {
                 .andExpect(jsonPath("$.res.[0].date").value(post.getComments().get(0).getDate()))
                 .andExpect(jsonPath("$.res.[0].picURL").value(post.getComments().get(0).getPicURL()))
                 .andExpect(jsonPath("$.res.[0].best").value(post.getComments().get(0).getBest()))
-                .andExpect(jsonPath("$.res.[0].userObjEmail").value(commentAuthor.getEmail()))
-                .andExpect(jsonPath("$.res.[0].userObjName").value(commentAuthor.getName()))
-                .andExpect(jsonPath("$.res.[0].userObjAvatar").value(commentAuthor.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[0].userObj.userObjEmail").value(commentAuthor.getEmail()))
+                .andExpect(jsonPath("$.res.[0].userObj.userObjName").value(commentAuthor.getName()))
+                .andExpect(jsonPath("$.res.[0].userObj.userObjAvatar").value(commentAuthor.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.[0].likerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.[1].id").value(post.getComments().get(1).getId()))
 //                .andExpect(jsonPath("$.res.[1].author").value(post.getComments().get(1).getAuthor()))
@@ -322,9 +330,9 @@ public class CommentTest {
                 .andExpect(jsonPath("$.res.[1].date").value(post.getComments().get(1).getDate()))
                 .andExpect(jsonPath("$.res.[1].picURL").value(post.getComments().get(1).getPicURL()))
                 .andExpect(jsonPath("$.res.[1].best").value(post.getComments().get(1).getBest()))
-                .andExpect(jsonPath("$.res.[1].userObjEmail").value(commentAuthor1.getEmail()))
-                .andExpect(jsonPath("$.res.[1].userObjName").value(commentAuthor1.getName()))
-                .andExpect(jsonPath("$.res.[1].userObjAvatar").value(commentAuthor1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[1].userObj.userObjEmail").value(commentAuthor1.getEmail()))
+                .andExpect(jsonPath("$.res.[1].userObj.userObjName").value(commentAuthor1.getName()))
+                .andExpect(jsonPath("$.res.[1].userObj.userObjAvatar").value(commentAuthor1.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.[1].likerUserObj").isEmpty());
     }
 
@@ -346,9 +354,9 @@ public class CommentTest {
                 .andExpect(jsonPath("$.res.date").value(post.getComments().get(0).getDate()))
                 .andExpect(jsonPath("$.res.picURL").value(post.getComments().get(0).getPicURL()))
                 .andExpect(jsonPath("$.res.best").value(post.getComments().get(0).getBest()))
-                .andExpect(jsonPath("$.res.userObjEmail").value(appUser.getEmail()))
-                .andExpect(jsonPath("$.res.userObjName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.userObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.userObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.userObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.likerUserObj").isEmpty());
     }
 
@@ -380,9 +388,9 @@ public class CommentTest {
                 .andExpect(jsonPath("$.res.picURL.[2]").value(picURLs.get(2)))
                 .andExpect(jsonPath("$.res.best").value(false))
                 .andExpect(jsonPath("$.res.content").value(request.get("content")))
-                .andExpect(jsonPath("$.res.userObjEmail").value(appUser.getEmail()))
-                .andExpect(jsonPath("$.res.userObjName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.userObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.userObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.userObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.likerUserObj").isEmpty());
     }
 
@@ -409,9 +417,9 @@ public class CommentTest {
                 .andExpect(jsonPath("$.res.best").value(comment.getBest()))
                 .andExpect(jsonPath("$.res.content").value(request.get("content")))
                 .andExpect(jsonPath("$.res.picURL").value(IsNull.nullValue()))
-                .andExpect(jsonPath("$.res.userObjEmail").value(appUser.getEmail()))
-                .andExpect(jsonPath("$.res.userObjName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.userObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.userObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.userObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.likerUserObj").isEmpty());
     }
 

@@ -101,8 +101,21 @@ public class CoinTest {
         note.setFavoriteCount(0);
         note.setUnlockCount(0);
         note.setDownloadable(false);
-        note.setCommentCount(0);
-        note.setComments(new ArrayList<Comment>());
+        note.setCommentCount(2);
+        ArrayList<Comment> comments = new ArrayList<>();
+        Comment comment = new Comment();
+        comment.setEmail("user1@gmail.com");
+        comment.setAuthor("User1");
+        comment.setFloor(0);
+        comment.setContent("comment Content");
+        Comment comment1 = new Comment();
+        comment1.setEmail("user2@gmail.com");
+        comment1.setAuthor("User2");
+        comment1.setFloor(1);
+        comment1.setContent("comment Content");
+        comments.add(comment);
+        comments.add(comment1);
+        note.setComments(comments);
         note.setSubmit(null);
         note.setQuotable(false);
         note.setTag(new ArrayList<String>());
@@ -125,6 +138,10 @@ public class CoinTest {
         folderRepository.deleteAll();
         AppUser appUser = createUser("yitingwu.1030@gmail.com","Ting",300);
         userRepository.insert(appUser);
+        AppUser appUser1 = createUser("user1@gmail.com","User1",300);
+        userRepository.insert(appUser1);
+        AppUser appUser2 = createUser("user2@gmail.com","User2",300);
+        userRepository.insert(appUser2);
         Note note = createNote();
         Folder favoriteFolder = folderRepository.findById(userRepository.findByEmail("yitingwu.1030@gmail.com").getFolders().get(1)).get();
         favoriteFolder.getNotes().add(note.getId());
@@ -212,6 +229,8 @@ public class CoinTest {
         userRepository.insert(buyer);
         AppUser noteAuthor = userRepository.findByEmail("yitingwu.1030@gmail.com");
         Note note = noteRepository.findAll().get(0);
+        AppUser commentAuthor = userRepository.findByEmail(note.getComments().get(0).getEmail());
+        AppUser commentAuthor1 = userRepository.findByEmail(note.getComments().get(1).getEmail());
         Integer buyerNewCoin = 250;
         Integer authorNewCoin = 350;
         mockMvc.perform(put("/coin/note/"+buyer.getEmail()+"/"+note.getId())
@@ -222,33 +241,58 @@ public class CoinTest {
                 .andExpect(jsonPath("$.res.department").value(note.getDepartment()))
                 .andExpect(jsonPath("$.res.subject").value(note.getSubject()))
                 .andExpect(jsonPath("$.res.title").value(note.getTitle()))
-                .andExpect(jsonPath("$.res.headerEmail").value(note.getHeaderEmail()))
-                .andExpect(jsonPath("$.res.headerName").value(note.getHeaderName()))
-                .andExpect(jsonPath("$.res.authorEmail").value(note.getAuthorEmail()))
-                .andExpect(jsonPath("$.res.authorName").value(note.getAuthorName()))
-                .andExpect(jsonPath("$.res.managerEmail").value(note.getManagerEmail()))
                 .andExpect(jsonPath("$.res.professor").value(note.getProfessor()))
                 .andExpect(jsonPath("$.res.school").value(note.getSchool()))
-                .andExpect(jsonPath("$.res.liker").value(note.getLiker()))
-                .andExpect(jsonPath("$.res.buyer.[0]").value(buyer.getEmail()))
-                .andExpect(jsonPath("$.res.favoriter").value(note.getFavoriter()))
                 .andExpect(jsonPath("$.res.likeCount").value(note.getLikeCount()))
                 .andExpect(jsonPath("$.res.favoriteCount").value(note.getFavoriteCount()))
                 .andExpect(jsonPath("$.res.unlockCount").value(note.getUnlockCount()+1))
                 .andExpect(jsonPath("$.res.downloadable").value(note.getDownloadable()))
                 .andExpect(jsonPath("$.res.commentCount").value(note.getCommentCount()))
-                .andExpect(jsonPath("$.res.comments").value(note.getComments()))
+                .andExpect(jsonPath("$.res.comments.[0].id").value(note.getComments().get(0).getId()))
+                .andExpect(jsonPath("$.res.comments.[0].likeCount").value(note.getComments().get(0).getLikeCount()))
+                .andExpect(jsonPath("$.res.comments.[0].floor").value(note.getComments().get(0).getFloor()))
+                .andExpect(jsonPath("$.res.comments.[0].date").value(note.getComments().get(0).getDate()))
+                .andExpect(jsonPath("$.res.comments.[0].best").value(note.getComments().get(0).getBest()))
+                .andExpect(jsonPath("$.res.comments.[0].content").value(note.getComments().get(0).getContent()))
+                .andExpect(jsonPath("$.res.comments.[0].picURL").value(note.getComments().get(0).getPicURL()))
+                .andExpect(jsonPath("$.res.comments.[0].userObj.userObjEmail").value(commentAuthor.getEmail()))
+                .andExpect(jsonPath("$.res.comments.[0].userObj.userObjName").value(commentAuthor.getName()))
+                .andExpect(jsonPath("$.res.comments.[0].userObj.userObjAvatar").value(commentAuthor.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.comments.[0].likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.comments.[1].id").value(note.getComments().get(1).getId()))
+                .andExpect(jsonPath("$.res.comments.[1].likeCount").value(note.getComments().get(1).getLikeCount()))
+                .andExpect(jsonPath("$.res.comments.[1].floor").value(note.getComments().get(1).getFloor()))
+                .andExpect(jsonPath("$.res.comments.[1].date").value(note.getComments().get(1).getDate()))
+                .andExpect(jsonPath("$.res.comments.[1].best").value(note.getComments().get(1).getBest()))
+                .andExpect(jsonPath("$.res.comments.[1].content").value(note.getComments().get(1).getContent()))
+                .andExpect(jsonPath("$.res.comments.[1].picURL").value(note.getComments().get(1).getPicURL()))
+                .andExpect(jsonPath("$.res.comments.[1].userObj.userObjEmail").value(commentAuthor1.getEmail()))
+                .andExpect(jsonPath("$.res.comments.[1].userObj.userObjName").value(commentAuthor1.getName()))
+                .andExpect(jsonPath("$.res.comments.[1].userObj.userObjAvatar").value(commentAuthor1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.comments.[1].likerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.price").value(note.getPrice()))
                 .andExpect(jsonPath("$.res.quotable").value(note.getQuotable()))
                 .andExpect(jsonPath("$.res.tag").value(note.getTag()))
                 .andExpect(jsonPath("$.res.hiddenTag").value(note.getHiddenTag()))
                 .andExpect(jsonPath("$.res.version").value(note.getVersion()))
-                .andExpect(jsonPath("$.res.contributors").value(note.getContributors()))
                 .andExpect(jsonPath("$.res.postID").value(note.getPostID()))
                 .andExpect(jsonPath("$.res.reference").value(note.getReference()))
                 .andExpect(jsonPath("$.res.best").value(note.getBest()))
                 .andExpect(jsonPath("$.res.public").value(note.getPublic()))
-                .andExpect(jsonPath("$.res.submit").value(note.getSubmit()));
+                .andExpect(jsonPath("$.res.submit").value(note.getSubmit()))
+                .andExpect(jsonPath("$.res.headerUserObj.userObjEmail").value(noteAuthor.getEmail()))
+                .andExpect(jsonPath("$.res.headerUserObj.userObjName").value(noteAuthor.getName()))
+                .andExpect(jsonPath("$.res.headerUserObj.userObjAvatar").value(noteAuthor.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjEmail").value(noteAuthor.getEmail()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjName").value(noteAuthor.getName()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjAvatar").value(noteAuthor.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.buyerUserObj.[0].userObjEmail").value(buyer.getEmail()))
+                .andExpect(jsonPath("$.res.buyerUserObj.[0].userObjName").value(buyer.getName()))
+                .andExpect(jsonPath("$.res.buyerUserObj.[0].userObjAvatar").value(buyer.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.contributorUserObj").isEmpty())
+        ;
         for(String s: note.getAuthorEmail()){
             if(!userRepository.findByEmail(s).getCoin().equals(authorNewCoin)){
                 throw new Exception("Coin Test : author's coin does not increase");

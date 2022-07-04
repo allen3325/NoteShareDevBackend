@@ -38,7 +38,7 @@ public class FollowController {
         for(String followingEmail : following){
             followingUserObj.add(followService.getUserInfo(followingEmail));
         }
-        map.put("followers", followingUserObj);
+        map.put("following", followingUserObj);
 
         return ResponseEntity.ok(map);
     }
