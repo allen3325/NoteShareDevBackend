@@ -8,11 +8,8 @@ import java.util.Date;
 
 public class CommentReturn {
     private String id;
-    private String author;
-    private String email;
     private String content;
     private Integer likeCount; // 愛心數
-    private ArrayList<String> liker; // 按愛心的人
     //    private ArrayList<String> referenceNotesURL; // 參考筆記的URL
     //    private Boolean isReference; // 是不是參考解
     private Integer floor; // 樓層數
@@ -36,22 +33,6 @@ public class CommentReturn {
         this.id = id;
     }
 
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getContent() {
         return content;
     }
@@ -66,14 +47,6 @@ public class CommentReturn {
 
     public void setLikeCount(Integer likeCount) {
         this.likeCount = likeCount;
-    }
-
-    public ArrayList<String> getLiker() {
-        return liker;
-    }
-
-    public void setLiker(ArrayList<String> liker) {
-        this.liker = liker;
     }
 
     public Integer getFloor() {

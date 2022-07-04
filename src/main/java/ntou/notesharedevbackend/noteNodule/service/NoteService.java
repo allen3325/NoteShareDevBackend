@@ -299,16 +299,9 @@ public class NoteService {
         noteReturn.setDepartment(note.getDepartment());
         noteReturn.setSubject(note.getSubject());
         noteReturn.setTitle(note.getTitle());
-        noteReturn.setHeaderEmail(note.getHeaderEmail());
-        noteReturn.setHeaderName(note.getHeaderName());
-        noteReturn.setAuthorEmail(note.getAuthorEmail());
-        noteReturn.setAuthorName(note.getAuthorName());
         noteReturn.setManagerEmail(note.getManagerEmail());
         noteReturn.setProfessor(note.getProfessor());
         noteReturn.setSchool(note.getSchool());
-        noteReturn.setLiker(note.getLiker());
-        noteReturn.setBuyer(note.getBuyer());
-        noteReturn.setFavoriter(note.getFavoriter());
         noteReturn.setLikeCount(note.getLikeCount());
         noteReturn.setFavoriteCount(note.getFavoriteCount());
         noteReturn.setUnlockCount(note.getUnlockCount());
@@ -322,7 +315,6 @@ public class NoteService {
         noteReturn.setTag(note.getTag());
         noteReturn.setHiddenTag(note.getHiddenTag());
         noteReturn.setVersion(note.getVersion());
-        noteReturn.setContributors(note.getContributors());
         noteReturn.setPostID(note.getPostID());
         noteReturn.setReference(note.getReference());
         noteReturn.setBest(note.getBest());

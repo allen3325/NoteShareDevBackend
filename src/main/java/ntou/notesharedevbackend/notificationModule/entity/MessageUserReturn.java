@@ -3,7 +3,6 @@ package ntou.notesharedevbackend.notificationModule.entity;
 import ntou.notesharedevbackend.userModule.entity.*;
 
 public class MessageUserReturn {
-    private String user;
     private String content;
     private String time;
 
@@ -16,20 +15,11 @@ public class MessageUserReturn {
     }
 
     public MessageUserReturn(Message message, UserObj userObj) {
-        setUser(message.getUser());
         setContent(message.getContent());
         setTime(message.getTime());
         setUserObjEmail(userObj.getUserObjEmail());
         setUserObjName(userObj.getUserObjName());
         setUserObjAvatar(userObj.getUserObjAvatar());
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
     }
 
     public String getContent() {

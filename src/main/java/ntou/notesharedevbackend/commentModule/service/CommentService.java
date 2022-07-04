@@ -177,11 +177,8 @@ public class CommentService {
     public CommentReturn getUserInfo(Comment comment){
         CommentReturn commentReturn = new CommentReturn();
         commentReturn.setId(comment.getId());
-        commentReturn.setAuthor(comment.getAuthor());
-        commentReturn.setEmail(comment.getEmail());
         commentReturn.setContent(comment.getContent());
         commentReturn.setLikeCount(comment.getLikeCount());
-        commentReturn.setLiker(comment.getLiker());
         commentReturn.setFloor(comment.getFloor());
         commentReturn.setDate(comment.getDate());
         commentReturn.setPicURL(comment.getPicURL());
