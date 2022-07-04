@@ -35,8 +35,6 @@ public class NotificationTest {
     private MockMvc mockMvc;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private FolderRepository folderRepository;
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @BeforeEach
@@ -44,10 +42,6 @@ public class NotificationTest {
         userRepository.deleteAll();
         httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        AppUser appUser = createUser("yitingwu.1030@gmail.com","Ting");
-        userRepository.insert(appUser);
-        AppUser appUser1 = createUser("user1@gmail.com","User1");
-        userRepository.insert(appUser1);
     }
 
     private AppUser createUser(String email, String name) {
@@ -76,21 +70,30 @@ public class NotificationTest {
         return message;
     }
 
-//    @Test
+    @Test
     public void testGetNotification() throws Exception{
         AppUser appUser = createUser("yitingwu.1030@gmail.com","Ting");
-        userRepository.insert(appUser);
+//        userRepository.insert(appUser);
+        AppUser appUser1 = createUser("user1@gmail.com","User1");
+//        userRepository.insert(appUser1);
+//        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         mockMvc.perform(get("/notification/"+appUser.getEmail())
                 .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.notification.[0].content").value(appUser.getNotification().get(0).getContent()))
-                .andExpect(jsonPath("$.notification.[0].user").value(appUser.getNotification().get(0).getUser()))
+                .andExpect(jsonPath("$.notification.[0].messageObj.userObjEmail").value(appUser1.getEmail()))
+                .andExpect(jsonPath("$.notification.[0].messageObj.userObjName").value(appUser1.getName()))
+                .andExpect(jsonPath("$.notification.[0].messageObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.notification.[0].time").value(appUser.getNotification().get(0).getTime()))
                 .andExpect(jsonPath("$.notification.[1].content").value(appUser.getNotification().get(1).getContent()))
-                .andExpect(jsonPath("$.notification.[1].user").value(appUser.getNotification().get(1).getUser()))
+                .andExpect(jsonPath("$.notification.[1].messageObj.userObjEmail").value(appUser1.getEmail()))
+                .andExpect(jsonPath("$.notification.[1].messageObj.userObjName").value(appUser1.getName()))
+                .andExpect(jsonPath("$.notification.[1].messageObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.notification.[1].time").value(appUser.getNotification().get(1).getTime()))
                 .andExpect(jsonPath("$.notification.[2].content").value(appUser.getNotification().get(2).getContent()))
-                .andExpect(jsonPath("$.notification.[2].user").value(appUser.getNotification().get(2).getUser()))
+                .andExpect(jsonPath("$.notification.[2].messageObj.userObjEmail").value(appUser1.getEmail()))
+                .andExpect(jsonPath("$.notification.[2].messageObj.userObjName").value(appUser1.getName()))
+                .andExpect(jsonPath("$.notification.[2].messageObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.notification.[2].time").value(appUser.getNotification().get(2).getTime()));
 
         if(!userRepository.findById(appUser.getId()).get().getUnreadMessageCount().equals(0)){
@@ -98,7 +101,7 @@ public class NotificationTest {
         }
     }
 
-    @AfterEach
+//    @AfterEach
     public void clear(){
         userRepository.deleteAll();
     }

@@ -50,8 +50,8 @@ public class NotificationService {
 
     public MessageReturn getUserInfo(Message message) {
         MessageReturn messageReturn = new MessageReturn();
-        messageReturn.setContent(messageReturn.getContent());
-        messageReturn.setTime(messageReturn.getTime());
+        messageReturn.setContent(message.getContent());
+        messageReturn.setTime(message.getTime());
 
         UserObj userObj = appUserService.getUserInfo(message.getUser());
         messageReturn.setMessageObj(userObj);
