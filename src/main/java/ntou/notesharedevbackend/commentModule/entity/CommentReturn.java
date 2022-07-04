@@ -17,9 +17,8 @@ public class CommentReturn {
     private Date date;
     private ArrayList<String> picURL; //截圖後引用筆記
     private Boolean isBest; // 是不是最佳解
-    private String userObjEmail;
-    private String userObjName;
-    private String userObjAvatar;
+
+    private UserObj userObj;
     private ArrayList<UserObj> likerUserObj;
 
     public CommentReturn() {
@@ -81,28 +80,12 @@ public class CommentReturn {
         isBest = best;
     }
 
-    public String getUserObjEmail() {
-        return userObjEmail;
+    public UserObj getUserObj() {
+        return userObj;
     }
 
-    public void setUserObjEmail(String userObjEmail) {
-        this.userObjEmail = userObjEmail;
-    }
-
-    public String getUserObjName() {
-        return userObjName;
-    }
-
-    public void setUserObjName(String userObjName) {
-        this.userObjName = userObjName;
-    }
-
-    public String getUserObjAvatar() {
-        return userObjAvatar;
-    }
-
-    public void setUserObjAvatar(String userObjAvatar) {
-        this.userObjAvatar = userObjAvatar;
+    public void setUserObj(UserObj userObj) {
+        this.userObj = userObj;
     }
 
     public ArrayList<UserObj> getLikerUserObj() {

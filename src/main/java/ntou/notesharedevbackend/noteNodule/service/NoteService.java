@@ -2,7 +2,8 @@ package ntou.notesharedevbackend.noteNodule.service;
 
 import ntou.notesharedevbackend.coinModule.entity.Coin;
 import ntou.notesharedevbackend.coinModule.service.CoinService;
-import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.commentModule.entity.*;
+import ntou.notesharedevbackend.commentModule.service.*;
 import ntou.notesharedevbackend.exception.BadRequestException;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
@@ -35,6 +36,9 @@ public class NoteService {
     @Autowired
     @Lazy
     private FolderService folderService;
+    @Autowired
+    @Lazy(value = true)
+    private CommentService commentService;
 
 
     public Note getNote(String id){
@@ -307,7 +311,14 @@ public class NoteService {
         noteReturn.setUnlockCount(note.getUnlockCount());
         noteReturn.setDownloadable(note.getDownloadable());
         noteReturn.setCommentCount(note.getCommentCount());
-        noteReturn.setComments(note.getComments());
+
+        ArrayList<CommentReturn> commentReturnArrayList = new ArrayList<>();
+        for(Comment comment : note.getComments()){
+            CommentReturn commentReturn = commentService.getUserInfo(comment);
+            commentReturnArrayList.add(commentReturn);
+        }
+        noteReturn.setComments(commentReturnArrayList);
+
         noteReturn.setPrice(note.getPrice());
         noteReturn.setPublic(note.getPublic());
         noteReturn.setSubmit(note.getSubmit());

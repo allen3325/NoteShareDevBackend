@@ -1,7 +1,7 @@
 package ntou.notesharedevbackend.noteNodule.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.commentModule.entity.*;
 import ntou.notesharedevbackend.userModule.entity.UserObj;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class NoteReturn {
     private Integer unlockCount;
     private Boolean downloadable;
     private Integer commentCount;
-    private ArrayList<Comment> comments;
+    private ArrayList<CommentReturn> comments;
     private Integer price;
     private Boolean isPublic; // 筆記是否公開
     private Boolean isSubmit; // 用於懸賞區投稿
@@ -149,11 +149,11 @@ public class NoteReturn {
         this.commentCount = commentCount;
     }
 
-    public ArrayList<Comment> getComments() {
+    public ArrayList<CommentReturn> getComments() {
         return comments;
     }
 
-    public void setComments(ArrayList<Comment> comments) {
+    public void setComments(ArrayList<CommentReturn> comments) {
         this.comments = comments;
     }
 

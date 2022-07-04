@@ -2,7 +2,8 @@ package ntou.notesharedevbackend.postModule.service;
 
 import ntou.notesharedevbackend.coinModule.entity.Coin;
 import ntou.notesharedevbackend.coinModule.service.CoinService;
-import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.commentModule.entity.*;
+import ntou.notesharedevbackend.commentModule.service.*;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.postModule.entity.*;
@@ -36,6 +37,9 @@ public class PostService {
     @Autowired
     @Lazy(value = true)
     private CoinService coinService;
+    @Autowired
+    @Lazy(value = true)
+    private CommentService commentService;
 
     public Post[] getAllTypeOfPost(String postType) {
         List<Post> postList = postRepository.findAllByType(postType);
@@ -473,7 +477,14 @@ public class PostService {
         postReturn.setReferencePrice(post.getReferencePrice());
         postReturn.setReferenceNumber(post.getReferenceNumber());
         postReturn.setPublic(post.getPublic());
-        postReturn.setComments(post.getComments());
+
+        ArrayList<CommentReturn> commentReturnArrayList = new ArrayList<>();
+        for(Comment comment : post.getComments()){
+            CommentReturn commentReturn = commentService.getUserInfo(comment);
+            commentReturnArrayList.add(commentReturn);
+        }
+        postReturn.setComments(commentReturnArrayList);
+
         postReturn.setCommentCount(post.getCommentCount());
         postReturn.setAnswers(post.getAnswers());
         postReturn.setPublishDate(post.getPublishDate());

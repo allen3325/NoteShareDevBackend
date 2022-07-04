@@ -25,7 +25,7 @@ public class PostReturn {
     private Integer referencePrice; //參考解金額
     private Integer referenceNumber; //剩餘參考解數目
     private Boolean isPublic;
-    private ArrayList<Comment> comments;
+    private ArrayList<CommentReturn> comments;
     private Integer commentCount;
     private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID，放入對應QA答案
     //    private ArrayList<String> wantEnterUsersEmail;
@@ -143,11 +143,11 @@ public class PostReturn {
         isPublic = aPublic;
     }
 
-    public ArrayList<Comment> getComments() {
+    public ArrayList<CommentReturn> getComments() {
         return comments;
     }
 
-    public void setComments(ArrayList<Comment> comments) {
+    public void setComments(ArrayList<CommentReturn> comments) {
         this.comments = comments;
     }
 

@@ -184,9 +184,7 @@ public class CommentService {
         commentReturn.setPicURL(comment.getPicURL());
         commentReturn.setBest(comment.getBest());
         UserObj userObj = appUserService.getUserInfo(comment.getEmail());
-        commentReturn.setUserObjEmail(userObj.getUserObjEmail());
-        commentReturn.setUserObjName(userObj.getUserObjName());
-        commentReturn.setUserObjAvatar(userObj.getUserObjAvatar());
+        commentReturn.setUserObj(userObj);
         ArrayList<UserObj> likerUserObj = new ArrayList<>();
         for(String likerEmail : comment.getLiker()){
             UserObj userObj1 = appUserService.getUserInfo(likerEmail);
