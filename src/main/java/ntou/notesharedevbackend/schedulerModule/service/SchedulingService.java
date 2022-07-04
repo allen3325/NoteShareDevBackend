@@ -59,7 +59,7 @@ public class SchedulingService {
             //dateOf(hour,minute,second,day,month,year)
             SimpleTrigger trigger = (SimpleTrigger) newTrigger()
                     .withIdentity(request.getId())
-                    .startAt(DateBuilder.dateOf(23, 55,0,request.getDay(),request.getMonth(),request.getYear()))
+                    .startAt(DateBuilder.dateOf(0, 0,0,request.getDay(),request.getMonth(),request.getYear()))
                     .build();
             Scheduler scheduler = quartzConfig.schedulerFactoryBean().getScheduler();
             scheduler.scheduleJob(jobDetail,trigger);
