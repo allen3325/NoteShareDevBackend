@@ -303,7 +303,6 @@ public class NoteService {
         noteReturn.setDepartment(note.getDepartment());
         noteReturn.setSubject(note.getSubject());
         noteReturn.setTitle(note.getTitle());
-        noteReturn.setManagerEmail(note.getManagerEmail());
         noteReturn.setProfessor(note.getProfessor());
         noteReturn.setSchool(note.getSchool());
         noteReturn.setLikeCount(note.getLikeCount());
@@ -332,6 +331,7 @@ public class NoteService {
         noteReturn.setPublishDate(note.getPublishDate());
         noteReturn.setDescription(note.getDescription());
         noteReturn.setHeaderUserObj(appUserService.getUserInfo(note.getHeaderEmail()));
+        noteReturn.setManagerUserObj(appUserService.getUserInfo(note.getManagerEmail()));
         ArrayList<UserObj> authorUserObj = new ArrayList<>();
         for(String authorEmail : note.getAuthorEmail()){
             UserObj userObj = appUserService.getUserInfo(authorEmail);

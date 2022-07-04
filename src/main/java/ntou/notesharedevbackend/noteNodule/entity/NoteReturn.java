@@ -13,7 +13,6 @@ public class NoteReturn {
     private String department;
     private String subject;
     private String title; // title
-    private String managerEmail; // 共筆用
     private String professor;
     private String school;
     private Integer likeCount;
@@ -37,6 +36,7 @@ public class NoteReturn {
     private String description;
 
     private UserObj headerUserObj;
+    private UserObj managerUserObj;
     private ArrayList<UserObj> authorUserObj;
     private ArrayList<UserObj> likerUserObj;
     private ArrayList<UserObj> buyerUserObj;
@@ -85,13 +85,6 @@ public class NoteReturn {
         this.title = title;
     }
 
-    public String getManagerEmail() {
-        return managerEmail;
-    }
-
-    public void setManagerEmail(String managerEmail) {
-        this.managerEmail = managerEmail;
-    }
 
     public String getProfessor() {
         return professor;
@@ -259,6 +252,14 @@ public class NoteReturn {
 
     public void setHeaderUserObj(UserObj headerUserObj) {
         this.headerUserObj = headerUserObj;
+    }
+
+    public UserObj getManagerUserObj() {
+        return managerUserObj;
+    }
+
+    public void setManagerUserObj(UserObj managerUserObj) {
+        this.managerUserObj = managerUserObj;
     }
 
     public ArrayList<UserObj> getAuthorUserObj() {
