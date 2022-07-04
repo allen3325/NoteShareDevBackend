@@ -2,6 +2,7 @@ package ntou.notesharedevbackend.searchModule.entity;
 
 import com.fasterxml.jackson.annotation.*;
 import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.userModule.entity.*;
 
 import java.util.*;
 
@@ -12,8 +13,6 @@ public class NoteBasicReturn {
     private String department;
     private String subject;
     private String title; // title
-    private String email; // 建立筆記者
-    private ArrayList<String> author; // 所有作者
     private String professor;
     private String school;
     private Integer likeCount;
@@ -27,14 +26,15 @@ public class NoteBasicReturn {
     private Date publishDate; // publish 後更新，預設為 NULL
     private String description;
 
+    private UserObj headerEmailUserObj;
+    private ArrayList<UserObj> authorEmailUserObj;
+
     public NoteBasicReturn (Note note) {
         this.id = note.getId();
         this.type = note.getType();
         this.department = note.getDepartment();
         this.subject = note.getSubject();
         this.title = note.getTitle();
-        this.email = note.getHeaderEmail();
-        this.author = note.getAuthorName();
         this.professor = note.getProfessor();
         this.school = note.getSchool();
         this.likeCount = note.getLikeCount();
@@ -86,22 +86,6 @@ public class NoteBasicReturn {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public ArrayList<String> getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(ArrayList<String> author) {
-        this.author = author;
     }
 
     public String getProfessor() {
@@ -190,5 +174,21 @@ public class NoteBasicReturn {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public UserObj getHeaderEmailUserObj() {
+        return headerEmailUserObj;
+    }
+
+    public void setHeaderEmailUserObj(UserObj headerEmailUserObj) {
+        this.headerEmailUserObj = headerEmailUserObj;
+    }
+
+    public ArrayList<UserObj> getAuthorEmailUserObj() {
+        return authorEmailUserObj;
+    }
+
+    public void setAuthorEmailUserObj(ArrayList<UserObj> authorEmailUserObj) {
+        this.authorEmailUserObj = authorEmailUserObj;
     }
 }
