@@ -490,7 +490,16 @@ public class PostService {
         postReturn.setPublishDate(post.getPublishDate());
         postReturn.setVote(post.getVote());
         postReturn.setCollabNoteAuthorNumber(post.getCollabNoteAuthorNumber());
-        postReturn.setCollabApply(post.getCollabApply());
+        ArrayList<ApplyReturn> collabApplyArrayList =new ArrayList<>();
+        if(post.getCollabApply()!=null){
+            for(Apply apply : post.getCollabApply()){
+                ApplyReturn applyReturn = new ApplyReturn();
+                applyReturn.setUserObj(appUserService.getUserInfo(apply.getWantEnterUsersEmail()));
+                applyReturn.setCommentFromApplicant(apply.getCommentFromApplicant());
+                collabApplyArrayList.add(applyReturn);
+            }
+        }
+        postReturn.setCollabApply(collabApplyArrayList);
 
         UserObj userObj = appUserService.getUserInfo(post.getAuthor());
         postReturn.setAuthorUserObj(userObj);

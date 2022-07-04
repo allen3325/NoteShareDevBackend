@@ -34,7 +34,7 @@ public class PostReturn {
     private Date publishDate;
     private ArrayList<Vote> vote = new ArrayList<Vote>();
     private Integer collabNoteAuthorNumber;
-    private ArrayList<Apply> collabApply;
+    private ArrayList<ApplyReturn> collabApply;
 
     private UserObj authorUserObj;
     private ArrayList<UserObj> emailUserObj;
@@ -191,11 +191,11 @@ public class PostReturn {
         this.collabNoteAuthorNumber = collabNoteAuthorNumber;
     }
 
-    public ArrayList<Apply> getCollabApply() {
+    public ArrayList<ApplyReturn> getCollabApply() {
         return collabApply;
     }
 
-    public void setCollabApply(ArrayList<Apply> collabApply) {
+    public void setCollabApply(ArrayList<ApplyReturn> collabApply) {
         this.collabApply = collabApply;
     }
 
