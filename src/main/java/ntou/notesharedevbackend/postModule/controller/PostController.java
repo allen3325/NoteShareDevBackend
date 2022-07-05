@@ -232,4 +232,16 @@ public class PostController {
         res.put("res", noteReturn);
         return ResponseEntity.status(201).body(res);
     }
+
+    @Operation(summary = "modify post archive status")
+    @PutMapping("/archive/{postID}")
+    public ResponseEntity<Object> modifyPostArchiveStatus(@PathVariable("postID") String postID) {
+        Map<String, String> res = new HashMap<>();
+        if (postService.archivePost(postID)) {
+            res.put("res", "Success");
+        } else {
+            res.put("res", "Fail");
+        }
+        return ResponseEntity.ok().body(res);
+    }
 }

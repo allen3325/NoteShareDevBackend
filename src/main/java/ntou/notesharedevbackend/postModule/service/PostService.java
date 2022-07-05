@@ -78,6 +78,8 @@ public class PostService {
         post.setCollabApply(new ArrayList<Apply>());
         post.setPublishDate(request.getPublishDate());
         post.setVote(new ArrayList<Vote>());
+        post.setArchive(false);
+        post.setApplyEmail(new ArrayList<String>());
         if (request.getType().equals("collaboration")) {//若為共筆貼文，須建立共筆筆記
             post.setCollabNoteAuthorNumber(post.getEmail().size());
             Note note = new Note();
@@ -131,7 +133,8 @@ public class PostService {
         post.setPublishDate(request.getDate());
         post.setVote(request.getVote());
         post.setCollabNoteAuthorNumber(post.getEmail().size());
-
+        post.setApplyEmail(request.getApplyEmail());
+        post.setArchive(request.getArchive());
         return postRepository.save(post);
     }
 
@@ -183,7 +186,7 @@ public class PostService {
         allApply.add(applicant);
         // update apply in post
         post.setCollabApply(allApply);
-
+        post.getApplyEmail().add(applicant.getWantEnterUsersEmail());
         replacePost(post.getId(), post);
 //        postRepository.save(post);
     }
@@ -512,6 +515,13 @@ public class PostService {
             emailUserObj.add(userInfo);
         }
         postReturn.setEmailUserObj(emailUserObj);
+        postReturn.setArchive(post.getArchive());
+        ArrayList<UserObj> applyUserObj = new ArrayList<>();
+        for (String applyEmail : post.getApplyEmail()) {
+            UserObj userObjInfo = appUserService.getUserInfo(applyEmail);
+            applyUserObj.add(userObjInfo);
+        }
+        postReturn.setApplyUserObj(applyUserObj);
 
         return postReturn;
     }
@@ -520,4 +530,35 @@ public class PostService {
         Note note = noteService.createRewardNote(postID, email, request);
         return noteService.getUserinfo(note);
     }
+
+    public Boolean archivePost(String postID) {
+        Post post = getPostById(postID);
+        if (!post.getArchive()) {//想封存
+            if (post.getType().equals("reward")) {//懸賞判斷有無best answer
+                if (post.getAnswers().size() != 0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
+                    post.setArchive(!post.getArchive());
+                    return true;
+                } else {
+                    System.out.println("can't change publish state before you got best answer.");
+                    return false;
+                }
+            } else if (post.getType().equals("QA")) {//QA判斷有無best answer
+                if (QAhaveBestAnswer(post.getComments())) {
+                    post.setArchive(!post.getArchive());
+                    return true;
+                } else {
+                    System.out.println("can't change publish state before you got best answer.");
+                    return false;
+                }
+            } else if (post.getType().equals("collaboration")) {//共筆無條件
+                post.setArchive(!post.getArchive());
+                return true;
+            }
+        } else {//想解除封存
+            post.setArchive(!post.getArchive());
+            return true;
+        }
+        return true;
+    }
+
 }
