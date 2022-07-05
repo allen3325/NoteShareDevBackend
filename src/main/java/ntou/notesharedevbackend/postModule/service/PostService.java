@@ -140,22 +140,23 @@ public class PostService {
 
     public Post modifyPublishStatus(String id) {
         Post post = getPostById(id);
-        if (post.getPublic()) {
-            if (post.getType().equals("reward")) {
-                if (noteService.rewardNoteHaveAnswer(post.getAnswers())) {
+        if (post.getPublic()) {//想改成非公開
+            if (post.getType().equals("reward")) {//懸賞判斷有無best answer
+                if (post.getAnswers().size()!=0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
                     post.setPublic(!post.getPublic());
                 } else {
                     System.out.println("can't change publish state before you got best answer.");
                     return null;
                 }
-            } else if (post.getType().equals("QA")) {
+            } else if (post.getType().equals("QA")) {//QA判斷有無best answer
                 if (QAhaveBestAnswer(post.getComments())) {
                     post.setPublic(!post.getPublic());
                 } else {
                     System.out.println("can't change publish state before you got best answer.");
                     return null;
                 }
-
+            }  else if(post.getType().equals("collaboration")){//共筆無條件
+                post.setPublic(!post.getPublic());
             }
         } else {
             post.setPublic(!post.getPublic());

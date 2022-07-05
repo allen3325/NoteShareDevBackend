@@ -288,9 +288,9 @@ public class NoteService {
     }
 
     public boolean rewardNoteHaveAnswer (ArrayList<String> answers){
-        for(String s : answers){
-            if(getNote(s).getBest()!=null){
-                if(getNote(s).getBest()) return true;
+        for(String noteID : answers){
+            if(getNote(noteID).getBest()!=null && getNote(noteID).getBest()){
+                    return true;
             }
         }
         return false;
