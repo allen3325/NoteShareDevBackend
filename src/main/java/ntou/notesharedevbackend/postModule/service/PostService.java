@@ -366,17 +366,15 @@ public class PostService {
         return false;
     }
 
-    public boolean rewardChooseBestAnswer(String postID, String answerID, String email) {
+    public boolean rewardChooseBestAnswer(String postID, String answerID) {
         Post post = getPostById(postID);
+        AppUser appUser = appUserService.getUserByEmail(post.getAuthor());
         String bestPrice = String.valueOf(post.getBestPrice());
-        if (post.getEmail().contains(email)) {//確認為貼文作者
-            Coin postAuthorCoin = new Coin();
-            postAuthorCoin.setCoin('-' + bestPrice);
-            coinService.changeCoin(email, postAuthorCoin);
-            noteService.rewardNoteBestAnswer(answerID, email, bestPrice);
-            return true;
-        }
-        return false;
+        Coin postAuthorCoin = new Coin();
+        postAuthorCoin.setCoin('-' + bestPrice);
+        coinService.changeCoin(appUser.getEmail(), postAuthorCoin);
+        noteService.rewardNoteBestAnswer(answerID, appUser.getEmail(), bestPrice);
+        return true;
     }
 
     public boolean QAChooseBestAnswer(String postID, String commentID) {
@@ -408,19 +406,18 @@ public class PostService {
         return true;
     }
 
-    public boolean rewardChooseReferenceAnswer(String postID, String answerID, String email) {
+    public boolean rewardChooseReferenceAnswer(String postID, String answerID) {
         Post post = getPostById(postID);
+        AppUser appUser = appUserService.getUserByEmail(post.getAuthor());
         String referencePrice = String.valueOf(post.getReferencePrice());
-        if (post.getEmail().contains(email)) {//確認為貼文作者
-            if (post.getReferenceNumber() > 0) {
-                post.setReferenceNumber(post.getReferenceNumber() - 1);
-                replacePost(postID, post);
-                Coin postAuthorCoin = new Coin();
-                postAuthorCoin.setCoin('-' + referencePrice);
-                coinService.changeCoin(email, postAuthorCoin);//作者扣點
-                noteService.rewardNoteReferenceAnswer(answerID, email, referencePrice);
-                return true;
-            } else return false;
+        if (post.getReferenceNumber() > 0) {
+            post.setReferenceNumber(post.getReferenceNumber() - 1);
+            replacePost(postID, post);
+            Coin postAuthorCoin = new Coin();
+            postAuthorCoin.setCoin('-' + referencePrice);
+            coinService.changeCoin(appUser.getEmail(), postAuthorCoin);//作者扣點
+            noteService.rewardNoteReferenceAnswer(answerID, appUser.getEmail(), referencePrice);
+            return true;
         }
         return false;
     }
@@ -537,6 +534,7 @@ public class PostService {
             if (post.getType().equals("reward")) {//懸賞判斷有無best answer
                 if (post.getAnswers().size() != 0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
                     post.setArchive(!post.getArchive());
+                    replacePost(postID, post);
                     return true;
                 } else {
                     System.out.println("can't change publish state before you got best answer.");
@@ -545,6 +543,7 @@ public class PostService {
             } else if (post.getType().equals("QA")) {//QA判斷有無best answer
                 if (QAhaveBestAnswer(post.getComments())) {
                     post.setArchive(!post.getArchive());
+                    replacePost(postID, post);
                     return true;
                 } else {
                     System.out.println("can't change publish state before you got best answer.");
@@ -552,10 +551,12 @@ public class PostService {
                 }
             } else if (post.getType().equals("collaboration")) {//共筆無條件
                 post.setArchive(!post.getArchive());
+                replacePost(postID, post);
                 return true;
             }
         } else {//想解除封存
             post.setArchive(!post.getArchive());
+            replacePost(postID, post);
             return true;
         }
         return true;

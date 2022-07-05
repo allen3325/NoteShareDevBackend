@@ -176,9 +176,9 @@ public class PostController {
     @Operation(summary = "reward choose best answer(note).", description = "填入postID,最佳解筆記ID")
     @PutMapping("/reward/best/{postID}/{answerID}")
     public ResponseEntity<Object> rewardChooseBestAnswer(@PathVariable("postID") String postID,
-                                                         @PathVariable("answerID") String answerID, @RequestBody String email) {
+                                                         @PathVariable("answerID") String answerID) {
         Map<String, Object> res = new HashMap<>();
-        if (postService.rewardChooseBestAnswer(postID, answerID, email)) {
+        if (postService.rewardChooseBestAnswer(postID, answerID)) {
             res.put("msg", "Success");
             return ResponseEntity.ok(res);
         } else {
@@ -203,10 +203,10 @@ public class PostController {
 
     @Operation(summary = "reward choose reference answer.", description = "填入postID,最佳解留言ID")
     @PutMapping("/reward/reference/{postID}/{answerID}")
-    public ResponseEntity<Object> QAChooseReferenceAnswer(@PathVariable("postID") String postID,
-                                                          @PathVariable("answerID") String answerID, @RequestBody String email) {
+    public ResponseEntity<Object> RewardChooseReferenceAnswer(@PathVariable("postID") String postID,
+                                                              @PathVariable("answerID") String answerID) {
         Map<String, Object> res = new HashMap<>();
-        if (postService.rewardChooseReferenceAnswer(postID, answerID, email)) {
+        if (postService.rewardChooseReferenceAnswer(postID, answerID)) {
             res.put("msg", "Success");
             return ResponseEntity.ok(res);
         } else {
