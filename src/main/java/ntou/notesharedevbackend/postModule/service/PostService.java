@@ -5,6 +5,7 @@ import ntou.notesharedevbackend.coinModule.service.CoinService;
 import ntou.notesharedevbackend.commentModule.entity.*;
 import ntou.notesharedevbackend.commentModule.service.*;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.exception.NotFoundException;
@@ -513,5 +514,10 @@ public class PostService {
         postReturn.setEmailUserObj(emailUserObj);
 
         return postReturn;
+    }
+
+    public NoteReturn createRewardNote(String postID, String email, Note request) {
+        Note note = noteService.createRewardNote(postID, email, request);
+        return noteService.getUserinfo(note);
     }
 }

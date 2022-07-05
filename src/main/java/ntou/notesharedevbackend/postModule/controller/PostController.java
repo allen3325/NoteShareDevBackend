@@ -2,6 +2,8 @@ package ntou.notesharedevbackend.postModule.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.exception.NotFoundException;
+import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.userModule.entity.*;
@@ -58,7 +60,7 @@ public class PostController {
     @Operation(summary = "get user's all post by type", description = "type為(QA, reward, collaboration)")
     @GetMapping("/{email}/{postType}")
     public ResponseEntity<Object> getUserAllPostByType(@PathVariable("email") String email, @PathVariable("postType") String postType) {
-        ArrayList<Post> allPost = postService.getUserAllPostByType(email,postType);
+        ArrayList<Post> allPost = postService.getUserAllPostByType(email, postType);
         ArrayList<PostReturn> postReturns = new ArrayList<>();
         for (Post post : allPost) {
             PostReturn postReturn = postService.getUserInfo(post);
@@ -220,5 +222,14 @@ public class PostController {
         Map<String, Object> res = new HashMap<>();
         res.put("msg", "Success");
         return ResponseEntity.status(204).body(res);
+    }
+
+    @Operation(summary = "create reward note", description = "postID為要投稿的reward post ID，email要放投稿人email")
+    @PostMapping(value = "/reward/{postID}/{email}")
+    public ResponseEntity<Object> createRewardNote(@PathVariable("postID") String postID, @PathVariable("email") String email, @RequestBody Note request) {
+        NoteReturn noteReturn = postService.createRewardNote(postID, email, request);
+        Map<String, Object> res = new HashMap<>();
+        res.put("res", noteReturn);
+        return ResponseEntity.status(201).body(res);
     }
 }

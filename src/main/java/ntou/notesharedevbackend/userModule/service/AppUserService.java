@@ -28,32 +28,32 @@ public class AppUserService {
     @Lazy(value = true)
     private FolderService folderService;
 
-    public AppUserService(UserRepository userRepository){
+    public AppUserService(UserRepository userRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    public boolean hasExitUserByEmail(String email){
+    public boolean hasExitUserByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
 
-    public AppUser getUserById(String id){
+    public AppUser getUserById(String id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Can't find user."));
     }
 
-    public AppUser getUserByEmail(String email){
+    public AppUser getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    public AppUser[] getAllUsers(){
+    public AppUser[] getAllUsers() {
         List<AppUser> tmp = userRepository.findAll();
         return tmp.toArray(new AppUser[0]);
     }
 
     public AppUser createUser(AppUser request) {
         // check email has existed
-        if(userRepository.existsByEmail(request.getEmail())){
+        if (userRepository.existsByEmail(request.getEmail())) {
             return null;
         }
         AppUser appUser = new AppUser();
@@ -78,19 +78,21 @@ public class AppUserService {
         createFolderAtRoot(appUser.getEmail(), "Buy");
         createFolderAtRoot(appUser.getEmail(), "Favorite");
         createFolderAtRoot(appUser.getEmail(), "Folder");
+        createFolderAtRoot(appUser.getEmail(), "Temp Reward Note");//放未提交的reward note
         appUser = getUserById(appUser.getId());
         return appUser;
     }
-    public void createFolderAtRoot(String email,String name){
+
+    public void createFolderAtRoot(String email, String name) {
         FolderRequest folder = new FolderRequest();
         folder.setParent(null);
         folder.setFolderName(name);
         folder.setPublic(false);
-        folder.setPath("/"+name);
-        folderService.createFolder(email,folder);
+        folder.setPath("/" + name);
+        folderService.createFolder(email, folder);
     }
 
-    public AppUser replaceUser(AppUser request){
+    public AppUser replaceUser(AppUser request) {
         AppUser user = new AppUser();
 
         user.setId(request.getId());
@@ -132,11 +134,11 @@ public class AppUserService {
         replaceUser(user);
     }
 
-    public static String randomCode(){
+    public static String randomCode() {
         char[] chars = new char[4];
         Random rnd = new Random();
-        for(int i = 0; i < 4; i++){
-            chars[i]=(char)('0'+rnd.nextInt(10));
+        for (int i = 0; i < 4; i++) {
+            chars[i] = (char) ('0' + rnd.nextInt(10));
         }
         return new String(chars);
     }

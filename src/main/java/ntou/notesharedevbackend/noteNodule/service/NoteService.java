@@ -9,6 +9,7 @@ import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.PostRepository;
@@ -145,15 +146,12 @@ public class NoteService {
 //        noteRepository.save(note);
     }
 
-    public Note publishOrSubmit(String noteID) {
+    public Note publishNote(String noteID) {
         Note note = getNote(noteID);
-        if (note.getType().equals("reward")) {
-            if (!note.getSubmit()) {
-                note.setSubmit(true);
-                //TODO :移出rewardFolder
-            }
-        } else {
+        if (note.getType().equals("normal")) {
             note.setPublic(true);
+        } else {//collaboration
+            note.setPublic(!note.getPublic());
         }
         // update publish date
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
@@ -161,6 +159,22 @@ public class NoteService {
         // update note
         return replaceNote(note, note.getId());
 //        noteRepository.save(note);
+    }
+
+    public Note submitRewardNote(String noteID) {
+        Note note = getNote(noteID);
+        note.setSubmit(true);
+        Note newNote = replaceNote(note, noteID);
+        AppUser appUser = appUserService.getUserByEmail(note.getHeaderEmail());
+        //remove from folder
+        Folder tempRewardNoteFolder = folderService.getTempRewardNoteFolder(appUser.getEmail());
+        tempRewardNoteFolder.getNotes().remove(noteID);
+        folderService.replaceFolder(tempRewardNoteFolder);
+
+        Post post = postService.getPostById(note.getPostID());
+        post.getAnswers().add(noteID);
+        postService.replacePost(post.getId(), post);
+        return newNote;
     }
 
     public void rewardNoteBestAnswer(String noteID, String email, String bestPrice) {
@@ -376,5 +390,15 @@ public class NoteService {
         oldVersionContent.set(version, versionContent);
         note.setVersion(oldVersionContent);
         return replaceNote(note, note.getId()).getVersion().get(version);
+    }
+
+    public Note createRewardNote(String postID, String email, Note request) {
+        Note note = createNote(request, email);
+        note.setPostID(postID);
+        Note newNote = replaceNote(note, note.getId());
+        AppUser appUser = appUserService.getUserByEmail(email);
+        Folder folder = folderService.getTempRewardNoteFolder(appUser.getEmail());
+        copyNoteToFolder(note.getId(), folder.getId());
+        return newNote;
     }
 }
