@@ -55,6 +55,7 @@ public class TriggerJob implements Job {
                     //需要同意大於不同意才算同意
                     if(v.getAgree().size()>v.getDisagree().size()) {//agree kick
                         noteService.kickUserFromCollaboration(post.getAnswers().get(0),v.getKickTarget());
+                        postService.kickUserFromCollaboration(post.getId(),v.getKickTarget());
                         v.setResult("agree kick");
                     } else {
                         v.setResult("disagree kick");
