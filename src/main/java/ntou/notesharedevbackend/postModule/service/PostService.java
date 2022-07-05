@@ -142,7 +142,7 @@ public class PostService {
         Post post = getPostById(id);
         if (post.getPublic()) {//想改成非公開
             if (post.getType().equals("reward")) {//懸賞判斷有無best answer
-                if (post.getAnswers().size()!=0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
+                if (post.getAnswers().size() != 0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
                     post.setPublic(!post.getPublic());
                 } else {
                     System.out.println("can't change publish state before you got best answer.");
@@ -155,7 +155,7 @@ public class PostService {
                     System.out.println("can't change publish state before you got best answer.");
                     return null;
                 }
-            }  else if(post.getType().equals("collaboration")){//共筆無條件
+            } else if (post.getType().equals("collaboration")) {//共筆無條件
                 post.setPublic(!post.getPublic());
             }
         } else {
@@ -422,7 +422,7 @@ public class PostService {
     }
 
     public ArrayList<Post> getUserAllPostByType(String email, String postType) {
-        List<Post> allPost = postRepository.findAllByAuthorAndType(email, postType);
+        List<Post> allPost = postRepository.findAllByEmailContainingAndType(email, postType);
         return new ArrayList<Post>(allPost);
     }
 
@@ -439,28 +439,28 @@ public class PostService {
         Post post = getPostById(postID);
         ArrayList<Apply> allApply = post.getCollabApply();
         // find deny in all apply
-        for(Apply applicant : allApply){
-            if(applicant.getWantEnterUsersEmail().equals(denyEmail)){
+        for (Apply applicant : allApply) {
+            if (applicant.getWantEnterUsersEmail().equals(denyEmail)) {
                 // find deny
                 allApply.remove(applicant);
                 break;
             }
         }
         post.setCollabApply(allApply);
-        replacePost(postID,post);
+        replacePost(postID, post);
     }
 
-    public void deleteVote(String postID, String voteID){
+    public void deleteVote(String postID, String voteID) {
         Post post = getPostById(postID);
         ArrayList<Vote> voteArrayList = post.getVote();
-        for(Vote vote : voteArrayList){
-            if(vote.getId().equals(voteID)){
+        for (Vote vote : voteArrayList) {
+            if (vote.getId().equals(voteID)) {
                 voteArrayList.remove(vote);
                 break;
             }
         }
         post.setVote(voteArrayList);
-        replacePost(postID,post);
+        replacePost(postID, post);
     }
 
     public PostReturn getUserInfo(Post post) {
@@ -480,7 +480,7 @@ public class PostService {
         postReturn.setPublic(post.getPublic());
 
         ArrayList<CommentReturn> commentReturnArrayList = new ArrayList<>();
-        for(Comment comment : post.getComments()){
+        for (Comment comment : post.getComments()) {
             CommentReturn commentReturn = commentService.getUserInfo(comment);
             commentReturnArrayList.add(commentReturn);
         }
@@ -491,9 +491,9 @@ public class PostService {
         postReturn.setPublishDate(post.getPublishDate());
         postReturn.setVote(post.getVote());
         postReturn.setCollabNoteAuthorNumber(post.getCollabNoteAuthorNumber());
-        ArrayList<ApplyReturn> collabApplyArrayList =new ArrayList<>();
-        if(post.getCollabApply()!=null){
-            for(Apply apply : post.getCollabApply()){
+        ArrayList<ApplyReturn> collabApplyArrayList = new ArrayList<>();
+        if (post.getCollabApply() != null) {
+            for (Apply apply : post.getCollabApply()) {
                 ApplyReturn applyReturn = new ApplyReturn();
                 applyReturn.setUserObj(appUserService.getUserInfo(apply.getWantEnterUsersEmail()));
                 applyReturn.setCommentFromApplicant(apply.getCommentFromApplicant());
@@ -506,7 +506,7 @@ public class PostService {
         postReturn.setAuthorUserObj(userObj);
 
         ArrayList<UserObj> emailUserObj = new ArrayList<>();
-        for(String email : post.getEmail()){
+        for (String email : post.getEmail()) {
             UserObj userInfo = appUserService.getUserInfo(email);
             emailUserObj.add(userInfo);
         }
