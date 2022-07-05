@@ -366,4 +366,14 @@ public class NoteService {
         noteReturn.setContributorUserObj(contributorUserObj);
         return noteReturn;
     }
+
+    public VersionContent modifyVersionStatus(String noteID, Integer version) {
+        Note note = getNote(noteID);
+        ArrayList<VersionContent> oldVersionContent = note.getVersion();
+        VersionContent versionContent = oldVersionContent.get(version);
+        versionContent.setTemp(!versionContent.getTemp());//修改狀態
+        oldVersionContent.set(version,versionContent);
+        note.setVersion(oldVersionContent);
+        return replaceNote(note, note.getId()).getVersion().get(version);
+    }
 }

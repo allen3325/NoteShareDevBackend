@@ -157,4 +157,16 @@ public class NoteController {
         res.put("res",folder);
         return ResponseEntity.ok(res);
     }
+    //更改version isTemp 需要noteID versionID
+    @Operation(summary = "modify version publish status",description ="第一個ID為noteID，第二個是version編號0-5")
+    @PutMapping("/publish/{noteID}/{version}")
+    public ResponseEntity<Object> modifyVersionStatus(@PathVariable("noteID") String noteID,
+                                                      @PathVariable("version") Integer version){
+        VersionContent versionContent = noteService.modifyVersionStatus(noteID, version);
+
+        Map<String,Object> res = new HashMap<>();
+        res.put("res",versionContent);
+
+        return ResponseEntity.ok(res);
+    }
 }
