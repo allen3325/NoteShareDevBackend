@@ -166,7 +166,15 @@ public class NoteController {
 
         Map<String,Object> res = new HashMap<>();
         res.put("res",versionContent);
+        return ResponseEntity.ok(res);
+    }
 
+    @Operation(summary = "publish note")
+    @PutMapping("/publish/{noteID}")
+    public ResponseEntity<Object> publishNote(@PathVariable("noteID") String noteID){
+        noteService.publishOrSubmit(noteID);
+        Map<String,Object> res = new HashMap<>();
+        res.put("msg","Success");
         return ResponseEntity.ok(res);
     }
 }

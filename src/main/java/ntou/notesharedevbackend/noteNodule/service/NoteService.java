@@ -145,20 +145,21 @@ public class NoteService {
 //        noteRepository.save(note);
     }
 
-    public void publishOrSubmit(String noteID){
+    public Note publishOrSubmit(String noteID){
         Note note = getNote(noteID);
         if(note.getType().equals("reward")){
             if(!note.getSubmit()) {
                 note.setSubmit(true);
+                //TODO :移出rewardFolder
             }
         }else{
-            note.setPublic(!note.getPublic());
+            note.setPublic(true);
         }
         // update publish date
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
         note.setPublishDate(calendar.getTime());
         // update note
-        replaceNote(note,note.getId());
+        return replaceNote(note,note.getId());
 //        noteRepository.save(note);
     }
 
