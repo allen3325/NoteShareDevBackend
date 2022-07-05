@@ -173,7 +173,7 @@ public class NoteController {
     @PutMapping("/publish/{noteID}")
     public ResponseEntity<Object> publishNote(@PathVariable("noteID") String noteID){
         noteService.publishOrSubmit(noteID);
-        Map<String,Object> res = new HashMap<>();
+        Map<String, Object> res = new HashMap<>();
         res.put("msg","Success");
         return ResponseEntity.ok(res);
     }
