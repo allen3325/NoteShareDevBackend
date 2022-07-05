@@ -1,17 +1,14 @@
 package ntou.notesharedevbackend.userModule.controller;
 
 import io.swagger.v3.oas.annotations.*;
-import ntou.notesharedevbackend.userModule.entity.AppUser;
-import ntou.notesharedevbackend.userModule.entity.ModifyUser;
+import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -23,9 +20,14 @@ public class AppUserController {
     @GetMapping
     public ResponseEntity<Object> getAllUsers() {
         AppUser[] appUsers = appUserService.getAllUsers();
-        Map<String, Object> res = new HashMap<>();
+        List<AppUserReturn> appUserReturnList = new ArrayList<>();
+        for (AppUser appUser : appUsers) {
+            AppUserReturn appUserReturns = appUserService.getAppUserInfo(appUser);
+            appUserReturnList.add(appUserReturns);
+        }
 
-        res.put("res", appUsers);
+        Map<String, Object> res = new HashMap<>();
+        res.put("res", appUserReturnList);
         return ResponseEntity.ok(res);
     }
 
@@ -33,9 +35,10 @@ public class AppUserController {
     @GetMapping("/id/{id}")
     public ResponseEntity<Object> getUserByID(@PathVariable("id") String id) {
         AppUser appUser = appUserService.getUserById(id);
+        AppUserReturn appUserReturns = appUserService.getAppUserInfo(appUser);
         Map<String, Object> res = new HashMap<>();
 
-        res.put("res", appUser);
+        res.put("res", appUserReturns);
         return ResponseEntity.ok(res);
     }
 
@@ -43,9 +46,10 @@ public class AppUserController {
     @GetMapping("/{email}")
     public ResponseEntity<Object> getUserByEmail(@PathVariable("email") String email) {
         AppUser appUser = appUserService.getUserByEmail(email);
+        AppUserReturn appUserReturns = appUserService.getAppUserInfo(appUser);
         Map<String, Object> res = new HashMap<>();
 
-        res.put("res", appUser);
+        res.put("res", appUserReturns);
         return ResponseEntity.ok(res);
     }
 
@@ -103,9 +107,10 @@ public class AppUserController {
     @PutMapping("/head/{email}")
     public ResponseEntity<Object> updateUserHeadshotPhoto(@PathVariable("email") String email,  @RequestBody AppUser request) {
         AppUser appUser = appUserService.updateUserHeadshotPhoto(email,request.getHeadshotPhoto());
+        AppUserReturn appUserReturns = appUserService.getAppUserInfo(appUser);
         Map<String, Object> res = new HashMap<>();
 
-        res.put("res", appUser);
+        res.put("res", appUserReturns);
         return ResponseEntity.ok(res);
     }
 

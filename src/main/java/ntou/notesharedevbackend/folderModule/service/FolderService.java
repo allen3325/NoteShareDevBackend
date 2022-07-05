@@ -120,7 +120,7 @@ public class FolderService {
     public Folder createFolder(String email, FolderRequest request) {
         AppUser appUser = appUserService.getUserByEmail(email);
         Folder folder = new Folder(request);
-        folder.setCreatorName(email);
+        folder.setCreatorName(appUser.getName());
         ArrayList<String> tmpFoldersList = new ArrayList<>();
         // check users has folders
         if (appUser.getFolders() == null || appUser.getFolders().isEmpty()) {

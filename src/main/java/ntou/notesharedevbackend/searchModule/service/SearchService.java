@@ -266,7 +266,7 @@ public class SearchService {
         foldersLikePage = foldersLikePage.stream()
                 .filter((Folder n) -> n.getPublic().equals(true))
                 .collect(Collectors.toList());
-        if (!creator.equals(""))
+        if (creator != null || !creator.equals(""))
             foldersLikePage = foldersLikePage.stream()
                     .filter((Folder p) -> p.getCreatorName().contains(creator))
                     .collect(Collectors.toList());

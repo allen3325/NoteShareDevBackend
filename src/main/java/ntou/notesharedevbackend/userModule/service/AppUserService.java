@@ -182,4 +182,43 @@ public class AppUserService {
 
         return userObj;
     }
+
+    public AppUserReturn getAppUserInfo(AppUser appUser) {
+        AppUserReturn appUserReturn = new AppUserReturn();
+        appUserReturn.setId(appUser.getId());
+        appUserReturn.setEmail(appUser.getEmail());
+        appUserReturn.setName(appUser.getName());
+        appUserReturn.setPassword(appUser.getPassword());
+        appUserReturn.setVerifyCode(appUser.getVerifyCode());
+        appUserReturn.setAdmin(appUser.isAdmin());
+        appUserReturn.setActivate(appUser.isActivate());
+        appUserReturn.setProfile(appUser.getProfile());
+        appUserReturn.setStrength(appUser.getStrength());
+        appUserReturn.setFolders(appUser.getFolders());
+        appUserReturn.setCoin(appUser.getCoin());
+        appUserReturn.setHeadshotPhoto(appUser.getHeadshotPhoto());
+        appUserReturn.setNotification(appUser.getNotification());
+        appUserReturn.setUnreadMessageCount(appUser.getUnreadMessageCount());
+
+        ArrayList<UserObj> subscribe = new ArrayList<>();
+        for (String subscribeEmail : appUser.getSubscribe()) {
+            UserObj userObj = getUserInfo(subscribeEmail);
+            subscribe.add(userObj);
+        }
+        appUserReturn.setSubscribeUserObj(subscribe);
+        ArrayList<UserObj> bell = new ArrayList<>();
+        for (String bellEmail : appUser.getBell()) {
+            UserObj userObj = getUserInfo(bellEmail);
+            bell.add(userObj);
+        }
+        appUserReturn.setBellUserObj(bell);
+        ArrayList<UserObj> fans = new ArrayList<>();
+        for (String fansEmail : appUser.getFans()) {
+            UserObj userObj = getUserInfo(fansEmail);
+            fans.add(userObj);
+        }
+        appUserReturn.setFansUserObj(fans);
+
+        return appUserReturn;
+    }
 }
