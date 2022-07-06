@@ -38,6 +38,8 @@ public class PostReturn {
 
     private UserObj authorUserObj;
     private ArrayList<UserObj> emailUserObj;
+    private Boolean isArchive;
+    private ArrayList<UserObj> applyUserObj;
 
     public String getId() {
         return id;
@@ -213,5 +215,21 @@ public class PostReturn {
 
     public void setEmailUserObj(ArrayList<UserObj> emailUserObj) {
         this.emailUserObj = emailUserObj;
+    }
+
+    public Boolean getArchive() {
+        return isArchive;
+    }
+
+    public void setArchive(Boolean archive) {
+        isArchive = archive;
+    }
+
+    public ArrayList<UserObj> getApplyUserObj() {
+        return applyUserObj;
+    }
+
+    public void setApplyUserObj(ArrayList<UserObj> applyUserObj) {
+        this.applyUserObj = applyUserObj;
     }
 }

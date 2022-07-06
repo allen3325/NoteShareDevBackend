@@ -2,8 +2,6 @@ package ntou.notesharedevbackend.followTest;
 
 import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
-import org.checkerframework.checker.units.qual.A;
-import org.json.JSONArray;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,8 +14,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -39,7 +42,7 @@ public class FollowTest {
     private UserRepository userRepository;
 
     @BeforeEach
-    public void init(){
+    public void init() {
         httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         userRepository.deleteAll();
@@ -47,7 +50,7 @@ public class FollowTest {
         userRepository.insert(appUser);
     }
 
-    private AppUser createInitUser(){
+    private AppUser createInitUser() {
         AppUser appUser = new AppUser();
         appUser.setEmail("yitingwu.1030@gmail.com");
         // 張哲瑋：因為我把appUser的建構子修改過，以下空陣列為原本建構子裡做的事情
@@ -64,10 +67,10 @@ public class FollowTest {
         AppUser fans1 = createUser("alan@gmail.com", "Alan");
         fans1.getFans().add(appUser.getEmail());
         userRepository.insert(fans1);
-        AppUser fans2 = createUser("eva@gmail.com","Eva");
+        AppUser fans2 = createUser("eva@gmail.com", "Eva");
         fans2.getFans().add(appUser.getEmail());
         userRepository.insert(fans2);
-        AppUser fans3 = createUser("tara@gmail.com","Tara");
+        AppUser fans3 = createUser("tara@gmail.com", "Tara");
         userRepository.insert(fans3);
         ArrayList<String> fans = new ArrayList<>();
         fans.add(fans1.getEmail());
@@ -78,10 +81,14 @@ public class FollowTest {
         subscribers.add(fans1.getEmail());
         subscribers.add(fans2.getEmail());
         appUser.setSubscribe(subscribers);
+        ArrayList<String> bells = new ArrayList<>();
+        bells.add(fans1.getEmail());
+        bells.add(fans2.getEmail());
+        appUser.setBell(bells);
         return appUser;
     }
 
-    private AppUser createUser(String email, String name){
+    private AppUser createUser(String email, String name) {
         AppUser appUser = new AppUser();
         appUser.setEmail(email);
         appUser.setActivate(true);
@@ -97,14 +104,15 @@ public class FollowTest {
         appUser.setHeadshotPhoto(null);
         return appUser;
     }
+
     @Test
-    public void testGetAUserFollowersByEmail ()throws Exception{
+    public void testGetAUserFollowersByEmail() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         AppUser fans1 = userRepository.findByEmail(appUser.getFans().get(0));
         AppUser fans2 = userRepository.findByEmail(appUser.getFans().get(1));
         AppUser fans3 = userRepository.findByEmail(appUser.getFans().get(2));
         mockMvc.perform(get("/followers/yitingwu.1030@gmail.com")
-                .headers(httpHeaders))
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.followers.[0].userObjEmail").value(fans1.getEmail()))
                 .andExpect(jsonPath("$.followers.[0].userObjName").value(fans1.getName()))
@@ -118,12 +126,12 @@ public class FollowTest {
     }
 
     @Test
-    public void testGetAUserFollowingByEmail() throws Exception{
+    public void testGetAUserFollowingByEmail() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        AppUser following1= userRepository.findByEmail(appUser.getSubscribe().get(0));
+        AppUser following1 = userRepository.findByEmail(appUser.getSubscribe().get(0));
         AppUser following2 = userRepository.findByEmail(appUser.getSubscribe().get(1));
         mockMvc.perform(get("/following/yitingwu.1030@gmail.com")
-                .headers(httpHeaders))
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.following.[0].userObjEmail").value(following1.getEmail()))
                 .andExpect(jsonPath("$.following.[0].userObjName").value(following1.getName()))
@@ -134,40 +142,87 @@ public class FollowTest {
     }
 
     @Test
-    public void testFollow()throws Exception{
+    public void testFollow() throws Exception {
         AppUser follower = userRepository.findByEmail("yitingwu.1030@gmail.com");
         AppUser beFollowed = userRepository.findByEmail("tara@gmail.com");
-        mockMvc.perform(put("/follow/"+follower.getEmail()+"/"+beFollowed.getEmail())
-                .headers(httpHeaders))
+        mockMvc.perform(put("/follow/" + follower.getEmail() + "/" + beFollowed.getEmail())
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
         //檢查Follower's subscribe
-        if(!userRepository.findByEmail(follower.getEmail()).getSubscribe().contains(beFollowed.getEmail())){
+        if (!userRepository.findByEmail(follower.getEmail()).getSubscribe().contains(beFollowed.getEmail())) {
             throw new Exception();
         }
         //檢查BeFollowed's fans
-        if(!userRepository.findByEmail(beFollowed.getEmail()).getFans().contains(follower.getEmail())){
+        if (!userRepository.findByEmail(beFollowed.getEmail()).getFans().contains(follower.getEmail())) {
             throw new Exception();
         }
     }
 
     @Test
-    public void testUnFollow()throws Exception{
+    public void testUnFollow() throws Exception {
         AppUser wantUnFollow = userRepository.findByEmail("yitingwu.1030@gmail.com");
         AppUser beUnFollowed = userRepository.findByEmail("alan@gmail.com");
-        mockMvc.perform(put("/unfollow/"+wantUnFollow.getEmail()+"/"+ beUnFollowed.getEmail())
-                .headers(httpHeaders))
+        mockMvc.perform(put("/unfollow/" + wantUnFollow.getEmail() + "/" + beUnFollowed.getEmail())
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
-        if(userRepository.findByEmail(wantUnFollow.getEmail()).getSubscribe().contains(beUnFollowed.getEmail())){
+        if (userRepository.findByEmail(wantUnFollow.getEmail()).getSubscribe().contains(beUnFollowed.getEmail())) {
             throw new Exception();
         }
-        if(userRepository.findByEmail(beUnFollowed.getEmail()).getFans().contains(wantUnFollow.getEmail())){
+        if (userRepository.findByEmail(beUnFollowed.getEmail()).getFans().contains(wantUnFollow.getEmail())) {
             throw new Exception();
         }
     }
+
+    @Test
+    public void testBell() throws Exception {
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        AppUser beBell = userRepository.findByEmail("tara@gmail.com");
+        mockMvc.perform(put("/bell/" + appUser.getEmail() + "/" + beBell.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
+
+        if (!userRepository.findByEmail(appUser.getEmail()).getBell().contains(beBell.getEmail())) {
+            throw new Exception("Bell Test : user's bell does not update");
+        }
+    }
+
+    @Test
+    public void testCancelBell() throws Exception {
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        AppUser beCancelBell = userRepository.findByEmail("tara@gmail.com");
+        appUser.getBell().add(beCancelBell.getEmail());
+        userRepository.save(appUser);
+        mockMvc.perform(put("/cancelBell/" + appUser.getEmail() + "/" + beCancelBell.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
+
+        if (userRepository.findByEmail(appUser.getEmail()).getBell().contains(beCancelBell.getEmail())) {
+            throw new Exception("Bell Test : user's bell does not update");
+        }
+    }
+
+    @Test
+    public void testGetUserBellByEmail() throws Exception {
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        AppUser bell1 = userRepository.findByEmail(appUser.getBell().get(0));
+        AppUser bell2 = userRepository.findByEmail(appUser.getBell().get(1));
+        mockMvc.perform(get("/following/yitingwu.1030@gmail.com")
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.following.[0].userObjEmail").value(bell1.getEmail()))
+                .andExpect(jsonPath("$.following.[0].userObjName").value(bell1.getName()))
+                .andExpect(jsonPath("$.following.[0].userObjAvatar").value(bell1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.following.[1].userObjEmail").value(bell2.getEmail()))
+                .andExpect(jsonPath("$.following.[1].userObjName").value(bell2.getName()))
+                .andExpect(jsonPath("$.following.[1].userObjAvatar").value(bell2.getHeadshotPhoto()));
+    }
+
     @AfterEach
-    public  void clear(){
+    public void clear() {
         userRepository.deleteAll();
     }
 }

@@ -7,6 +7,7 @@ import ntou.notesharedevbackend.repository.FolderRepository;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
+import org.hamcrest.core.IsNull;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,8 +62,8 @@ public class FolderTest {
         JSONObject request = new JSONObject()
                 .put("folderName", "OS")
                 .put("public", true)
-                .put("path", "/Favorite/OS")
-                .put("parent", appUser.getFolders().get(1));//Favorite folder's id
+                .put("path", "/Folder/OS")
+                .put("parent", appUser.getFolders().get(2));//Folder Folder ID
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/folder/yitingwu.1030@gmail.com")
@@ -80,7 +81,7 @@ public class FolderTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         //檢查user+(檢查parentFolder)
-        String folderID = userRepository.findByEmail("yitingwu.1030@gmail.com").getFolders().get(2);
+        String folderID = userRepository.findByEmail("yitingwu.1030@gmail.com").getFolders().get(4);
         if (!folderRepository.findById(folderID).isPresent()) {
             throw new Exception("Create Folder: folder does not in DB");
         }
@@ -97,9 +98,13 @@ public class FolderTest {
         appUser.setPassword("1234");
         Folder buyFolder = createFolder("Buy", "/Buy", null);
         Folder favoriteFolder = createFolder("Favorite", "/Favorite", null);
+        Folder folderFolder = createFolder("Folder", "/Folder", null);
+        Folder tempRewardFolder = createFolder("Temp Reward Note", "/Temp Reward Note", null);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());
+        folderList.add(folderFolder.getId());
+        folderList.add(tempRewardFolder.getId());
         appUser.setFolders(folderList);
         return appUser;
     }
@@ -113,6 +118,7 @@ public class FolderTest {
         folder.setNotes(new ArrayList<String>());
         folder.setChildren(new ArrayList<String>());
         folder.setPublic(false);
+        folder.setCreatorName("Ting");
         folderRepository.insert(folder);
         return folder;
     }
@@ -151,16 +157,26 @@ public class FolderTest {
                 .andExpect(jsonPath("$.res.[1].parent").value(folderRepository.findById(appUser.getFolders().get(1)).get().getParent()))
                 .andExpect(jsonPath("$.res.[1].path").value("/Favorite"))
                 .andExpect(jsonPath("$.res.[1].public").value(false))
-                .andExpect(jsonPath("$.res.[2].id").value(folder3.getId()))
-                .andExpect(jsonPath("$.res.[2].folderName").value(folder3.getFolderName()))
-                .andExpect(jsonPath("$.res.[2].parent").value(folder3.getParent()))
-                .andExpect(jsonPath("$.res.[2].path").value(folder3.getPath()))
-                .andExpect(jsonPath("$.res.[2].public").value(folder3.getPublic()))
-                .andExpect(jsonPath("$.res.[3].id").value(folder33.getId()))
-                .andExpect(jsonPath("$.res.[3].folderName").value(folder33.getFolderName()))
-                .andExpect(jsonPath("$.res.[3].parent").value(folder33.getParent()))
-                .andExpect(jsonPath("$.res.[3].path").value(folder33.getPath()))
-                .andExpect(jsonPath("$.res.[3].public").value(folder33.getPublic()));
+                .andExpect(jsonPath("$.res.[2].id").value(appUser.getFolders().get(2)))
+                .andExpect(jsonPath("$.res.[2].folderName").value("Folder"))
+                .andExpect(jsonPath("$.res.[2].parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.[2].path").value("/Folder"))
+                .andExpect(jsonPath("$.res.[2].public").value(false))
+                .andExpect(jsonPath("$.res.[3].id").value(appUser.getFolders().get(3)))
+                .andExpect(jsonPath("$.res.[3].folderName").value("Temp Reward Note"))
+                .andExpect(jsonPath("$.res.[3].parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.[3].path").value("/Temp Reward Note"))
+                .andExpect(jsonPath("$.res.[3].public").value(false))
+                .andExpect(jsonPath("$.res.[4].id").value(folder3.getId()))
+                .andExpect(jsonPath("$.res.[4].folderName").value(folder3.getFolderName()))
+                .andExpect(jsonPath("$.res.[4].parent").value(folder3.getParent()))
+                .andExpect(jsonPath("$.res.[4].path").value(folder3.getPath()))
+                .andExpect(jsonPath("$.res.[4].public").value(folder3.getPublic()))
+                .andExpect(jsonPath("$.res.[5].id").value(folder33.getId()))
+                .andExpect(jsonPath("$.res.[5].folderName").value(folder33.getFolderName()))
+                .andExpect(jsonPath("$.res.[5].parent").value(folder33.getParent()))
+                .andExpect(jsonPath("$.res.[5].path").value(folder33.getPath()))
+                .andExpect(jsonPath("$.res.[5].public").value(folder33.getPublic()));
     }
 
     @Test
@@ -460,6 +476,81 @@ public class FolderTest {
         if (folderRepository.findById(appUser.getFolders().get(1)).get().getChildren().contains(folder.getId())) {
             throw new Exception("Delete Folder: favorite folder's children doesn't not remove folder's id");
         }
+
+    }
+
+    @Test
+    public void testGetRootFolderFromUser() throws Exception {
+        AppUser appUser = createUser();//建user
+        userRepository.insert(appUser);
+        mockMvc.perform(get("/folder/root/" + appUser.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.[0].id").value(appUser.getFolders().get(0)))
+                .andExpect(jsonPath("$.res.[0].folderName").value("Buy"))
+                .andExpect(jsonPath("$.res.[0].parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.[0].path").value("/Buy"))
+                .andExpect(jsonPath("$.res.[0].public").value(false))
+                .andExpect(jsonPath("$.res.[1].id").value(appUser.getFolders().get(1)))
+                .andExpect(jsonPath("$.res.[1].folderName").value("Favorite"))
+                .andExpect(jsonPath("$.res.[1].parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.[1].path").value("/Favorite"))
+                .andExpect(jsonPath("$.res.[1].public").value(false))
+                .andExpect(jsonPath("$.res.[2].id").value(appUser.getFolders().get(2)))
+                .andExpect(jsonPath("$.res.[2].folderName").value("Folder"))
+                .andExpect(jsonPath("$.res.[2].parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.[2].path").value("/Folder"))
+                .andExpect(jsonPath("$.res.[2].public").value(false))
+                .andExpect(jsonPath("$.res.[3].id").value(appUser.getFolders().get(3)))
+                .andExpect(jsonPath("$.res.[3].folderName").value("Temp Reward Note"))
+                .andExpect(jsonPath("$.res.[3].parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.[3].path").value("/Temp Reward Note"))
+                .andExpect(jsonPath("$.res.[3].public").value(false));
+
+    }
+
+    @Test
+    public void testGetFavoriteFolderFromUser() throws Exception {
+        AppUser appUser = createUser();//建user
+        userRepository.insert(appUser);
+        mockMvc.perform(get("/folder/favorite/" + appUser.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(appUser.getFolders().get(1)))
+                .andExpect(jsonPath("$.res.folderName").value("Favorite"))
+                .andExpect(jsonPath("$.res.parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.path").value("/Favorite"))
+                .andExpect(jsonPath("$.res.public").value(false));
+
+    }
+
+    @Test
+    public void testGetBuyFolderFromUser() throws Exception {
+        AppUser appUser = createUser();//建user
+        userRepository.insert(appUser);
+        mockMvc.perform(get("/folder/buy/" + appUser.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(appUser.getFolders().get(0)))
+                .andExpect(jsonPath("$.res.folderName").value("Buy"))
+                .andExpect(jsonPath("$.res.parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.path").value("/Buy"))
+                .andExpect(jsonPath("$.res.public").value(false));
+
+    }
+
+    @Test
+    public void testGeTempRewardNoteFolderFromUser() throws Exception {
+        AppUser appUser = createUser();//建user
+        userRepository.insert(appUser);
+        mockMvc.perform(get("/folder/tempRewardNote/" + appUser.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(appUser.getFolders().get(3)))
+                .andExpect(jsonPath("$.res.folderName").value("Temp Reward Note"))
+                .andExpect(jsonPath("$.res.parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.path").value("/Temp Reward Note"))
+                .andExpect(jsonPath("$.res.public").value(false));
 
     }
 
