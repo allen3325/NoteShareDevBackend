@@ -240,7 +240,7 @@ public class PostController {
         if (postService.archivePost(postID)) {
             res.put("res", "Success");
         } else {
-            res.put("res", "Fail");
+            res.put("res", "can't change publish state before you got best answer.");
         }
         return ResponseEntity.ok().body(res);
     }
