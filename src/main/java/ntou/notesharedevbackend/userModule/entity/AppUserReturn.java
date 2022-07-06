@@ -20,9 +20,9 @@ public class AppUserReturn {
     private ArrayList<String> folders; // folder's ID
     private Integer coin;
     private String headshotPhoto;
-    private ArrayList<Message> notification;
     private Integer unreadMessageCount;
 
+    private ArrayList<UserObj> notificationUserObj;
     private ArrayList<UserObj> subscribeUserObj;
     private ArrayList<UserObj> bellUserObj;
     private ArrayList<UserObj> fansUserObj;
@@ -123,12 +123,12 @@ public class AppUserReturn {
         this.headshotPhoto = headshotPhoto;
     }
 
-    public ArrayList<Message> getNotification() {
-        return notification;
+    public ArrayList<UserObj> getNotificationUserObj() {
+        return notificationUserObj;
     }
 
-    public void setNotification(ArrayList<Message> notification) {
-        this.notification = notification;
+    public void setNotificationUserObj(ArrayList<UserObj> notificationUserObj) {
+        this.notificationUserObj = notificationUserObj;
     }
 
     public Integer getUnreadMessageCount() {

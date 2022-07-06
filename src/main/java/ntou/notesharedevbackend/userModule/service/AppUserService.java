@@ -195,9 +195,14 @@ public class AppUserService {
         appUserReturn.setFolders(appUser.getFolders());
         appUserReturn.setCoin(appUser.getCoin());
         appUserReturn.setHeadshotPhoto(appUser.getHeadshotPhoto());
-        appUserReturn.setNotification(appUser.getNotification());
         appUserReturn.setUnreadMessageCount(appUser.getUnreadMessageCount());
 
+        ArrayList<UserObj> notificationUserObj = new ArrayList<>();
+        for (Message message : appUser.getNotification()) {
+            UserObj userObj = getUserInfo(message.getUser());
+            notificationUserObj.add(userObj);
+        }
+        appUserReturn.setNotificationUserObj(notificationUserObj);
         ArrayList<UserObj> subscribe = new ArrayList<>();
         for (String subscribeEmail : appUser.getSubscribe()) {
             UserObj userObj = getUserInfo(subscribeEmail);
