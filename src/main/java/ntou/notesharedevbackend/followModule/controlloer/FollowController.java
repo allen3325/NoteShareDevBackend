@@ -92,7 +92,7 @@ public class FollowController {
         for (String bellEmail : bells) {
             bellUserObj.add(followService.getUserInfo(bellEmail));
         }
-        res.put("following", bellUserObj);
+        res.put("res", bellUserObj);
         return ResponseEntity.ok(res);
     }
 }
