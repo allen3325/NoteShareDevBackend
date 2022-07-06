@@ -20,15 +20,22 @@ public class NotificationService {
     @Autowired
     private AppUserService appUserService;
 
-    public void saveNotificationPublic(String noteID, Message message) {
+    public void saveNotificationGroup(String noteID, Message message) {
         Note note = noteService.getNote(noteID);
         ArrayList<String> authorEmail = note.getAuthorEmail();
         for (String email: authorEmail)
             saveNotificationPrivate(email, message);
     }
 
+    public void saveNotificationBell(String email, Message message) {
+        AppUser appUser = appUserService.getUserByEmail(email);
+        ArrayList<String> bellSubscribers = appUser.getBell();
+        for (String bellSubscriber: bellSubscribers)
+            saveNotificationPrivate(bellSubscriber, message);
+    }
+
     public void saveNotificationPrivate(String email, Message message) {
-        AppUser appUser = userRepository.findByEmail(email);
+        AppUser appUser = appUserService.getUserByEmail(email);
         ArrayList<Message> notificationList = appUser.getNotification();
         notificationList.add(message);
         appUser.setNotification(notificationList);
@@ -41,7 +48,7 @@ public class NotificationService {
     }
 
     public ArrayList<Message> getNotification(String email) {
-        AppUser appUser = userRepository.findByEmail(email);
+        AppUser appUser = appUserService.getUserByEmail(email);
         appUser.setUnreadMessageCount(0);
         userRepository.save(appUser);
 
