@@ -53,16 +53,17 @@ public class UserTest {
         folderRepository.insert(folder);
         return folder;
     }
-    private AppUser createUser(){
+
+    private AppUser createUser(String email, String name) {
         AppUser appUser = new AppUser();
-        appUser.setEmail("yitingwu.1030@gmail.com");
+        appUser.setEmail(email);
         appUser.setActivate(true);
-        appUser.setName("Ting");
+        appUser.setName(name);
         appUser.setPassword(passwordEncoder.encode("1234"));
         appUser.setVerifyCode("1111");
         Folder buyFolder = createFolder("Buy", "/Buy", null);
         Folder favoriteFolder = createFolder("Favorite", "/Favorite", null);
-        Folder folderFolder = createFolder("Folder","/Folder",null);
+        Folder folderFolder = createFolder("Folder", "/Folder", null);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());
@@ -75,26 +76,27 @@ public class UserTest {
         strengths.add("strength2");
         strengths.add("strength3");
         appUser.setStrength(strengths);
-        return appUser;
+        appUser.setBell(new ArrayList<>());
+        appUser.setSubscribe(new ArrayList<>());
+        appUser.setFans(new ArrayList<>());
+        return userRepository.insert(appUser);
     }
 
     @BeforeEach
-    public void init(){
+    public void init() {
         httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         userRepository.deleteAll();
         folderRepository.deleteAll();
-        AppUser appUser = createUser();
-        userRepository.insert(appUser);
     }
 
 
     @Test
     public void testCreateUser() throws Exception {
         JSONObject request = new JSONObject()
-                .put("email","00853129@email.ntou.edu.tw")
-                .put("name","wu")
-                .put("password","1234");
+                .put("email", "00853129@email.ntou.edu.tw")
+                .put("name", "wu")
+                .put("password", "1234");
 
         RequestBuilder requestBuilder = post("/verification/signup")
                 .headers(httpHeaders)
@@ -107,10 +109,11 @@ public class UserTest {
 
     @Test
     public void testCreateSameEmailUser() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
         JSONObject request = new JSONObject()
-                .put("email","yitingwu.1030@gmail.com")
-                .put("name","Ting")
-                .put("password","1234");
+                .put("email", "yitingwu.1030@gmail.com")
+                .put("name", "Ting")
+                .put("password", "1234");
 
         RequestBuilder requestBuilder = post("/verification/signup")
                 .headers(httpHeaders)
@@ -122,7 +125,8 @@ public class UserTest {
     }
 
     @Test
-    public void testVerifyCode() throws Exception{
+    public void testVerifyCode() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
         mockMvc.perform(MockMvcRequestBuilders.put("/verification/verify/yitingwu.1030@gmail.com/1111")
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
@@ -130,54 +134,70 @@ public class UserTest {
     }
 
     @Test
-    public void testWrongVerifyCode() throws Exception{
+    public void testWrongVerifyCode() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
         mockMvc.perform(MockMvcRequestBuilders.put("/verification/verify/yitingwu.1030@gmail.com/2222")
                         .headers(httpHeaders))
                 .andExpect(status().isIAmATeapot());
     }
+
     @Test
-    public void testRandomPassword() throws Exception{
+    public void testRandomPassword() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
         mockMvc.perform(MockMvcRequestBuilders.post("/verification/randomPassword/yitingwu.1030@gmail.com")
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
     }
+
     @Test
-    public void testResetPassword() throws Exception{
+    public void testResetPassword() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
         JSONObject request = new JSONObject()
-                .put("email","yitingwu.1030@gmail.com")
-                        .put("password","1234")
-                                .put("newPassword","1111");
+                .put("email", "yitingwu.1030@gmail.com")
+                .put("password", "1234")
+                .put("newPassword", "1111");
         mockMvc.perform(MockMvcRequestBuilders.post("/verification/resetPassword")
                         .headers(httpHeaders)
                         .content(request.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
     }
+
     @Test
-    public void testResendCode() throws Exception{
+    public void testResendCode() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
         mockMvc.perform(MockMvcRequestBuilders.post("/verification/resendCode/yitingwu.1030@gmail.com")
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
     }
+
     @Test
-    public void testLogin() throws Exception{
+    public void testLogin() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
         JSONObject request = new JSONObject()
-                .put("email","yitingwu.1030@gmail.com")
-                .put("password","1234");
+                .put("email", "yitingwu.1030@gmail.com")
+                .put("password", "1234");
         mockMvc.perform(post("/verification/login")
-                .headers(httpHeaders)
-                .content(request.toString()))
+                        .headers(httpHeaders)
+                        .content(request.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").exists());
     }
 
     @Test
-    public void testGetUserByID() throws Exception{
-        String id = userRepository.findByEmail("yitingwu.1030@gmail.com").getId();
-        AppUser appUser =userRepository.findById(id).get();
-        mockMvc.perform(get("/user/id/"+id)
+    public void testGetUserByID() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
+        String id = appUser.getId();
+        AppUser fans = createUser("user1@gmail.com","User1");
+        appUser.getFans().add(fans.getEmail());
+        AppUser following = createUser("user2@gmail.com","User2");
+        appUser.getSubscribe().add(following.getEmail());
+        AppUser bells = createUser("user3@gmail.com0","User3");
+        appUser.getBell().add(bells.getEmail());
+        userRepository.save(appUser);
+        mockMvc.perform(get("/user/id/" + id)
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(id))
@@ -190,18 +210,25 @@ public class UserTest {
                 .andExpect(jsonPath("$.res.folders.[0]").value(appUser.getFolders().get(0)))
                 .andExpect(jsonPath("$.res.folders.[1]").value(appUser.getFolders().get(1)))
                 .andExpect(jsonPath("$.res.folders.[2]").value(appUser.getFolders().get(2)))
-                .andExpect(jsonPath("$.res.subscribe").value(appUser.getSubscribe()))
-                .andExpect(jsonPath("$.res.bell").value(appUser.getBell()))
-                .andExpect(jsonPath("$.res.fans").value(appUser.getFans()))
+                .andExpect(jsonPath("$.res.fansUserObj.[0].userObjEmail").value(fans.getEmail()))
+                .andExpect(jsonPath("$.res.fansUserObj.[0].userObjName").value(fans.getName()))
+                .andExpect(jsonPath("$.res.fansUserObj.[0].userObjAvatar").value(fans.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.subscribeUserObj.[0].userObjEmail").value(following.getEmail()))
+                .andExpect(jsonPath("$.res.subscribeUserObj.[0].userObjName").value(following.getName()))
+                .andExpect(jsonPath("$.res.subscribeUserObj.[0].userObjAvatar").value(following.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.bellUserObj.[0].userObjEmail").value(bells.getEmail()))
+                .andExpect(jsonPath("$.res.bellUserObj.[0].userObjName").value(bells.getName()))
+                .andExpect(jsonPath("$.res.bellUserObj.[0].userObjAvatar").value(bells.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.coin").value(appUser.getCoin()))
                 .andExpect(jsonPath("$.res.headshotPhoto").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.admin").value(appUser.isAdmin()))
                 .andExpect(jsonPath("$.res.activate").value(appUser.isActivate()));
     }
+
     @Test
-    public void testGetUserByEmail() throws Exception{
-        AppUser appUser =userRepository.findByEmail("yitingwu.1030@gmail.com");
-        mockMvc.perform(get("/user/"+appUser.getEmail())
+    public void testGetUserByEmail() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
+        mockMvc.perform(get("/user/" + appUser.getEmail())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(appUser.getId()))
@@ -212,9 +239,9 @@ public class UserTest {
                 .andExpect(jsonPath("$.res.profile").value(appUser.getProfile()))
                 .andExpect(jsonPath("$.res.strength").value(appUser.getStrength()))
                 .andExpect(jsonPath("$.res.folders").value(appUser.getFolders()))
-                .andExpect(jsonPath("$.res.subscribe").value(appUser.getSubscribe()))
-                .andExpect(jsonPath("$.res.bell").value(appUser.getBell()))
-                .andExpect(jsonPath("$.res.fans").value(appUser.getFans()))
+                .andExpect(jsonPath("$.res.subscribeUserObj").value(appUser.getSubscribe()))
+                .andExpect(jsonPath("$.res.bellUserObj").value(appUser.getBell()))
+                .andExpect(jsonPath("$.res.fansUserObj").value(appUser.getFans()))
                 .andExpect(jsonPath("$.res.coin").value(appUser.getCoin()))
                 .andExpect(jsonPath("$.res.headshotPhoto").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.admin").value(appUser.isAdmin()))
@@ -223,27 +250,27 @@ public class UserTest {
 
 
     @Test
-    public void testGetUserHeadShotPhoto() throws Exception{
-        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        mockMvc.perform(get("/user/head/"+appUser.getEmail())
-                .headers(httpHeaders))
+    public void testGetUserHeadShotPhoto() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
+        mockMvc.perform(get("/user/head/" + appUser.getEmail())
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res").value(appUser.getHeadshotPhoto()));
     }
 
     @Test
-    public void testGetUserProfile() throws Exception{
-        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        mockMvc.perform(get("/user/profile/"+appUser.getEmail())
+    public void testGetUserProfile() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
+        mockMvc.perform(get("/user/profile/" + appUser.getEmail())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res").value(appUser.getProfile()));
     }
 
     @Test
-    public void testGetUserStrength() throws Exception{
-        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        mockMvc.perform(get("/user/strength/"+appUser.getEmail())
+    public void testGetUserStrength() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
+        mockMvc.perform(get("/user/strength/" + appUser.getEmail())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.[0]").value(appUser.getStrength().get(0)))
@@ -252,31 +279,31 @@ public class UserTest {
     }
 
     @Test
-    public void testGetUserName() throws Exception{
-        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        mockMvc.perform(get("/user/name/"+appUser.getEmail())
+    public void testGetUserName() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
+        mockMvc.perform(get("/user/name/" + appUser.getEmail())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res").value(appUser.getName()));
     }
 
     @Test
-    public void testUpdateUserName() throws Exception{
-        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+    public void testUpdateUserName() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
         String newName = "newTime";
-        mockMvc.perform(put("/user/name/"+appUser.getEmail()+"/"+newName)
+        mockMvc.perform(put("/user/name/" + appUser.getEmail() + "/" + newName)
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res").value(newName));
     }
 
     @Test
-    public void testUpdateHeadshotPhoto() throws Exception{
-        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+    public void testUpdateHeadshotPhoto() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
         String newHeadshotPhoto = "newHeadshotPhoto";
         JSONObject request = new JSONObject()
-                .put("headshotPhoto",newHeadshotPhoto);
-        mockMvc.perform(put("/user/head/"+appUser.getEmail())
+                .put("headshotPhoto", newHeadshotPhoto);
+        mockMvc.perform(put("/user/head/" + appUser.getEmail())
                         .headers(httpHeaders)
                         .content(request.toString()))
                 .andExpect(status().isOk())
@@ -292,18 +319,19 @@ public class UserTest {
                 .andExpect(jsonPath("$.res.folders.[0]").value(appUser.getFolders().get(0)))
                 .andExpect(jsonPath("$.res.folders.[1]").value(appUser.getFolders().get(1)))
                 .andExpect(jsonPath("$.res.folders.[2]").value(appUser.getFolders().get(2)))
-                .andExpect(jsonPath("$.res.subscribe").value(appUser.getSubscribe()))
-                .andExpect(jsonPath("$.res.bell").value(appUser.getBell()))
-                .andExpect(jsonPath("$.res.fans").value(appUser.getFans()))
+                .andExpect(jsonPath("$.res.subscribeUserObj").value(appUser.getSubscribe()))
+                .andExpect(jsonPath("$.res.bellUserObj").value(appUser.getBell()))
+                .andExpect(jsonPath("$.res.fansUserObj").value(appUser.getFans()))
                 .andExpect(jsonPath("$.res.coin").value(appUser.getCoin()))
                 .andExpect(jsonPath("$.res.headshotPhoto").value(newHeadshotPhoto))
                 .andExpect(jsonPath("$.res.admin").value(appUser.isAdmin()))
                 .andExpect(jsonPath("$.res.activate").value(appUser.isActivate()));
     }
+
     @Test
-    public void testModifyUserStrength() throws Exception{
-        AppUser appUser =userRepository.findByEmail("yitingwu.1030@gmail.com");
-        JSONArray newStrength =new JSONArray();
+    public void testModifyUserStrength() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
+        JSONArray newStrength = new JSONArray();
         newStrength.put("Operating System");
         newStrength.put("Java");
         newStrength.put("Discrete mathematics");
@@ -312,38 +340,39 @@ public class UserTest {
         newStrengthArray.add("Java");
         newStrengthArray.add("Discrete mathematics");
         JSONObject request = new JSONObject()
-                .put("strength",newStrength);
+                .put("strength", newStrength);
 
-        mockMvc.perform(put("/user/strength/"+appUser.getEmail())
+        mockMvc.perform(put("/user/strength/" + appUser.getEmail())
                         .headers(httpHeaders)
                         .content(request.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
-        if(!userRepository.findByEmail("yitingwu.1030@gmail.com").getStrength().equals(newStrengthArray)){
+        if (!userRepository.findByEmail("yitingwu.1030@gmail.com").getStrength().equals(newStrengthArray)) {
             throw new Exception("Modify User Strength : strength does not change");
         }
     }
 
     @Test
-    public void testModifyUserProfile() throws Exception{
-        AppUser appUser =userRepository.findByEmail("yitingwu.1030@gmail.com");
+    public void testModifyUserProfile() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
         String newProfile = "我是測試，我在測試，希望測試成功";
         JSONObject request = new JSONObject()
-                .put("profile",newProfile);
+                .put("profile", newProfile);
 
-        mockMvc.perform(put("/user/profile/"+appUser.getEmail())
+        mockMvc.perform(put("/user/profile/" + appUser.getEmail())
                         .headers(httpHeaders)
                         .content(request.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
-        if(!userRepository.findByEmail("yitingwu.1030@gmail.com").getProfile().equals(newProfile)){
+        if (!userRepository.findByEmail("yitingwu.1030@gmail.com").getProfile().equals(newProfile)) {
             throw new Exception("Modify User Profile : profile does not change");
         }
     }
+
     @AfterEach
-    public void clear(){
+    public void clear() {
         userRepository.deleteAll();
         folderRepository.deleteAll();
     }
