@@ -217,6 +217,12 @@ public class AppUserService {
             bell.add(userObj);
         }
         appUserReturn.setBellUserObj(bell);
+        ArrayList<UserObj> belledBy = new ArrayList<>();
+        for (String belledByEmail : appUser.getBelledBy()) {
+            UserObj userObj = getUserInfo(belledByEmail);
+            belledBy.add(userObj);
+        }
+        appUserReturn.setBelledByUserObj(belledBy);
         ArrayList<UserObj> fans = new ArrayList<>();
         for (String fansEmail : appUser.getFans()) {
             UserObj userObj = getUserInfo(fansEmail);

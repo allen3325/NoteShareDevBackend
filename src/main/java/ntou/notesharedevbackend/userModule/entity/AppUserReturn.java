@@ -25,6 +25,7 @@ public class AppUserReturn {
     private ArrayList<UserObj> notificationUserObj;
     private ArrayList<UserObj> subscribeUserObj;
     private ArrayList<UserObj> bellUserObj;
+    private ArrayList<UserObj> belledByUserObj;
     private ArrayList<UserObj> fansUserObj;
 
     public String getId() {
@@ -153,6 +154,14 @@ public class AppUserReturn {
 
     public void setBellUserObj(ArrayList<UserObj> bellUserObj) {
         this.bellUserObj = bellUserObj;
+    }
+
+    public ArrayList<UserObj> getBelledByUserObj() {
+        return belledByUserObj;
+    }
+
+    public void setBelledByUserObj(ArrayList<UserObj> belledByUserObj) {
+        this.belledByUserObj = belledByUserObj;
     }
 
     public ArrayList<UserObj> getFansUserObj() {
