@@ -2,6 +2,8 @@ package ntou.notesharedevbackend.postModule.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.exception.NotFoundException;
+import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.userModule.entity.*;
@@ -58,7 +60,7 @@ public class PostController {
     @Operation(summary = "get user's all post by type", description = "type為(QA, reward, collaboration)")
     @GetMapping("/{email}/{postType}")
     public ResponseEntity<Object> getUserAllPostByType(@PathVariable("email") String email, @PathVariable("postType") String postType) {
-        ArrayList<Post> allPost = postService.getUserAllPostByType(email,postType);
+        ArrayList<Post> allPost = postService.getUserAllPostByType(email, postType);
         ArrayList<PostReturn> postReturns = new ArrayList<>();
         for (Post post : allPost) {
             PostReturn postReturn = postService.getUserInfo(post);
@@ -128,11 +130,12 @@ public class PostController {
     @Operation(summary = "apply become one of collaboration note's author.", description = "wantEnterUsersEmail為申請者,commentFromApplicant為留言")
     @PutMapping("/apply/{postID}")
     public ResponseEntity<Object> applyCollaboration(@PathVariable("postID") String id, @RequestBody Apply applicant) {
-        postService.applyCollaboration(id, applicant);
-
         Map<String, Object> res = new HashMap<>();
-
-        res.put("msg", "Success");
+        if (postService.applyCollaboration(id, applicant)) {
+            res.put("msg", "Success");
+        } else {
+            res.put("msg", "User already apply");
+        }
         return ResponseEntity.ok(res);
     }
 
@@ -174,9 +177,9 @@ public class PostController {
     @Operation(summary = "reward choose best answer(note).", description = "填入postID,最佳解筆記ID")
     @PutMapping("/reward/best/{postID}/{answerID}")
     public ResponseEntity<Object> rewardChooseBestAnswer(@PathVariable("postID") String postID,
-                                                         @PathVariable("answerID") String answerID, @RequestBody String email) {
+                                                         @PathVariable("answerID") String answerID) {
         Map<String, Object> res = new HashMap<>();
-        if (postService.rewardChooseBestAnswer(postID, answerID, email)) {
+        if (postService.rewardChooseBestAnswer(postID, answerID)) {
             res.put("msg", "Success");
             return ResponseEntity.ok(res);
         } else {
@@ -201,10 +204,10 @@ public class PostController {
 
     @Operation(summary = "reward choose reference answer.", description = "填入postID,最佳解留言ID")
     @PutMapping("/reward/reference/{postID}/{answerID}")
-    public ResponseEntity<Object> QAChooseReferenceAnswer(@PathVariable("postID") String postID,
-                                                          @PathVariable("answerID") String answerID, @RequestBody String email) {
+    public ResponseEntity<Object> RewardChooseReferenceAnswer(@PathVariable("postID") String postID,
+                                                              @PathVariable("answerID") String answerID) {
         Map<String, Object> res = new HashMap<>();
-        if (postService.rewardChooseReferenceAnswer(postID, answerID, email)) {
+        if (postService.rewardChooseReferenceAnswer(postID, answerID)) {
             res.put("msg", "Success");
             return ResponseEntity.ok(res);
         } else {
@@ -220,5 +223,26 @@ public class PostController {
         Map<String, Object> res = new HashMap<>();
         res.put("msg", "Success");
         return ResponseEntity.status(204).body(res);
+    }
+
+    @Operation(summary = "create reward note", description = "postID為要投稿的reward post ID，email要放投稿人email")
+    @PostMapping(value = "/reward/{postID}/{email}")
+    public ResponseEntity<Object> createRewardNote(@PathVariable("postID") String postID, @PathVariable("email") String email, @RequestBody Note request) {
+        NoteReturn noteReturn = postService.createRewardNote(postID, email, request);
+        Map<String, Object> res = new HashMap<>();
+        res.put("res", noteReturn);
+        return ResponseEntity.status(201).body(res);
+    }
+
+    @Operation(summary = "modify post archive status")
+    @PutMapping("/archive/{postID}")
+    public ResponseEntity<Object> modifyPostArchiveStatus(@PathVariable("postID") String postID) {
+        Map<String, String> res = new HashMap<>();
+        if (postService.archivePost(postID)) {
+            res.put("res", "Success");
+        } else {
+            res.put("res", "can't change archive state before you got best answer.");
+        }
+        return ResponseEntity.ok().body(res);
     }
 }

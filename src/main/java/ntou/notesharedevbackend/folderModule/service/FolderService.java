@@ -120,7 +120,7 @@ public class FolderService {
     public Folder createFolder(String email, FolderRequest request) {
         AppUser appUser = appUserService.getUserByEmail(email);
         Folder folder = new Folder(request);
-        folder.setCreatorName(email);
+        folder.setCreatorName(appUser.getName());
         ArrayList<String> tmpFoldersList = new ArrayList<>();
         // check users has folders
         if (appUser.getFolders() == null || appUser.getFolders().isEmpty()) {
@@ -202,7 +202,7 @@ public class FolderService {
                 String newDirection = "";
                 String[] hasOldNameDirection = folder.getPath().split("/");
                 for (String oldDirection : hasOldNameDirection) {
-                    if(!oldDirection.equals("")){
+                    if (!oldDirection.equals("")) {
                         if (oldDirection.equals(oldName)) {
                             newDirection += "/" + wannaChangeName;
                         } else {
@@ -288,7 +288,7 @@ public class FolderService {
         replaceFolder(folder);
         folderRepository.save(folder);
         // update new parent's children if it has new parent
-        if(newParentID!=null){
+        if (newParentID != null) {
             Folder newParent = getFolderByID(newParentID);
             ArrayList<String> newParentChildrenList = newParent.getChildren();
             newParentChildrenList.add(folderID);
@@ -328,17 +328,17 @@ public class FolderService {
     public ArrayList<Folder> getRootFoldersFromUser(String email) {
         ArrayList<Folder> allFolders = getAllFoldersFromUser(email);
         ArrayList<Folder> res = new ArrayList<Folder>();
-        for(Folder folder:allFolders){
-            if(folder.getPath().split("/").length==2){
+        for (Folder folder : allFolders) {
+            if (folder.getPath().split("/").length == 2) {
                 res.add(folder);
             }
         }
         return res;
     }
 
-    public ArrayList<FolderReturn> turnAllFolderToFolderReturn(ArrayList<Folder> folders){
+    public ArrayList<FolderReturn> turnAllFolderToFolderReturn(ArrayList<Folder> folders) {
         ArrayList<FolderReturn> folderReturns = new ArrayList<>();
-        for(Folder folder:folders){
+        for (Folder folder : folders) {
             folderReturns.add(getAllContentUnderFolderID(folder.getId()));
         }
         return folderReturns;
@@ -347,4 +347,15 @@ public class FolderService {
     public FolderReturn turnFolderToFolderReturn(Folder folder) {
         return getAllContentUnderFolderID(folder.getId());
     }
+
+    public Folder getTempRewardNoteFolder(String email) {
+        AppUser appUser = appUserService.getUserByEmail(email);
+        for (String folderID : appUser.getFolders()) {
+            if (getFolderByID(folderID).getFolderName().equals("Temp Reward Note")) {
+                return getFolderByID(folderID);
+            }
+        }
+        return null;
+    }
+
 }

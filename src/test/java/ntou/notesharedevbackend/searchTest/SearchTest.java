@@ -99,7 +99,7 @@ public class SearchTest {
         return appUser;
     }
 
-    private Note createNormalNote(){
+    private Note createNormalNote() {
         Note note = new Note();
         note.setType("normal");
         note.setDepartment("CS");
@@ -240,6 +240,8 @@ public class SearchTest {
         post.setCommentCount(2);
         post.setBestPrice(30);
         post.setAnswers(new ArrayList<>());
+        post.setApplyEmail(new ArrayList<>());
+        post.setArchive(false);
         post = postRepository.insert(post);
         return post;
     }
@@ -377,6 +379,8 @@ public class SearchTest {
         answers.add(note.getId());
         answers.add(note1.getId());
         post.setAnswers(answers);
+        post.setArchive(false);
+        post.setApplyEmail(new ArrayList<>());
         post = postRepository.insert(post);
         return post;
     }
@@ -498,6 +502,8 @@ public class SearchTest {
         post.setType("collaboration");
         ArrayList<String> email = new ArrayList<>();
         email.add("yitingwu.1030@gmail.com");
+        email.add("user1@gmail.com");
+        email.add("user2@gmail.com");
         post.setEmail(email);
         post.setAuthor("yitingwu.1030@gmail.com");
         post.setAuthorName("Ting");
@@ -518,6 +524,11 @@ public class SearchTest {
         post.setComments(new ArrayList<Comment>());
         post.setCommentCount(0);
         post.setBestPrice(0);
+        post.setArchive(false);
+        ArrayList<String> applyEmails = new ArrayList<>();
+        applyEmails.add("user1@gmail.com");
+        applyEmails.add("user2@gmail.com");
+        post.setApplyEmail(applyEmails);
         post = postRepository.insert(post);
         return post;
     }
@@ -594,20 +605,20 @@ public class SearchTest {
         int offset = 0;
         int pageSize = 10;
 
-        mockMvc.perform(get("/search/note/"+offset+"/"+pageSize)
-                .headers(httpHeaders)
+        mockMvc.perform(get("/search/note/" + offset + "/" + pageSize)
+                        .headers(httpHeaders)
                         .param("keyword", keyword)
-                .param("school","NTOU")
-                .param("subject","OS")
-                .param("department","CS")
-                .param("professor","NoteShare")
-                .param("haveNormal","true")
-                .param("haveCollaboration","true")
-                .param("haveReward","true")
-                .param("favoriteCount","0")
-                .param("price","50")
-                .param("quotable","false")
-                .param("sortBy","unlockCount")
+                        .param("school", "NTOU")
+                        .param("subject", "OS")
+                        .param("department", "CS")
+                        .param("professor", "NoteShare")
+                        .param("haveNormal", "true")
+                        .param("haveCollaboration", "true")
+                        .param("haveReward", "true")
+                        .param("favoriteCount", "0")
+                        .param("price", "50")
+                        .param("quotable", "false")
+                        .param("sortBy", "unlockCount")
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.search.items.[0].id").value(normalNote.getId()))
@@ -723,7 +734,7 @@ public class SearchTest {
                         .param("haveQA", "true")
                         .param("haveCollaboration", "true")
                         .param("haveReward", "true")
-                        .param("professor","professor")
+                        .param("professor", "professor")
 
                 )
                 .andExpect(status().isOk())
@@ -810,22 +821,22 @@ public class SearchTest {
     public void testSearchFolderCreatorIsUser1() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         AppUser folderCreator = userRepository.findByEmail("user1@gmail.com");
-        Folder folder1 = createFolder("taldskfgjaldfjk", "/taldskfgjaldfjk", null,folderCreator.getEmail(), folderCreator.getName());
+        Folder folder1 = createFolder("taldskfgjaldfjk", "/taldskfgjaldfjk", null, folderCreator.getEmail(), folderCreator.getName());
 
         Folder folder2 = createFolder("taldskfgjaldfjk1111", "/taldskfgjaldfjk1111", null, folderCreator.getEmail(), folderCreator.getName());
         folder2.setPublic(false);
         folderRepository.save(folder2);
-        Folder folder11 = createFolder("tSecond", "/taldskfgjaldfjk/tSecond", folder1.getId(),folderCreator.getEmail(), folderCreator.getName());
+        Folder folder11 = createFolder("tSecond", "/taldskfgjaldfjk/tSecond", folder1.getId(), folderCreator.getEmail(), folderCreator.getName());
 
-        Folder folder111 = createFolder("tThird", "/taldskfgjaldfjk/tSecond/Third", folder11.getId(),folderCreator.getEmail(), folderCreator.getName());
+        Folder folder111 = createFolder("tThird", "/taldskfgjaldfjk/tSecond/Third", folder11.getId(), folderCreator.getEmail(), folderCreator.getName());
 
-        Folder folder1111 = createFolder("tUnPublic", "/taldskfgjaldfjk/tSecond/Third/tUnPublic", folder111.getId(),folderCreator.getEmail(), folderCreator.getName());
+        Folder folder1111 = createFolder("tUnPublic", "/taldskfgjaldfjk/tSecond/Third/tUnPublic", folder111.getId(), folderCreator.getEmail(), folderCreator.getName());
 
         String keyword = "t";
-        int offset =0;
+        int offset = 0;
         int pageSize = 10;
-        mockMvc.perform(get("/search/folder/"+offset+"/"+pageSize)
-                .headers(httpHeaders)
+        mockMvc.perform(get("/search/folder/" + offset + "/" + pageSize)
+                        .headers(httpHeaders)
                         .param("keyword", keyword)
                 )
                 .andExpect(status().isOk())
@@ -876,24 +887,24 @@ public class SearchTest {
     public void testSearchFolderCreatorIsTing() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         AppUser folderCreator = userRepository.findByEmail("user1@gmail.com");
-        Folder folder1 = createFolder("tFirst", "/tFirst", null,appUser.getEmail(), appUser.getName());
+        Folder folder1 = createFolder("tFirst", "/tFirst", null, appUser.getEmail(), appUser.getName());
 
         Folder folder2 = createFolder("tFirst111", "/tFirst111", null, folderCreator.getEmail(), folderCreator.getName());
         folder2.setPublic(false);
         folderRepository.save(folder2);
-        Folder folder11 = createFolder("tSecond", "/tFirst/tSecond", folder1.getId(),folderCreator.getEmail(), folderCreator.getName());
+        Folder folder11 = createFolder("tSecond", "/tFirst/tSecond", folder1.getId(), folderCreator.getEmail(), folderCreator.getName());
 
-        Folder folder111 = createFolder("tThird", "/tFirst/tSecond/Third", folder11.getId(),appUser.getEmail(), appUser.getName());
+        Folder folder111 = createFolder("tThird", "/tFirst/tSecond/Third", folder11.getId(), appUser.getEmail(), appUser.getName());
 
-        Folder folder1111 = createFolder("tUnPublic", "/tFirst/tSecond/Third/tUnPublic", folder111.getId(),folderCreator.getEmail(), folderCreator.getName());
+        Folder folder1111 = createFolder("tUnPublic", "/tFirst/tSecond/Third/tUnPublic", folder111.getId(), folderCreator.getEmail(), folderCreator.getName());
 
         String keyword = "t";
-        int offset =0;
+        int offset = 0;
         int pageSize = 10;
-        mockMvc.perform(get("/search/folder/"+offset+"/"+pageSize)
+        mockMvc.perform(get("/search/folder/" + offset + "/" + pageSize)
                         .headers(httpHeaders)
                         .param("keyword", keyword)
-                        .param("creator","Ting"))
+                        .param("creator", "Ting"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.search.items.[0].id").value(folder1.getId()))
                 .andExpect(jsonPath("$.search.items.[0].folderName").value(folder1.getFolderName()))

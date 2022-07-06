@@ -26,9 +26,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 
@@ -93,11 +98,13 @@ public class PostTest {
         Folder favoriteFolder = createFolder("Favorite", "/Favorite", null, name);
         Folder collaborationFolder = createFolder("Collaboration", "/Collaboration", null, name);
         Folder OSFolder = createFolder("OS", "/OS", null, name);
+        Folder tempRewardNote = createFolder("Temp Reward Note", "/TempRewardNote", null, name);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());
         folderList.add(collaborationFolder.getId());
         folderList.add(OSFolder.getId());
+        folderList.add(tempRewardNote.getId());
         appUser.setFolders(folderList);
         appUser.setCoin(300);
         return appUser;
@@ -136,6 +143,8 @@ public class PostTest {
         post.setCommentCount(2);
         post.setBestPrice(10);
         post.setAnswers(new ArrayList<>());
+        post.setArchive(false);
+        post.setApplyEmail(new ArrayList<>());
         return postRepository.insert(post);
     }
 
@@ -272,6 +281,8 @@ public class PostTest {
         answers.add(note.getId());
         answers.add(note1.getId());
         post.setAnswers(answers);
+        post.setArchive(false);
+        post.setApplyEmail(new ArrayList<>());
         return postRepository.insert(post);
     }
 
@@ -285,8 +296,8 @@ public class PostTest {
         note.setHeaderName("Ting");
         ArrayList<String> authorEmails = new ArrayList<>();
         authorEmails.add("yitingwu.1030@gmail.com");
-        authorEmails.add("user1@gmail.com");
-        authorEmails.add("user2@gmail.com");
+//        authorEmails.add("user1@gmail.com");
+//        authorEmails.add("user2@gmail.com");
         note.setAuthorEmail(authorEmails);
         ArrayList<String> authorNames = new ArrayList<>();
         authorNames.add("Ting");
@@ -413,6 +424,8 @@ public class PostTest {
         post.setCollabNoteAuthorNumber(1);
         post.setComments(new ArrayList<Comment>());
         post.setCommentCount(0);
+        post.setArchive(false);
+        post.setApplyEmail(new ArrayList<>());
         post = postRepository.insert(post);
         return post;
     }
@@ -537,7 +550,7 @@ public class PostTest {
     }
 
     @Test
-    public void testGetAllTypesOfPost() throws Exception {
+    public void testGetAllQAPost() throws Exception {
         Post post1 = createQAPost();
         Post post2 = createQAPost();
         Post post3 = createQAPost();
@@ -702,6 +715,7 @@ public class PostTest {
         post.setSubject("Java");
         post.setTitle("TITLE");
 
+        JSONArray applyEmails = new JSONArray();
         JSONArray comments = new JSONArray();
         for (Comment c : post.getComments()) {
             JSONArray likers = new JSONArray();
@@ -739,7 +753,8 @@ public class PostTest {
                 .put("comments", comments)
                 .put("commentCount", post.getCommentCount())
                 .put("public", true)
-                .put("email", new JSONArray().put("yitingwu.1030@gmail.com"));
+                .put("email", new JSONArray().put("yitingwu.1030@gmail.com"))
+                .put("applyEmail", applyEmails);
 
         mockMvc.perform(put("/post/" + post.getId())
                         .headers(httpHeaders)
@@ -793,10 +808,8 @@ public class PostTest {
 
 
         JSONObject request = new JSONObject();
-//      "wantEnterUsersEmail": "genewang7@gmail.com",
-//      "commentFromApplicant": "我想加入口以嗎？二"
-        request.put("wantEnterUsersEmail",applicant.getEmail());
-        request.put("commentFromApplicant","我是留言");
+        request.put("wantEnterUsersEmail", applicant.getEmail());
+        request.put("commentFromApplicant", "我是留言");
 
         mockMvc.perform(put("/post/apply/" + post.getId())
                         .headers(httpHeaders)
@@ -874,38 +887,38 @@ public class PostTest {
         if (!noteRepository.findById(answerID).get().getBest().equals(true)) {
             throw new Exception("Post Test : note isBest does not change to true");
         }
-        if(!noteRepository.findById(answerID).get().getContributors().contains(contributor.getEmail())){
+        if (!noteRepository.findById(answerID).get().getContributors().contains(contributor.getEmail())) {
             throw new Exception("Post Test : note's contributor does not add contributor");
         }
-        if(!userRepository.findById(contributor.getId()).get().getCoin().equals(contributor.getCoin()+post.getBestPrice())){
+        if (!userRepository.findById(contributor.getId()).get().getCoin().equals(contributor.getCoin() + post.getBestPrice())) {
             throw new Exception("Post Test : best answer author's coin does not get");
         }
-        if(!userRepository.findById(postAuthor.getId()).get().getCoin().equals(postAuthor.getCoin()-post.getBestPrice())){
+        if (!userRepository.findById(postAuthor.getId()).get().getCoin().equals(postAuthor.getCoin() - post.getBestPrice())) {
             throw new Exception("Post Test : post author's coin does not reduce");
         }
     }
 
     @Test
-    public void testRewardChooseReferenceAnswer() throws Exception{
+    public void testRewardChooseReferenceAnswer() throws Exception {
         AppUser contributor = userRepository.findByEmail("user2@gmail.com");
         Post post = createRewardPost();
         String answerID = post.getAnswers().get(1);
         AppUser postAuthor = userRepository.findByEmail(post.getAuthor());
-        mockMvc.perform(put("/post/reward/reference/"+post.getId()+"/"+answerID)
+        mockMvc.perform(put("/post/reward/reference/" + post.getId() + "/" + answerID)
                         .content(postAuthor.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
-        if(!noteRepository.findById(answerID).get().getReference().equals(true)){
+        if (!noteRepository.findById(answerID).get().getReference().equals(true)) {
             throw new Exception("Post Test : note isBest does not change to true");
         }
-        if(!userRepository.findById(contributor.getId()).get().getCoin().equals(contributor.getCoin()+post.getReferencePrice())){
+        if (!userRepository.findById(contributor.getId()).get().getCoin().equals(contributor.getCoin() + post.getReferencePrice())) {
             throw new Exception("Post Test : best answer author's coin does not get");
         }
-        if(!userRepository.findById(postAuthor.getId()).get().getCoin().equals(postAuthor.getCoin()-post.getReferencePrice())){
+        if (!userRepository.findById(postAuthor.getId()).get().getCoin().equals(postAuthor.getCoin() - post.getReferencePrice())) {
             throw new Exception("Post Test : post author's coin does not reduce");
         }
-        if(!postRepository.findById(post.getId()).get().getReferenceNumber().equals(post.getReferenceNumber()-1)){
+        if (!postRepository.findById(post.getId()).get().getReferenceNumber().equals(post.getReferenceNumber() - 1)) {
             throw new Exception("Post Test : post reference number does not reduce");
         }
     }
@@ -954,7 +967,7 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("can't change publish state before you got best answer."));
 
-        if(postRepository.findById(post.getId()).get().getPublic().equals(false)){
+        if (postRepository.findById(post.getId()).get().getPublic().equals(false)) {
             throw new Exception("Post Test : post's public should be true");
         }
     }
@@ -968,7 +981,7 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("can't change publish state before you got best answer."));
 
-        if(postRepository.findById(post.getId()).get().getPublic().equals(false)){
+        if (postRepository.findById(post.getId()).get().getPublic().equals(false)) {
             throw new Exception("Post Test : post's public should be true");
         }
     }
@@ -1138,6 +1151,312 @@ public class PostTest {
             throw new Exception("Post Test: post is still public");
         }
     }
+
+    @Test
+    public void testCreateRewardNote() throws Exception {
+        Post post = createRewardPost();
+        AppUser appUser = userRepository.findByEmail("user1@gmail.com");
+        JSONArray authorEmails = new JSONArray();
+        authorEmails.put(appUser.getEmail());
+        JSONArray authorNames = new JSONArray();
+        authorNames.put(appUser.getName());
+        JSONArray versionContents = new JSONArray();
+        JSONArray fileURLs = new JSONArray()
+                .put("fileURL1")
+                .put("fileURL2")
+                .put("fileURL3");
+        JSONArray picURLs = new JSONArray()
+                .put("picURL1")
+                .put("picURL2")
+                .put("picURL3");
+        JSONObject content = new JSONObject()
+                .put("mycustom_assets", "string")
+                .put("mycustom_components", "string")
+                .put("mycustom_html", "string")
+                .put("mycustom_styles", "string")
+                .put("mycustom_css", "string");
+        JSONArray contentArray = new JSONArray()
+                .put(content);
+        JSONObject v1 = new JSONObject()
+                .put("name", "string")
+                .put("slug", "string")
+                .put("fileURL", fileURLs)
+                .put("picURL", picURLs)
+                .put("temp", true)
+                .put("content", contentArray);
+        versionContents.put(v1);
+        JSONObject request = new JSONObject()
+                .put("type", "reward")
+                .put("department", "CS")
+                .put("subject", "Java")
+                .put("title", "Array")
+                .put("headerEmail", appUser.getEmail())
+                .put("headerName", appUser.getName())
+                .put("authorEmail", authorEmails)
+                .put("authorName", authorNames)
+                .put("professor", "NoteShare")
+                .put("school", "NTOU")
+                .put("public", false)
+                .put("price", 50)
+                .put("downloadable", false)
+                .put("quotable", false)
+                .put("version", versionContents);
+        mockMvc.perform(post("/post/reward/" + post.getId() + "/" + appUser.getEmail())
+                        .headers(httpHeaders)
+                        .content(request.toString()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.res.id").exists())
+                .andExpect(jsonPath("$.res.type").value(request.get("type")))
+                .andExpect(jsonPath("$.res.department").value(request.get("department")))
+                .andExpect(jsonPath("$.res.subject").value(request.get("subject")))
+                .andExpect(jsonPath("$.res.title").value(request.get("title")))
+                .andExpect(jsonPath("$.res.professor").value(request.get("professor")))
+                .andExpect(jsonPath("$.res.school").value(request.get("school")))
+                .andExpect(jsonPath("$.res.likeCount").value(0))
+                .andExpect(jsonPath("$.res.favoriteCount").value(0))
+                .andExpect(jsonPath("$.res.unlockCount").value(0))
+                .andExpect(jsonPath("$.res.downloadable").value(request.get("downloadable")))
+                .andExpect(jsonPath("$.res.commentCount").value(0))
+                .andExpect(jsonPath("$.res.comments").isEmpty())
+                .andExpect(jsonPath("$.res.price").value(request.get("price")))
+                .andExpect(jsonPath("$.res.quotable").value(request.get("quotable")))
+                .andExpect(jsonPath("$.res.tag").isEmpty())
+                .andExpect(jsonPath("$.res.hiddenTag").isEmpty())
+                .andExpect(jsonPath("$.res.version.[0].id").exists())
+                .andExpect(jsonPath("$.res.version.[0].name").value(v1.get("name")))
+                .andExpect(jsonPath("$.res.version.[0].slug").value(v1.get("slug")))
+                .andExpect(jsonPath("$.res.version.[0].content.[0].mycustom_html").value(content.get("mycustom_html")))
+                .andExpect(jsonPath("$.res.version.[0].content.[0].mycustom_components").value(content.get("mycustom_components")))
+                .andExpect(jsonPath("$.res.version.[0].content.[0].mycustom_assets").value(content.get("mycustom_assets")))
+                .andExpect(jsonPath("$.res.version.[0].content.[0].mycustom_css").value(content.get("mycustom_css")))
+                .andExpect(jsonPath("$.res.version.[0].content.[0].mycustom_styles").value(content.get("mycustom_styles")))
+                .andExpect(jsonPath("$.res.version.[0].picURL.[0]").value(picURLs.get(0)))
+                .andExpect(jsonPath("$.res.version.[0].picURL.[1]").value(picURLs.get(1)))
+                .andExpect(jsonPath("$.res.version.[0].picURL.[2]").value(picURLs.get(2)))
+                .andExpect(jsonPath("$.res.version.[0].fileURL[0]").value(fileURLs.get(0)))
+                .andExpect(jsonPath("$.res.version.[0].fileURL[1]").value(fileURLs.get(1)))
+                .andExpect(jsonPath("$.res.version.[0].fileURL[2]").value(fileURLs.get(2)))
+                .andExpect(jsonPath("$.res.version.[0].temp").value(v1.get("temp")))
+                .andExpect(jsonPath("$.res.postID").value(post.getId()))
+                .andExpect(jsonPath("$.res.reference").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.best").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.public").value(request.get("public")))
+                .andExpect(jsonPath("$.res.submit").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.headerUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.buyerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.contributorUserObj").isEmpty());
+
+        Folder tempRewardNote = folderRepository.findById(appUser.getFolders().get(4)).get();
+        if (tempRewardNote.getNotes().isEmpty()) {
+            throw new Exception("Post Test : new reward note does enter tempRewardNote Folder");
+        }
+
+    }
+
+    @Test
+    public void testCollaborationPostModifyPublishStatusToUnPublish() throws Exception {
+        Post post = createCollaborationPost();
+        AppUser appUser = userRepository.findByEmail(post.getAuthor());
+
+        mockMvc.perform(put("/post/publish/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(post.getId()))
+                .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
+                .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
+                .andExpect(jsonPath("$.res.school").value(post.getSchool()))
+                .andExpect(jsonPath("$.res.professor").value(post.getProfessor()))
+                .andExpect(jsonPath("$.res.title").value(post.getTitle()))
+                .andExpect(jsonPath("$.res.content").value(post.getContent()))
+                .andExpect(jsonPath("$.res.date").hasJsonPath())
+                .andExpect(jsonPath("$.res.bestPrice").value(post.getBestPrice()))
+                .andExpect(jsonPath("$.res.referencePrice").value(post.getReferencePrice()))
+                .andExpect(jsonPath("$.res.referenceNumber").value(post.getReferenceNumber()))
+                .andExpect(jsonPath("$.res.answers").value(post.getAnswers()))
+                .andExpect(jsonPath("$.res.public").value(false))
+                .andExpect(jsonPath("$.res.authorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.authorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()));
+        if (postRepository.findById(post.getId()).get().getPublic().equals(post.getPublic())) {
+            throw new Exception("Post Test : publish does not update");
+        }
+    }
+
+    @Test
+    public void testCollaborationPostModifyPublishStatusToPublish() throws Exception {
+        Post post = createCollaborationPost();
+        post.setPublic(false);
+        postRepository.save(post);
+        AppUser appUser = userRepository.findByEmail(post.getAuthor());
+
+        mockMvc.perform(put("/post/publish/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(post.getId()))
+                .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
+                .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
+                .andExpect(jsonPath("$.res.school").value(post.getSchool()))
+                .andExpect(jsonPath("$.res.professor").value(post.getProfessor()))
+                .andExpect(jsonPath("$.res.title").value(post.getTitle()))
+                .andExpect(jsonPath("$.res.content").value(post.getContent()))
+                .andExpect(jsonPath("$.res.date").hasJsonPath())
+                .andExpect(jsonPath("$.res.bestPrice").value(post.getBestPrice()))
+                .andExpect(jsonPath("$.res.referencePrice").value(post.getReferencePrice()))
+                .andExpect(jsonPath("$.res.referenceNumber").value(post.getReferenceNumber()))
+                .andExpect(jsonPath("$.res.answers").value(post.getAnswers()))
+                .andExpect(jsonPath("$.res.public").value(true))
+                .andExpect(jsonPath("$.res.authorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.authorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()));
+        if (postRepository.findById(post.getId()).get().getPublic().equals(post.getPublic())) {
+            throw new Exception("Post Test : publish does not update");
+        }
+    }
+
+    @Test
+    public void testApplyCollaborationPostAgain() throws Exception {
+        Post post = createCollaborationPost();
+        post.getApplyEmail().add("user1@gmail.com");
+        postRepository.save(post);
+
+        JSONObject request = new JSONObject();
+        request.put("wantEnterUsersEmail", "user1@gmail.com");
+        request.put("commentFromApplicant", "我是留言");
+
+        mockMvc.perform(put("/post/apply/" + post.getId())
+                        .headers(httpHeaders)
+                        .content(request.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("User already apply"));
+
+    }
+
+    @Test
+    public void testGetUserAllCollaborationPost() throws Exception {
+        AppUser appUser = userRepository.findByEmail("user1@gmail.com");
+        Post post = createCollaborationPost();
+        AppUser postAuthor = userRepository.findByEmail(post.getAuthor());
+        post.getApplyEmail().add(appUser.getEmail());
+        post.getEmail().add(appUser.getEmail());
+        postRepository.save(post);
+        mockMvc.perform(get("/post/" + appUser.getEmail() + "/collaboration")
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.[0].id").value(post.getId()))
+                .andExpect(jsonPath("$.res.[0].type").value(post.getType()))
+                .andExpect(jsonPath("$.res.[0].department").value(post.getDepartment()))
+                .andExpect(jsonPath("$.res.[0].subject").value(post.getSubject()))
+                .andExpect(jsonPath("$.res.[0].school").value(post.getSchool()))
+                .andExpect(jsonPath("$.res.[0].professor").value(post.getProfessor()))
+                .andExpect(jsonPath("$.res.[0].title").value(post.getTitle()))
+                .andExpect(jsonPath("$.res.[0].content").value(post.getContent()))
+                .andExpect(jsonPath("$.res.[0].date").hasJsonPath())
+                .andExpect(jsonPath("$.res.[0].bestPrice").value(post.getBestPrice()))
+                .andExpect(jsonPath("$.res.[0].commentCount").value(post.getCommentCount()))
+                .andExpect(jsonPath("$.res.[0].public").value(post.getPublic()))
+                .andExpect(jsonPath("$.res.[0].archive").value(post.getArchive()))
+                .andExpect(jsonPath("$.res.[0].applyUserObj.[0].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.[0].applyUserObj.[0].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.[0].applyUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[0].authorUserObj.userObjEmail").value(postAuthor.getEmail()))
+                .andExpect(jsonPath("$.res.[0].authorUserObj.userObjName").value(postAuthor.getName()))
+                .andExpect(jsonPath("$.res.[0].authorUserObj.userObjAvatar").value(postAuthor.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[0].emailUserObj.[0].userObjEmail").value(postAuthor.getEmail()))
+                .andExpect(jsonPath("$.res.[0].emailUserObj.[0].userObjName").value(postAuthor.getName()))
+                .andExpect(jsonPath("$.res.[0].emailUserObj.[0].userObjAvatar").value(postAuthor.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[0].emailUserObj.[1].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.[0].emailUserObj.[1].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.[0].emailUserObj.[1].userObjAvatar").value(appUser.getHeadshotPhoto()))
+        ;
+    }
+
+    @Test
+    public void testRewardPostModifyArchiveStatusBeforeChooseBestAnswer() throws Exception {
+        Post post = createRewardPost();
+
+        mockMvc.perform(put("/post/archive/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res").value("can't change archive state before you got best answer."));
+
+        if (postRepository.findById(post.getId()).get().getArchive().equals(true)) {
+            throw new Exception("Post Test : post's archive should be false");
+        }
+    }
+
+    @Test
+    public void testQAPostModifyArchiveStatusBeforeChooseBestAnswer() throws Exception {
+        Post post = createQAPost();
+
+        mockMvc.perform(put("/post/archive/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res").value("can't change archive state before you got best answer."));
+
+        if (postRepository.findById(post.getId()).get().getArchive().equals(true)) {
+            throw new Exception("Post Test : post's archive should be false");
+        }
+    }
+
+
+    @Test
+    public void testRewardPostModifyArchiveStatusAfterChooseBestAnswer() throws Exception {
+        Post post = createRewardPost();
+        AppUser appUser = userRepository.findByEmail(post.getEmail().get(0));
+        Note answerNote = noteRepository.findById(post.getAnswers().get(0)).get();
+        answerNote.setBest(true);
+        noteRepository.save(answerNote);
+
+        mockMvc.perform(put("/post/archive/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res").value("Success"));
+        if (postRepository.findById(post.getId()).get().getArchive().equals(false)) {
+            throw new Exception("Post Test: post does not archive");
+        }
+    }
+
+    @Test
+    public void testQAPostModifyArchiveStatusAfterChooseBestAnswer() throws Exception {
+        Post post = createQAPost();
+        post.getComments().get(0).setBest(true);
+        postRepository.save(post);
+        AppUser appUser = userRepository.findByEmail(post.getEmail().get(0));
+
+        mockMvc.perform(put("/post/archive/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res").value("Success"));
+        if (postRepository.findById(post.getId()).get().getArchive().equals(false)) {
+            throw new Exception("Post Test: post does not archive");
+        }
+    }
+
+    @Test
+    public void testCollaborationPostModifyArchiveStatus() throws Exception {
+        Post post = createCollaborationPost();
+        mockMvc.perform(put("/post/archive/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res").value("Success"));
+        if (postRepository.findById(post.getId()).get().getArchive().equals(false)) {
+            throw new Exception("Post Test: post does not archive");
+        }
+    }
+
 
     @AfterEach
     public void clear() {

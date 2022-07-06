@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping(value = "/",produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FollowController {
     @Autowired
     private FollowService followService;
@@ -21,7 +21,7 @@ public class FollowController {
         String[] followers = followService.getFollowers(email);
         Map<String, Object> map = new HashMap<>();
         ArrayList<UserObj> followUserObj = new ArrayList<>();
-        for(String followerEmail : followers){
+        for (String followerEmail : followers) {
             followUserObj.add(followService.getUserInfo(followerEmail));
         }
         map.put("followers", followUserObj);
@@ -35,7 +35,7 @@ public class FollowController {
         String[] following = followService.getFollowing(email);
         Map<String, Object> map = new HashMap<>();
         ArrayList<UserObj> followingUserObj = new ArrayList<>();
-        for(String followingEmail : following){
+        for (String followingEmail : following) {
             followingUserObj.add(followService.getUserInfo(followingEmail));
         }
         map.put("following", followingUserObj);
@@ -61,5 +61,38 @@ public class FollowController {
         map.put("msg", "Success");
 
         return ResponseEntity.ok(map);
+    }
+
+    @Operation(summary = "Bell someone", description = "userEmail是做開啟小鈴鐺的人，bellEmail是被開啟小鈴鐺的人")
+    @PutMapping("/bell/{userEmail}/{bellEmail}")
+    public ResponseEntity<Object> bell(@PathVariable("userEmail") String userEmail,
+                                       @PathVariable("bellEmail") String bellEmail) {
+        followService.bell(userEmail, bellEmail);
+        Map<String, String> map = new HashMap<>();
+        map.put("msg", "Success");
+        return ResponseEntity.ok(map);
+    }
+
+    @Operation(summary = "Cancel bell someone", description = "userEmail是做關閉小鈴鐺的人，cancelBellEmail是被取消小鈴鐺的人")
+    @PutMapping("/cancelBell/{userEmail}/{cancelBellEmail}")
+    public ResponseEntity<Object> cancelBell(@PathVariable("userEmail") String userEmail,
+                                             @PathVariable("cancelBellEmail") String cancelBellEmail) {
+        followService.cancelBell(userEmail, cancelBellEmail);
+        Map<String, String> map = new HashMap<>();
+        map.put("msg", "Success");
+        return ResponseEntity.ok(map);
+    }
+
+    @Operation(summary = "get a user's bell by email")
+    @GetMapping("/bell/{email}")
+    public ResponseEntity<Object> getBell(@PathVariable("email") String email) {
+        ArrayList<String> bells = followService.getBell(email);
+        Map<String, Object> res = new HashMap<>();
+        ArrayList<UserObj> bellUserObj = new ArrayList<>();
+        for (String bellEmail : bells) {
+            bellUserObj.add(followService.getUserInfo(bellEmail));
+        }
+        res.put("res", bellUserObj);
+        return ResponseEntity.ok(res);
     }
 }
