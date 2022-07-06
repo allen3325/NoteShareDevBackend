@@ -29,7 +29,7 @@ public class NotificationService {
 
     public void saveNotificationBell(String email, Message message) {
         AppUser appUser = appUserService.getUserByEmail(email);
-        ArrayList<String> bellSubscribers = appUser.getBell();
+        ArrayList<String> bellSubscribers = appUser.getBelledBy();
         for (String bellSubscriber: bellSubscribers)
             saveNotificationPrivate(bellSubscriber, message);
     }
