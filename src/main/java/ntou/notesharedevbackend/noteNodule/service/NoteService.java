@@ -393,12 +393,12 @@ public class NoteService {
     }
 
     public Note createRewardNote(String postID, String email, Note request) {
+        request.setType("reward");
+        request.setPostID(postID);
         Note note = createNote(request, email);
-        note.setPostID(postID);
-        Note newNote = replaceNote(note, note.getId());
         AppUser appUser = appUserService.getUserByEmail(email);
         Folder folder = folderService.getTempRewardNoteFolder(appUser.getEmail());
         copyNoteToFolder(note.getId(), folder.getId());
-        return newNote;
+        return note;
     }
 }

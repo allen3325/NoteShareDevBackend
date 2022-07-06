@@ -130,11 +130,12 @@ public class PostController {
     @Operation(summary = "apply become one of collaboration note's author.", description = "wantEnterUsersEmail為申請者,commentFromApplicant為留言")
     @PutMapping("/apply/{postID}")
     public ResponseEntity<Object> applyCollaboration(@PathVariable("postID") String id, @RequestBody Apply applicant) {
-        postService.applyCollaboration(id, applicant);
-
         Map<String, Object> res = new HashMap<>();
-
-        res.put("msg", "Success");
+        if (postService.applyCollaboration(id, applicant)) {
+            res.put("msg", "Success");
+        } else {
+            res.put("msg", "User already apply");
+        }
         return ResponseEntity.ok(res);
     }
 
@@ -240,7 +241,7 @@ public class PostController {
         if (postService.archivePost(postID)) {
             res.put("res", "Success");
         } else {
-            res.put("res", "can't change publish state before you got best answer.");
+            res.put("res", "can't change archive state before you got best answer.");
         }
         return ResponseEntity.ok().body(res);
     }

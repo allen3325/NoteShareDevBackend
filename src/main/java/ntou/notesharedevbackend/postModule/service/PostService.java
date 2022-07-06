@@ -179,15 +179,19 @@ public class PostService {
         return false;
     }
 
-    public void applyCollaboration(String id, Apply applicant) {
+    public Boolean applyCollaboration(String id, Apply applicant) {
         Post post = getPostById(id);
         // get all apply
         ArrayList<Apply> allApply = post.getCollabApply();
         allApply.add(applicant);
         // update apply in post
         post.setCollabApply(allApply);
+        if (post.getApplyEmail().contains(applicant.getWantEnterUsersEmail())) {
+            return false;
+        }
         post.getApplyEmail().add(applicant.getWantEnterUsersEmail());
         replacePost(post.getId(), post);
+        return true;
 //        postRepository.save(post);
     }
 
