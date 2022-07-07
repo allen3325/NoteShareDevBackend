@@ -95,4 +95,17 @@ public class FollowController {
         res.put("res", bellUserObj);
         return ResponseEntity.ok(res);
     }
+
+    @Operation(summary = "get a user's bellBy by email")
+    @GetMapping("/bellBy/{email}")
+    public ResponseEntity<Object> getBellBy(@PathVariable("email") String email) {
+        ArrayList<String> bellBys = followService.getBellBy(email);
+        Map<String, Object> res = new HashMap<>();
+        ArrayList<UserObj> bellByUserObj = new ArrayList<>();
+        for (String bellByEmail : bellBys) {
+            bellByUserObj.add(followService.getUserInfo(bellByEmail));
+        }
+        res.put("res", bellByUserObj);
+        return ResponseEntity.ok(res);
+    }
 }
