@@ -91,9 +91,9 @@ public class CommentService {
         comment.setDate();
         comment.setEmail(request.getEmail());
         comment.setFloor(commentArrayList.size());
-        if(request.getPicURL()!=null){
+        if (request.getPicURL() != null) {
             comment.setPicURL(request.getPicURL());
-        }else{
+        } else {
             comment.setPicURL(new ArrayList<String>());
         }
 
@@ -177,23 +177,40 @@ public class CommentService {
         }
     }
 
-    public CommentReturn getUserInfo(Comment comment){
+    public CommentReturn getUserInfo(Comment comment) {
         CommentReturn commentReturn = new CommentReturn();
         commentReturn.setId(comment.getId());
-        commentReturn.setContent(comment.getContent());
-        commentReturn.setLikeCount(comment.getLikeCount());
-        commentReturn.setFloor(comment.getFloor());
-        commentReturn.setDate(comment.getDate());
-        commentReturn.setPicURL(comment.getPicURL());
-        commentReturn.setBest(comment.getBest());
-        UserObj userObj = appUserService.getUserInfo(comment.getEmail());
-        commentReturn.setUserObj(userObj);
-        ArrayList<UserObj> likerUserObj = new ArrayList<>();
-        for(String likerEmail : comment.getLiker()){
-            UserObj userObj1 = appUserService.getUserInfo(likerEmail);
-            likerUserObj.add(userObj1);
+        if (comment.getEmail() == null) {
+            commentReturn.setContent(null);
+            commentReturn.setLikeCount(null);
+            commentReturn.setFloor(null);
+            commentReturn.setDate(null);
+            commentReturn.setPicURL(null);
+            commentReturn.setBest(null);
+            UserObj userObj = new UserObj();
+            userObj.setUserObjAvatar(null);
+            userObj.setUserObjEmail(null);
+            userObj.setUserObjName(null);
+            commentReturn.setUserObj(userObj);
+            ArrayList<UserObj> likerUserObj = new ArrayList<>();
+            commentReturn.setLikerUserObj(null);
+        } else {
+            commentReturn.setContent(comment.getContent());
+            commentReturn.setLikeCount(comment.getLikeCount());
+            commentReturn.setFloor(comment.getFloor());
+            commentReturn.setDate(comment.getDate());
+            commentReturn.setPicURL(comment.getPicURL());
+            commentReturn.setBest(comment.getBest());
+            UserObj userObj = appUserService.getUserInfo(comment.getEmail());
+            commentReturn.setUserObj(userObj);
+            ArrayList<UserObj> likerUserObj = new ArrayList<>();
+            for (String likerEmail : comment.getLiker()) {
+                UserObj userObj1 = appUserService.getUserInfo(likerEmail);
+                likerUserObj.add(userObj1);
+            }
+            commentReturn.setLikerUserObj(likerUserObj);
         }
-        commentReturn.setLikerUserObj(likerUserObj);
+
         return commentReturn;
     }
 }
