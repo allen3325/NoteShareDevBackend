@@ -65,12 +65,18 @@ public class FollowService {
         AppUser appUser = appUserService.getUserByEmail(userEmail);
         appUser.getBell().add(bellEmail);
         appUserService.replaceUser(appUser);
+        AppUser beBellUser = appUserService.getUserByEmail(bellEmail);
+        beBellUser.getBelledBy().add(appUser.getEmail());
+        appUserService.replaceUser(beBellUser);
     }
 
     public void cancelBell(String userEmail, String cancelBellEmail) {
         AppUser appUser = appUserService.getUserByEmail(userEmail);
         appUser.getBell().remove(cancelBellEmail);
         appUserService.replaceUser(appUser);
+        AppUser cancelBellUser = appUserService.getUserByEmail(cancelBellEmail);
+        cancelBellUser.getBelledBy().remove(appUser.getEmail());
+        appUserService.replaceUser(cancelBellUser);
     }
 
     public ArrayList<String> getBell(String email) {
