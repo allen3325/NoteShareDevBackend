@@ -3,22 +3,17 @@ package ntou.notesharedevbackend.notificationModule.entity;
 import lombok.*;
 
 @ToString
-public class Message {
+public class MessageWithReceiver {
     private String user;
     private String content;
     private String time;
+    private String receiver;
 
-    public Message() {
+    public MessageWithReceiver() {
 
     }
 
-    public Message(MessageWithReceiver message) {
-        setUser(message.getUser());
-        setContent(message.getContent());
-        setTime(message.getTime());
-    }
-
-    public Message(Message message) {
+    public MessageWithReceiver(Message message) {
         this.user = message.getUser();
         this.content = message.getContent();
         this.time = message.getTime();
@@ -47,4 +42,13 @@ public class Message {
     public void setTime(String time) {
         this.time = time;
     }
+
+    public String getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(String receiver) {
+        this.receiver = receiver;
+    }
 }
+

@@ -69,6 +69,7 @@ public class AppUserService {
         appUser.setSubscribe(new ArrayList<String>());
         appUser.setBell(new ArrayList<String>());
         appUser.setFans(new ArrayList<String>());
+        appUser.setBelledBy(new ArrayList<String>());
         appUser.setCoin(300);
         appUser.setHeadshotPhoto(request.getHeadshotPhoto());
         appUser.setNotification(new ArrayList<Message>());
@@ -112,7 +113,7 @@ public class AppUserService {
         user.setHeadshotPhoto(request.getHeadshotPhoto());
         user.setNotification(request.getNotification());
         user.setUnreadMessageCount(request.getUnreadMessageCount());
-
+        user.setBelledBy(request.getBelledBy());
         return userRepository.save(user);
     }
 
@@ -197,9 +198,14 @@ public class AppUserService {
         appUserReturn.setFolders(appUser.getFolders());
         appUserReturn.setCoin(appUser.getCoin());
         appUserReturn.setHeadshotPhoto(appUser.getHeadshotPhoto());
-        appUserReturn.setNotification(appUser.getNotification());
         appUserReturn.setUnreadMessageCount(appUser.getUnreadMessageCount());
 
+        ArrayList<UserObj> notificationUserObj = new ArrayList<>();
+        for (Message message : appUser.getNotification()) {
+            UserObj userObj = getUserInfo(message.getUser());
+            notificationUserObj.add(userObj);
+        }
+        appUserReturn.setNotificationUserObj(notificationUserObj);
         ArrayList<UserObj> subscribe = new ArrayList<>();
         for (String subscribeEmail : appUser.getSubscribe()) {
             UserObj userObj = getUserInfo(subscribeEmail);
@@ -212,6 +218,12 @@ public class AppUserService {
             bell.add(userObj);
         }
         appUserReturn.setBellUserObj(bell);
+        ArrayList<UserObj> belledBy = new ArrayList<>();
+        for (String belledByEmail : appUser.getBelledBy()) {
+            UserObj userObj = getUserInfo(belledByEmail);
+            belledBy.add(userObj);
+        }
+        appUserReturn.setBelledByUserObj(belledBy);
         ArrayList<UserObj> fans = new ArrayList<>();
         for (String fansEmail : appUser.getFans()) {
             UserObj userObj = getUserInfo(fansEmail);

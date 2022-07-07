@@ -102,6 +102,7 @@ public class FollowTest {
         appUser.setBell(new ArrayList<String>());
         appUser.setFans(new ArrayList<String>());
         appUser.setHeadshotPhoto(null);
+        appUser.setBelledBy(new ArrayList<>());
         return appUser;
     }
 
@@ -187,6 +188,9 @@ public class FollowTest {
         if (!userRepository.findByEmail(appUser.getEmail()).getBell().contains(beBell.getEmail())) {
             throw new Exception("Bell Test : user's bell does not update");
         }
+        if(!userRepository.findByEmail(beBell.getEmail()).getBelledBy().contains(appUser.getEmail())){
+            throw new Exception("Bell Test : beBell's BellBy does not update");
+        }
     }
 
     @Test
@@ -194,6 +198,8 @@ public class FollowTest {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         AppUser beCancelBell = userRepository.findByEmail("tara@gmail.com");
         appUser.getBell().add(beCancelBell.getEmail());
+        beCancelBell.getBelledBy().add(appUser.getEmail());
+        userRepository.save(beCancelBell);
         userRepository.save(appUser);
         mockMvc.perform(put("/cancelBell/" + appUser.getEmail() + "/" + beCancelBell.getEmail())
                         .headers(httpHeaders))
@@ -203,6 +209,9 @@ public class FollowTest {
         if (userRepository.findByEmail(appUser.getEmail()).getBell().contains(beCancelBell.getEmail())) {
             throw new Exception("Bell Test : user's bell does not update");
         }
+        if(userRepository.findByEmail(beCancelBell.getEmail()).getBelledBy().contains(appUser.getEmail())){
+            throw new Exception("Bell Test : beCancelBell's beBell does not update");
+        }
     }
 
     @Test
@@ -210,15 +219,15 @@ public class FollowTest {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         AppUser bell1 = userRepository.findByEmail(appUser.getBell().get(0));
         AppUser bell2 = userRepository.findByEmail(appUser.getBell().get(1));
-        mockMvc.perform(get("/following/yitingwu.1030@gmail.com")
+        mockMvc.perform(get("/bell/yitingwu.1030@gmail.com")
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.following.[0].userObjEmail").value(bell1.getEmail()))
-                .andExpect(jsonPath("$.following.[0].userObjName").value(bell1.getName()))
-                .andExpect(jsonPath("$.following.[0].userObjAvatar").value(bell1.getHeadshotPhoto()))
-                .andExpect(jsonPath("$.following.[1].userObjEmail").value(bell2.getEmail()))
-                .andExpect(jsonPath("$.following.[1].userObjName").value(bell2.getName()))
-                .andExpect(jsonPath("$.following.[1].userObjAvatar").value(bell2.getHeadshotPhoto()));
+                .andExpect(jsonPath("$.res.[0].userObjEmail").value(bell1.getEmail()))
+                .andExpect(jsonPath("$.res.[0].userObjName").value(bell1.getName()))
+                .andExpect(jsonPath("$.res.[0].userObjAvatar").value(bell1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[1].userObjEmail").value(bell2.getEmail()))
+                .andExpect(jsonPath("$.res.[1].userObjName").value(bell2.getName()))
+                .andExpect(jsonPath("$.res.[1].userObjAvatar").value(bell2.getHeadshotPhoto()));
     }
 
     @AfterEach

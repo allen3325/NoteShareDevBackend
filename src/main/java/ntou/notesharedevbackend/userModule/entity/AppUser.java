@@ -51,7 +51,8 @@ public class AppUser {
 //    private ArrayList<Folder> folders;
     private ArrayList<String> folders; // folder's ID
     private ArrayList<String> subscribe;
-    private ArrayList<String> bell;
+    private ArrayList<String> bell; // 開啟誰的小鈴鐺
+    private ArrayList<String> belledBy; // 誰開啟我的小鈴鐺
     private ArrayList<String> fans;
     private Integer coin;
     private String headshotPhoto;
@@ -165,6 +166,14 @@ public class AppUser {
 
     public void setBell(ArrayList<String> bell) {
         this.bell = bell;
+    }
+
+    public ArrayList<String> getBelledBy() {
+        return belledBy;
+    }
+
+    public void setBelledBy(ArrayList<String> belledBy) {
+        this.belledBy = belledBy;
     }
 
     public ArrayList<String> getFans() {
