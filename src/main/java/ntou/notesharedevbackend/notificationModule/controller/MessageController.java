@@ -21,19 +21,27 @@ public class MessageController {
         this.messagingTemplate = messagingTemplate;
     }
 
-    @MessageMapping("/message/{noteID}")
-    public void getMessage(@DestinationVariable String noteID, final Message message, final Principal principal) throws InterruptedException {
+    @MessageMapping("/many-to-many-message/{noteID}")
+    public void getGroupMessage(@DestinationVariable String noteID, final Message message, final Principal principal) throws InterruptedException {
         Thread.sleep(1000);
-        System.out.println(principal.getName());
-        messagingTemplate.convertAndSend("/topic/messages/" + noteID, message);
-        notificationService.saveNotificationPublic(noteID, message);
+        messagingTemplate.convertAndSend("/topic/group-messages/" + noteID, message);
+        notificationService.saveNotificationGroup(noteID, message);
     }
 
-    @MessageMapping("/private-message")
-    public void getPrivateMessage(final Message message, final Principal principal) throws InterruptedException {
+    @MessageMapping("/one-to-many-message/{email}")
+    public void getBellMessage(@DestinationVariable String email, final Message message, final Principal principal) throws  InterruptedException {
         Thread.sleep(1000);
-        messagingTemplate.convertAndSendToUser(principal.getName(), "/topic/private-messages", message);
-        notificationService.saveNotificationPrivate(principal.getName(), message);
+        messagingTemplate.convertAndSend("/topic/bell-messages/" + email, message);
+        notificationService.saveNotificationBell(email, message);
+    }
+
+    @MessageMapping("/one-to-one-message")
+    public void getPrivateMessage(final MessageWithReceiver messageWithReceiver, final Principal principal) throws InterruptedException {
+        Thread.sleep(1000);
+
+        Message message = new Message(messageWithReceiver);
+        messagingTemplate.convertAndSendToUser(messageWithReceiver.getReceiver(), "/topic/private-messages", message);
+        notificationService.saveNotificationPrivate(messageWithReceiver.getReceiver(), message);
     }
 
 //    @Scheduled(fixedRate = 5000)
