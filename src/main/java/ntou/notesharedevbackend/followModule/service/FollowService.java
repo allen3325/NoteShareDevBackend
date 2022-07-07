@@ -63,11 +63,13 @@ public class FollowService {
 
     public void bell(String userEmail, String bellEmail) {
         AppUser appUser = appUserService.getUserByEmail(userEmail);
-        appUser.getBell().add(bellEmail);
-        appUserService.replaceUser(appUser);
-        AppUser beBellUser = appUserService.getUserByEmail(bellEmail);
-        beBellUser.getBelledBy().add(appUser.getEmail());
-        appUserService.replaceUser(beBellUser);
+        if(!appUser.getBell().contains(bellEmail)) {
+            appUser.getBell().add(bellEmail);
+            appUserService.replaceUser(appUser);
+            AppUser beBellUser = appUserService.getUserByEmail(bellEmail);
+            beBellUser.getBelledBy().add(appUser.getEmail());
+            appUserService.replaceUser(beBellUser);
+        }
     }
 
     public void cancelBell(String userEmail, String cancelBellEmail) {
