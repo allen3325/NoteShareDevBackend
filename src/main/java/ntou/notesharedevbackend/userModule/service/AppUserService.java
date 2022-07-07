@@ -69,6 +69,7 @@ public class AppUserService {
         appUser.setSubscribe(new ArrayList<String>());
         appUser.setBell(new ArrayList<String>());
         appUser.setFans(new ArrayList<String>());
+        appUser.setBelledBy(new ArrayList<String>());
         appUser.setCoin(300);
         appUser.setHeadshotPhoto(request.getHeadshotPhoto());
         appUser.setNotification(new ArrayList<Message>());
@@ -112,7 +113,7 @@ public class AppUserService {
         user.setHeadshotPhoto(request.getHeadshotPhoto());
         user.setNotification(request.getNotification());
         user.setUnreadMessageCount(request.getUnreadMessageCount());
-
+        user.setBelledBy(request.getBelledBy());
         return userRepository.save(user);
     }
 

@@ -79,6 +79,8 @@ public class UserTest {
         appUser.setBell(new ArrayList<>());
         appUser.setSubscribe(new ArrayList<>());
         appUser.setFans(new ArrayList<>());
+        appUser.setNotification(new ArrayList<>());
+        appUser.setBelledBy(new ArrayList<>());
         return userRepository.insert(appUser);
     }
 
@@ -192,10 +194,18 @@ public class UserTest {
         String id = appUser.getId();
         AppUser fans = createUser("user1@gmail.com","User1");
         appUser.getFans().add(fans.getEmail());
+        fans.getSubscribe().add(appUser.getEmail());
         AppUser following = createUser("user2@gmail.com","User2");
         appUser.getSubscribe().add(following.getEmail());
+        following.getFans().add(appUser.getEmail());
         AppUser bells = createUser("user3@gmail.com0","User3");
         appUser.getBell().add(bells.getEmail());
+        bells.getBelledBy().add(appUser.getEmail());
+        fans.getBell().add(appUser.getEmail());
+        appUser.getBelledBy().add(fans.getEmail());
+        userRepository.save(fans);
+        userRepository.save(following);
+        userRepository.save(bells);
         userRepository.save(appUser);
         mockMvc.perform(get("/user/id/" + id)
                         .headers(httpHeaders))
@@ -219,6 +229,9 @@ public class UserTest {
                 .andExpect(jsonPath("$.res.bellUserObj.[0].userObjEmail").value(bells.getEmail()))
                 .andExpect(jsonPath("$.res.bellUserObj.[0].userObjName").value(bells.getName()))
                 .andExpect(jsonPath("$.res.bellUserObj.[0].userObjAvatar").value(bells.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.belledByUserObj.[0].userObjEmail").value(fans.getEmail()))
+                .andExpect(jsonPath("$.res.belledByUserObj.[0].userObjName").value(fans.getName()))
+                .andExpect(jsonPath("$.res.belledByUserObj.[0].userObjAvatar").value(fans.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.coin").value(appUser.getCoin()))
                 .andExpect(jsonPath("$.res.headshotPhoto").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.admin").value(appUser.isAdmin()))
