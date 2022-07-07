@@ -87,4 +87,13 @@ public class FollowService {
             return new ArrayList<String>();
         }
     }
+
+    public ArrayList<String> getBellBy(String email) {
+        AppUser appUser = appUserService.getUserByEmail(email);
+        if (appUser.getBelledBy() != null) {
+            return appUser.getBelledBy();
+        } else {
+            return new ArrayList<String>();
+        }
+    }
 }

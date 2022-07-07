@@ -66,12 +66,12 @@ public class FollowTest {
         appUser.setFolders(new ArrayList<>());
         AppUser fans1 = createUser("alan@gmail.com", "Alan");
         fans1.getFans().add(appUser.getEmail());
-        userRepository.insert(fans1);
+        fans1 = userRepository.insert(fans1);
         AppUser fans2 = createUser("eva@gmail.com", "Eva");
         fans2.getFans().add(appUser.getEmail());
-        userRepository.insert(fans2);
+        fans2 = userRepository.insert(fans2);
         AppUser fans3 = createUser("tara@gmail.com", "Tara");
-        userRepository.insert(fans3);
+        fans3 = userRepository.insert(fans3);
         ArrayList<String> fans = new ArrayList<>();
         fans.add(fans1.getEmail());
         fans.add(fans2.getEmail());
@@ -85,6 +85,10 @@ public class FollowTest {
         bells.add(fans1.getEmail());
         bells.add(fans2.getEmail());
         appUser.setBell(bells);
+        fans1.getBelledBy().add(appUser.getEmail());
+        userRepository.save(fans1);
+        fans2.getBelledBy().add(appUser.getEmail());
+        userRepository.save(fans2);
         return appUser;
     }
 
@@ -188,7 +192,7 @@ public class FollowTest {
         if (!userRepository.findByEmail(appUser.getEmail()).getBell().contains(beBell.getEmail())) {
             throw new Exception("Bell Test : user's bell does not update");
         }
-        if(!userRepository.findByEmail(beBell.getEmail()).getBelledBy().contains(appUser.getEmail())){
+        if (!userRepository.findByEmail(beBell.getEmail()).getBelledBy().contains(appUser.getEmail())) {
             throw new Exception("Bell Test : beBell's BellBy does not update");
         }
     }
@@ -209,7 +213,7 @@ public class FollowTest {
         if (userRepository.findByEmail(appUser.getEmail()).getBell().contains(beCancelBell.getEmail())) {
             throw new Exception("Bell Test : user's bell does not update");
         }
-        if(userRepository.findByEmail(beCancelBell.getEmail()).getBelledBy().contains(appUser.getEmail())){
+        if (userRepository.findByEmail(beCancelBell.getEmail()).getBelledBy().contains(appUser.getEmail())) {
             throw new Exception("Bell Test : beCancelBell's beBell does not update");
         }
     }
@@ -228,6 +232,18 @@ public class FollowTest {
                 .andExpect(jsonPath("$.res.[1].userObjEmail").value(bell2.getEmail()))
                 .andExpect(jsonPath("$.res.[1].userObjName").value(bell2.getName()))
                 .andExpect(jsonPath("$.res.[1].userObjAvatar").value(bell2.getHeadshotPhoto()));
+    }
+
+    @Test
+    public void testGetUserBellByByEmail() throws Exception {
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        AppUser bell1 = userRepository.findByEmail(appUser.getBell().get(0));
+        mockMvc.perform(get("/bellBy/" + bell1.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.[0].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.[0].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.[0].userObjAvatar").value(appUser.getHeadshotPhoto()));
     }
 
     @AfterEach
