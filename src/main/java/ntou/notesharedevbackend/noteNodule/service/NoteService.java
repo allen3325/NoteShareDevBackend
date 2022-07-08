@@ -345,34 +345,43 @@ public class NoteService {
         noteReturn.setBest(note.getBest());
         noteReturn.setPublishDate(note.getPublishDate());
         noteReturn.setDescription(note.getDescription());
+        noteReturn.setHeaderName(note.getHeaderName());
+        noteReturn.setHeaderEmail(note.getHeaderEmail());
         noteReturn.setHeaderUserObj(appUserService.getUserInfo(note.getHeaderEmail()));
         if (note.getManagerEmail() != null) {
+            noteReturn.setManagerEmail(note.getManagerEmail());
             noteReturn.setManagerUserObj(appUserService.getUserInfo(note.getManagerEmail()));
         }
+        noteReturn.setAuthorName(note.getAuthorName());
+        noteReturn.setAuthorEmail(note.getAuthorEmail());
         ArrayList<UserObj> authorUserObj = new ArrayList<>();
         for (String authorEmail : note.getAuthorEmail()) {
             UserObj userObj = appUserService.getUserInfo(authorEmail);
             authorUserObj.add(userObj);
         }
         noteReturn.setAuthorUserObj(authorUserObj);
+        noteReturn.setLiker(note.getLiker());
         ArrayList<UserObj> likerUserObj = new ArrayList<>();
         for (String likerEmail : note.getLiker()) {
             UserObj userObj = appUserService.getUserInfo(likerEmail);
             likerUserObj.add(userObj);
         }
         noteReturn.setLikerUserObj(likerUserObj);
+        noteReturn.setBuyer(note.getBuyer());
         ArrayList<UserObj> buyerUserObj = new ArrayList<>();
         for (String buyerEmail : note.getBuyer()) {
             UserObj userObj = appUserService.getUserInfo(buyerEmail);
             buyerUserObj.add(userObj);
         }
         noteReturn.setBuyerUserObj(buyerUserObj);
+        noteReturn.setFavoriter(note.getFavoriter());
         ArrayList<UserObj> favoriterUserObj = new ArrayList<>();
         for (String favoriterEmail : note.getFavoriter()) {
             UserObj userObj = appUserService.getUserInfo(favoriterEmail);
             favoriterUserObj.add(userObj);
         }
         noteReturn.setFavoriterUserObj(favoriterUserObj);
+        noteReturn.setContributors(note.getContributors());
         ArrayList<UserObj> contributorUserObj = new ArrayList<>();
         for (String contributorEmail : note.getContributors()) {
             UserObj userObj = appUserService.getUserInfo(contributorEmail);
