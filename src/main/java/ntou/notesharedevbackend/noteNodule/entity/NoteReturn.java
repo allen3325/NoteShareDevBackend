@@ -28,7 +28,8 @@ public class NoteReturn {
     private Integer unlockCount;
     private Boolean downloadable;
     private Integer commentCount;
-    private ArrayList<CommentReturn> comments;
+    private ArrayList<Comment> comments;
+    private ArrayList<CommentReturn> commentsUserObj;
     private Integer price;
     private Boolean isPublic; // 筆記是否公開
     private Boolean isSubmit; // 用於懸賞區投稿
@@ -152,12 +153,20 @@ public class NoteReturn {
         this.commentCount = commentCount;
     }
 
-    public ArrayList<CommentReturn> getComments() {
+    public ArrayList<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(ArrayList<CommentReturn> comments) {
+    public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
+    }
+
+    public ArrayList<CommentReturn> getCommentsUserObj() {
+        return commentsUserObj;
+    }
+
+    public void setCommentsUserObj(ArrayList<CommentReturn> commentsUserObj) {
+        this.commentsUserObj = commentsUserObj;
     }
 
     public Integer getPrice() {

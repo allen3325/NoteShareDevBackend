@@ -338,13 +338,13 @@ public class NoteService {
         noteReturn.setUnlockCount(note.getUnlockCount());
         noteReturn.setDownloadable(note.getDownloadable());
         noteReturn.setCommentCount(note.getCommentCount());
-
+        noteReturn.setComments(note.getComments());
         ArrayList<CommentReturn> commentReturnArrayList = new ArrayList<>();
         for (Comment comment : note.getComments()) {
             CommentReturn commentReturn = commentService.getUserInfo(comment);
             commentReturnArrayList.add(commentReturn);
         }
-        noteReturn.setComments(commentReturnArrayList);
+        noteReturn.setCommentsUserObj(commentReturnArrayList);
 
         noteReturn.setPrice(note.getPrice());
         noteReturn.setPublic(note.getPublic());
@@ -424,7 +424,7 @@ public class NoteService {
         return note;
     }
 
-    public FolderReturn folderGetUserInfo(String folderID){
+    public FolderReturn folderGetUserInfo(String folderID) {
         return folderService.getAllContentUnderFolderID(folderID);
     }
 }
