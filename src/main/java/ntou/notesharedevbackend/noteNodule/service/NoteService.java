@@ -297,7 +297,19 @@ public class NoteService {
         List<Note> tmp = noteRepository.findAllByHeaderEmail(email);
         ArrayList<NoteFolderReturn> res = new ArrayList<>();
         for (Note note : tmp) {
-            res.add(new NoteFolderReturn(note));
+            NoteFolderReturn noteFolderReturn = new NoteFolderReturn(note);
+            noteFolderReturn.setHeaderUserObj(appUserService.getUserInfo(note.getHeaderEmail()));
+            if (note.getManagerEmail() != null) {
+                noteFolderReturn.setManagerEmail(note.getManagerEmail());
+                noteFolderReturn.setManagerUserObj(appUserService.getUserInfo(note.getManagerEmail()));
+            }
+            ArrayList<UserObj> authorUserObj = new ArrayList<>();
+            for (String authorEmail : note.getAuthorEmail()) {
+                UserObj userObj = appUserService.getUserInfo(authorEmail);
+                authorUserObj.add(userObj);
+            }
+            noteFolderReturn.setAuthorUserObj(authorUserObj);
+            res.add(noteFolderReturn);
         }
         return res;
     }

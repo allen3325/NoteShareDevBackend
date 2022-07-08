@@ -9,6 +9,7 @@ import ntou.notesharedevbackend.noteNodule.entity.NoteFolderReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.repository.FolderRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
+import ntou.notesharedevbackend.userModule.entity.UserObj;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,6 +84,17 @@ public class FolderService {
         for (String noteID : noteIDList) {
             Note noteTmp = noteService.getNote(noteID);
             NoteFolderReturn noteBasicReturn = new NoteFolderReturn(noteTmp);
+            noteBasicReturn.setHeaderUserObj(appUserService.getUserInfo(noteTmp.getHeaderEmail()));
+            if (noteTmp.getManagerEmail() != null) {
+                noteBasicReturn.setManagerEmail(noteTmp.getManagerEmail());
+                noteBasicReturn.setManagerUserObj(appUserService.getUserInfo(noteTmp.getManagerEmail()));
+            }
+            ArrayList<UserObj> authorUserObj = new ArrayList<>();
+            for (String authorEmail : noteTmp.getAuthorEmail()) {
+                UserObj userObj = appUserService.getUserInfo(authorEmail);
+                authorUserObj.add(userObj);
+            }
+            noteBasicReturn.setAuthorUserObj(authorUserObj);
             notes.add(noteBasicReturn);
         }
 
