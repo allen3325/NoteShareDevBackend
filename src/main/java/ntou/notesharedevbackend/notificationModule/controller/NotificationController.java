@@ -33,4 +33,12 @@ public class NotificationController {
         map.put("notification", messageUserReturnArrayList);
         return ResponseEntity.ok(map);
     }
+
+    @PutMapping("/unreadMessage/{email}")
+    public ResponseEntity<Object> clearUnreadMessage(@PathVariable("email") String email) {
+        notificationService.clearUnreadMessage(email);
+        Map<String, Object> map = new HashMap<>();
+        map.put("msg", "Success");
+        return ResponseEntity.ok(map);
+    }
 }

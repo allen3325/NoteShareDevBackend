@@ -55,6 +55,12 @@ public class NotificationService {
         return appUser.getNotification();
     }
 
+    public void clearUnreadMessage(String email) {
+        AppUser appUser = appUserService.getUserByEmail(email);
+        appUser.setUnreadMessageCount(0);
+        userRepository.save(appUser);
+    }
+
     public MessageReturn getUserInfo(Message message) {
         MessageReturn messageReturn = new MessageReturn();
         messageReturn.setContent(message.getContent());
