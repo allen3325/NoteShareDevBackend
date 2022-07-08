@@ -269,8 +269,8 @@ public class FolderService {
         newFolder.setPath(request.getPath());
         newFolder.setParent(request.getParent());
         newFolder.setChildren(request.getChildren());
-
-        return folderRepository.save(request);
+        newFolder.setCreatorName(request.getCreatorName());
+        return folderRepository.save(newFolder);
     }
 
     public void changeOldParentChildren(String email, String folderID, Folder request) {
