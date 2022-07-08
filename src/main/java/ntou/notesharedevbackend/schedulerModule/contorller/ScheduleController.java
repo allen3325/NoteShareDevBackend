@@ -82,11 +82,11 @@ public class ScheduleController {
         return ResponseEntity.status(204).body(res);
     }
 
-    @Operation(summary = "後端自己用")
-    @DeleteMapping("/cancelTask/{taskID}")
-    public ResponseEntity cancelTask(@PathVariable(name = "taskID") String taskID) {
-        schedulingService.cancelSchedule(taskID);
-        return ResponseEntity.noContent().build();
-    }
+//    @Operation(summary = "後端自己用")
+//    @DeleteMapping("/cancelTask/{taskID}")
+//    public ResponseEntity cancelTask(@PathVariable(name = "taskID") String taskID) {
+//        schedulingService.cancelSchedule(taskID);
+//        return ResponseEntity.noContent().build();
+//    }
 
 }

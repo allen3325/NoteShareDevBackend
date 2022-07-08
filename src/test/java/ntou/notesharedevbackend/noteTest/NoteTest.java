@@ -56,7 +56,7 @@ public class NoteTest {
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    private Folder createFolder(String folderName, String path, String parent) {
+    private Folder createFolder(String folderName, String path, String parent, String name) {
         Folder folder = new Folder();
         folder.setFolderName(folderName);
         folder.setFavorite(false);
@@ -65,6 +65,7 @@ public class NoteTest {
         folder.setNotes(new ArrayList<String>());
         folder.setChildren(new ArrayList<String>());
         folder.setPublic(false);
+        folder.setCreatorName(name);
         folderRepository.insert(folder);
         return folder;
     }
@@ -75,11 +76,11 @@ public class NoteTest {
         appUser.setActivate(true);
         appUser.setName(name);
         appUser.setPassword(passwordEncoder.encode("1234"));
-        Folder buyFolder = createFolder("Buy", "/Buy", null);
-        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null);
-        Folder collaborationFolder = createFolder("Collaboration", "/Collaboration", null);
-        Folder OSFolder = createFolder("OS", "/OS", null);
-        Folder tempRewardNoteFolder = createFolder("Temp Reward Note", "/Temp Reward Note", null);
+        Folder buyFolder = createFolder("Buy", "/Buy", null, name);
+        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null, name);
+        Folder collaborationFolder = createFolder("Collaboration", "/Collaboration", null, name);
+        Folder OSFolder = createFolder("OS", "/OS", null, name);
+        Folder tempRewardNoteFolder = createFolder("Temp Reward Note", "/Temp Reward Note", null, name);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());
@@ -516,6 +517,11 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.department").value(note.getDepartment()))
                 .andExpect(jsonPath("$.res.subject").value(note.getSubject()))
                 .andExpect(jsonPath("$.res.title").value(note.getTitle()))
+                .andExpect(jsonPath("$.res.headerEmail").value(note.getHeaderEmail()))
+                .andExpect(jsonPath("$.res.headerName").value(note.getHeaderName()))
+                .andExpect(jsonPath("$.res.authorEmail.[0]").value(note.getAuthorEmail().get(0)))
+                .andExpect(jsonPath("$.res.authorName.[0]").value(note.getAuthorName().get(0)))
+                .andExpect(jsonPath("$.res.managerEmail").value(note.getManagerEmail()))
                 .andExpect(jsonPath("$.res.professor").value(note.getProfessor()))
                 .andExpect(jsonPath("$.res.school").value(note.getSchool()))
                 .andExpect(jsonPath("$.res.likeCount").value(note.getLikeCount()))
@@ -621,6 +627,10 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.authorUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.authorUserObj.[0].userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.authorUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.liker").isEmpty())
+                .andExpect(jsonPath("$.res.buyer").isEmpty())
+                .andExpect(jsonPath("$.res.favoriter").isEmpty())
+                .andExpect(jsonPath("$.res.contributors").isEmpty())
                 .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.buyerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
@@ -730,6 +740,10 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.department").value(request.get("department")))
                 .andExpect(jsonPath("$.res.subject").value(request.get("subject")))
                 .andExpect(jsonPath("$.res.title").value(request.get("title")))
+                .andExpect(jsonPath("$.res.headerEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.headerName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.authorEmail.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName.[0]").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.professor").value(request.get("professor")))
                 .andExpect(jsonPath("$.res.school").value(request.get("school")))
                 .andExpect(jsonPath("$.res.likeCount").value(0))
@@ -766,6 +780,10 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.authorUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.authorUserObj.[0].userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.authorUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.liker").isEmpty())
+                .andExpect(jsonPath("$.res.buyer").isEmpty())
+                .andExpect(jsonPath("$.res.favoriter").isEmpty())
+                .andExpect(jsonPath("$.res.contributors").isEmpty())
                 .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.buyerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
@@ -895,6 +913,10 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.department").value(request.get("department")))
                 .andExpect(jsonPath("$.res.subject").value(request.get("subject")))
                 .andExpect(jsonPath("$.res.title").value(request.get("title")))
+                .andExpect(jsonPath("$.res.headerEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.headerName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.authorEmail.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName.[0]").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.professor").value(request.get("professor")))
                 .andExpect(jsonPath("$.res.school").value(request.get("school")))
                 .andExpect(jsonPath("$.res.likeCount").value(0))
@@ -927,6 +949,9 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.authorUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.authorUserObj.[0].userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.authorUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.liker").isEmpty())
+                .andExpect(jsonPath("$.res.buyer").isEmpty())
+                .andExpect(jsonPath("$.res.favoriter").isEmpty())
                 .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.buyerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
@@ -1084,7 +1109,7 @@ public class NoteTest {
     @Test
     public void testCopyNoteToFolder() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        Folder newFolder = createFolder("New", "/New", null);
+        Folder newFolder = createFolder("New", "/New", null, appUser.getName());
         appUser.getFolders().add(newFolder.getId());
         userRepository.save(appUser);
         Folder oldFolder = folderRepository.findById(appUser.getFolders().get(3)).get();
@@ -1096,9 +1121,14 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.folderName").value(newFolder.getFolderName()))
                 .andExpect(jsonPath("$.res.path").value(newFolder.getPath()))
                 .andExpect(jsonPath("$.res.children").isEmpty())
-                .andExpect(jsonPath("$.res.notes.[0]").value(note.getId()))
+                .andExpect(jsonPath("$.res.notes.[0].id").value(note.getId()))
+                .andExpect(jsonPath("$.res.notes.[0].headerEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.notes.[0].headerName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.favorite").value(newFolder.getFavorite()))
-                .andExpect(jsonPath("$.res.public").value(newFolder.getPublic()));
+                .andExpect(jsonPath("$.res.public").value(newFolder.getPublic()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
 
         if (!folderRepository.findById(oldFolder.getId()).get().getNotes().contains(note.getId())) {
             throw new Exception("Note Test : Old Folder remove note id");
@@ -1108,7 +1138,7 @@ public class NoteTest {
     @Test
     public void testDeleteNoteToFolder() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        Folder newFolder = createFolder("New", "/New", null);
+        Folder newFolder = createFolder("New", "/New", null, appUser.getName());
         appUser.getFolders().add(newFolder.getId());
         userRepository.save(appUser);
         Folder oldFolder = folderRepository.findById(appUser.getFolders().get(3)).get();
@@ -1124,7 +1154,10 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.children").isEmpty())
                 .andExpect(jsonPath("$.res.notes").isEmpty())
                 .andExpect(jsonPath("$.res.favorite").value(oldFolder.getFavorite()))
-                .andExpect(jsonPath("$.res.public").value(oldFolder.getPublic()));
+                .andExpect(jsonPath("$.res.public").value(oldFolder.getPublic()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
 
         if (!folderRepository.findById(newFolder.getId()).get().getNotes().contains(note.getId())) {
             throw new Exception("Note Test : new Folder's note be remove");
@@ -1134,7 +1167,7 @@ public class NoteTest {
     @Test
     public void testDeleteNoteToEmptyFolder() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        Folder newFolder = createFolder("New", "/New", null);
+        Folder newFolder = createFolder("New", "/New", null, appUser.getName());
         appUser.getFolders().add(newFolder.getId());
         userRepository.save(appUser);
         Folder oldFolder = folderRepository.findById(appUser.getFolders().get(3)).get();

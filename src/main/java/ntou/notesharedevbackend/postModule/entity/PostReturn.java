@@ -12,6 +12,9 @@ public class PostReturn {
     // attributes
     private String id;
     private String type; // QA, reward, collaboration
+    private ArrayList<String> email; // 共筆發起人以及管理員，用來核准加入共筆queue的
+    private String author;
+    private String authorName;
     private String department;
     private String subject;
     private String school;
@@ -25,7 +28,8 @@ public class PostReturn {
     private Integer referencePrice; //參考解金額
     private Integer referenceNumber; //剩餘參考解數目
     private Boolean isPublic;
-    private ArrayList<CommentReturn> comments;
+    private ArrayList<Comment> comments;
+    private ArrayList<CommentReturn> commentsUserObj;
     private Integer commentCount;
     private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID，放入對應QA答案
     //    private ArrayList<String> wantEnterUsersEmail;
@@ -33,13 +37,17 @@ public class PostReturn {
     @JsonFormat(timezone = "GMT+08:00")
     private Date publishDate;
     private ArrayList<Vote> vote = new ArrayList<Vote>();
+    private ArrayList<VoteReturn> voteUserObj = new ArrayList<VoteReturn>();
     private Integer collabNoteAuthorNumber;
-    private ArrayList<ApplyReturn> collabApply;
 
+    private ArrayList<ApplyReturn> collabApplyUserObj;
+
+    private ArrayList<Apply> collabApply;
     private UserObj authorUserObj;
     private ArrayList<UserObj> emailUserObj;
     private Boolean isArchive;
     private ArrayList<UserObj> applyUserObj;
+    private ArrayList<String> applyEmail;
 
     public String getId() {
         return id;
@@ -145,12 +153,20 @@ public class PostReturn {
         isPublic = aPublic;
     }
 
-    public ArrayList<CommentReturn> getComments() {
+    public ArrayList<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(ArrayList<CommentReturn> comments) {
+    public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
+    }
+
+    public ArrayList<CommentReturn> getCommentsUserObj() {
+        return commentsUserObj;
+    }
+
+    public void setCommentsUserObj(ArrayList<CommentReturn> commentsUserObj) {
+        this.commentsUserObj = commentsUserObj;
     }
 
     public Integer getCommentCount() {
@@ -185,6 +201,14 @@ public class PostReturn {
         this.vote = vote;
     }
 
+    public ArrayList<VoteReturn> getVoteUserObj() {
+        return voteUserObj;
+    }
+
+    public void setVoteUserObj(ArrayList<VoteReturn> voteUserObj) {
+        this.voteUserObj = voteUserObj;
+    }
+
     public Integer getCollabNoteAuthorNumber() {
         return collabNoteAuthorNumber;
     }
@@ -193,13 +217,6 @@ public class PostReturn {
         this.collabNoteAuthorNumber = collabNoteAuthorNumber;
     }
 
-    public ArrayList<ApplyReturn> getCollabApply() {
-        return collabApply;
-    }
-
-    public void setCollabApply(ArrayList<ApplyReturn> collabApply) {
-        this.collabApply = collabApply;
-    }
 
     public UserObj getAuthorUserObj() {
         return authorUserObj;
@@ -231,5 +248,53 @@ public class PostReturn {
 
     public void setApplyUserObj(ArrayList<UserObj> applyUserObj) {
         this.applyUserObj = applyUserObj;
+    }
+
+    public ArrayList<String> getEmail() {
+        return email;
+    }
+
+    public void setEmail(ArrayList<String> email) {
+        this.email = email;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
+    public ArrayList<ApplyReturn> getCollabApplyUserObj() {
+        return collabApplyUserObj;
+    }
+
+    public void setCollabApplyUserObj(ArrayList<ApplyReturn> collabApplyUserObj) {
+        this.collabApplyUserObj = collabApplyUserObj;
+    }
+
+    public ArrayList<Apply> getCollabApply() {
+        return collabApply;
+    }
+
+    public void setCollabApply(ArrayList<Apply> collabApply) {
+        this.collabApply = collabApply;
+    }
+
+    public ArrayList<String> getApplyEmail() {
+        return applyEmail;
+    }
+
+    public void setApplyEmail(ArrayList<String> applyEmail) {
+        this.applyEmail = applyEmail;
     }
 }

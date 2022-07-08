@@ -13,14 +13,23 @@ public class NoteReturn {
     private String department;
     private String subject;
     private String title; // title
+    private String headerEmail; // 建立筆記者
+    private String headerName; // 建立筆記者
+    private ArrayList<String> authorEmail; // 所有作者
+    private ArrayList<String> authorName; // 所有作者
+    private String managerEmail; // 共筆用
     private String professor;
     private String school;
+    private ArrayList<String> liker; // 喜灣筆記的人
+    private ArrayList<String> buyer; // 購買筆記的人
+    private ArrayList<String> favoriter; // 收藏這筆記的人
     private Integer likeCount;
     private Integer favoriteCount;
     private Integer unlockCount;
     private Boolean downloadable;
     private Integer commentCount;
-    private ArrayList<CommentReturn> comments;
+    private ArrayList<Comment> comments;
+    private ArrayList<CommentReturn> commentsUserObj;
     private Integer price;
     private Boolean isPublic; // 筆記是否公開
     private Boolean isSubmit; // 用於懸賞區投稿
@@ -28,6 +37,7 @@ public class NoteReturn {
     private ArrayList<String> tag;
     private ArrayList<String> hiddenTag;
     private ArrayList<VersionContent> version; // 版本
+    private ArrayList<String> contributors;
     private String postID; // 紀錄貼文ID用於投稿後存在哪
     private Boolean isReference; // 是不是參考解
     private Boolean isBest; // 用於懸賞區看是否為最佳解
@@ -43,7 +53,8 @@ public class NoteReturn {
     private ArrayList<UserObj> favoriterUserObj;
     private ArrayList<UserObj> contributorUserObj;
 
-    public NoteReturn(){}
+    public NoteReturn() {
+    }
 
     public String getId() {
         return id;
@@ -142,12 +153,20 @@ public class NoteReturn {
         this.commentCount = commentCount;
     }
 
-    public ArrayList<CommentReturn> getComments() {
+    public ArrayList<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(ArrayList<CommentReturn> comments) {
+    public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
+    }
+
+    public ArrayList<CommentReturn> getCommentsUserObj() {
+        return commentsUserObj;
+    }
+
+    public void setCommentsUserObj(ArrayList<CommentReturn> commentsUserObj) {
+        this.commentsUserObj = commentsUserObj;
     }
 
     public Integer getPrice() {
@@ -300,5 +319,77 @@ public class NoteReturn {
 
     public void setContributorUserObj(ArrayList<UserObj> contributorUserObj) {
         this.contributorUserObj = contributorUserObj;
+    }
+
+    public String getHeaderEmail() {
+        return headerEmail;
+    }
+
+    public void setHeaderEmail(String headerEmail) {
+        this.headerEmail = headerEmail;
+    }
+
+    public String getHeaderName() {
+        return headerName;
+    }
+
+    public void setHeaderName(String headerName) {
+        this.headerName = headerName;
+    }
+
+    public ArrayList<String> getAuthorEmail() {
+        return authorEmail;
+    }
+
+    public void setAuthorEmail(ArrayList<String> authorEmail) {
+        this.authorEmail = authorEmail;
+    }
+
+    public ArrayList<String> getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(ArrayList<String> authorName) {
+        this.authorName = authorName;
+    }
+
+    public String getManagerEmail() {
+        return managerEmail;
+    }
+
+    public void setManagerEmail(String managerEmail) {
+        this.managerEmail = managerEmail;
+    }
+
+    public ArrayList<String> getLiker() {
+        return liker;
+    }
+
+    public void setLiker(ArrayList<String> liker) {
+        this.liker = liker;
+    }
+
+    public ArrayList<String> getBuyer() {
+        return buyer;
+    }
+
+    public void setBuyer(ArrayList<String> buyer) {
+        this.buyer = buyer;
+    }
+
+    public ArrayList<String> getFavoriter() {
+        return favoriter;
+    }
+
+    public void setFavoriter(ArrayList<String> favoriter) {
+        this.favoriter = favoriter;
+    }
+
+    public ArrayList<String> getContributors() {
+        return contributors;
+    }
+
+    public void setContributors(ArrayList<String> contributors) {
+        this.contributors = contributors;
     }
 }

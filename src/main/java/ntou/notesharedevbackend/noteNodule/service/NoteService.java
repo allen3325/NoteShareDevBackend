@@ -7,6 +7,7 @@ import ntou.notesharedevbackend.commentModule.service.*;
 import ntou.notesharedevbackend.exception.BadRequestException;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
+import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.postModule.entity.Post;
@@ -297,7 +298,19 @@ public class NoteService {
         List<Note> tmp = noteRepository.findAllByHeaderEmail(email);
         ArrayList<NoteFolderReturn> res = new ArrayList<>();
         for (Note note : tmp) {
-            res.add(new NoteFolderReturn(note));
+            NoteFolderReturn noteFolderReturn = new NoteFolderReturn(note);
+            noteFolderReturn.setHeaderUserObj(appUserService.getUserInfo(note.getHeaderEmail()));
+            if (note.getManagerEmail() != null) {
+                noteFolderReturn.setManagerEmail(note.getManagerEmail());
+                noteFolderReturn.setManagerUserObj(appUserService.getUserInfo(note.getManagerEmail()));
+            }
+            ArrayList<UserObj> authorUserObj = new ArrayList<>();
+            for (String authorEmail : note.getAuthorEmail()) {
+                UserObj userObj = appUserService.getUserInfo(authorEmail);
+                authorUserObj.add(userObj);
+            }
+            noteFolderReturn.setAuthorUserObj(authorUserObj);
+            res.add(noteFolderReturn);
         }
         return res;
     }
@@ -325,13 +338,13 @@ public class NoteService {
         noteReturn.setUnlockCount(note.getUnlockCount());
         noteReturn.setDownloadable(note.getDownloadable());
         noteReturn.setCommentCount(note.getCommentCount());
-
+        noteReturn.setComments(note.getComments());
         ArrayList<CommentReturn> commentReturnArrayList = new ArrayList<>();
         for (Comment comment : note.getComments()) {
             CommentReturn commentReturn = commentService.getUserInfo(comment);
             commentReturnArrayList.add(commentReturn);
         }
-        noteReturn.setComments(commentReturnArrayList);
+        noteReturn.setCommentsUserObj(commentReturnArrayList);
 
         noteReturn.setPrice(note.getPrice());
         noteReturn.setPublic(note.getPublic());
@@ -345,34 +358,43 @@ public class NoteService {
         noteReturn.setBest(note.getBest());
         noteReturn.setPublishDate(note.getPublishDate());
         noteReturn.setDescription(note.getDescription());
+        noteReturn.setHeaderName(note.getHeaderName());
+        noteReturn.setHeaderEmail(note.getHeaderEmail());
         noteReturn.setHeaderUserObj(appUserService.getUserInfo(note.getHeaderEmail()));
         if (note.getManagerEmail() != null) {
+            noteReturn.setManagerEmail(note.getManagerEmail());
             noteReturn.setManagerUserObj(appUserService.getUserInfo(note.getManagerEmail()));
         }
+        noteReturn.setAuthorName(note.getAuthorName());
+        noteReturn.setAuthorEmail(note.getAuthorEmail());
         ArrayList<UserObj> authorUserObj = new ArrayList<>();
         for (String authorEmail : note.getAuthorEmail()) {
             UserObj userObj = appUserService.getUserInfo(authorEmail);
             authorUserObj.add(userObj);
         }
         noteReturn.setAuthorUserObj(authorUserObj);
+        noteReturn.setLiker(note.getLiker());
         ArrayList<UserObj> likerUserObj = new ArrayList<>();
         for (String likerEmail : note.getLiker()) {
             UserObj userObj = appUserService.getUserInfo(likerEmail);
             likerUserObj.add(userObj);
         }
         noteReturn.setLikerUserObj(likerUserObj);
+        noteReturn.setBuyer(note.getBuyer());
         ArrayList<UserObj> buyerUserObj = new ArrayList<>();
         for (String buyerEmail : note.getBuyer()) {
             UserObj userObj = appUserService.getUserInfo(buyerEmail);
             buyerUserObj.add(userObj);
         }
         noteReturn.setBuyerUserObj(buyerUserObj);
+        noteReturn.setFavoriter(note.getFavoriter());
         ArrayList<UserObj> favoriterUserObj = new ArrayList<>();
         for (String favoriterEmail : note.getFavoriter()) {
             UserObj userObj = appUserService.getUserInfo(favoriterEmail);
             favoriterUserObj.add(userObj);
         }
         noteReturn.setFavoriterUserObj(favoriterUserObj);
+        noteReturn.setContributors(note.getContributors());
         ArrayList<UserObj> contributorUserObj = new ArrayList<>();
         for (String contributorEmail : note.getContributors()) {
             UserObj userObj = appUserService.getUserInfo(contributorEmail);
@@ -400,5 +422,9 @@ public class NoteService {
         Folder folder = folderService.getTempRewardNoteFolder(appUser.getEmail());
         copyNoteToFolder(note.getId(), folder.getId());
         return note;
+    }
+
+    public FolderReturn folderGetUserInfo(String folderID) {
+        return folderService.getAllContentUnderFolderID(folderID);
     }
 }

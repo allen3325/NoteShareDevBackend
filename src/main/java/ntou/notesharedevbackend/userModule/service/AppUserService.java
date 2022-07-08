@@ -42,6 +42,10 @@ public class AppUserService {
                 .orElseThrow(() -> new NotFoundException("Can't find user."));
     }
 
+    public AppUser getUserByName(String name) {
+        return userRepository.findByName(name);
+    }
+
     public AppUser getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }

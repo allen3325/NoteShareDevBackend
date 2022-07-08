@@ -76,6 +76,15 @@ public class CoinTest {
         folderList.add(favoriteFolder.getId());
         appUser.setFolders(folderList);
         appUser.setCoin(coin);
+        appUser.setNotification(new ArrayList<>());
+        appUser.setSubscribe(new ArrayList<>());
+        appUser.setBell(new ArrayList<>());
+        appUser.setBelledBy(new ArrayList<>());
+        appUser.setFans(new ArrayList<>());
+        appUser.setHeadshotPhoto("headshotPhoto");
+        appUser.setStrength(new ArrayList<>());
+        appUser.setProfile("profile");
+        appUser.setUnreadMessageCount(0);
         return appUser;
     }
 
@@ -172,9 +181,10 @@ public class CoinTest {
                 .andExpect(jsonPath("$.res.profile").value(appUser.getProfile()))
                 .andExpect(jsonPath("$.res.strength").value(appUser.getStrength()))
                 .andExpect(jsonPath("$.res.folders").value(appUser.getFolders()))
-                .andExpect(jsonPath("$.res.subscribe").value(appUser.getSubscribe()))
-                .andExpect(jsonPath("$.res.bell").value(appUser.getBell()))
-                .andExpect(jsonPath("$.res.fans").value(appUser.getFans()))
+                .andExpect(jsonPath("$.res.subscribeUserObj").value(appUser.getSubscribe()))
+                .andExpect(jsonPath("$.res.bellUserObj").value(appUser.getBell()))
+                .andExpect(jsonPath("$.res.belledByUserObj").value(appUser.getBelledBy()))
+                .andExpect(jsonPath("$.res.fansUserObj").value(appUser.getFans()))
                 .andExpect(jsonPath("$.res.coin").value(newCoin))
                 .andExpect(jsonPath("$.res.headshotPhoto").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.admin").value(appUser.isAdmin()))
@@ -201,9 +211,10 @@ public class CoinTest {
                 .andExpect(jsonPath("$.res.profile").value(appUser.getProfile()))
                 .andExpect(jsonPath("$.res.strength").value(appUser.getStrength()))
                 .andExpect(jsonPath("$.res.folders").value(appUser.getFolders()))
-                .andExpect(jsonPath("$.res.subscribe").value(appUser.getSubscribe()))
-                .andExpect(jsonPath("$.res.bell").value(appUser.getBell()))
-                .andExpect(jsonPath("$.res.fans").value(appUser.getFans()))
+                .andExpect(jsonPath("$.res.subscribeUserObj").value(appUser.getSubscribe()))
+                .andExpect(jsonPath("$.res.bellUserObj").value(appUser.getBell()))
+                .andExpect(jsonPath("$.res.belledByUserObj").value(appUser.getBelledBy()))
+                .andExpect(jsonPath("$.res.fansUserObj").value(appUser.getFans()))
                 .andExpect(jsonPath("$.res.coin").value(newCoin))
                 .andExpect(jsonPath("$.res.headshotPhoto").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.admin").value(appUser.isAdmin()))
@@ -268,10 +279,10 @@ public class CoinTest {
                 .andExpect(jsonPath("$.res.comments.[0].best").value(note.getComments().get(0).getBest()))
                 .andExpect(jsonPath("$.res.comments.[0].content").value(note.getComments().get(0).getContent()))
                 .andExpect(jsonPath("$.res.comments.[0].picURL").value(note.getComments().get(0).getPicURL()))
-                .andExpect(jsonPath("$.res.comments.[0].userObj.userObjEmail").value(commentAuthor.getEmail()))
-                .andExpect(jsonPath("$.res.comments.[0].userObj.userObjName").value(commentAuthor.getName()))
-                .andExpect(jsonPath("$.res.comments.[0].userObj.userObjAvatar").value(commentAuthor.getHeadshotPhoto()))
-                .andExpect(jsonPath("$.res.comments.[0].likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.commentsUserObj.[0].userObj.userObjEmail").value(commentAuthor.getEmail()))
+                .andExpect(jsonPath("$.res.commentsUserObj.[0].userObj.userObjName").value(commentAuthor.getName()))
+                .andExpect(jsonPath("$.res.commentsUserObj.[0].userObj.userObjAvatar").value(commentAuthor.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.commentsUserObj.[0].likerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.comments.[1].id").value(note.getComments().get(1).getId()))
                 .andExpect(jsonPath("$.res.comments.[1].likeCount").value(note.getComments().get(1).getLikeCount()))
                 .andExpect(jsonPath("$.res.comments.[1].floor").value(note.getComments().get(1).getFloor()))
@@ -279,10 +290,10 @@ public class CoinTest {
                 .andExpect(jsonPath("$.res.comments.[1].best").value(note.getComments().get(1).getBest()))
                 .andExpect(jsonPath("$.res.comments.[1].content").value(note.getComments().get(1).getContent()))
                 .andExpect(jsonPath("$.res.comments.[1].picURL").value(note.getComments().get(1).getPicURL()))
-                .andExpect(jsonPath("$.res.comments.[1].userObj.userObjEmail").value(commentAuthor1.getEmail()))
-                .andExpect(jsonPath("$.res.comments.[1].userObj.userObjName").value(commentAuthor1.getName()))
-                .andExpect(jsonPath("$.res.comments.[1].userObj.userObjAvatar").value(commentAuthor1.getHeadshotPhoto()))
-                .andExpect(jsonPath("$.res.comments.[1].likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.commentsUserObj.[1].userObj.userObjEmail").value(commentAuthor1.getEmail()))
+                .andExpect(jsonPath("$.res.commentsUserObj.[1].userObj.userObjName").value(commentAuthor1.getName()))
+                .andExpect(jsonPath("$.res.commentsUserObj.[1].userObj.userObjAvatar").value(commentAuthor1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.commentsUserObj.[1].likerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.price").value(note.getPrice()))
                 .andExpect(jsonPath("$.res.quotable").value(note.getQuotable()))
                 .andExpect(jsonPath("$.res.tag").value(note.getTag()))
@@ -293,9 +304,17 @@ public class CoinTest {
                 .andExpect(jsonPath("$.res.best").value(note.getBest()))
                 .andExpect(jsonPath("$.res.public").value(note.getPublic()))
                 .andExpect(jsonPath("$.res.submit").value(note.getSubmit()))
+                .andExpect(jsonPath("$.res.headerEmail").value(noteAuthor.getEmail()))
+                .andExpect(jsonPath("$.res.headerName").value(noteAuthor.getName()))
                 .andExpect(jsonPath("$.res.headerUserObj.userObjEmail").value(noteAuthor.getEmail()))
                 .andExpect(jsonPath("$.res.headerUserObj.userObjName").value(noteAuthor.getName()))
                 .andExpect(jsonPath("$.res.headerUserObj.userObjAvatar").value(noteAuthor.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.authorEmail.[0]").value(noteAuthor.getEmail()))
+                .andExpect(jsonPath("$.res.authorName.[0]").value(noteAuthor.getName()))
+                .andExpect(jsonPath("$.res.authorEmail.[1]").value(noteAuthor1.getEmail()))
+                .andExpect(jsonPath("$.res.authorName.[1]").value(noteAuthor1.getName()))
+                .andExpect(jsonPath("$.res.authorEmail.[2]").value(noteAuthor2.getEmail()))
+                .andExpect(jsonPath("$.res.authorName.[2]").value(noteAuthor2.getName()))
                 .andExpect(jsonPath("$.res.authorUserObj.[0].userObjEmail").value(noteAuthor.getEmail()))
                 .andExpect(jsonPath("$.res.authorUserObj.[0].userObjName").value(noteAuthor.getName()))
                 .andExpect(jsonPath("$.res.authorUserObj.[0].userObjAvatar").value(noteAuthor.getHeadshotPhoto()))
@@ -306,6 +325,7 @@ public class CoinTest {
                 .andExpect(jsonPath("$.res.authorUserObj.[2].userObjName").value(noteAuthor2.getName()))
                 .andExpect(jsonPath("$.res.authorUserObj.[2].userObjAvatar").value(noteAuthor2.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.buyer.[0]").value(buyer.getEmail()))
                 .andExpect(jsonPath("$.res.buyerUserObj.[0].userObjEmail").value(buyer.getEmail()))
                 .andExpect(jsonPath("$.res.buyerUserObj.[0].userObjName").value(buyer.getName()))
                 .andExpect(jsonPath("$.res.buyerUserObj.[0].userObjAvatar").value(buyer.getHeadshotPhoto()))

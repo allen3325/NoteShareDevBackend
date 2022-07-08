@@ -13,6 +13,7 @@ import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.schedulerModule.entity.KickVoteRequest;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
+import ntou.notesharedevbackend.schedulerModule.entity.VoteReturn;
 import ntou.notesharedevbackend.schedulerModule.service.SchedulingService;
 import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
@@ -483,18 +484,23 @@ public class PostService {
         postReturn.setReferencePrice(post.getReferencePrice());
         postReturn.setReferenceNumber(post.getReferenceNumber());
         postReturn.setPublic(post.getPublic());
-
+        postReturn.setComments(post.getComments());
         ArrayList<CommentReturn> commentReturnArrayList = new ArrayList<>();
         for (Comment comment : post.getComments()) {
             CommentReturn commentReturn = commentService.getUserInfo(comment);
             commentReturnArrayList.add(commentReturn);
         }
-        postReturn.setComments(commentReturnArrayList);
+        postReturn.setCommentsUserObj(commentReturnArrayList);
 
         postReturn.setCommentCount(post.getCommentCount());
         postReturn.setAnswers(post.getAnswers());
         postReturn.setPublishDate(post.getPublishDate());
         postReturn.setVote(post.getVote());
+        ArrayList<VoteReturn> voteReturnArrayList = new ArrayList<>();
+        for (Vote vote : post.getVote()) {
+            voteReturnArrayList.add(schedulingService.getUserInfo(vote));
+        }
+        postReturn.setVoteUserObj(voteReturnArrayList);
         postReturn.setCollabNoteAuthorNumber(post.getCollabNoteAuthorNumber());
         ArrayList<ApplyReturn> collabApplyArrayList = new ArrayList<>();
         if (post.getCollabApply() != null) {
@@ -504,18 +510,20 @@ public class PostService {
                 applyReturn.setCommentFromApplicant(apply.getCommentFromApplicant());
                 collabApplyArrayList.add(applyReturn);
             }
+            postReturn.setCollabApply(post.getCollabApply());
         }
-        postReturn.setCollabApply(collabApplyArrayList);
-
+        postReturn.setCollabApplyUserObj(collabApplyArrayList);
         UserObj userObj = appUserService.getUserInfo(post.getAuthor());
         postReturn.setAuthorUserObj(userObj);
-
+        postReturn.setAuthorName(post.getAuthorName());
+        postReturn.setAuthor(post.getAuthor());
         ArrayList<UserObj> emailUserObj = new ArrayList<>();
         for (String email : post.getEmail()) {
             UserObj userInfo = appUserService.getUserInfo(email);
             emailUserObj.add(userInfo);
         }
         postReturn.setEmailUserObj(emailUserObj);
+        postReturn.setEmail(post.getEmail());
         postReturn.setArchive(post.getArchive());
         ArrayList<UserObj> applyUserObj = new ArrayList<>();
         for (String applyEmail : post.getApplyEmail()) {
@@ -523,7 +531,7 @@ public class PostService {
             applyUserObj.add(userObjInfo);
         }
         postReturn.setApplyUserObj(applyUserObj);
-
+        postReturn.setApplyEmail(post.getApplyEmail());
         return postReturn;
     }
 
