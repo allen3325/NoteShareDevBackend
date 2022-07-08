@@ -127,7 +127,8 @@ public class NoteController {
         Map<String, Object> res = new HashMap<>();
 
         Folder folder = noteService.copyNoteToFolder(noteID, folderID);
-        res.put("res", folder);
+        FolderReturn folderReturn = noteService.folderGetUserInfo(folderID);
+        res.put("res", folderReturn);
 
         return ResponseEntity.ok(res);
     }
