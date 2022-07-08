@@ -18,6 +18,7 @@ public class FolderReturn {
     private String path; // 路徑
     private String parent; // 父資料夾
     private ArrayList<Folder> children; // 子資料夾
+    private String creatorName;
 
     private UserObj creatorUserObj;
 
@@ -31,6 +32,7 @@ public class FolderReturn {
         this.isFavorite = folder.getFavorite();
         this.path = folder.getPath();
         this.parent = folder.getParent();
+        this.creatorName = folder.getCreatorName();
 //        this.children = folder.getChildren();
     }
 
@@ -122,6 +124,14 @@ public class FolderReturn {
 
     public void setChildren(ArrayList<Folder> children) {
         this.children = children;
+    }
+
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
     }
 }
 

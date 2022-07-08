@@ -115,7 +115,7 @@ public class FolderService {
         folderReturn.setParent(folder.getParent());
         folderReturn.setPath(folder.getPath());
         folderReturn.setPublic(folder.getPublic());
-
+        folderReturn.setCreatorName(folder.getCreatorName());
         AppUser appUser = appUserService.getUserByName(folder.getCreatorName());
         UserObj userObj = appUserService.getUserInfo(appUser.getEmail());
         folderReturn.setCreatorUserObj(userObj);
