@@ -28,15 +28,18 @@ public class PostReturn {
     private Integer referencePrice; //參考解金額
     private Integer referenceNumber; //剩餘參考解數目
     private Boolean isPublic;
-    private ArrayList<CommentReturn> comments;
+    private ArrayList<Comment> comments;
+    private ArrayList<CommentReturn> commentsUserObj;
     private Integer commentCount;
     private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID，放入對應QA答案
     //    private ArrayList<String> wantEnterUsersEmail;
 //    private Task task;
     @JsonFormat(timezone = "GMT+08:00")
     private Date publishDate;
-    private ArrayList<VoteReturn> vote = new ArrayList<VoteReturn>();
+    private ArrayList<Vote> vote = new ArrayList<Vote>();
+    private ArrayList<VoteReturn> voteUserObj = new ArrayList<VoteReturn>();
     private Integer collabNoteAuthorNumber;
+
     private ArrayList<ApplyReturn> collabApplyUserObj;
 
     private ArrayList<Apply> collabApply;
@@ -150,12 +153,20 @@ public class PostReturn {
         isPublic = aPublic;
     }
 
-    public ArrayList<CommentReturn> getComments() {
+    public ArrayList<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(ArrayList<CommentReturn> comments) {
+    public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
+    }
+
+    public ArrayList<CommentReturn> getCommentsUserObj() {
+        return commentsUserObj;
+    }
+
+    public void setCommentsUserObj(ArrayList<CommentReturn> commentsUserObj) {
+        this.commentsUserObj = commentsUserObj;
     }
 
     public Integer getCommentCount() {
@@ -182,12 +193,20 @@ public class PostReturn {
         this.publishDate = publishDate;
     }
 
-    public ArrayList<VoteReturn> getVote() {
+    public ArrayList<Vote> getVote() {
         return vote;
     }
 
-    public void setVote(ArrayList<VoteReturn> vote) {
+    public void setVote(ArrayList<Vote> vote) {
         this.vote = vote;
+    }
+
+    public ArrayList<VoteReturn> getVoteUserObj() {
+        return voteUserObj;
+    }
+
+    public void setVoteUserObj(ArrayList<VoteReturn> voteUserObj) {
+        this.voteUserObj = voteUserObj;
     }
 
     public Integer getCollabNoteAuthorNumber() {

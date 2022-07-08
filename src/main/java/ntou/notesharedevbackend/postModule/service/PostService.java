@@ -484,22 +484,23 @@ public class PostService {
         postReturn.setReferencePrice(post.getReferencePrice());
         postReturn.setReferenceNumber(post.getReferenceNumber());
         postReturn.setPublic(post.getPublic());
-
+        postReturn.setComments(post.getComments());
         ArrayList<CommentReturn> commentReturnArrayList = new ArrayList<>();
         for (Comment comment : post.getComments()) {
             CommentReturn commentReturn = commentService.getUserInfo(comment);
             commentReturnArrayList.add(commentReturn);
         }
-        postReturn.setComments(commentReturnArrayList);
+        postReturn.setCommentsUserObj(commentReturnArrayList);
 
         postReturn.setCommentCount(post.getCommentCount());
         postReturn.setAnswers(post.getAnswers());
         postReturn.setPublishDate(post.getPublishDate());
+        postReturn.setVote(post.getVote());
         ArrayList<VoteReturn> voteReturnArrayList = new ArrayList<>();
         for (Vote vote : post.getVote()) {
             voteReturnArrayList.add(schedulingService.getUserInfo(vote));
         }
-        postReturn.setVote(voteReturnArrayList);
+        postReturn.setVoteUserObj(voteReturnArrayList);
         postReturn.setCollabNoteAuthorNumber(post.getCollabNoteAuthorNumber());
         ArrayList<ApplyReturn> collabApplyArrayList = new ArrayList<>();
         if (post.getCollabApply() != null) {
