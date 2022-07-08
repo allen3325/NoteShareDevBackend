@@ -115,6 +115,7 @@ public class PostTest {
         post.setType("QA");
         post.setPublic(true);
         post.setAuthor("yitingwu.1030@gmail.com");
+        post.setAuthorName("Ting");
         ArrayList<String> email = new ArrayList<>();
         email.add("yitingwu.1030@gmail.com");
         post.setEmail(email);
@@ -145,6 +146,7 @@ public class PostTest {
         post.setAnswers(new ArrayList<>());
         post.setArchive(false);
         post.setApplyEmail(new ArrayList<>());
+
         return postRepository.insert(post);
     }
 
@@ -260,6 +262,7 @@ public class PostTest {
         Post post = new Post();
         post.setType("reward");
         post.setAuthor("yitingwu.1030@gmail.com");
+        post.setAuthorName("Ting");
         ArrayList<String> email = new ArrayList<String>();
         email.add("yitingwu.1030@gmail.com");
         post.setEmail(email);
@@ -405,6 +408,7 @@ public class PostTest {
         email.add("yitingwu.1030@gmail.com");
         post.setEmail(email);
         post.setAuthor("yitingwu.1030@gmail.com");
+        post.setAuthorName("Ting");
         post.setDepartment("Computer Science");
         post.setSubject("Operation System");
         post.setSchool("NTOU");
@@ -451,6 +455,9 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(post.getId()))
                 .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
                 .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
                 .andExpect(jsonPath("$.res.school").value(post.getSchool()))
@@ -500,6 +507,9 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(post.getId()))
                 .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
                 .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
                 .andExpect(jsonPath("$.res.school").value(post.getSchool()))
@@ -529,6 +539,9 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(post.getId()))
                 .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
                 .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
                 .andExpect(jsonPath("$.res.school").value(post.getSchool()))
@@ -546,6 +559,9 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.collabApply").isEmpty())
+                .andExpect(jsonPath("$.res.applyEmail").isEmpty())
+                .andExpect(jsonPath("$.res.applyUserObj").isEmpty())
         ;
     }
 
@@ -559,6 +575,9 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res[0].id").value(post1.getId()))
                 .andExpect(jsonPath("$.res[0].type").value(post1.getType()))
+                .andExpect(jsonPath("$.res[0].email.[0]").value(userRepository.findByEmail(post1.getEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.res[0].author").value(userRepository.findByEmail(post1.getEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.res[0].authorName").value(userRepository.findByEmail(post1.getEmail().get(0)).getName()))
                 .andExpect(jsonPath("$.res[0].department").value(post1.getDepartment()))
                 .andExpect(jsonPath("$.res[0].subject").value(post1.getSubject()))
                 .andExpect(jsonPath("$.res[0].school").value(post1.getSchool()))
@@ -593,6 +612,9 @@ public class PostTest {
                 .andExpect(jsonPath("$.res[0].public").value(post1.getPublic()))
                 .andExpect(jsonPath("$.res[1].id").value(post2.getId()))
                 .andExpect(jsonPath("$.res[1].type").value(post2.getType()))
+                .andExpect(jsonPath("$.res[1].email.[0]").value(userRepository.findByEmail(post2.getEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.res[1].author").value(userRepository.findByEmail(post2.getEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.res[1].authorName").value(userRepository.findByEmail(post2.getEmail().get(0)).getName()))
                 .andExpect(jsonPath("$.res[1].department").value(post2.getDepartment()))
                 .andExpect(jsonPath("$.res[1].subject").value(post2.getSubject()))
                 .andExpect(jsonPath("$.res[1].school").value(post2.getSchool()))
@@ -627,6 +649,9 @@ public class PostTest {
                 .andExpect(jsonPath("$.res[1].public").value(post2.getPublic()))
                 .andExpect(jsonPath("$.res[2].id").value(post3.getId()))
                 .andExpect(jsonPath("$.res[2].type").value(post3.getType()))
+                .andExpect(jsonPath("$.res[2].email.[0]").value(userRepository.findByEmail(post3.getEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.res[2].author").value(userRepository.findByEmail(post3.getEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.res[2].authorName").value(userRepository.findByEmail(post3.getEmail().get(0)).getName()))
                 .andExpect(jsonPath("$.res[2].department").value(post3.getDepartment()))
                 .andExpect(jsonPath("$.res[2].subject").value(post3.getSubject()))
                 .andExpect(jsonPath("$.res[2].school").value(post3.getSchool()))
@@ -686,6 +711,9 @@ public class PostTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.res.id").hasJsonPath())
                 .andExpect(jsonPath("$.res.type").value(request.get("type")))
+                .andExpect(jsonPath("$.res.email.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.department").value(request.get("department")))
                 .andExpect(jsonPath("$.res.subject").value(request.get("subject")))
                 .andExpect(jsonPath("$.res.school").value(request.get("school")))
@@ -745,6 +773,7 @@ public class PostTest {
                 .put("id", post.getId())
                 .put("type", post.getType())
                 .put("author", post.getAuthor())
+                .put("authorName",appUser.getName())
                 .put("department", post.getDepartment())
                 .put("subject", post.getSubject())
                 .put("professor", post.getProfessor())
@@ -762,6 +791,9 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(post.getId()))
                 .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
                 .andExpect(jsonPath("$.res.professor").value(post.getProfessor()))
                 .andExpect(jsonPath("$.res.title").value(post.getTitle()))
@@ -1000,6 +1032,9 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(post.getId()))
                 .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
                 .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
                 .andExpect(jsonPath("$.res.school").value(post.getSchool()))
@@ -1035,6 +1070,9 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(post.getId()))
                 .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
                 .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
                 .andExpect(jsonPath("$.res.school").value(post.getSchool()))
@@ -1070,6 +1108,9 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(post.getId()))
                 .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
                 .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
                 .andExpect(jsonPath("$.res.school").value(post.getSchool()))
@@ -1106,6 +1147,9 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(post.getId()))
                 .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
                 .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
                 .andExpect(jsonPath("$.res.school").value(post.getSchool()))
@@ -1207,6 +1251,9 @@ public class PostTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.res.id").exists())
                 .andExpect(jsonPath("$.res.type").value(request.get("type")))
+                .andExpect(jsonPath("$.res.headerEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorEmail.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName.[0]").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.department").value(request.get("department")))
                 .andExpect(jsonPath("$.res.subject").value(request.get("subject")))
                 .andExpect(jsonPath("$.res.title").value(request.get("title")))
@@ -1268,6 +1315,9 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(post.getId()))
                 .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
                 .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
                 .andExpect(jsonPath("$.res.school").value(post.getSchool()))
@@ -1303,6 +1353,9 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(post.getId()))
                 .andExpect(jsonPath("$.res.type").value(post.getType()))
+                .andExpect(jsonPath("$.res.email.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.author").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.department").value(post.getDepartment()))
                 .andExpect(jsonPath("$.res.subject").value(post.getSubject()))
                 .andExpect(jsonPath("$.res.school").value(post.getSchool()))
@@ -1357,6 +1410,9 @@ public class PostTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.[0].id").value(post.getId()))
                 .andExpect(jsonPath("$.res.[0].type").value(post.getType()))
+                .andExpect(jsonPath("$.res.[0].email.[0]").value(postAuthor.getEmail()))
+                .andExpect(jsonPath("$.res.[0].author").value(postAuthor.getEmail()))
+                .andExpect(jsonPath("$.res.[0].authorName").value(postAuthor.getName()))
                 .andExpect(jsonPath("$.res.[0].department").value(post.getDepartment()))
                 .andExpect(jsonPath("$.res.[0].subject").value(post.getSubject()))
                 .andExpect(jsonPath("$.res.[0].school").value(post.getSchool()))
@@ -1368,6 +1424,7 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.[0].commentCount").value(post.getCommentCount()))
                 .andExpect(jsonPath("$.res.[0].public").value(post.getPublic()))
                 .andExpect(jsonPath("$.res.[0].archive").value(post.getArchive()))
+                .andExpect(jsonPath("$.res.[0].applyEmail.[0]").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.[0].applyUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.[0].applyUserObj.[0].userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.[0].applyUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
