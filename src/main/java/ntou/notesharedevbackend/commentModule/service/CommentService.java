@@ -181,8 +181,10 @@ public class CommentService {
         CommentReturn commentReturn = new CommentReturn();
         commentReturn.setId(comment.getId());
         if (comment.getEmail() == null) {
+            commentReturn.setEmail(null);
             commentReturn.setContent(null);
             commentReturn.setLikeCount(null);
+            commentReturn.setLiker(null);
             commentReturn.setFloor(null);
             commentReturn.setDate(null);
             commentReturn.setPicURL(null);
@@ -195,8 +197,10 @@ public class CommentService {
             ArrayList<UserObj> likerUserObj = new ArrayList<>();
             commentReturn.setLikerUserObj(null);
         } else {
+            commentReturn.setEmail(comment.getEmail());
             commentReturn.setContent(comment.getContent());
             commentReturn.setLikeCount(comment.getLikeCount());
+            commentReturn.setLiker(comment.getLiker());
             commentReturn.setFloor(comment.getFloor());
             commentReturn.setDate(comment.getDate());
             commentReturn.setPicURL(comment.getPicURL());

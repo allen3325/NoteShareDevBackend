@@ -8,10 +8,12 @@ import java.util.Date;
 
 public class CommentReturn {
     private String id;
+    private String email;
     private String content;
     private Integer likeCount; // 愛心數
     //    private ArrayList<String> referenceNotesURL; // 參考筆記的URL
     //    private Boolean isReference; // 是不是參考解
+    private ArrayList<String> liker;
     private Integer floor; // 樓層數
     @JsonFormat(timezone = "GMT+08:00")
     private Date date;
@@ -32,6 +34,14 @@ public class CommentReturn {
         this.id = id;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getContent() {
         return content;
     }
@@ -46,6 +56,14 @@ public class CommentReturn {
 
     public void setLikeCount(Integer likeCount) {
         this.likeCount = likeCount;
+    }
+
+    public ArrayList<String> getLiker() {
+        return liker;
+    }
+
+    public void setLiker(ArrayList<String> liker) {
+        this.liker = liker;
     }
 
     public Integer getFloor() {
