@@ -12,6 +12,9 @@ public class PostReturn {
     // attributes
     private String id;
     private String type; // QA, reward, collaboration
+    private ArrayList<String> email; // 共筆發起人以及管理員，用來核准加入共筆queue的
+    private String author;
+    private String authorName;
     private String department;
     private String subject;
     private String school;
@@ -34,12 +37,14 @@ public class PostReturn {
     private Date publishDate;
     private ArrayList<Vote> vote = new ArrayList<Vote>();
     private Integer collabNoteAuthorNumber;
-    private ArrayList<ApplyReturn> collabApply;
+    private ArrayList<ApplyReturn> collabApplyUserObj;
 
+    private ArrayList<Apply> collabApply;
     private UserObj authorUserObj;
     private ArrayList<UserObj> emailUserObj;
     private Boolean isArchive;
     private ArrayList<UserObj> applyUserObj;
+    private ArrayList<String> applyEmail;
 
     public String getId() {
         return id;
@@ -193,13 +198,6 @@ public class PostReturn {
         this.collabNoteAuthorNumber = collabNoteAuthorNumber;
     }
 
-    public ArrayList<ApplyReturn> getCollabApply() {
-        return collabApply;
-    }
-
-    public void setCollabApply(ArrayList<ApplyReturn> collabApply) {
-        this.collabApply = collabApply;
-    }
 
     public UserObj getAuthorUserObj() {
         return authorUserObj;
@@ -231,5 +229,53 @@ public class PostReturn {
 
     public void setApplyUserObj(ArrayList<UserObj> applyUserObj) {
         this.applyUserObj = applyUserObj;
+    }
+
+    public ArrayList<String> getEmail() {
+        return email;
+    }
+
+    public void setEmail(ArrayList<String> email) {
+        this.email = email;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
+    public ArrayList<ApplyReturn> getCollabApplyUserObj() {
+        return collabApplyUserObj;
+    }
+
+    public void setCollabApplyUserObj(ArrayList<ApplyReturn> collabApplyUserObj) {
+        this.collabApplyUserObj = collabApplyUserObj;
+    }
+
+    public ArrayList<Apply> getCollabApply() {
+        return collabApply;
+    }
+
+    public void setCollabApply(ArrayList<Apply> collabApply) {
+        this.collabApply = collabApply;
+    }
+
+    public ArrayList<String> getApplyEmail() {
+        return applyEmail;
+    }
+
+    public void setApplyEmail(ArrayList<String> applyEmail) {
+        this.applyEmail = applyEmail;
     }
 }

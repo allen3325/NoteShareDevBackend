@@ -504,18 +504,20 @@ public class PostService {
                 applyReturn.setCommentFromApplicant(apply.getCommentFromApplicant());
                 collabApplyArrayList.add(applyReturn);
             }
+            postReturn.setCollabApply(post.getCollabApply());
         }
-        postReturn.setCollabApply(collabApplyArrayList);
-
+        postReturn.setCollabApplyUserObj(collabApplyArrayList);
         UserObj userObj = appUserService.getUserInfo(post.getAuthor());
         postReturn.setAuthorUserObj(userObj);
-
+        postReturn.setAuthorName(post.getAuthorName());
+        postReturn.setAuthor(post.getAuthor());
         ArrayList<UserObj> emailUserObj = new ArrayList<>();
         for (String email : post.getEmail()) {
             UserObj userInfo = appUserService.getUserInfo(email);
             emailUserObj.add(userInfo);
         }
         postReturn.setEmailUserObj(emailUserObj);
+        postReturn.setEmail(post.getEmail());
         postReturn.setArchive(post.getArchive());
         ArrayList<UserObj> applyUserObj = new ArrayList<>();
         for (String applyEmail : post.getApplyEmail()) {
@@ -523,7 +525,7 @@ public class PostService {
             applyUserObj.add(userObjInfo);
         }
         postReturn.setApplyUserObj(applyUserObj);
-
+        postReturn.setApplyEmail(post.getApplyEmail());
         return postReturn;
     }
 

@@ -41,7 +41,18 @@ public class PostRequest {
     private Integer collabNoteAuthorNumber;
     private Apply collabApply;
 
+    private ArrayList<String> applyEmail;
+
     // getter and setter
+
+
+    public ArrayList<String> getApplyEmail() {
+        return applyEmail;
+    }
+
+    public void setApplyEmail(ArrayList<String> applyEmail) {
+        this.applyEmail = applyEmail;
+    }
 
     public String getAuthorName() {
         return authorName;
