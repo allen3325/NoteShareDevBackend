@@ -8,6 +8,7 @@ import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
+import ntou.notesharedevbackend.userModule.entity.AppUserReturn;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +58,7 @@ public class CoinService {
             buyer.setCoin(buyersCoin - price);
             // update note's author's coin
             ArrayList<String> authorEmails = note.getAuthorEmail();
-            for(String authorEmail : authorEmails){
+            for (String authorEmail : authorEmails) {
                 AppUser noteAuthor = appUserService.getUserByEmail(authorEmail);
                 Integer noteAuthorCoin = noteAuthor.getCoin();
                 noteAuthor.setCoin(noteAuthorCoin + price);
@@ -78,13 +79,17 @@ public class CoinService {
             ArrayList<String> noteBuyerList = note.getBuyer();
             noteBuyerList.add(email);
             note.setBuyer(noteBuyerList);
-            noteService.replaceNote(note,note.getId()); // update unlockCount in replace.
+            noteService.replaceNote(note, note.getId()); // update unlockCount in replace.
             return noteService.getNote(noteID);
         }
     }
 
-    public NoteReturn getUserinfo(Note note){
+    public NoteReturn getNoteUserinfo(Note note) {
         NoteReturn noteReturn = noteService.getUserinfo(note);
         return noteReturn;
+    }
+
+    public AppUserReturn getUserInfo(AppUser appUser) {
+        return appUserService.getAppUserInfo(appUser);
     }
 }
