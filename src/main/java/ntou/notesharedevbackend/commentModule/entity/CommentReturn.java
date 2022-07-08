@@ -8,6 +8,7 @@ import java.util.Date;
 
 public class CommentReturn {
     private String id;
+    private String author;
     private String email;
     private String content;
     private Integer likeCount; // 愛心數
@@ -32,6 +33,14 @@ public class CommentReturn {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getEmail() {
