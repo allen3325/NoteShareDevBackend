@@ -2,6 +2,7 @@ package ntou.notesharedevbackend.noteNodule.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
+import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,8 +154,8 @@ public class NoteController {
             res.put("msg", "This folder hasn't contains the note.");
             return ResponseEntity.status(204).body(res);
         }
-
-        res.put("res", folder);
+        FolderReturn folderReturn = noteService.folderGetUserInfo(folder.getId());
+        res.put("res", folderReturn);
         return ResponseEntity.ok(res);
     }
 

@@ -7,6 +7,7 @@ import ntou.notesharedevbackend.commentModule.service.*;
 import ntou.notesharedevbackend.exception.BadRequestException;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
+import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.postModule.entity.Post;
@@ -421,5 +422,9 @@ public class NoteService {
         Folder folder = folderService.getTempRewardNoteFolder(appUser.getEmail());
         copyNoteToFolder(note.getId(), folder.getId());
         return note;
+    }
+
+    public FolderReturn folderGetUserInfo(String folderID){
+        return folderService.getAllContentUnderFolderID(folderID);
     }
 }
