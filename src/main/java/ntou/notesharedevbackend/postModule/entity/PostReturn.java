@@ -35,7 +35,7 @@ public class PostReturn {
 //    private Task task;
     @JsonFormat(timezone = "GMT+08:00")
     private Date publishDate;
-    private ArrayList<Vote> vote = new ArrayList<Vote>();
+    private ArrayList<VoteReturn> vote = new ArrayList<VoteReturn>();
     private Integer collabNoteAuthorNumber;
     private ArrayList<ApplyReturn> collabApplyUserObj;
 
@@ -182,11 +182,11 @@ public class PostReturn {
         this.publishDate = publishDate;
     }
 
-    public ArrayList<Vote> getVote() {
+    public ArrayList<VoteReturn> getVote() {
         return vote;
     }
 
-    public void setVote(ArrayList<Vote> vote) {
+    public void setVote(ArrayList<VoteReturn> vote) {
         this.vote = vote;
     }
 

@@ -34,24 +34,25 @@ public class SchedulingService {
     @Autowired
     private AppUserService appUserService;
 
-//    public Task newPublishSchedule(String postID, Task request){
+    //    public Task newPublishSchedule(String postID, Task request){
 //        if(timeBeforeNow(request)){
 //            return null;
 //        }
 //        Task task = postService.schedulerPublishTime(postID,request);
 //        return task;
 //    }
-    public Vote newVoteSchedule(String postID, KickVoteRequest request){
+    public Vote newVoteSchedule(String postID, KickVoteRequest request) {
         //判斷時間是否過早
-        if(timeBeforeNow(request.getYear(), request.getMonth(), request.getDay())){
+        if (timeBeforeNow(request.getYear(), request.getMonth(), request.getDay())) {
             return null;
         }
-        Vote vote = postService.addVote(postID,request);
+        Vote vote = postService.addVote(postID, request);
         return vote;
     }
-    public void addSchedule(Task request){
+
+    public void addSchedule(Task request) {
         //setting scheduleJob
-        try{
+        try {
             JobDetail jobDetail = JobBuilder.newJob(TriggerJob.class).withIdentity(request.getId()).build();
             jobDetail.getJobDataMap().put("taskID", request.getId());
             jobDetail.getJobDataMap().put("voteID", request.getVoteID());
@@ -59,25 +60,25 @@ public class SchedulingService {
             //dateOf(hour,minute,second,day,month,year)
             SimpleTrigger trigger = (SimpleTrigger) newTrigger()
                     .withIdentity(request.getId())
-                    .startAt(DateBuilder.dateOf(0, 0,0,request.getDay(),request.getMonth(),request.getYear()))
+                    .startAt(DateBuilder.dateOf(0, 0, 0, request.getDay(), request.getMonth(), request.getYear()))
                     .build();
             Scheduler scheduler = quartzConfig.schedulerFactoryBean().getScheduler();
-            scheduler.scheduleJob(jobDetail,trigger);
+            scheduler.scheduleJob(jobDetail, trigger);
             scheduler.start();
-            System.out.println("schedule "+request.getId());
-        }catch(IOException | SchedulerException e){
+            System.out.println("schedule " + request.getId());
+        } catch (IOException | SchedulerException e) {
             e.printStackTrace();
         }
     }
 
-    public void cancelSchedule(String taskID){
-        try{
+    public void cancelSchedule(String taskID) {
+        try {
             Scheduler scheduler = quartzConfig.schedulerFactoryBean().getScheduler();
             scheduler.deleteJob(new JobKey(taskID));
             TriggerKey triggerKey = new TriggerKey(taskID);
             scheduler.unscheduleJob(triggerKey);
-            System.out.println("Cancel "+ taskID);
-        }catch(IOException | SchedulerException e){
+            System.out.println("Cancel " + taskID);
+        } catch (IOException | SchedulerException e) {
             e.printStackTrace();
         }
     }
@@ -91,9 +92,9 @@ public class SchedulingService {
 //        return postService.replacePublishTime(postID, request);
 //    }
 
-    public  Vote modifyVoteSchedule(String postID, String voteID, KickVoteRequest request){
+    public Vote modifyVoteSchedule(String postID, String voteID, KickVoteRequest request) {
         //判斷時間是否過早
-        if(timeBeforeNow(request.getYear(), request.getMonth(), request.getDay())){
+        if (timeBeforeNow(request.getYear(), request.getMonth(), request.getDay())) {
             return null;
         }
 
@@ -107,19 +108,19 @@ public class SchedulingService {
         return postService.replaceVote(postID, voteID, request);
     }
 
-    public boolean timeBeforeNow(int requestYear , int requestMonth, int requestDay){
+    public boolean timeBeforeNow(int requestYear, int requestMonth, int requestDay) {
         LocalDate currentDate = LocalDate.now();
         int currentDay = currentDate.getDayOfMonth();
         Month month = currentDate.getMonth();
         int currentMonth = month.getValue();
         int currentYear = currentDate.getYear();
-        if(requestYear < currentYear){//past year
+        if (requestYear < currentYear) {//past year
             return true;
         } else if (requestYear == currentYear) {//same year
-            if(requestMonth < currentMonth){//past month
+            if (requestMonth < currentMonth) {//past month
                 return true;
             } else if (requestMonth == currentMonth) {
-                if(requestDay <= currentDay){//hour already set , can not set same day
+                if (requestDay <= currentDay) {//hour already set , can not set same day
                     return true;
                 }
             }
@@ -127,10 +128,10 @@ public class SchedulingService {
         return false;
     }
 
-    public void deleteVote(String postID, String voteID){
+    public void deleteVote(String postID, String voteID) {
         Post post = postService.getPostById(postID);
-        for(Vote vote : post.getVote()){
-            if(vote.getId().equals(voteID)) {
+        for (Vote vote : post.getVote()) {
+            if (vote.getId().equals(voteID)) {
                 cancelSchedule(vote.getTask().getId());
                 break;
             }
@@ -138,24 +139,27 @@ public class SchedulingService {
         postService.deleteVote(postID, voteID);
     }
 
-    public VoteReturn getUserInfo (Vote vote){
+    public VoteReturn getUserInfo(Vote vote) {
         VoteReturn voteReturn = new VoteReturn();
         voteReturn.setId(vote.getId());
         voteReturn.setResult(vote.getResult());
-        voteReturn.setKickTarget(vote.getKickTarget());
+        voteReturn.setKickTargetUserObj(appUserService.getUserInfo(vote.getKickTarget()));
         voteReturn.setTask(vote.getTask());
+        voteReturn.setDisagree(vote.getDisagree());
+        voteReturn.setAgree(vote.getAgree());
+        voteReturn.setKickTarget(vote.getKickTarget());
         ArrayList<UserObj> agreeUserList = new ArrayList<UserObj>();
-        for(String agreeUser : vote.getAgree()){
+        for (String agreeUser : vote.getAgree()) {
             UserObj userObj = appUserService.getUserInfo(agreeUser);
             agreeUserList.add(userObj);
         }
         ArrayList<UserObj> disagreeUserList = new ArrayList<UserObj>();
-        for(String disagreeUser : vote.getDisagree()){
+        for (String disagreeUser : vote.getDisagree()) {
             UserObj userObj = appUserService.getUserInfo(disagreeUser);
             disagreeUserList.add(userObj);
         }
         voteReturn.setAgreeUserObj(agreeUserList);
-        voteReturn.setDisagreeUserObj(agreeUserList);
+        voteReturn.setDisagreeUserObj(disagreeUserList);
         return voteReturn;
     }
 }

@@ -7,13 +7,18 @@ import java.util.ArrayList;
 public class VoteReturn {
     private String id;
     private Task task;
-    private String kickTarget;//user's email
+    private String kickTarget;
+    private UserObj kickTargetUserObj;//user's email
     private String result;
 
+    private ArrayList<String> agree;
+    private ArrayList<String> disagree;
     private ArrayList<UserObj> agreeUserObj;//user's email
     private ArrayList<UserObj> disagreeUserObj;//user's email
 
-    public VoteReturn(){}
+    public VoteReturn() {
+    }
+
 
     public String getId() {
         return id;
@@ -47,12 +52,12 @@ public class VoteReturn {
         this.disagreeUserObj = disagreeUserObj;
     }
 
-    public String getKickTarget() {
-        return kickTarget;
+    public UserObj getKickTargetUserObj() {
+        return kickTargetUserObj;
     }
 
-    public void setKickTarget(String kickTarget) {
-        this.kickTarget = kickTarget;
+    public void setKickTargetUserObj(UserObj kickTargetUserObj) {
+        this.kickTargetUserObj = kickTargetUserObj;
     }
 
     public String getResult() {
@@ -61,5 +66,29 @@ public class VoteReturn {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public String getKickTarget() {
+        return kickTarget;
+    }
+
+    public void setKickTarget(String kickTarget) {
+        this.kickTarget = kickTarget;
+    }
+
+    public ArrayList<String> getAgree() {
+        return agree;
+    }
+
+    public void setAgree(ArrayList<String> agree) {
+        this.agree = agree;
+    }
+
+    public ArrayList<String> getDisagree() {
+        return disagree;
+    }
+
+    public void setDisagree(ArrayList<String> disagree) {
+        this.disagree = disagree;
     }
 }

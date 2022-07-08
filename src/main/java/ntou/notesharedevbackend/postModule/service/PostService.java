@@ -13,6 +13,7 @@ import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.schedulerModule.entity.KickVoteRequest;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
+import ntou.notesharedevbackend.schedulerModule.entity.VoteReturn;
 import ntou.notesharedevbackend.schedulerModule.service.SchedulingService;
 import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
@@ -494,7 +495,11 @@ public class PostService {
         postReturn.setCommentCount(post.getCommentCount());
         postReturn.setAnswers(post.getAnswers());
         postReturn.setPublishDate(post.getPublishDate());
-        postReturn.setVote(post.getVote());
+        ArrayList<VoteReturn> voteReturnArrayList = new ArrayList<>();
+        for (Vote vote : post.getVote()) {
+            voteReturnArrayList.add(schedulingService.getUserInfo(vote));
+        }
+        postReturn.setVote(voteReturnArrayList);
         postReturn.setCollabNoteAuthorNumber(post.getCollabNoteAuthorNumber());
         ArrayList<ApplyReturn> collabApplyArrayList = new ArrayList<>();
         if (post.getCollabApply() != null) {
