@@ -24,30 +24,32 @@ public class MessageController {
     @MessageMapping("/group-messages/{noteID}")
     public void getGroupMessage(@DestinationVariable String noteID, final Message message) throws InterruptedException {
         Thread.sleep(1000);
-        messagingTemplate.convertAndSend("/topic/group-messages/" + noteID, message);
-        notificationService.saveNotificationGroup(noteID, message);
+        MessageReturn messageReturn = new MessageReturn(message);
+        messagingTemplate.convertAndSend("/topic/group-messages/" + noteID, messageReturn);
+        notificationService.saveNotificationGroup(noteID, messageReturn);
     }
 
     @MessageMapping("/group-messages-manager/{noteID}")
     public void getGroupMessageForManager(@DestinationVariable String noteID, final Message message) throws InterruptedException {
         Thread.sleep(1000);
-        notificationService.sendToManagerAndHeader(noteID, message);
+        MessageReturn messageReturn = new MessageReturn(message);
+        notificationService.sendToManagerAndHeader(noteID, messageReturn);
     }
 
     @MessageMapping("/bell-messages/{email}")
     public void getBellMessage(@DestinationVariable String email, final Message message) throws  InterruptedException {
         Thread.sleep(1000);
-        messagingTemplate.convertAndSend("/topic/bell-messages/" + email, message);
-        notificationService.saveNotificationBell(email, message);
+        MessageReturn messageReturn = new MessageReturn(message);
+        messagingTemplate.convertAndSend("/topic/bell-messages/" + email, messageReturn);
+        notificationService.saveNotificationBell(email, messageReturn);
     }
 
     @MessageMapping("/private-messages")
-    public void getPrivateMessage(final MessageWithReceiver messageWithReceiver) throws InterruptedException {
+    public void getPrivateMessage(final Message message) throws InterruptedException {
         Thread.sleep(1000);
-
-        Message message = new Message(messageWithReceiver);
-        messagingTemplate.convertAndSendToUser(messageWithReceiver.getReceiver(), "/topic/private-messages", message);
-        notificationService.saveNotificationPrivate(messageWithReceiver.getReceiver(), message);
+        MessageReturn messageReturn = new MessageReturn(message);
+        messagingTemplate.convertAndSendToUser(message.getReceiverEmail(), "/topic/private-messages", messageReturn);
+        notificationService.saveNotificationPrivate(message.getReceiverEmail(), messageReturn);
     }
 
 //    @Scheduled(fixedRate = 5000)

@@ -2,7 +2,7 @@ package ntou.notesharedevbackend.userModule.service;
 
 import ntou.notesharedevbackend.folderModule.entity.FolderRequest;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
-import ntou.notesharedevbackend.notificationModule.entity.Message;
+import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.UserRepository;
@@ -72,7 +72,7 @@ public class AppUserService {
         appUser.setBelledBy(new ArrayList<String>());
         appUser.setCoin(300);
         appUser.setHeadshotPhoto(request.getHeadshotPhoto());
-        appUser.setNotification(new ArrayList<Message>());
+        appUser.setNotification(new ArrayList<MessageReturn>());
         appUser.setUnreadMessageCount(0);
         userRepository.insert(appUser);
         // create Buy and Favorite and default folder
@@ -199,13 +199,8 @@ public class AppUserService {
         appUserReturn.setCoin(appUser.getCoin());
         appUserReturn.setHeadshotPhoto(appUser.getHeadshotPhoto());
         appUserReturn.setUnreadMessageCount(appUser.getUnreadMessageCount());
+        appUserReturn.setNotificationUserObj(appUserReturn.getNotificationUserObj());
 
-        ArrayList<UserObj> notificationUserObj = new ArrayList<>();
-        for (Message message : appUser.getNotification()) {
-            UserObj userObj = getUserInfo(message.getUser());
-            notificationUserObj.add(userObj);
-        }
-        appUserReturn.setNotificationUserObj(notificationUserObj);
         ArrayList<UserObj> subscribe = new ArrayList<>();
         for (String subscribeEmail : appUser.getSubscribe()) {
             UserObj userObj = getUserInfo(subscribeEmail);

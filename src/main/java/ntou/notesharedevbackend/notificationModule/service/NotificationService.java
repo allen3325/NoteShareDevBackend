@@ -28,14 +28,14 @@ public class NotificationService {
         this.messagingTemplate = messagingTemplate;
     }
 
-    public void saveNotificationGroup(String noteID, Message message) {
+    public void saveNotificationGroup(String noteID, MessageReturn message) {
         Note note = noteService.getNote(noteID);
         ArrayList<String> authorEmail = note.getAuthorEmail();
         for (String email: authorEmail)
             saveNotificationPrivate(email, message);
     }
 
-    public void sendToManagerAndHeader(String noteID, Message message) {
+    public void sendToManagerAndHeader(String noteID, MessageReturn message) {
         Note note = noteService.getNote(noteID);
         String managerEmail = note.getManagerEmail();
         String headerEmail = note.getHeaderEmail();
@@ -47,16 +47,16 @@ public class NotificationService {
         saveNotificationPrivate(headerEmail, message);
     }
 
-    public void saveNotificationBell(String email, Message message) {
+    public void saveNotificationBell(String email, MessageReturn message) {
         AppUser appUser = appUserService.getUserByEmail(email);
         ArrayList<String> bellSubscribers = appUser.getBelledBy();
         for (String bellSubscriber: bellSubscribers)
             saveNotificationPrivate(bellSubscriber, message);
     }
 
-    public void saveNotificationPrivate(String email, Message message) {
+    public void saveNotificationPrivate(String email, MessageReturn message) {
         AppUser appUser = appUserService.getUserByEmail(email);
-        ArrayList<Message> notificationList = appUser.getNotification();
+        ArrayList<MessageReturn> notificationList = appUser.getNotification();
         notificationList.add(message);
         appUser.setNotification(notificationList);
 
@@ -67,7 +67,7 @@ public class NotificationService {
         userRepository.save(appUser);
     }
 
-    public ArrayList<Message> getNotification(String email) {
+    public ArrayList<MessageReturn> getNotification(String email) {
         AppUser appUser = appUserService.getUserByEmail(email);
         return appUser.getNotification();
     }
@@ -76,16 +76,5 @@ public class NotificationService {
         AppUser appUser = appUserService.getUserByEmail(email);
         appUser.setUnreadMessageCount(0);
         userRepository.save(appUser);
-    }
-
-    public MessageReturn getUserInfo(Message message) {
-        MessageReturn messageReturn = new MessageReturn();
-        messageReturn.setContent(message.getContent());
-        messageReturn.setTime(message.getTime());
-
-        UserObj userObj = appUserService.getUserInfo(message.getUser());
-        messageReturn.setMessageObj(userObj);
-
-        return messageReturn;
     }
 }

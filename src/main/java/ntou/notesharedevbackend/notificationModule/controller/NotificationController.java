@@ -22,15 +22,9 @@ public class NotificationController {
     @Operation(summary = "get a user's all notifications")
     @GetMapping("/{email}")
     public ResponseEntity<Object> getNotification(@PathVariable("email") String email) {
-        ArrayList<Message> notificationList = notificationService.getNotification(email);
-
-        ArrayList<MessageReturn> messageUserReturnArrayList = new ArrayList<>();
-        for (Message notification : notificationList) {
-            MessageReturn messageReturn = notificationService.getUserInfo(notification);
-            messageUserReturnArrayList.add(messageReturn);
-        }
+        ArrayList<MessageReturn> notificationList = notificationService.getNotification(email);
         Map<String, Object> map = new HashMap<>();
-        map.put("notification", messageUserReturnArrayList);
+        map.put("notification", notificationList);
         return ResponseEntity.ok(map);
     }
 
