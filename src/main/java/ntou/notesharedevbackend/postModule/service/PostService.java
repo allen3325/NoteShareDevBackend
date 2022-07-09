@@ -182,10 +182,10 @@ public class PostService {
 
     public Boolean applyCollaboration(String id, Apply applicant) {
         Post post = getPostById(id);
-        if (post.getApplyEmail().contains(applicant.getWantEnterUsersEmail())) {
-            return false;
-        }
-        post.getApplyEmail().add(applicant.getWantEnterUsersEmail());
+//        if (post.getApplyEmail().contains(applicant.getWantEnterUsersEmail())) {
+//            return false;
+//        }
+//        post.getApplyEmail().add(applicant.getWantEnterUsersEmail());
         // get all apply
         ArrayList<Apply> allApply = post.getCollabApply();
         allApply.add(applicant);
@@ -525,13 +525,13 @@ public class PostService {
         postReturn.setEmailUserObj(emailUserObj);
         postReturn.setEmail(post.getEmail());
         postReturn.setArchive(post.getArchive());
-        ArrayList<UserObj> applyUserObj = new ArrayList<>();
-        for (String applyEmail : post.getApplyEmail()) {
-            UserObj userObjInfo = appUserService.getUserInfo(applyEmail);
-            applyUserObj.add(userObjInfo);
-        }
-        postReturn.setApplyUserObj(applyUserObj);
-        postReturn.setApplyEmail(post.getApplyEmail());
+//        ArrayList<UserObj> applyUserObj = new ArrayList<>();
+//        for (String applyEmail : post.getApplyEmail()) {
+//            UserObj userObjInfo = appUserService.getUserInfo(applyEmail);
+//            applyUserObj.add(userObjInfo);
+//        }
+//        postReturn.setApplyUserObj(applyUserObj);
+//        postReturn.setApplyEmail(post.getApplyEmail());
         return postReturn;
     }
 
