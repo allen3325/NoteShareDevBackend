@@ -7,6 +7,7 @@ import ntou.notesharedevbackend.repository.*;
 import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.*;
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.messaging.simp.*;
 import org.springframework.stereotype.*;
 
 import java.util.*;
@@ -20,11 +21,30 @@ public class NotificationService {
     @Autowired
     private AppUserService appUserService;
 
+    private final SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    public NotificationService(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
+
     public void saveNotificationGroup(String noteID, Message message) {
         Note note = noteService.getNote(noteID);
         ArrayList<String> authorEmail = note.getAuthorEmail();
         for (String email: authorEmail)
             saveNotificationPrivate(email, message);
+    }
+
+    public void sendToManagerAndHeader(String noteID, Message message) {
+        Note note = noteService.getNote(noteID);
+        String managerEmail = note.getManagerEmail();
+        String headerEmail = note.getHeaderEmail();
+        if (managerEmail != null) {
+            messagingTemplate.convertAndSendToUser(managerEmail, "/topic/private-messages" + noteID, message);
+            saveNotificationPrivate(managerEmail, message);
+        }
+        messagingTemplate.convertAndSendToUser(headerEmail, "/topic/private-messages" + noteID, message);
+        saveNotificationPrivate(headerEmail, message);
     }
 
     public void saveNotificationBell(String email, Message message) {
@@ -49,9 +69,6 @@ public class NotificationService {
 
     public ArrayList<Message> getNotification(String email) {
         AppUser appUser = appUserService.getUserByEmail(email);
-        appUser.setUnreadMessageCount(0);
-        userRepository.save(appUser);
-
         return appUser.getNotification();
     }
 

@@ -21,22 +21,28 @@ public class MessageController {
         this.messagingTemplate = messagingTemplate;
     }
 
-    @MessageMapping("/many-to-many-message/{noteID}")
-    public void getGroupMessage(@DestinationVariable String noteID, final Message message, final Principal principal) throws InterruptedException {
+    @MessageMapping("/group-messages/{noteID}")
+    public void getGroupMessage(@DestinationVariable String noteID, final Message message) throws InterruptedException {
         Thread.sleep(1000);
         messagingTemplate.convertAndSend("/topic/group-messages/" + noteID, message);
         notificationService.saveNotificationGroup(noteID, message);
     }
 
-    @MessageMapping("/one-to-many-message/{email}")
-    public void getBellMessage(@DestinationVariable String email, final Message message, final Principal principal) throws  InterruptedException {
+    @MessageMapping("/group-messages-manager/{noteID}")
+    public void getGroupMessageForManager(@DestinationVariable String noteID, final Message message) throws InterruptedException {
+        Thread.sleep(1000);
+        notificationService.sendToManagerAndHeader(noteID, message);
+    }
+
+    @MessageMapping("/bell-messages/{email}")
+    public void getBellMessage(@DestinationVariable String email, final Message message) throws  InterruptedException {
         Thread.sleep(1000);
         messagingTemplate.convertAndSend("/topic/bell-messages/" + email, message);
         notificationService.saveNotificationBell(email, message);
     }
 
-    @MessageMapping("/one-to-one-message")
-    public void getPrivateMessage(final MessageWithReceiver messageWithReceiver, final Principal principal) throws InterruptedException {
+    @MessageMapping("/private-messages")
+    public void getPrivateMessage(final MessageWithReceiver messageWithReceiver) throws InterruptedException {
         Thread.sleep(1000);
 
         Message message = new Message(messageWithReceiver);
