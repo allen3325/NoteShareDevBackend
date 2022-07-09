@@ -46,8 +46,8 @@ public class PostReturn {
     private UserObj authorUserObj;
     private ArrayList<UserObj> emailUserObj;
     private Boolean isArchive;
-    private ArrayList<UserObj> applyUserObj;
-    private ArrayList<String> applyEmail;
+//    private ArrayList<UserObj> applyUserObj;
+//    private ArrayList<String> applyEmail;
 
     public String getId() {
         return id;
@@ -242,13 +242,13 @@ public class PostReturn {
         isArchive = archive;
     }
 
-    public ArrayList<UserObj> getApplyUserObj() {
-        return applyUserObj;
-    }
-
-    public void setApplyUserObj(ArrayList<UserObj> applyUserObj) {
-        this.applyUserObj = applyUserObj;
-    }
+//    public ArrayList<UserObj> getApplyUserObj() {
+//        return applyUserObj;
+//    }
+//
+//    public void setApplyUserObj(ArrayList<UserObj> applyUserObj) {
+//        this.applyUserObj = applyUserObj;
+//    }
 
     public ArrayList<String> getEmail() {
         return email;
@@ -290,11 +290,11 @@ public class PostReturn {
         this.collabApply = collabApply;
     }
 
-    public ArrayList<String> getApplyEmail() {
-        return applyEmail;
-    }
-
-    public void setApplyEmail(ArrayList<String> applyEmail) {
-        this.applyEmail = applyEmail;
-    }
+//    public ArrayList<String> getApplyEmail() {
+//        return applyEmail;
+//    }
+//
+//    public void setApplyEmail(ArrayList<String> applyEmail) {
+//        this.applyEmail = applyEmail;
+//    }
 }

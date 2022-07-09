@@ -560,8 +560,8 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.collabApply").isEmpty())
-                .andExpect(jsonPath("$.res.applyEmail").isEmpty())
-                .andExpect(jsonPath("$.res.applyUserObj").isEmpty())
+//                .andExpect(jsonPath("$.res.applyEmail").isEmpty())
+//                .andExpect(jsonPath("$.res.applyUserObj").isEmpty())
         ;
     }
 
@@ -743,7 +743,7 @@ public class PostTest {
         post.setSubject("Java");
         post.setTitle("TITLE");
 
-        JSONArray applyEmails = new JSONArray();
+//        JSONArray applyEmails = new JSONArray();
         JSONArray comments = new JSONArray();
         for (Comment c : post.getComments()) {
             JSONArray likers = new JSONArray();
@@ -773,7 +773,7 @@ public class PostTest {
                 .put("id", post.getId())
                 .put("type", post.getType())
                 .put("author", post.getAuthor())
-                .put("authorName",appUser.getName())
+                .put("authorName", appUser.getName())
                 .put("department", post.getDepartment())
                 .put("subject", post.getSubject())
                 .put("professor", post.getProfessor())
@@ -783,7 +783,8 @@ public class PostTest {
                 .put("commentCount", post.getCommentCount())
                 .put("public", true)
                 .put("email", new JSONArray().put("yitingwu.1030@gmail.com"))
-                .put("applyEmail", applyEmails);
+//                .put("applyEmail", applyEmails)
+                ;
 
         mockMvc.perform(put("/post/" + post.getId())
                         .headers(httpHeaders)
@@ -1379,30 +1380,30 @@ public class PostTest {
         }
     }
 
-    @Test
-    public void testApplyCollaborationPostAgain() throws Exception {
-        Post post = createCollaborationPost();
-        post.getApplyEmail().add("user1@gmail.com");
-        postRepository.save(post);
-
-        JSONObject request = new JSONObject();
-        request.put("wantEnterUsersEmail", "user1@gmail.com");
-        request.put("commentFromApplicant", "我是留言");
-
-        mockMvc.perform(put("/post/apply/" + post.getId())
-                        .headers(httpHeaders)
-                        .content(request.toString()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("User already apply"));
-
-    }
+//    @Test
+//    public void testApplyCollaborationPostAgain() throws Exception {
+//        Post post = createCollaborationPost();
+//        post.getApplyEmail().add("user1@gmail.com");
+//        postRepository.save(post);
+//
+//        JSONObject request = new JSONObject();
+//        request.put("wantEnterUsersEmail", "user1@gmail.com");
+//        request.put("commentFromApplicant", "我是留言");
+//
+//        mockMvc.perform(put("/post/apply/" + post.getId())
+//                        .headers(httpHeaders)
+//                        .content(request.toString()))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.msg").value("User already apply"));
+//
+//    }
 
     @Test
     public void testGetUserAllCollaborationPost() throws Exception {
         AppUser appUser = userRepository.findByEmail("user1@gmail.com");
         Post post = createCollaborationPost();
         AppUser postAuthor = userRepository.findByEmail(post.getAuthor());
-        post.getApplyEmail().add(appUser.getEmail());
+//        post.getApplyEmail().add(appUser.getEmail());
         post.getEmail().add(appUser.getEmail());
         postRepository.save(post);
         mockMvc.perform(get("/post/" + appUser.getEmail() + "/collaboration")
@@ -1424,10 +1425,10 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.[0].commentCount").value(post.getCommentCount()))
                 .andExpect(jsonPath("$.res.[0].public").value(post.getPublic()))
                 .andExpect(jsonPath("$.res.[0].archive").value(post.getArchive()))
-                .andExpect(jsonPath("$.res.[0].applyEmail.[0]").value(appUser.getEmail()))
-                .andExpect(jsonPath("$.res.[0].applyUserObj.[0].userObjEmail").value(appUser.getEmail()))
-                .andExpect(jsonPath("$.res.[0].applyUserObj.[0].userObjName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.[0].applyUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+//                .andExpect(jsonPath("$.res.[0].applyEmail.[0]").value(appUser.getEmail()))
+//                .andExpect(jsonPath("$.res.[0].applyUserObj.[0].userObjEmail").value(appUser.getEmail()))
+//                .andExpect(jsonPath("$.res.[0].applyUserObj.[0].userObjName").value(appUser.getName()))
+//                .andExpect(jsonPath("$.res.[0].applyUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.[0].authorUserObj.userObjEmail").value(postAuthor.getEmail()))
                 .andExpect(jsonPath("$.res.[0].authorUserObj.userObjName").value(postAuthor.getName()))
                 .andExpect(jsonPath("$.res.[0].authorUserObj.userObjAvatar").value(postAuthor.getHeadshotPhoto()))
