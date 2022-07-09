@@ -1,50 +1,57 @@
 package ntou.notesharedevbackend.notificationModule.entity;
 
 import lombok.*;
+import ntou.notesharedevbackend.userModule.entity.*;
 
 @ToString
 public class Message {
-    private String user;
-    private String content;
-    private String time;
+    private String message;
+    private String type;
+    private UserObj userObj;
+    private String id;
+    private String receiverEmail;
 
     public Message() {
 
     }
 
-    public Message(MessageWithReceiver message) {
-        setUser(message.getUser());
-        setContent(message.getContent());
-        setTime(message.getTime());
+    public String getMessage() {
+        return message;
     }
 
-    public Message(Message message) {
-        this.user = message.getUser();
-        this.content = message.getContent();
-        this.time = message.getTime();
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public String getContent() {
-        return content;
+    public String getType() {
+        return type;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getUser() {
-        return user;
+    public UserObj getUserObj() {
+        return userObj;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setUserObj(UserObj userObj) {
+        this.userObj = userObj;
     }
 
-    public String getTime() {
-        return time;
+    public String getId() {
+        return id;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getReceiverEmail() {
+        return receiverEmail;
+    }
+
+    public void setReceiverEmail(String receiverEmail) {
+        this.receiverEmail = receiverEmail;
     }
 }
