@@ -1250,10 +1250,7 @@ public class NoteTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
-        // check note remove from folder
-        if (folderRepository.findById(tempRewardNote.getId()).get().getNotes().contains(rewardNote.getId())) {
-            throw new Exception("Note Test : reward note does not remove");
-        }
+
         //check post answer add noteID
         if (!postRepository.findById(post.getId()).get().getAnswers().contains(rewardNote.getId())) {
             throw new Exception("Note Test : post answer does not add reward noteID");
