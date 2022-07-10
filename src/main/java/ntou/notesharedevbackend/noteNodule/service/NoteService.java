@@ -193,6 +193,7 @@ public class NoteService {
     }
 
     public void rewardNoteBestAnswer(String noteID, String email, String bestPrice) {
+        //email為懸賞人email
         Note note = getNote(noteID);
         note.setBest(true);
         Coin bestAnswerCoin = new Coin();
@@ -200,25 +201,29 @@ public class NoteService {
         coinService.changeCoin(note.getAuthorEmail().get(0), bestAnswerCoin);
         String contributor = note.getAuthorEmail().get(0);//投稿人email
         note.getContributors().add(contributor);//將投稿人放入contributor
-        //TODO 移除投稿人擁有權（投稿人可以看嗎？
-        note.getAuthorEmail().add(email);
-        String userName = appUserService.getUserByEmail(email).getName();
-        note.getAuthorName().add(userName);
         note = replaceNote(note, note.getId());
-        copyNoteToFolder(note.getId(), appUserService.getUserByEmail(email).getFolders().get(0));//筆記放入懸賞人的buy folder;
+//        note.getAuthorEmail().add(email);
+//        String userName = appUserService.getUserByEmail(email).getName();
+//        note.getAuthorName().add(userName);
+        Folder buyFolder = folderService.getBuyFolderByUserEmail(email);
+        copyNoteToFolder(note.getId(), buyFolder.getId());//筆記放入懸賞人的buy folder;
 //        noteRepository.save(note);
     }
 
     public void rewardNoteReferenceAnswer(String noteID, String email, String referencePrice) {
+        //email為懸賞人email
         Note note = getNote(noteID);
         note.setReference(true);
         Coin referenceAnswerCoin = new Coin();
         referenceAnswerCoin.setCoin('+' + referencePrice);
         coinService.changeCoin(note.getAuthorEmail().get(0), referenceAnswerCoin);//購買者增加點
-        note.getAuthorEmail().add(email);
-        String userName = appUserService.getUserByEmail(email).getName();
-        note.getAuthorName().add(userName);
+//        note.getAuthorEmail().add(email);
+//        String userName = appUserService.getUserByEmail(email).getName();
+//        note.getAuthorName().add(userName);
         replaceNote(note, note.getId());
+        //筆寄放入懸賞人buyFolder
+        Folder buyFolder = folderService.getBuyFolderByUserEmail(email);
+        copyNoteToFolder(noteID, buyFolder.getId());
 //        noteRepository.save(note);
     }
 
@@ -336,6 +341,32 @@ public class NoteService {
             }
         }
         return false;
+    }
+
+    public void returnRewardNoteToAuthor(String postID, ArrayList<String> answers) {
+        Post post = postService.getPostById(postID);
+        ArrayList<String> answersNotes = new ArrayList<>();
+        answersNotes.addAll(post.getAnswers());
+        for (String noteID : answers) {
+            Note note = getNote(noteID);
+            //非最佳解且非參考解 歸還原作者
+            if (note.getBest() != null && note.getBest() == false && note.getReference() != null && note.getReference() == false) {
+                String authorEmail = note.getHeaderEmail();
+                //移出tempRewardNote Folder
+                Folder tempRewardNote = folderService.getTempRewardNoteFolder(authorEmail);
+                tempRewardNote.getNotes().remove(noteID);
+                folderService.replaceFolder(tempRewardNote);
+                //移入Folder Folder
+                Folder defaultFolder = folderService.getFolderFolderByEmail(authorEmail);
+                copyNoteToFolder(noteID, defaultFolder.getId());
+                note.setPostID(null);
+                note.setType("normal");
+                replaceNote(note, noteID);
+                answersNotes.remove(noteID);
+            }
+        }
+        post.setAnswers(answersNotes);
+        postService.replacePost(postID, post);
     }
 
     public NoteReturn getUserinfo(Note note) {

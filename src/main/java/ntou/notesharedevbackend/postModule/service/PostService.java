@@ -149,6 +149,8 @@ public class PostService {
             if (post.getType().equals("reward")) {//懸賞判斷有無best answer
                 if (post.getAnswers().size() != 0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
                     post.setPublic(!post.getPublic());
+                    //歸還非最佳解且非參考解的筆記
+                    noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
                 } else {
                     System.out.println("can't change publish state before you got best answer.");
                     return null;
@@ -373,12 +375,17 @@ public class PostService {
 
     public boolean rewardChooseBestAnswer(String postID, String answerID) {
         Post post = getPostById(postID);
-        AppUser appUser = appUserService.getUserByEmail(post.getAuthor());
+        AppUser appUser = appUserService.getUserByEmail(post.getAuthor());//懸賞人
         String bestPrice = String.valueOf(post.getBestPrice());
         Coin postAuthorCoin = new Coin();
         postAuthorCoin.setCoin('-' + bestPrice);
         coinService.changeCoin(appUser.getEmail(), postAuthorCoin);
         noteService.rewardNoteBestAnswer(answerID, appUser.getEmail(), bestPrice);
+        //檢查是否選完最佳解和參考解
+        if (noteService.rewardNoteHaveAnswer(post.getAnswers()) && post.getReferenceNumber().equals(0)) {
+            //選完歸還剩餘筆記
+            noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
+        }
         return true;
     }
 
@@ -417,11 +424,16 @@ public class PostService {
         String referencePrice = String.valueOf(post.getReferencePrice());
         if (post.getReferenceNumber() > 0) {
             post.setReferenceNumber(post.getReferenceNumber() - 1);
-            replacePost(postID, post);
+            post = replacePost(postID, post);
             Coin postAuthorCoin = new Coin();
             postAuthorCoin.setCoin('-' + referencePrice);
             coinService.changeCoin(appUser.getEmail(), postAuthorCoin);//作者扣點
             noteService.rewardNoteReferenceAnswer(answerID, appUser.getEmail(), referencePrice);
+            //檢查是否選完最佳解和參考解
+            if (noteService.rewardNoteHaveAnswer(post.getAnswers()) && post.getReferenceNumber().equals(0)) {
+                //選完歸還剩餘筆記
+                noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
+            }
             return true;
         }
         return false;
@@ -547,6 +559,8 @@ public class PostService {
                 if (post.getAnswers().size() != 0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
                     post.setArchive(!post.getArchive());
                     replacePost(postID, post);
+                    //歸還非最佳非參考的筆記
+                    noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
                     return true;
                 } else {
                     System.out.println("can't change publish state before you got best answer.");
