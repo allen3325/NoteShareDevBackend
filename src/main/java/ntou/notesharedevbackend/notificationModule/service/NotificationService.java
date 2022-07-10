@@ -40,10 +40,10 @@ public class NotificationService {
         String managerEmail = note.getManagerEmail();
         String headerEmail = note.getHeaderEmail();
         if (managerEmail != null) {
-            messagingTemplate.convertAndSendToUser(managerEmail, "/topic/private-messages" + noteID, message);
+            messagingTemplate.convertAndSendToUser(managerEmail, "/topic/private-messages", message);
             saveNotificationPrivate(managerEmail, message);
         }
-        messagingTemplate.convertAndSendToUser(headerEmail, "/topic/private-messages" + noteID, message);
+        messagingTemplate.convertAndSendToUser(headerEmail, "/topic/private-messages", message);
         saveNotificationPrivate(headerEmail, message);
     }
 
