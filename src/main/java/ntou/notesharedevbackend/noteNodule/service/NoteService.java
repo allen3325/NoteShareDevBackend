@@ -166,14 +166,28 @@ public class NoteService {
         Note note = getNote(noteID);
         note.setSubmit(true);
         Note newNote = replaceNote(note, noteID);
-        AppUser appUser = appUserService.getUserByEmail(note.getHeaderEmail());
         //remove from folder
-        Folder tempRewardNoteFolder = folderService.getTempRewardNoteFolder(appUser.getEmail());
-        tempRewardNoteFolder.getNotes().remove(noteID);
-        folderService.replaceFolder(tempRewardNoteFolder);
-
+//        AppUser appUser = appUserService.getUserByEmail(note.getHeaderEmail());
+//        Folder tempRewardNoteFolder = folderService.getTempRewardNoteFolder(appUser.getEmail());
+//        tempRewardNoteFolder.getNotes().remove(noteID);
+//        folderService.replaceFolder(tempRewardNoteFolder);
         Post post = postService.getPostById(note.getPostID());
         post.getAnswers().add(noteID);
+        postService.replacePost(post.getId(), post);
+        return newNote;
+    }
+
+    public Note withdrawRewardNote(String noteID) {
+        Note note = getNote(noteID);
+        note.setSubmit(false);
+        Note newNote = replaceNote(note, noteID);
+        //remove from folder
+//        AppUser appUser = appUserService.getUserByEmail(note.getHeaderEmail());
+//        Folder tempRewardNoteFolder = folderService.getTempRewardNoteFolder(appUser.getEmail());
+//        tempRewardNoteFolder.getNotes().remove(noteID);
+//        folderService.replaceFolder(tempRewardNoteFolder);
+        Post post = postService.getPostById(note.getPostID());
+        post.getAnswers().remove(noteID);
         postService.replacePost(post.getId(), post);
         return newNote;
     }
