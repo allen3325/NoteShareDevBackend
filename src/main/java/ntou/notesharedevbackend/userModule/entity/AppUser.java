@@ -56,7 +56,7 @@ public class AppUser {
     private ArrayList<String> fans;
     private Integer coin;
     private String headshotPhoto;
-    private ArrayList<Message> notification;
+    private ArrayList<MessageReturn> notification;
     private Integer unreadMessageCount;
 
     // constructor
@@ -192,11 +192,11 @@ public class AppUser {
         this.coin = coin;
     }
 
-    public ArrayList<Message> getNotification() {
+    public ArrayList<MessageReturn> getNotification() {
         return notification;
     }
 
-    public void setNotification(ArrayList<Message> notification) {
+    public void setNotification(ArrayList<MessageReturn> notification) {
         this.notification = notification;
     }
 
