@@ -198,4 +198,22 @@ public class NoteController {
         res.put("msg", "Success");
         return ResponseEntity.ok(res);
     }
+
+    @Operation(summary = "remove note from folder")
+    @PutMapping("/delete/{noteID}/{folderID}")
+    public ResponseEntity<Object> removeNoteFromFolder(@PathVariable("noteID") String noteID, @PathVariable("folderID") String folderID) {
+        Folder folder = noteService.removeNoteFromFolder(noteID, folderID);
+        Map<String, Object> res = new HashMap<>();
+        if (folder.getFolderName().equals("Buy")) {
+            res.put("res", "Can't delete note which in Buy Folder");
+            return ResponseEntity.status(406).body(res);
+        } else if (folder.getNotes().contains(noteID)) {
+            res.put("res", "Can't delete last note");
+            return ResponseEntity.status(409).body(res);
+        } else {//可移除
+            res.put("res", noteService.turnFolderToFolderReturn(folder));
+            return ResponseEntity.ok(res);
+        }
+    }
+
 }
