@@ -150,6 +150,7 @@ public class PostService {
                 if (post.getAnswers().size() != 0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
                     post.setPublic(!post.getPublic());
                     //歸還非最佳解且非參考解的筆記
+                    replacePost(post.getId(), post);
                     noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
                 } else {
                     System.out.println("can't change publish state before you got best answer.");
@@ -158,19 +159,22 @@ public class PostService {
             } else if (post.getType().equals("QA")) {//QA判斷有無best answer
                 if (QAhaveBestAnswer(post.getComments())) {
                     post.setPublic(!post.getPublic());
+                    replacePost(post.getId(), post);
                 } else {
                     System.out.println("can't change publish state before you got best answer.");
                     return null;
                 }
             } else if (post.getType().equals("collaboration")) {//共筆無條件
                 post.setPublic(!post.getPublic());
+                replacePost(post.getId(), post);
             }
         } else {
             post.setPublic(!post.getPublic());
             Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
             post.setPublishDate(calendar.getTime());
+            replacePost(post.getId(), post);
         }
-        replacePost(post.getId(), post);
+
         return getPostById(id);
 //        postRepository.save(post);
     }

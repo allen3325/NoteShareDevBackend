@@ -207,6 +207,9 @@ public class NoteService {
 //        note.getAuthorName().add(userName);
         Folder buyFolder = folderService.getBuyFolderByUserEmail(email);
         copyNoteToFolder(note.getId(), buyFolder.getId());//筆記放入懸賞人的buy folder;
+        Folder tempRewardNote = folderService.getTempRewardNoteFolder(contributor);
+        tempRewardNote.getNotes().remove(noteID);
+        folderService.replaceFolder(tempRewardNote);
 //        noteRepository.save(note);
     }
 
@@ -224,6 +227,9 @@ public class NoteService {
         //筆寄放入懸賞人buyFolder
         Folder buyFolder = folderService.getBuyFolderByUserEmail(email);
         copyNoteToFolder(noteID, buyFolder.getId());
+        Folder tempRewardNote = folderService.getTempRewardNoteFolder(note.getAuthorEmail().get(0));
+        tempRewardNote.getNotes().remove(noteID);
+        folderService.replaceFolder(tempRewardNote);
 //        noteRepository.save(note);
     }
 
@@ -350,7 +356,7 @@ public class NoteService {
         for (String noteID : answers) {
             Note note = getNote(noteID);
             //非最佳解且非參考解 歸還原作者
-            if (note.getBest() != null && note.getBest() == false && note.getReference() != null && note.getReference() == false) {
+            if ((note.getBest() == null || note.getBest() == false) && (note.getReference() == null || note.getReference() == false)) {
                 String authorEmail = note.getHeaderEmail();
                 //移出tempRewardNote Folder
                 Folder tempRewardNote = folderService.getTempRewardNoteFolder(authorEmail);
