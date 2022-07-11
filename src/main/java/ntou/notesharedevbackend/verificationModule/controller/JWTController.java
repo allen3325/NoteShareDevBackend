@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.verificationModule.controller;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
@@ -76,6 +77,7 @@ public class JWTController {
         }
     }
 
+    @Hidden
     @Operation(summary = "前端用不到", description = "")
     @PostMapping("/parse")
     public ResponseEntity<Map<String, Object>> parseToken(@RequestBody Map<String, String> request) {
