@@ -1,5 +1,6 @@
 package ntou.notesharedevbackend.tagGeneration.controller;
 
+import com.fasterxml.jackson.databind.*;
 import ntou.notesharedevbackend.repository.*;
 import ntou.notesharedevbackend.tagGeneration.entity.*;
 import ntou.notesharedevbackend.tagGeneration.service.*;
@@ -14,21 +15,19 @@ import java.util.*;
 public class TagController {
     @Autowired
     private TagService tagService;
-    @Autowired
-    private DictionaryRepository dictionaryRepository;
 
-//    @GetMapping("/wordSuggestion/{noteID}")
-//    public ResponseEntity<Object> getWordSuggestion(@PathVariable("noteID") String noteID,
-//                                                    @RequestBody Map<String, String> request) {
-//
-//        Map<String, Object> res = new HashMap<>();
-//        res.put("generatedTags", possibleInputWord);
-//        return ResponseEntity.ok(res);
-//    }
-//
+    @PutMapping("/wordSuggestion/{noteID}")
+    public ResponseEntity<Object> getWordSuggestion(@PathVariable("noteID") String noteID,
+                                                    @RequestBody Map<String, String> request) {
+        String text = request.get("text");
+        List<String> generatedTags = tagService.getWordSuggestion(noteID, text);
+        Map<String, Object> res = new HashMap<>();
+        res.put("generatedTags", generatedTags);
+        return ResponseEntity.ok(res);
+    }
+
     @GetMapping("/showPossibleWord")
-    public ResponseEntity<Object> getPossibleInputWord(@RequestBody Map<String, String> request) {
-        String word = request.get("word");
+    public ResponseEntity<Object> getPossibleInputWord(@RequestParam(value = "word", defaultValue = "") String word) {
         List<String> possibleInputWord = tagService.getPossibleInputWord(word);
         Map<String, Object> res = new HashMap<>();
         res.put("possibleInputTags", possibleInputWord);
@@ -36,9 +35,10 @@ public class TagController {
     }
 //
     @PutMapping("/addWordToDict")
-    public ResponseEntity<Object> addWordToDict(@RequestBody Map<String, String> request) {
-        String word = request.get("word");
-        tagService.addWordToDict(word);
+    public ResponseEntity<Object> addWordToDict(@RequestBody Map<String, String[]> request) {
+        String[] words = request.get("words");
+        for (String word: words)
+            tagService.addWordToDict(word);
 
         Map<String, Object> res = new HashMap<>();
         res.put("msg", "Success");

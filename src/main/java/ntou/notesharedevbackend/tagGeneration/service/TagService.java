@@ -15,21 +15,30 @@ public class TagService {
     @Autowired
     private NoteService noteService;
     @Autowired
+    private NoteRepository noteRepository;
+    @Autowired
     private DictionaryRepository dictionaryRepository;
 
-//    public List<String> getWordSuggestion(String noteID) {
-//        Note note = noteService.getNote(noteID);
-//        ArrayList<VersionContent> versionContents = note.getVersion();
-//        int latestVersion = versionContents.size() - 1;
-//        VersionContent versionContent = versionContents.get(latestVersion);
-//
-//    }
+    public List<String> getWordSuggestion(String noteID, String text) {
+        Note note = noteService.getNote(noteID);
+        TagGeneration tagGeneration = new TagGeneration();
+        List<String> generatedTags = tagGeneration.wordSuggestion(text);
+        ArrayList<String> tags = note.getTag();
+        ArrayList<String> hiddenTags = note.getHiddenTag();
+        tags.addAll(generatedTags);
+        hiddenTags.addAll(generatedTags);
+        note.setTag(tags);
+        note.setHiddenTag(hiddenTags);
+        noteRepository.save(note);
+
+        return generatedTags;
+    }
 
     public List<String> getPossibleInputWord(String word) {
         TagGeneration tagGeneration = new TagGeneration();
         return tagGeneration.showPossibleWords(word);
     }
-//
+
     public void addWordToDict(String word) {
         TagGeneration tagGeneration = new TagGeneration();
         tagGeneration.addWordToDict(word);
