@@ -95,6 +95,8 @@ public class CommentTest {
         folderList.add(favoriteFolder.getId());
         folderList.add(OSFolder.getId());
         appUser.setFolders(folderList);
+        appUser.setNotification(new ArrayList<>());
+        appUser.setUnreadMessageCount(0);
         appUser.setCoin(300);
         return appUser;
     }

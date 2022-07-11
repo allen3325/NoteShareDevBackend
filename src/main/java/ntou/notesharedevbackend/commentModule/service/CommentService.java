@@ -6,6 +6,9 @@ import ntou.notesharedevbackend.commentModule.entity.CommentReturn;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
+import ntou.notesharedevbackend.notificationModule.entity.Message;
+import ntou.notesharedevbackend.notificationModule.entity.MessageReturn;
+import ntou.notesharedevbackend.notificationModule.service.NotificationService;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
@@ -14,6 +17,7 @@ import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.entity.UserObj;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -33,7 +37,15 @@ public class CommentService {
     private PostService postService;
     @Autowired
     private AppUserService appUserService;
+    @Autowired
+    private NotificationService notificationService;
 
+    private final SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    public CommentService(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
     public ArrayList<Comment> getAllCommentsByID(String id) {
 
@@ -71,8 +83,8 @@ public class CommentService {
         Post post = new Post();
         String type = "";
         AppUser appUser = appUserService.getUserByEmail(request.getEmail());
-
-        ArrayList<Comment> commentArrayList;
+        //尋找筆記或貼文
+        ArrayList<Comment> commentArrayList = new ArrayList<>();
         if (noteRepository.findById(id).isPresent()) {
             type = "note";
             note = noteService.getNote(id);
@@ -84,7 +96,7 @@ public class CommentService {
         } else {
             throw new NotFoundException("Can't find any note or post matched id");
         }
-
+        //更新留言
         Comment comment = new Comment();
         comment.setAuthor(appUser.getName());
         comment.setContent(request.getContent());
@@ -96,14 +108,73 @@ public class CommentService {
         } else {
             comment.setPicURL(new ArrayList<String>());
         }
-
+        //更新筆記或貼文
+        UserObj userObj = appUserService.getUserInfo(comment.getEmail());
         commentArrayList.add(comment);
         if (type.equals("note")) {
             note.setComments(commentArrayList);
             noteService.replaceNote(note, note.getId());
+            //通知筆記作者
+            MessageReturn messageReturn = new MessageReturn();
+            messageReturn.setDate(new Date());
+            messageReturn.setMessage(comment.getAuthor() + "在你的筆記內留言");
+            messageReturn.setId(note.getId());
+            messageReturn.setType(note.getType());
+            messageReturn.setUserObj(userObj);
+            if (note.getType().equals("collaboration")) {//共筆要寄給所有作者
+                messagingTemplate.convertAndSend("/topic/group-messages/" + note.getId(), messageReturn);
+                notificationService.saveNotificationGroup(note.getId(), messageReturn);
+            } else {
+                messagingTemplate.convertAndSendToUser(note.getHeaderEmail(), "/topic/private-messages", messageReturn);
+                notificationService.saveNotificationPrivate(note.getHeaderEmail(), messageReturn);
+            }
+            ArrayList<String> taggedEmails;
+            if ((taggedEmails = tagOtherCommentAuthor(request.getContent(), commentArrayList)) != null) {//可在留言內@多人
+                //通知被@的人
+                MessageReturn messageReturnToCommentAuthor = new MessageReturn();
+                messageReturnToCommentAuthor.setDate(new Date());
+                messageReturnToCommentAuthor.setMessage(comment.getAuthor() + "在筆記留言中提及你");
+                messageReturnToCommentAuthor.setId(note.getId());
+                messageReturnToCommentAuthor.setType(note.getType());
+                messageReturnToCommentAuthor.setUserObj(userObj);
+                for (String taggedEmail : taggedEmails) {
+                    messagingTemplate.convertAndSendToUser(taggedEmail, "/topic/private-messages", messageReturnToCommentAuthor);
+                    notificationService.saveNotificationPrivate(taggedEmail, messageReturnToCommentAuthor);
+                }
+            }
+
         } else {
             post.setComments(commentArrayList);
             postService.replacePost(post.getId(), post);
+            //通知貼文作者
+            MessageReturn messageReturn = new MessageReturn();
+            messageReturn.setDate(new Date());
+            messageReturn.setMessage(comment.getAuthor() + "在你的貼文內留言");
+            messageReturn.setId(post.getId());
+            messageReturn.setType(post.getType());
+            messageReturn.setUserObj(userObj);
+            if (post.getType().equals("collaboration")) {//共筆要寄給所有作者
+                Note collaborationNote = noteService.getNote(post.getAnswers().get(0));//從共筆筆記拿到所有作者
+                messagingTemplate.convertAndSend("/topic/group-messages/" + collaborationNote.getId(), messageReturn);
+                notificationService.saveNotificationGroup(collaborationNote.getId(), messageReturn);
+            } else {
+                messagingTemplate.convertAndSendToUser(post.getAuthor(), "/topic/private-messages", messageReturn);
+                notificationService.saveNotificationPrivate(post.getAuthor(), messageReturn);
+            }
+            ArrayList<String> taggedEmails;
+            if ((taggedEmails = tagOtherCommentAuthor(request.getContent(), commentArrayList)) != null) {//可提及多人
+                MessageReturn messageReturnToCommentAuthor = new MessageReturn();
+                messageReturnToCommentAuthor.setDate(new Date());
+                //通知被@的留言作者
+                messageReturnToCommentAuthor.setMessage(comment.getAuthor() + "在貼文留言中提及你");
+                messageReturnToCommentAuthor.setId(post.getId());
+                messageReturnToCommentAuthor.setType(post.getType());
+                messageReturnToCommentAuthor.setUserObj(userObj);
+                for (String taggedEmail : taggedEmails) {
+                    messagingTemplate.convertAndSendToUser(taggedEmail, "/topic/private-messages", messageReturnToCommentAuthor);
+                    notificationService.saveNotificationPrivate(taggedEmail, messageReturnToCommentAuthor);
+                }
+            }
         }
         return comment;
     }
@@ -114,28 +185,50 @@ public class CommentService {
         if (noteRepository.findById(id).isPresent()) {
             Note note = noteService.getNote(id);
             commentArrayList = note.getComments();
-//            commentArrayList.get(floor).setBest(request.getBest());
-//            commentArrayList.get(floor).setLiker(request.getLiker());
-//            commentArrayList.get(floor).setLikeCount(request.getLiker().size());
             commentArrayList.get(floor).setContent(request.getContent());
             commentArrayList.get(floor).setDate();
             commentArrayList.get(floor).setPicURL(request.getPicURL());
             note.setComments(commentArrayList);
             noteService.replaceNote(note, note.getId());
-
+            ArrayList<String> taggedEmails;//可在留言內@多人
+            if ((taggedEmails = tagOtherCommentAuthor(request.getContent(), commentArrayList)) != null) {//檢查有無提及人
+                //通知被@的人
+                MessageReturn messageReturnToCommentAuthor = new MessageReturn();
+                messageReturnToCommentAuthor.setDate(new Date());
+                messageReturnToCommentAuthor.setMessage(commentArrayList.get(floor).getAuthor() + "在筆記留言中提及你");
+                messageReturnToCommentAuthor.setId(note.getId());
+                messageReturnToCommentAuthor.setType(note.getType());
+                UserObj userObj = appUserService.getUserInfo(commentArrayList.get(floor).getEmail());
+                messageReturnToCommentAuthor.setUserObj(userObj);
+                for (String taggedEmail : taggedEmails) {
+                    messagingTemplate.convertAndSendToUser(taggedEmail, "/topic/private-messages", messageReturnToCommentAuthor);
+                    notificationService.saveNotificationPrivate(taggedEmail, messageReturnToCommentAuthor);
+                }
+            }
             return commentArrayList.get(floor);
         } else if (postRepository.findById(id).isPresent()) {
             Post post = postService.getPostById(id);
             commentArrayList = post.getComments();
-//            commentArrayList.get(floor).setBest(request.getBest());
-//            commentArrayList.get(floor).setLiker(request.getLiker());
-//            commentArrayList.get(floor).setLikeCount(request.getLiker().size());
             commentArrayList.get(floor).setContent(request.getContent());
             commentArrayList.get(floor).setDate();
             commentArrayList.get(floor).setPicURL(request.getPicURL());
             post.setComments(commentArrayList);
             postService.replacePost(post.getId(), post);
-
+            ArrayList<String> taggedEmails;//可在留言內@多人
+            if ((taggedEmails = tagOtherCommentAuthor(request.getContent(), commentArrayList)) != null) {//檢查有無提及人
+                //通知被@的人
+                MessageReturn messageReturnToCommentAuthor = new MessageReturn();
+                messageReturnToCommentAuthor.setDate(new Date());
+                messageReturnToCommentAuthor.setMessage(commentArrayList.get(floor).getAuthor() + "在貼文留言中提及你");
+                messageReturnToCommentAuthor.setId(post.getId());
+                messageReturnToCommentAuthor.setType(post.getType());
+                UserObj userObj = appUserService.getUserInfo(commentArrayList.get(floor).getEmail());
+                messageReturnToCommentAuthor.setUserObj(userObj);
+                for (String taggedEmail : taggedEmails) {
+                    messagingTemplate.convertAndSendToUser(taggedEmail, "/topic/private-messages", messageReturnToCommentAuthor);
+                    notificationService.saveNotificationPrivate(taggedEmail, messageReturnToCommentAuthor);
+                }
+            }
             return commentArrayList.get(floor);
         } else {
             throw new NotFoundException("Can't find any note or post matched id");
@@ -218,5 +311,34 @@ public class CommentService {
         }
 
         return commentReturn;
+    }
+
+    public ArrayList<String> tagOtherCommentAuthor(String content, ArrayList<Comment> commentArrayList) {
+        if (content.contains("@")) {//有tag人
+            ArrayList<String> tagEmails = new ArrayList<>();
+            String name = "";
+            String email = "";
+            int index = content.indexOf("@");//可@很多人
+            while (index >= 0) {
+                name = "";
+                for (int i = index + 1; i < content.length(); i++) {//切出名字
+                    if (content.charAt(i) == ' ') break;
+                    name = name + content.charAt(i);
+                }
+                for (Comment comment : commentArrayList) {//判斷是否為commentList內的用戶
+                    if (name.equals(comment.getAuthor())) {
+                        email = comment.getEmail();
+                        if (!tagEmails.contains(email)) {//檢查是否tag過
+                            tagEmails.add(email);
+                        }
+                        break;
+                    }
+                }
+                index = content.indexOf("@", index + 1);
+            }
+            return tagEmails;
+        } else {
+            return null;
+        }
     }
 }

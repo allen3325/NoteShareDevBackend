@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/verification",produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/verification", produces = MediaType.APPLICATION_JSON_VALUE)
 public class JWTController {
 
     @Autowired
@@ -28,28 +28,31 @@ public class JWTController {
 
     @Operation(summary = "sign up", description = "註冊,body裡，只需填email,name,password,headshotPhoto")
     @PostMapping("/signup")
-    public ResponseEntity<Object> signUp(@RequestBody AppUser request){
-        Map<String,Object> res = new HashMap<>();
-
-        if(jwtService.signUp(request)){
-            res.put("msg","Success");
-            return ResponseEntity.status(201).body(res);
-        }else{
-            res.put("msg","Has the same email registered!");
+    public ResponseEntity<Object> signUp(@RequestBody AppUser request) {
+        Map<String, Object> res = new HashMap<>();
+        String msg = jwtService.signUp(request);
+        if (msg.equals("Name")) {
+            res.put("res", "Has the same name registered!");
+            return ResponseEntity.status(406).body(res);
+        } else if (msg.equals("Email")) {
+            res.put("res", "Has the same email registered!");
             return ResponseEntity.status(409).body(res);
+        } else {
+            res.put("res", "Success");
+            return ResponseEntity.status(201).body(res);
         }
     }
 
     @Operation(summary = "驗證", description = "")
     @PutMapping("/verify/{email}/{code}")
-    public ResponseEntity<Object> verify(@PathVariable String email,@PathVariable String code){
-        Map<String,Object> res = new HashMap<>();
+    public ResponseEntity<Object> verify(@PathVariable String email, @PathVariable String code) {
+        Map<String, Object> res = new HashMap<>();
 
-        if(jwtService.verifyCode(email,code)){
-            res.put("msg","Success");
+        if (jwtService.verifyCode(email, code)) {
+            res.put("msg", "Success");
             return ResponseEntity.ok(res);
-        }else{
-            res.put("msg","Verification code error.");
+        } else {
+            res.put("msg", "Verification code error.");
             return ResponseEntity.status(418).body(res);
         }
     }
@@ -62,7 +65,7 @@ public class JWTController {
 
         Map<String, Object> user = jwtService.parseToken(response.get("token").toString());
         String userEmail = user.get("email").toString();
-        response.put("activate",appUserService.getUserByEmail(userEmail).isActivate());
+        response.put("activate", appUserService.getUserByEmail(userEmail).isActivate());
 
         return ResponseEntity.ok(response);
     }

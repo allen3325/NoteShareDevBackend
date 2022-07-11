@@ -96,15 +96,17 @@ public class PostTest {
         appUser.setPassword(passwordEncoder.encode("1234"));
         Folder buyFolder = createFolder("Buy", "/Buy", null, name);
         Folder favoriteFolder = createFolder("Favorite", "/Favorite", null, name);
+        Folder defaultFolder = createFolder("Folder", "/Folder", null, name);
+        Folder tempRewardNote = createFolder("Temp Reward Note", "/TempRewardNote", null, name);
         Folder collaborationFolder = createFolder("Collaboration", "/Collaboration", null, name);
         Folder OSFolder = createFolder("OS", "/OS", null, name);
-        Folder tempRewardNote = createFolder("Temp Reward Note", "/TempRewardNote", null, name);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());
+        folderList.add(defaultFolder.getId());
+        folderList.add(tempRewardNote.getId());
         folderList.add(collaborationFolder.getId());
         folderList.add(OSFolder.getId());
-        folderList.add(tempRewardNote.getId());
         appUser.setFolders(folderList);
         appUser.setCoin(300);
         return appUser;
@@ -1027,7 +1029,9 @@ public class PostTest {
         Note answerNote = noteRepository.findById(post.getAnswers().get(0)).get();
         answerNote.setBest(true);
         noteRepository.save(answerNote);
-
+        ArrayList<String> newAnswers = new ArrayList<>();
+        newAnswers.addAll(post.getAnswers());
+        newAnswers.removeIf(id -> !id.equals(answerNote.getId()));
         mockMvc.perform(put("/post/publish/" + post.getId())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
@@ -1046,7 +1050,7 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.bestPrice").value(post.getBestPrice()))
                 .andExpect(jsonPath("$.res.referencePrice").value(post.getReferencePrice()))
                 .andExpect(jsonPath("$.res.referenceNumber").value(post.getReferenceNumber()))
-                .andExpect(jsonPath("$.res.answers").value(post.getAnswers()))
+                .andExpect(jsonPath("$.res.answers.[0]").value(answerNote.getId()))
                 .andExpect(jsonPath("$.res.public").value(false))
                 .andExpect(jsonPath("$.res.authorUserObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.authorUserObj.userObjName").value(appUser.getName()))
@@ -1054,8 +1058,16 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()));
+
         if (postRepository.findById(post.getId()).get().getPublic().equals(true)) {
             throw new Exception("Post Test: post is still public");
+        }
+        int i = 0;
+        for (String s : postRepository.findById(post.getId()).get().getAnswers()) {
+            if (!s.equals(newAnswers.get(i))) {
+                throw new Exception("Post Test : post answers does update");
+            }
+            i++;
         }
     }
 
@@ -1299,7 +1311,7 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.contributorUserObj").isEmpty());
 
-        Folder tempRewardNote = folderRepository.findById(appUser.getFolders().get(4)).get();
+        Folder tempRewardNote = folderRepository.findById(appUser.getFolders().get(3)).get();
         if (tempRewardNote.getNotes().isEmpty()) {
             throw new Exception("Post Test : new reward note does enter tempRewardNote Folder");
         }

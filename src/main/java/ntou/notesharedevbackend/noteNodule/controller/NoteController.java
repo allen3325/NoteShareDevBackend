@@ -189,4 +189,13 @@ public class NoteController {
         res.put("msg", "Success");
         return ResponseEntity.ok(res);
     }
+
+    @Operation(summary = "withdraw reward note ", description = "收回懸賞筆記")
+    @PutMapping("/withdraw/{noteID}")
+    public ResponseEntity<Object> withdrawRewardNote(@PathVariable("noteID") String noteID) {
+        noteService.withdrawRewardNote(noteID);
+        Map<String, String> res = new HashMap<>();
+        res.put("msg", "Success");
+        return ResponseEntity.ok(res);
+    }
 }
