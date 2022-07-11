@@ -144,21 +144,21 @@ public class NoteController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "delete note from folder.", description = "第一個ID為noteID，第二個ID為folderID")
-    @PutMapping("/delete/{noteID}/{folderID}")
-    public ResponseEntity<Object> deleteNoteToFolder(@PathVariable("noteID") String noteID,
-                                                     @PathVariable("folderID") String folderID) {
-        Map<String, Object> res = new HashMap<>();
-        Folder folder = noteService.deleteNoteFromFolder(noteID, folderID);
-
-        if (folder == null) {
-            res.put("msg", "This folder hasn't contains the note.");
-            return ResponseEntity.status(204).body(res);
-        }
-        FolderReturn folderReturn = noteService.folderGetUserInfo(folder.getId());
-        res.put("res", folderReturn);
-        return ResponseEntity.ok(res);
-    }
+//    @Operation(summary = "delete note from folder.", description = "第一個ID為noteID，第二個ID為folderID")
+//    @PutMapping("/delete/{noteID}/{folderID}")
+//    public ResponseEntity<Object> deleteNoteToFolder(@PathVariable("noteID") String noteID,
+//                                                     @PathVariable("folderID") String folderID) {
+//        Map<String, Object> res = new HashMap<>();
+//        Folder folder = noteService.deleteNoteFromFolder(noteID, folderID);
+//
+//        if (folder == null) {
+//            res.put("msg", "This folder hasn't contains the note.");
+//            return ResponseEntity.status(204).body(res);
+//        }
+//        FolderReturn folderReturn = noteService.folderGetUserInfo(folder.getId());
+//        res.put("res", folderReturn);
+//        return ResponseEntity.ok(res);
+//    }
 
     //更改version isTemp 需要noteID versionID
     @Operation(summary = "modify version publish status", description = "第一個ID為noteID，第二個是version編號0-5")
@@ -199,7 +199,7 @@ public class NoteController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "remove note from folder")
+    @Operation(summary = "delete note from folder.", description = "第一個ID為noteID，第二個ID為folderID")
     @PutMapping("/delete/{noteID}/{folderID}")
     public ResponseEntity<Object> removeNoteFromFolder(@PathVariable("noteID") String noteID, @PathVariable("folderID") String folderID) {
         Folder folder = noteService.removeNoteFromFolder(noteID, folderID);
@@ -211,7 +211,7 @@ public class NoteController {
             res.put("res", "Can't delete last note");
             return ResponseEntity.status(409).body(res);
         } else {//可移除
-            res.put("res", noteService.turnFolderToFolderReturn(folder));
+            res.put("res", noteService.folderGetUserInfo(folder.getId()));
             return ResponseEntity.ok(res);
         }
     }
