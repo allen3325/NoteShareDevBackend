@@ -152,4 +152,16 @@ public class FolderController {
         res.put("msg", "Success");
         return ResponseEntity.status(204).body(res);
     }
+
+    @Operation(summary = "Get TempRewardNote folder from a User.", description = "email填入使用者email")
+    @GetMapping("/tempRewardNote/{email}")
+    public ResponseEntity<Object> getTempRewardNoteFromUser(@PathVariable(name = "email") String email) {
+        Folder folders = folderService.getTempRewardNoteFolder(email);
+        FolderReturn folderReturns = folderService.turnFolderToFolderReturn(folders);
+
+        Map<String, Object> res = new HashMap<>();
+        res.put("res", folderReturns);
+
+        return ResponseEntity.ok(res);
+    }
 }

@@ -3,9 +3,11 @@ package ntou.notesharedevbackend.searchModule.service;
 import ntou.notesharedevbackend.folderModule.entity.*;
 import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.postModule.entity.*;
+import ntou.notesharedevbackend.postModule.service.*;
 import ntou.notesharedevbackend.repository.*;
 import ntou.notesharedevbackend.searchModule.entity.*;
 import ntou.notesharedevbackend.userModule.entity.*;
+import ntou.notesharedevbackend.userModule.service.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.*;
@@ -23,6 +25,10 @@ public class SearchService {
     private PostRepository postRepository;
     @Autowired
     private FolderRepository folderRepository;
+    @Autowired
+    private AppUserService appUserService;
+    @Autowired
+    private PostService postService;
 
     public Pages getSearchedUser(String userName, int offset, int pageSize) {
         PageRequest pageRequest = PageRequest.of(offset, pageSize, Sort.by("name").descending());
@@ -147,14 +153,26 @@ public class SearchService {
         else
             copyOfNoteList.removeIf((Note n) -> (n.getType().equals("reward")));
 
-        List<NoteBasicReturn> noteBasicReturn = new ArrayList<>();
-        for (Note note : copyOfNoteList)
-            noteBasicReturn.add(new NoteBasicReturn(note));
+        List<NoteBasicReturn> noteBasicReturns = new ArrayList<>();
+        for (Note note : copyOfNoteList) {
+            NoteBasicReturn noteBasicReturn = new NoteBasicReturn(note);
+            UserObj userObj = appUserService.getUserInfo(note.getHeaderEmail());
+            noteBasicReturn.setHeaderEmailUserObj(userObj);
+
+            ArrayList<UserObj> userObjs = new ArrayList<>();
+            for(String email : note.getAuthorEmail()){
+                UserObj userInfo = appUserService.getUserInfo(email);
+                userObjs.add(userInfo);
+            }
+            noteBasicReturn.setAuthorEmailUserObj(userObjs);
+
+            noteBasicReturns.add(noteBasicReturn);
+        }
 
         Pageable paging = PageRequest.of(offset, pageSize, Sort.by(sortBy).descending());
-        int start = Math.min((int)paging.getOffset(), noteBasicReturn.size());
-        int end = Math.min((start + paging.getPageSize()), noteBasicReturn.size());
-        Page<NoteBasicReturn> page = new PageImpl<>(noteBasicReturn.subList(start, end), paging, noteBasicReturn.size());
+        int start = Math.min((int)paging.getOffset(), noteBasicReturns.size());
+        int end = Math.min((start + paging.getPageSize()), noteBasicReturns.size());
+        Page<NoteBasicReturn> page = new PageImpl<>(noteBasicReturns.subList(start, end), paging, noteBasicReturns.size());
 
         return new Pages(page.getContent(), page.getTotalPages());
     }
@@ -229,10 +247,16 @@ public class SearchService {
         else
             copyOfPostList.removeIf((Post p) -> (p.getType().equals("reward")));
 
+        List<PostReturn> postReturns = new ArrayList<>();
+        for (Post post : copyOfPostList) {
+            PostReturn postReturn = postService.getUserInfo(post);
+            postReturns.add(postReturn);
+        }
+
         Pageable paging = PageRequest.of(offset, pageSize, Sort.by(sortBy).descending());
-        int start = Math.min((int)paging.getOffset(), copyOfPostList.size());
-        int end = Math.min((start + paging.getPageSize()), copyOfPostList.size());
-        Page<Post> page = new PageImpl<>(copyOfPostList.subList(start, end), paging, copyOfPostList.size());
+        int start = Math.min((int)paging.getOffset(), postReturns.size());
+        int end = Math.min((start + paging.getPageSize()), postReturns.size());
+        Page<PostReturn> page = new PageImpl<>(postReturns.subList(start, end), paging, postReturns.size());
 
         return new Pages(page.getContent(), page.getTotalPages());
     }
@@ -242,7 +266,7 @@ public class SearchService {
         foldersLikePage = foldersLikePage.stream()
                 .filter((Folder n) -> n.getPublic().equals(true))
                 .collect(Collectors.toList());
-        if (creator != null)
+        if (creator != null || !creator.equals(""))
             foldersLikePage = foldersLikePage.stream()
                     .filter((Folder p) -> p.getCreatorName().contains(creator))
                     .collect(Collectors.toList());
@@ -255,6 +279,7 @@ public class SearchService {
         List<FolderBasicReturn> folderBasicReturnList = new ArrayList<>();
         for (Folder folder : copyFolderList) {
             String creatorName = folder.getCreatorName();
+            System.out.println(creatorName);
             AppUser appUser = userRepository.findByName(creatorName);
             FolderBasicReturn folderBasicReturn = new FolderBasicReturn(folder, appUser);
             folderBasicReturnList.add(folderBasicReturn);

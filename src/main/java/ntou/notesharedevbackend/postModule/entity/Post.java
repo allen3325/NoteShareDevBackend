@@ -18,7 +18,7 @@ public class Post {
     private String type; // QA, reward, collaboration
     private ArrayList<String> email; // 共筆發起人以及管理員，用來核准加入共筆queue的
     private String author; // 貼文發起人email
-    private String authorName; // 貼文發起人email
+    private String authorName; // 貼文發起人name
     private String department;
     private String subject;
     private String school;
@@ -27,7 +27,7 @@ public class Post {
     private String content;
     @JsonFormat(timezone = "GMT+08:00")
     private Date date;
-//    private Integer price; //為共筆貼文時，為共筆筆記的金額
+    //    private Integer price; //為共筆貼文時，為共筆筆記的金額
     private Integer bestPrice; //最佳解金額
     private Integer referencePrice; //參考解金額
     private Integer referenceNumber; //剩餘參考解數目
@@ -35,13 +35,15 @@ public class Post {
     private ArrayList<Comment> comments;
     private Integer commentCount;
     private ArrayList<String> answers; // to save note's ID , 共筆post存共筆note's ID，放入對應QA答案
-//    private ArrayList<String> wantEnterUsersEmail;
+    //    private ArrayList<String> wantEnterUsersEmail;
 //    private Task task;
     @JsonFormat(timezone = "GMT+08:00")
     private Date publishDate;
-    private ArrayList<Vote> vote;
+    private ArrayList<Vote> vote = new ArrayList<Vote>();
     private Integer collabNoteAuthorNumber;
     private ArrayList<Apply> collabApply;
+    private Boolean isArchive;
+    private ArrayList<String> applyEmail;
 
     // constructors
     public Post() {
@@ -248,5 +250,21 @@ public class Post {
 
     public void setCommentCount(Integer commentCount) {
         this.commentCount = commentCount;
+    }
+
+    public Boolean getArchive() {
+        return isArchive;
+    }
+
+    public void setArchive(Boolean archive) {
+        isArchive = archive;
+    }
+
+    public ArrayList<String> getApplyEmail() {
+        return applyEmail;
+    }
+
+    public void setApplyEmail(ArrayList<String> applyEmail) {
+        this.applyEmail = applyEmail;
     }
 }
