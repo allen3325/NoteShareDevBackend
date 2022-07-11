@@ -57,17 +57,23 @@ public class JWTController {
         }
     }
 
-    @Operation(summary = "登入", description = "")
+    @Operation(summary = "登入", description = "error code 404 -> 此信箱為註冊過。 403 -> 密碼錯誤。")
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> issueToken(@Valid @RequestBody AuthRequest request) {
-        String token = jwtService.generateToken(request);
-        Map<String, Object> response = new HashMap<>(Collections.singletonMap("token", token));
+        if (appUserService.hasExitUserByEmail(request.getEmail())) {
+            String token = jwtService.generateToken(request);
+            Map<String, Object> response = new HashMap<>(Collections.singletonMap("token", token));
 
-        Map<String, Object> user = jwtService.parseToken(response.get("token").toString());
-        String userEmail = user.get("email").toString();
-        response.put("activate", appUserService.getUserByEmail(userEmail).isActivate());
+            Map<String, Object> user = jwtService.parseToken(response.get("token").toString());
+            String userEmail = user.get("email").toString();
+            response.put("activate", appUserService.getUserByEmail(userEmail).isActivate());
 
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
+        } else {
+            Map<String, Object> res = new HashMap<>();
+            res.put("msg", "not found this email.");
+            return ResponseEntity.status(404).body(res);
+        }
     }
 
     @Operation(summary = "前端用不到", description = "")
