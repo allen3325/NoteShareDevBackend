@@ -1257,6 +1257,32 @@ public class NoteTest {
         }
     }
 
+    @Test
+    public void testWithdrawRewardNote() throws Exception {
+        AppUser appUser = userRepository.findByEmail("user1@gmail.com");
+        Post post = createRewardPost();
+        Note rewardNote = createRewardNote(appUser.getEmail(), appUser.getName());
+        rewardNote.setPostID(post.getId());
+        rewardNote.setSubmit(true);
+        noteRepository.save(rewardNote);
+        post.getAnswers().add(rewardNote.getId());
+        postRepository.save(post);
+        Folder tempRewardNote = folderRepository.findById(appUser.getFolders().get(4)).get();
+        tempRewardNote.getNotes().add(rewardNote.getId());
+        folderRepository.save(tempRewardNote);
+
+        mockMvc.perform(put("/note/withdraw/" + rewardNote.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
+
+
+        //check post answer remove noteID
+        if (postRepository.findById(post.getId()).get().getAnswers().contains(rewardNote.getId())) {
+            throw new Exception("Note Test : post answer does not remove reward noteID");
+        }
+    }
+
     @AfterEach
     public void clear() {
         userRepository.deleteAll();

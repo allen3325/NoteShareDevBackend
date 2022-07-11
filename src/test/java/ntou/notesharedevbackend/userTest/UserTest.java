@@ -127,6 +127,24 @@ public class UserTest {
     }
 
     @Test
+    public void testCreateSameNameUser() throws Exception {
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
+        JSONObject request = new JSONObject()
+                .put("email", "a8257tsa1030@gmail.com")
+                .put("name", "Ting")
+                .put("password", "1234");
+
+        RequestBuilder requestBuilder = post("/verification/signup")
+                .headers(httpHeaders)
+                .content(request.toString());
+
+        mockMvc.perform(requestBuilder)
+                .andDo(print())
+                .andExpect(status().isNotAcceptable());
+    }
+
+
+    @Test
     public void testVerifyCode() throws Exception {
         AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
         mockMvc.perform(MockMvcRequestBuilders.put("/verification/verify/yitingwu.1030@gmail.com/1111")
@@ -192,13 +210,13 @@ public class UserTest {
     public void testGetUserByID() throws Exception {
         AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
         String id = appUser.getId();
-        AppUser fans = createUser("user1@gmail.com","User1");
+        AppUser fans = createUser("user1@gmail.com", "User1");
         appUser.getFans().add(fans.getEmail());
         fans.getSubscribe().add(appUser.getEmail());
-        AppUser following = createUser("user2@gmail.com","User2");
+        AppUser following = createUser("user2@gmail.com", "User2");
         appUser.getSubscribe().add(following.getEmail());
         following.getFans().add(appUser.getEmail());
-        AppUser bells = createUser("user3@gmail.com0","User3");
+        AppUser bells = createUser("user3@gmail.com0", "User3");
         appUser.getBell().add(bells.getEmail());
         bells.getBelledBy().add(appUser.getEmail());
         fans.getBell().add(appUser.getEmail());
