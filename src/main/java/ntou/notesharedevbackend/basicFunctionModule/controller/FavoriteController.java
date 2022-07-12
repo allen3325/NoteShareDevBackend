@@ -15,11 +15,15 @@ public class FavoriteController {
     @Autowired
     private FavoriteService favoriteService;
 
-//    @PutMapping("/note/{noteID}")
-//    public ResponseEntity favoriteNote(@PathVariable("noteID") String id) {
-//        favoriteService.favoriteNote(id);
-//        return ResponseEntity.ok().build();
-//    }
+    @Operation(summary = "Favorite a note",description = "email給此用戶")
+    @PutMapping("/favorite/note/{noteID}/{email}")
+    public ResponseEntity<Object> favoriteNote(@PathVariable("noteID") String id,@PathVariable("email") String email) {
+        favoriteService.favoriteNote(id,email);
+        Map<String,Object> res = new HashMap<>();
+
+        res.put("msg","success");
+        return ResponseEntity.ok().body(res);
+    }
 
     @Operation(summary = "Favorite a comment from a note", description = "email是傳誰做favorite的動作")
     @PutMapping("/favorite/note/{noteID}/{commentID}/{email}")
