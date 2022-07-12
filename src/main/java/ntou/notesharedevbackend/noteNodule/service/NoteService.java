@@ -165,6 +165,7 @@ public class NoteService {
     public Note submitRewardNote(String noteID) {
         Note note = getNote(noteID);
         note.setSubmit(true);
+        note.setPublishDate(new Date());
         Note newNote = replaceNote(note, noteID);
         //remove from folder
 //        AppUser appUser = appUserService.getUserByEmail(note.getHeaderEmail());
@@ -479,33 +480,34 @@ public class NoteService {
         return folderService.getAllContentUnderFolderID(folderID);
     }
 
-    public Folder removeNoteFromFolder(String noteID, String folderID){
+    public Folder removeNoteFromFolder(String noteID, String folderID) {
         //判斷是否為buyFolder，裡面筆記不可刪除
         Folder folder = folderService.getFolderByID(folderID);
-        if(folder.getFolderName().equals("Buy")){
+        if (folder.getFolderName().equals("Buy")) {
             return folder;
         }
         //判斷是否為購買的筆記
         Note note = getNote(noteID);
         AppUser appUser = appUserService.getUserByName(folder.getCreatorName());
-        if(note.getHeaderName().equals(appUser.getName())){//自己的筆記
+        if (note.getHeaderName().equals(appUser.getName())) {//自己的筆記
             //判斷是否為最後一份
             ArrayList<Folder> folderArrayList = folderService.getAllFoldersFromUser(appUser.getEmail());
-            for(Folder f : folderArrayList){
-                if(f.getId().equals(folderID)) continue;;
-                if(f.getNotes().contains(noteID)){//其餘folder內也有
+            for (Folder f : folderArrayList) {
+                if (f.getId().equals(folderID)) continue;
+                ;
+                if (f.getNotes().contains(noteID)) {//其餘folder內也有
                     folder.getNotes().remove(noteID);
                     return folderService.replaceFolder(folder);
                 }
             }
-        }else{//購買筆記可直接移出
+        } else {//購買筆記可直接移出
             folder.getNotes().remove(noteID);
             return folderService.replaceFolder(folder);
         }
         return folder;//不可移出
     }
 
-    public FolderReturn turnFolderToFolderReturn(Folder folder){
+    public FolderReturn turnFolderToFolderReturn(Folder folder) {
         return folderService.turnFolderToFolderReturn(folder);
     }
 }

@@ -46,6 +46,7 @@ public class PostReturn {
     private UserObj authorUserObj;
     private ArrayList<UserObj> emailUserObj;
     private Boolean isArchive;
+    private ArrayList<NotePostReturn> answersUserObj;
 //    private ArrayList<UserObj> applyUserObj;
 //    private ArrayList<String> applyEmail;
 
@@ -288,6 +289,14 @@ public class PostReturn {
 
     public void setCollabApply(ArrayList<Apply> collabApply) {
         this.collabApply = collabApply;
+    }
+
+    public ArrayList<NotePostReturn> getAnswersUserObj() {
+        return answersUserObj;
+    }
+
+    public void setAnswersUserObj(ArrayList<NotePostReturn> answersUserObj) {
+        this.answersUserObj = answersUserObj;
     }
 
 //    public ArrayList<String> getApplyEmail() {
