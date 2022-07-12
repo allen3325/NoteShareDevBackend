@@ -552,6 +552,8 @@ public class PostService {
                         notePostReturn.setDate(comment.getDate());
                         UserObj userObj1 = appUserService.getUserInfo(comment.getEmail());
                         notePostReturn.setUserObj(userObj1);
+                        notePostReturn.setBest(true);
+                        notePostReturn.setReference(false);
                         answersUserObj.add(notePostReturn);
                         break;
                     }
@@ -565,6 +567,16 @@ public class PostService {
                     notePostReturn.setDate(note.getPublishDate());
                     UserObj userObj1 = appUserService.getUserInfo(note.getHeaderEmail());
                     notePostReturn.setUserObj(userObj1);
+                    if(note.getReference()!=null && note.getReference()){
+                        notePostReturn.setReference(true);
+                    } else{
+                        notePostReturn.setReference(false);
+                    }
+                    if(note.getBest()!=null && note.getBest()){
+                        notePostReturn.setBest(true);
+                    } else{
+                        notePostReturn.setBest(false);
+                    }
                     answersUserObj.add(notePostReturn);
                 }
 
