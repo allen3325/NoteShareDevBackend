@@ -7,9 +7,6 @@ target/
 ### token ###
 tokens/
 
-### dict ###
-dict/
-
 ### STS ###
 .apt_generated
 .classpath

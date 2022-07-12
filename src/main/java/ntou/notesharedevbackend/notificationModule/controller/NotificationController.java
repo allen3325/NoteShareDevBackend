@@ -24,9 +24,7 @@ public class NotificationController {
     public ResponseEntity<Object> getNotification(@PathVariable("email") String email) {
         ArrayList<MessageReturn> notificationList = notificationService.getNotification(email);
         Map<String, Object> map = new HashMap<>();
-        AppUser appUser = appUserService.getUserByEmail(email);
-        NotificationReturn notificationReturn = new NotificationReturn(notificationList, appUser);
-        map.put("notification", notificationReturn);
+        map.put("notification", notificationList);
         return ResponseEntity.ok(map);
     }
 
