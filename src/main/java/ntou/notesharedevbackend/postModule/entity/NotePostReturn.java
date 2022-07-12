@@ -5,17 +5,21 @@ import ntou.notesharedevbackend.userModule.entity.UserObj;
 import java.util.Date;
 
 public class NotePostReturn {
-    private String noteID;
+    private String id;
     private Date date;
     private UserObj userObj;
-    public NotePostReturn(){};
 
-    public String getNoteID() {
-        return noteID;
+    public NotePostReturn() {
     }
 
-    public void setNoteID(String noteID) {
-        this.noteID = noteID;
+    ;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Date getDate() {

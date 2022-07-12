@@ -541,6 +541,36 @@ public class PostService {
         postReturn.setEmailUserObj(emailUserObj);
         postReturn.setEmail(post.getEmail());
         postReturn.setArchive(post.getArchive());
+        ArrayList<NotePostReturn> answersUserObj = new ArrayList<>();
+        if (post.getAnswers() != null) {
+            if (post.getType().equals("QA") && !post.getAnswers().isEmpty()) {//為QA且有最佳解
+                NotePostReturn notePostReturn = new NotePostReturn();
+                String answerComment = post.getAnswers().get(0);
+                notePostReturn.setId(answerComment);
+                for (Comment comment : post.getComments()) {
+                    if (comment.getId().equals(answerComment)) {
+                        notePostReturn.setDate(comment.getDate());
+                        UserObj userObj1 = appUserService.getUserInfo(comment.getEmail());
+                        notePostReturn.setUserObj(userObj1);
+                        answersUserObj.add(notePostReturn);
+                        break;
+                    }
+                }
+            } else {
+                for (String noteID : post.getAnswers()) {
+                    NotePostReturn notePostReturn = new NotePostReturn();
+                    System.out.println(noteID);
+                    notePostReturn.setId(noteID);
+                    Note note = noteService.getNote(noteID);
+                    notePostReturn.setDate(note.getPublishDate());
+                    UserObj userObj1 = appUserService.getUserInfo(note.getHeaderEmail());
+                    notePostReturn.setUserObj(userObj1);
+                    answersUserObj.add(notePostReturn);
+                }
+
+            }
+        }
+        postReturn.setAnswersUserObj(answersUserObj);
 //        ArrayList<UserObj> applyUserObj = new ArrayList<>();
 //        for (String applyEmail : post.getApplyEmail()) {
 //            UserObj userObjInfo = appUserService.getUserInfo(applyEmail);
