@@ -151,7 +151,7 @@ public class CommentService {
             messageReturn.setDate(new Date());
             messageReturn.setMessage(comment.getAuthor() + "在你的貼文內留言");
             messageReturn.setId(post.getId());
-            messageReturn.setType(post.getType());
+            messageReturn.setType(post.getType().toLowerCase());
             messageReturn.setUserObj(userObj);
             if (post.getType().equals("collaboration")) {//共筆要寄給所有作者
                 Note collaborationNote = noteService.getNote(post.getAnswers().get(0));//從共筆筆記拿到所有作者
@@ -168,7 +168,7 @@ public class CommentService {
                 //通知被@的留言作者
                 messageReturnToCommentAuthor.setMessage(comment.getAuthor() + "在貼文留言中提及你");
                 messageReturnToCommentAuthor.setId(post.getId());
-                messageReturnToCommentAuthor.setType(post.getType());
+                messageReturnToCommentAuthor.setType(post.getType().toLowerCase());
                 messageReturnToCommentAuthor.setUserObj(userObj);
                 for (String taggedEmail : taggedEmails) {
                     messagingTemplate.convertAndSendToUser(taggedEmail, "/topic/private-messages", messageReturnToCommentAuthor);
@@ -221,7 +221,7 @@ public class CommentService {
                 messageReturnToCommentAuthor.setDate(new Date());
                 messageReturnToCommentAuthor.setMessage(commentArrayList.get(floor).getAuthor() + "在貼文留言中提及你");
                 messageReturnToCommentAuthor.setId(post.getId());
-                messageReturnToCommentAuthor.setType(post.getType());
+                messageReturnToCommentAuthor.setType(post.getType().toLowerCase());
                 UserObj userObj = appUserService.getUserInfo(commentArrayList.get(floor).getEmail());
                 messageReturnToCommentAuthor.setUserObj(userObj);
                 for (String taggedEmail : taggedEmails) {
