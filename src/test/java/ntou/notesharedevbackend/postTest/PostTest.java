@@ -541,11 +541,15 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjEmail").value(appUser1.getEmail()))
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjName").value(appUser1.getName()))
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].best").value(false))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].reference").value(false))
                 .andExpect(jsonPath("$.res.answersUserObj.[1].id").value(note2.getId()))
                 .andExpect(jsonPath("$.res.answersUserObj.[1].date").hasJsonPath())
                 .andExpect(jsonPath("$.res.answersUserObj.[1].userObj.userObjEmail").value(appUser2.getEmail()))
                 .andExpect(jsonPath("$.res.answersUserObj.[1].userObj.userObjName").value(appUser2.getName()))
                 .andExpect(jsonPath("$.res.answersUserObj.[1].userObj.userObjAvatar").value(appUser2.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[1].best").value(false))
+                .andExpect(jsonPath("$.res.answersUserObj.[1].reference").value(false))
         ;
     }
 
@@ -585,6 +589,8 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].best").value(false))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].reference").value(false))
 
 //                .andExpect(jsonPath("$.res.applyEmail").isEmpty())
 //                .andExpect(jsonPath("$.res.applyUserObj").isEmpty())
@@ -1095,6 +1101,8 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjEmail").value(appUser1.getEmail()))
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjName").value(appUser1.getName()))
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].best").value(true))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].reference").value(false))
         ;
 
         if (postRepository.findById(post.getId()).get().getPublic().equals(true)) {
@@ -1190,6 +1198,8 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjEmail").value(appUser1.getEmail()))
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjName").value(appUser1.getName()))
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].best").value(false))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].reference").value(false))
         ;
         if (postRepository.findById(post.getId()).get().getPublic().equals(false)) {
             throw new Exception("Post Test: post is still public");
@@ -1405,6 +1415,8 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjEmail").value(appUser1.getEmail()))
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjName").value(appUser1.getName()))
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].best").value(false))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].reference").value(false))
         ;
         if (postRepository.findById(post.getId()).get().getPublic().equals(post.getPublic())) {
             throw new Exception("Post Test : publish does not update");
@@ -1450,6 +1462,8 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjEmail").value(appUser1.getEmail()))
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjName").value(appUser1.getName()))
                 .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].best").value(false))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].reference").value(false))
         ;
         if (postRepository.findById(post.getId()).get().getPublic().equals(post.getPublic())) {
             throw new Exception("Post Test : publish does not update");
@@ -1521,6 +1535,8 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.[0].answersUserObj.[0].userObj.userObjEmail").value(appUser1.getEmail()))
                 .andExpect(jsonPath("$.res.[0].answersUserObj.[0].userObj.userObjName").value(appUser1.getName()))
                 .andExpect(jsonPath("$.res.[0].answersUserObj.[0].userObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[0].answersUserObj.[0].best").value(false))
+                .andExpect(jsonPath("$.res.[0].answersUserObj.[0].reference").value(false))
         ;
     }
 

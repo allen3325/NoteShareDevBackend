@@ -8,6 +8,8 @@ public class NotePostReturn {
     private String id;
     private Date date;
     private UserObj userObj;
+    private boolean best;
+    private boolean reference;
 
     public NotePostReturn() {
     }
@@ -36,5 +38,21 @@ public class NotePostReturn {
 
     public void setUserObj(UserObj userObj) {
         this.userObj = userObj;
+    }
+
+    public boolean isBest() {
+        return best;
+    }
+
+    public void setBest(boolean best) {
+        this.best = best;
+    }
+
+    public boolean isReference() {
+        return reference;
+    }
+
+    public void setReference(boolean reference) {
+        this.reference = reference;
     }
 }
