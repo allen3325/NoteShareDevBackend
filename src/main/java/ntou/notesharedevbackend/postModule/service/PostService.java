@@ -7,6 +7,7 @@ import ntou.notesharedevbackend.commentModule.service.*;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
+import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.PostRepository;
@@ -19,6 +20,7 @@ import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.simp.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -42,6 +44,11 @@ public class PostService {
     @Autowired
     @Lazy(value = true)
     private CommentService commentService;
+
+    private final SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private PostService(SimpMessagingTemplate messagingTemplate) { this.messagingTemplate = messagingTemplate; }
 
     public Post[] getAllTypeOfPost(String postType) {
         List<Post> postList = postRepository.findAllByType(postType);
@@ -595,6 +602,17 @@ public class PostService {
 
     public NoteReturn createRewardNote(String postID, String email, Note request) {
         Note note = noteService.createRewardNote(postID, email, request);
+
+        UserObj userObj = appUserService.getUserInfo(email);
+        MessageReturn messageReturn = new MessageReturn();
+        messageReturn.setDate(new Date());
+        messageReturn.setUserObj(userObj);
+        messageReturn.setMessage(userObj.getUserObjName() + " 投稿了懸賞筆記");
+        messageReturn.setType("reward");
+        messageReturn.setId(postID);
+        Post post = getPostById(postID);
+        messagingTemplate.convertAndSendToUser(post.getAuthor(), "/topic/private-messages", messageReturn);
+
         return noteService.getUserinfo(note);
     }
 
