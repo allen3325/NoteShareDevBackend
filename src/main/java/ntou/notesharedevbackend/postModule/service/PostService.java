@@ -607,7 +607,7 @@ public class PostService {
         MessageReturn messageReturn = new MessageReturn();
         messageReturn.setDate(new Date());
         messageReturn.setUserObj(userObj);
-        messageReturn.setMessage(userObj.getUserObjName() + " 投稿了懸賞筆記");
+        messageReturn.setMessage(userObj.getUserObjName() + " 對你投稿了懸賞筆記");
         messageReturn.setType("reward");
         messageReturn.setId(postID);
         Post post = getPostById(postID);
