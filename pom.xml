@@ -185,9 +185,9 @@
 <!--        </dependency>-->
 
         <dependency>
-            <groupId>com.allen</groupId>
-            <artifactId>sample</artifactId>
-            <version>1.0</version>
+            <groupId>org.manlier</groupId>
+            <artifactId>better-jieba</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/better-jieba-1.0.0-SNAPSHOT.jar</systemPath>
         </dependency>
