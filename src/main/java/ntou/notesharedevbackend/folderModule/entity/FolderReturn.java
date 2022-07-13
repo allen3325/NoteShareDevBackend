@@ -3,6 +3,7 @@ package ntou.notesharedevbackend.folderModule.entity;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.entity.NoteFolderReturn;
 import ntou.notesharedevbackend.searchModule.entity.NoteBasicReturn;
+import ntou.notesharedevbackend.userModule.entity.UserObj;
 
 import java.util.ArrayList;
 
@@ -10,24 +11,38 @@ public class FolderReturn {
     // attributes
     private String id;
     private String folderName;
-//    private ArrayList<Folder> folders; // folder
+    //    private ArrayList<Folder> folders; // folder
     private ArrayList<NoteFolderReturn> notes; // note
     private Boolean isPublic;
     private Boolean isFavorite; // 收藏區
     private String path; // 路徑
     private String parent; // 父資料夾
     private ArrayList<Folder> children; // 子資料夾
+    private String creatorName;
+
+    private UserObj creatorUserObj;
 
     public FolderReturn() {
     }
-    public FolderReturn(Folder folder){
+
+    public FolderReturn(Folder folder) {
         this.id = folder.getId();
         this.folderName = folder.getFolderName();
         this.isPublic = folder.getPublic();
         this.isFavorite = folder.getFavorite();
         this.path = folder.getPath();
         this.parent = folder.getParent();
+        this.creatorName = folder.getCreatorName();
 //        this.children = folder.getChildren();
+    }
+
+
+    public UserObj getCreatorUserObj() {
+        return creatorUserObj;
+    }
+
+    public void setCreatorUserObj(UserObj creatorUserObj) {
+        this.creatorUserObj = creatorUserObj;
     }
 
     public String getId() {
@@ -109,6 +124,14 @@ public class FolderReturn {
 
     public void setChildren(ArrayList<Folder> children) {
         this.children = children;
+    }
+
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
     }
 }
 

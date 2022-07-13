@@ -55,7 +55,8 @@ public class NoteTest {
     private PostRepository postRepository;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    private Folder createFolder(String folderName, String path, String parent){
+
+    private Folder createFolder(String folderName, String path, String parent, String name) {
         Folder folder = new Folder();
         folder.setFolderName(folderName);
         folder.setFavorite(false);
@@ -64,24 +65,28 @@ public class NoteTest {
         folder.setNotes(new ArrayList<String>());
         folder.setChildren(new ArrayList<String>());
         folder.setPublic(false);
+        folder.setCreatorName(name);
         folderRepository.insert(folder);
         return folder;
     }
-    private AppUser createUser(String email, String name){
+
+    private AppUser createUser(String email, String name) {
         AppUser appUser = new AppUser();
         appUser.setEmail(email);
         appUser.setActivate(true);
         appUser.setName(name);
         appUser.setPassword(passwordEncoder.encode("1234"));
-        Folder buyFolder = createFolder("Buy","/Buy",null);
-        Folder favoriteFolder = createFolder("Favorite","/Favorite",null);
-        Folder collaborationFolder = createFolder("Collaboration","/Collaboration",null);
-        Folder OSFolder = createFolder("OS","/OS",null);
+        Folder buyFolder = createFolder("Buy", "/Buy", null, name);
+        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null, name);
+        Folder collaborationFolder = createFolder("Collaboration", "/Collaboration", null, name);
+        Folder OSFolder = createFolder("OS", "/OS", null, name);
+        Folder tempRewardNoteFolder = createFolder("Temp Reward Note", "/Temp Reward Note", null, name);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());
         folderList.add(collaborationFolder.getId());
         folderList.add(OSFolder.getId());
+        folderList.add(tempRewardNoteFolder.getId());
         appUser.setFolders(folderList);
         appUser.setCoin(300);
         return appUser;
@@ -112,7 +117,8 @@ public class NoteTest {
         post = postRepository.insert(post);
         return post;
     }
-    private Note createNormalNote(){
+
+    private Note createNormalNote() {
         Note note = new Note();
         note.setType("normal");
         note.setDepartment("CS");
@@ -128,7 +134,7 @@ public class NoteTest {
         note.setAuthorName(authorNames);
         note.setProfessor("NoteShare");
         note.setSchool("NTOU");
-        note.setPublic(true);
+        note.setPublic(false);
         note.setPrice(50);
         note.setLiker(new ArrayList<>());
         note.setLikeCount(null);
@@ -220,7 +226,139 @@ public class NoteTest {
         return note;
     }
 
-    private Note createCollaborationNote(){
+    private Note createRewardNote(String email, String name) {
+        Note note = new Note();
+        note.setType("reward");
+        note.setDepartment("CS");
+        note.setSubject("OS");
+        note.setTitle("Interrupt");
+        note.setHeaderEmail(email);
+        note.setHeaderName(name);
+        ArrayList<String> authorEmails = new ArrayList<>();
+        authorEmails.add(email);
+        note.setAuthorEmail(authorEmails);
+        ArrayList<String> authorNames = new ArrayList<>();
+        authorNames.add(name);
+        note.setAuthorName(authorNames);
+        note.setProfessor("NoteShare");
+        note.setSchool("NTOU");
+        note.setPublic(true);
+        note.setPrice(50);
+        note.setLiker(new ArrayList<>());
+        note.setLikeCount(null);
+        note.setBuyer(new ArrayList<>());
+        note.setFavoriter(new ArrayList<>());
+        note.setFavoriteCount(null);
+        note.setUnlockCount(0);
+        note.setDownloadable(false);
+        note.setCommentCount(null);
+        note.setComments(new ArrayList<>());
+        note.setSubmit(false);
+        note.setQuotable(false);
+        ArrayList<String> tags = new ArrayList<>();
+        tags.add("tag1");
+        tags.add("tag2");
+        tags.add("tag3");
+        note.setTag(tags);
+        note.setHiddenTag(new ArrayList<>());
+        ArrayList<VersionContent> versionContents = new ArrayList<>();
+        VersionContent v1 = new VersionContent();
+        v1.setName("v1");
+        v1.setSlug("string");
+        ArrayList<String> fileURLs = new ArrayList<>();
+        fileURLs.add("fileURL1");
+        fileURLs.add("fileURL2");
+        fileURLs.add("fileURL3");
+        v1.setFileURL(fileURLs);
+        ArrayList<String> picURLs = new ArrayList<>();
+        picURLs.add("picURL1");
+        picURLs.add("picURL2");
+        picURLs.add("picURL3");
+        v1.setPicURL(picURLs);
+        v1.setTemp(true);
+        Content content1 = new Content();
+        content1.setMycustom_assets("string");
+        content1.setMycustom_components("string");
+        content1.setMycustom_css("string");
+        content1.setMycustom_html("string");
+        content1.setMycustom_styles("string");
+        Content content2 = new Content();
+        content2.setMycustom_assets("string");
+        content2.setMycustom_components("string");
+        content2.setMycustom_css("string");
+        content2.setMycustom_html("string");
+        content2.setMycustom_styles("string");
+        Content content3 = new Content();
+        content3.setMycustom_assets("string");
+        content3.setMycustom_components("string");
+        content3.setMycustom_css("string");
+        content3.setMycustom_html("string");
+        content3.setMycustom_styles("string");
+        ArrayList<Content> contents = new ArrayList<>();
+        contents.add(content1);
+        contents.add(content2);
+        contents.add(content3);
+        v1.setContent(contents);
+        VersionContent v2 = new VersionContent();
+        v2.setSlug("String");
+        v2.setFileURL(fileURLs);
+        v2.setPicURL(picURLs);
+        v2.setContent(contents);
+        v2.setName("v2");
+        v2.setTemp(false);
+        VersionContent v3 = new VersionContent();
+        v3.setSlug("String");
+        v3.setFileURL(fileURLs);
+        v3.setPicURL(picURLs);
+        v3.setContent(contents);
+        v3.setTemp(true);
+        v3.setName("v3");
+        VersionContent v4 = new VersionContent();
+        v4.setSlug("String");
+        v4.setFileURL(fileURLs);
+        v4.setPicURL(picURLs);
+        v4.setContent(contents);
+        v4.setName("v4");
+        v4.setTemp(false);
+        versionContents.add(v1);
+        versionContents.add(v2);
+        versionContents.add(v3);
+        versionContents.add(v4);
+        note.setVersion(versionContents);
+        note.setContributors(new ArrayList<>());
+        note.setPostID(null);
+        note.setReference(null);
+        note.setBest(null);
+        note.setManagerEmail(null);
+        noteRepository.insert(note);
+        return note;
+    }
+
+    public Post createRewardPost() {
+        Post post = new Post();
+        post.setType("reward");
+        post.setAuthor("yitingwu.1030@gmail.com");
+        ArrayList<String> email = new ArrayList<String>();
+        email.add("yitingwu.1030@gmail.com");
+        post.setEmail(email);
+        post.setDepartment("CS");
+        post.setSubject("Python");
+        post.setSchool("NTOU");
+        post.setProfessor("Chin-Chun Chang");
+        post.setTitle("Python iterator");
+        post.setContent("iterator詳細介紹");
+        post.setDate();
+        post.setBestPrice(50);
+        post.setReferencePrice(10);
+        post.setReferenceNumber(2);
+        post.setPublic(true);
+        post.setComments(new ArrayList<Comment>());
+        ArrayList<String> answers = new ArrayList<>();
+        post.setAnswers(answers);
+        return postRepository.insert(post);
+    }
+
+    private Note createCollaborationNote() {
         Note note = new Note();
         note.setType("collaboration");
         note.setDepartment("CS");
@@ -334,16 +472,16 @@ public class NoteTest {
     }
 
     @BeforeEach
-    public void init(){
+    public void init() {
         userRepository.deleteAll();
         noteRepository.deleteAll();
         folderRepository.deleteAll();
         postRepository.deleteAll();
         httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        AppUser appUser = createUser("yitingwu.1030@gmail.com","Ting");
-        AppUser appUser1 = createUser("user1@gmail.com","User1");
-        AppUser appUser2  = createUser("user2@gmail.com","User2");
+        AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
+        AppUser appUser1 = createUser("user1@gmail.com", "User1");
+        AppUser appUser2 = createUser("user2@gmail.com", "User2");
         userRepository.insert(appUser);
         userRepository.insert(appUser1);
         userRepository.insert(appUser2);
@@ -367,12 +505,12 @@ public class NoteTest {
     }
 
     @Test
-    public void testGetNoteByID() throws Exception{
+    public void testGetNoteByID() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         Folder folder = folderRepository.findById(appUser.getFolders().get(2)).get();
         Note note = noteRepository.findById(folder.getNotes().get(0)).get();
-        mockMvc.perform(get("/note/"+note.getId())
-                .headers(httpHeaders))
+        mockMvc.perform(get("/note/" + note.getId())
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(note.getId()))
                 .andExpect(jsonPath("$.res.type").value(note.getType()))
@@ -381,14 +519,11 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.title").value(note.getTitle()))
                 .andExpect(jsonPath("$.res.headerEmail").value(note.getHeaderEmail()))
                 .andExpect(jsonPath("$.res.headerName").value(note.getHeaderName()))
-                .andExpect(jsonPath("$.res.authorEmail").value(note.getAuthorEmail()))
-                .andExpect(jsonPath("$.res.authorName").value(note.getAuthorName()))
+                .andExpect(jsonPath("$.res.authorEmail.[0]").value(note.getAuthorEmail().get(0)))
+                .andExpect(jsonPath("$.res.authorName.[0]").value(note.getAuthorName().get(0)))
                 .andExpect(jsonPath("$.res.managerEmail").value(note.getManagerEmail()))
                 .andExpect(jsonPath("$.res.professor").value(note.getProfessor()))
                 .andExpect(jsonPath("$.res.school").value(note.getSchool()))
-                .andExpect(jsonPath("$.res.liker").value(note.getLiker()))
-                .andExpect(jsonPath("$.res.buyer").value(note.getBuyer()))
-                .andExpect(jsonPath("$.res.favoriter").value(note.getFavoriter()))
                 .andExpect(jsonPath("$.res.likeCount").value(note.getLikeCount()))
                 .andExpect(jsonPath("$.res.favoriteCount").value(note.getFavoriteCount()))
                 .andExpect(jsonPath("$.res.unlockCount").value(note.getUnlockCount()))
@@ -483,20 +618,32 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.version.[3].picURL").value(note.getVersion().get(3).getPicURL()))
                 .andExpect(jsonPath("$.res.version.[3].fileURL").value(note.getVersion().get(3).getFileURL()))
                 .andExpect(jsonPath("$.res.version.[3].temp").value(note.getVersion().get(3).getTemp()))
-                .andExpect(jsonPath("$.res.contributors").value(note.getContributors()))
                 .andExpect(jsonPath("$.res.postID").value(note.getPostID()))
                 .andExpect(jsonPath("$.res.reference").value(note.getReference()))
                 .andExpect(jsonPath("$.res.best").value(note.getBest()))
                 .andExpect(jsonPath("$.res.public").value(note.getPublic()))
-                .andExpect(jsonPath("$.res.submit").value(note.getSubmit()));
+                .andExpect(jsonPath("$.res.submit").value(note.getSubmit()))
+                .andExpect(jsonPath("$.res.headerUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.liker").isEmpty())
+                .andExpect(jsonPath("$.res.buyer").isEmpty())
+                .andExpect(jsonPath("$.res.favoriter").isEmpty())
+                .andExpect(jsonPath("$.res.contributors").isEmpty())
+                .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.buyerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.contributorUserObj").isEmpty())
+        ;
     }
 
     @Test
-    public void testGetNoteVersion() throws Exception{
+    public void testGetNoteVersion() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         Folder folder = folderRepository.findById(appUser.getFolders().get(2)).get();
         Note note = noteRepository.findById(folder.getNotes().get(0)).get();
-        mockMvc.perform(get("/note/"+note.getId()+"/3")
+        mockMvc.perform(get("/note/" + note.getId() + "/3")
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(note.getVersion().get(3).getId()))
@@ -523,11 +670,11 @@ public class NoteTest {
     }
 
     @Test
-    public void testGetNoteTags() throws Exception{
+    public void testGetNoteTags() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         Folder folder = folderRepository.findById(appUser.getFolders().get(2)).get();
         Note note = noteRepository.findById(folder.getNotes().get(0)).get();
-        mockMvc.perform(get("/note/tags/"+note.getId())
+        mockMvc.perform(get("/note/tags/" + note.getId())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tags.[0]").value(note.getTag().get(0)))
@@ -536,7 +683,7 @@ public class NoteTest {
     }
 
     @Test
-    public void testCreateNote() throws Exception{
+    public void testCreateNote() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         Folder folder = folderRepository.findById(appUser.getFolders().get(3)).get();
         JSONArray authorEmails = new JSONArray();
@@ -552,57 +699,53 @@ public class NoteTest {
                 .put("picURL1")
                 .put("picURL2")
                 .put("picURL3");
-        JSONObject content =new JSONObject()
-                .put("mycustom_assets","string")
-                .put("mycustom_components","string")
-                .put("mycustom_html","string")
-                .put("mycustom_styles","string")
-                .put("mycustom_css","string");
+        JSONObject content = new JSONObject()
+                .put("mycustom_assets", "string")
+                .put("mycustom_components", "string")
+                .put("mycustom_html", "string")
+                .put("mycustom_styles", "string")
+                .put("mycustom_css", "string");
         JSONArray contentArray = new JSONArray()
                 .put(content);
         JSONObject v1 = new JSONObject()
-                .put("name","string")
-                .put("slug","string")
-                .put("fileURL",fileURLs)
-                .put("picURL",picURLs)
-                .put("temp",true)
-                .put("content",contentArray);
+                .put("name", "string")
+                .put("slug", "string")
+                .put("fileURL", fileURLs)
+                .put("picURL", picURLs)
+                .put("temp", true)
+                .put("content", contentArray);
         versionContents.put(v1);
         JSONObject request = new JSONObject()
-                .put("type","normal")
-                .put("department","CS")
-                .put("subject","Java")
-                .put("title","Array")
-                .put("headerEmail",appUser.getEmail())
-                .put("headerName",appUser.getName())
-                .put("authorEmail",authorEmails)
-                .put("authorName",authorNames)
-                .put("professor","NoteShare")
-                .put("school","NTOU")
-                .put("public",false)
-                .put("price",50)
-                .put("downloadable",false)
-                .put("quotable",false)
-                .put("version",versionContents);
-        mockMvc.perform(post("/note/"+appUser.getEmail()+"/"+folder.getId())
-                .headers(httpHeaders)
-                .content(request.toString()))
+                .put("type", "normal")
+                .put("department", "CS")
+                .put("subject", "Java")
+                .put("title", "Array")
+                .put("headerEmail", appUser.getEmail())
+                .put("headerName", appUser.getName())
+                .put("authorEmail", authorEmails)
+                .put("authorName", authorNames)
+                .put("professor", "NoteShare")
+                .put("school", "NTOU")
+                .put("public", false)
+                .put("price", 50)
+                .put("downloadable", false)
+                .put("quotable", false)
+                .put("version", versionContents);
+        mockMvc.perform(post("/note/" + appUser.getEmail() + "/" + folder.getId())
+                        .headers(httpHeaders)
+                        .content(request.toString()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.res.id").exists())
                 .andExpect(jsonPath("$.res.type").value(request.get("type")))
                 .andExpect(jsonPath("$.res.department").value(request.get("department")))
                 .andExpect(jsonPath("$.res.subject").value(request.get("subject")))
                 .andExpect(jsonPath("$.res.title").value(request.get("title")))
-                .andExpect(jsonPath("$.res.headerEmail").value(request.get("headerEmail")))
-                .andExpect(jsonPath("$.res.headerName").value(request.get("headerName")))
-                .andExpect(jsonPath("$.res.authorEmail").value(appUser.getEmail()))
-                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.managerEmail").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.headerEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.headerName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.authorEmail.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName.[0]").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.professor").value(request.get("professor")))
                 .andExpect(jsonPath("$.res.school").value(request.get("school")))
-                .andExpect(jsonPath("$.res.liker").isEmpty())
-                .andExpect(jsonPath("$.res.buyer").isEmpty())
-                .andExpect(jsonPath("$.res.favoriter").isEmpty())
                 .andExpect(jsonPath("$.res.likeCount").value(0))
                 .andExpect(jsonPath("$.res.favoriteCount").value(0))
                 .andExpect(jsonPath("$.res.unlockCount").value(0))
@@ -628,20 +771,31 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.version.[0].fileURL[1]").value(fileURLs.get(1)))
                 .andExpect(jsonPath("$.res.version.[0].fileURL[2]").value(fileURLs.get(2)))
                 .andExpect(jsonPath("$.res.version.[0].temp").value(v1.get("temp")))
-                .andExpect(jsonPath("$.res.contributors").isEmpty())
                 .andExpect(jsonPath("$.res.postID").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.reference").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.best").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.public").value(request.get("public")))
-                .andExpect(jsonPath("$.res.submit").value(IsNull.nullValue()));
+                .andExpect(jsonPath("$.res.submit").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.headerUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.liker").isEmpty())
+                .andExpect(jsonPath("$.res.buyer").isEmpty())
+                .andExpect(jsonPath("$.res.favoriter").isEmpty())
+                .andExpect(jsonPath("$.res.contributors").isEmpty())
+                .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.buyerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.contributorUserObj").isEmpty());
 
-        if(folderRepository.findById(folder.getId()).get().getNotes().isEmpty()){
+        if (folderRepository.findById(folder.getId()).get().getNotes().isEmpty()) {
             throw new Exception("Note Test : new note does not add in folder");
         }
     }
 
     @Test
-    public void testSaveNote() throws Exception{
+    public void testSaveNote() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         Folder folder = folderRepository.findById(appUser.getFolders().get(3)).get();//Normal Folder
         Note note = noteRepository.findById(folder.getNotes().get(0)).get();
@@ -654,122 +808,117 @@ public class NoteTest {
                 .put("fileURL3");
         JSONArray picURLs = new JSONArray()
                 .put("picURL3");
-        JSONObject content =new JSONObject()
-                .put("mycustom_assets","newString")
-                .put("mycustom_components","newString")
-                .put("mycustom_html","newString")
-                .put("mycustom_styles","newString")
-                .put("mycustom_css","newString");
+        JSONObject content = new JSONObject()
+                .put("mycustom_assets", "newString")
+                .put("mycustom_components", "newString")
+                .put("mycustom_html", "newString")
+                .put("mycustom_styles", "newString")
+                .put("mycustom_css", "newString");
         JSONArray contentArray = new JSONArray()
                 .put(content);
         JSONObject v1 = new JSONObject()
-                .put("name","newString")
-                .put("slug","newString")
-                .put("fileURL",fileURLs)
-                .put("picURL",picURLs)
-                .put("temp",true)
-                .put("content",contentArray);
+                .put("name", "newString")
+                .put("slug", "newString")
+                .put("fileURL", fileURLs)
+                .put("picURL", picURLs)
+                .put("temp", true)
+                .put("content", contentArray);
         versionContents.put(v1);
         JSONArray tag = new JSONArray()
                 .put("tag1");
         JSONArray liker = new JSONArray();
-        for(String s : note.getLiker()){
+        for (String s : note.getLiker()) {
             liker.put(s);
         }
         JSONArray favoriter = new JSONArray();
-        for(String s : note.getFavoriter()){
+        for (String s : note.getFavoriter()) {
             favoriter.put(s);
         }
         JSONArray buyer = new JSONArray();
-        for(String s : note.getBuyer()){
+        for (String s : note.getBuyer()) {
             buyer.put(s);
         }
         JSONArray hiddenTag = new JSONArray();
-        for(String s : note.getHiddenTag()){
+        for (String s : note.getHiddenTag()) {
             hiddenTag.put(s);
         }
         JSONArray contributors = new JSONArray();
-        for(String s : note.getContributors()){
+        for (String s : note.getContributors()) {
             contributors.put(s);
         }
         JSONArray comments = new JSONArray();
         JSONObject comment = new JSONObject();
-        for(Comment c : note.getComments()){
+        for (Comment c : note.getComments()) {
             JSONArray commentLiker = new JSONArray();
-            for(String s : c.getLiker()){
+            for (String s : c.getLiker()) {
                 commentLiker.put(s);
             }
             JSONArray commentPicURL = new JSONArray();
-            for(String s : c.getPicURL()){
+            for (String s : c.getPicURL()) {
                 commentPicURL.put(s);
             }
-            comment.put("id",c.getId())
-                    .put("author",c.getAuthor())
-                    .put("email",c.getEmail())
-                    .put("content",c.getContent())
-                    .put("likeCount",c.getLikeCount())
-                    .put("floor",c.getFloor())
-                    .put("date",c.getDate())
-                    .put("best",c.getBest())
-                    .put("liker",commentLiker)
-                    .put("picURL",commentPicURL);
+            comment.put("id", c.getId())
+                    .put("author", c.getAuthor())
+                    .put("email", c.getEmail())
+                    .put("content", c.getContent())
+                    .put("likeCount", c.getLikeCount())
+                    .put("floor", c.getFloor())
+                    .put("date", c.getDate())
+                    .put("best", c.getBest())
+                    .put("liker", commentLiker)
+                    .put("picURL", commentPicURL);
             comments.put(c);
         }
         JSONObject request = new JSONObject()
-                .put("id",note.getId())
-                .put("type",note.getType())
-                .put("department","CSE")
-                .put("subject","Java")
-                .put("title","Array")
-                .put("headerEmail",appUser.getEmail())
-                .put("headerName",appUser.getName())
-                .put("authorEmail",authorEmails)
-                .put("authorName",authorNames)
-                .put("professor","Note")
-                .put("school","NTU")
-                .put("liker",liker)
-                .put("likeCount",note.getLikeCount())
-                .put("favoriter",favoriter)
-                .put("favoriteCount",note.getFavoriteCount())
-                .put("buyer",buyer)
-                .put("unlockCount",note.getUnlockCount())
-                .put("commentCount",note.getCommentCount())
-                .put("comments",comments)
-                .put("tag",tag)
-                .put("hiddenTag",hiddenTag)
-                .put("contributors",contributors)
-                .put("postID",note.getPostID())
-                .put("publishDate",note.getPublishDate()==null?null:note.getPublishDate())
-                .put("description",note.getDescription()==null?null:note.getDescription())
-                .put("reference",note.getReference()==null?null:note.getReference())
-                .put("best",note.getBest()==null?null:note.getBest())
-                .put("submit",note.getSubmit()==null?null:note.getSubmit())
-                .put("public",true)
-                .put("price",500)
-                .put("downloadable",true)
-                .put("quotable",true)
-                .put("version",versionContents)
-                .put("managerEmail",note.getManagerEmail()==null?null:note.getManagerEmail())
-                ;
-        mockMvc.perform(put("/note/"+note.getId())
-                .headers(httpHeaders)
-                .content(request.toString()))
+                .put("id", note.getId())
+                .put("type", note.getType())
+                .put("department", "CSE")
+                .put("subject", "Java")
+                .put("title", "Array")
+                .put("headerEmail", appUser.getEmail())
+                .put("headerName", appUser.getName())
+                .put("authorEmail", authorEmails)
+                .put("authorName", authorNames)
+                .put("professor", "Note")
+                .put("school", "NTU")
+                .put("liker", liker)
+                .put("likeCount", note.getLikeCount())
+                .put("favoriter", favoriter)
+                .put("favoriteCount", note.getFavoriteCount())
+                .put("buyer", buyer)
+                .put("unlockCount", note.getUnlockCount())
+                .put("commentCount", note.getCommentCount())
+                .put("comments", comments)
+                .put("tag", tag)
+                .put("hiddenTag", hiddenTag)
+                .put("contributors", contributors)
+                .put("postID", note.getPostID())
+                .put("publishDate", note.getPublishDate() == null ? null : note.getPublishDate())
+                .put("description", note.getDescription() == null ? null : note.getDescription())
+                .put("reference", note.getReference() == null ? null : note.getReference())
+                .put("best", note.getBest() == null ? null : note.getBest())
+                .put("submit", note.getSubmit() == null ? null : note.getSubmit())
+                .put("public", true)
+                .put("price", 500)
+                .put("downloadable", true)
+                .put("quotable", true)
+                .put("version", versionContents)
+                .put("managerEmail", note.getManagerEmail() == null ? null : note.getManagerEmail());
+        mockMvc.perform(put("/note/" + note.getId())
+                        .headers(httpHeaders)
+                        .content(request.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(note.getId()))
                 .andExpect(jsonPath("$.res.type").value(request.get("type")))
                 .andExpect(jsonPath("$.res.department").value(request.get("department")))
                 .andExpect(jsonPath("$.res.subject").value(request.get("subject")))
                 .andExpect(jsonPath("$.res.title").value(request.get("title")))
-                .andExpect(jsonPath("$.res.headerEmail").value(request.get("headerEmail")))
-                .andExpect(jsonPath("$.res.headerName").value(request.get("headerName")))
-                .andExpect(jsonPath("$.res.authorEmail").value(appUser.getEmail()))
-                .andExpect(jsonPath("$.res.authorName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.managerEmail").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.headerEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.headerName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.authorEmail.[0]").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorName.[0]").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.professor").value(request.get("professor")))
                 .andExpect(jsonPath("$.res.school").value(request.get("school")))
-                .andExpect(jsonPath("$.res.liker").isEmpty())
-                .andExpect(jsonPath("$.res.buyer").isEmpty())
-                .andExpect(jsonPath("$.res.favoriter").isEmpty())
                 .andExpect(jsonPath("$.res.likeCount").value(0))
                 .andExpect(jsonPath("$.res.favoriteCount").value(0))
                 .andExpect(jsonPath("$.res.unlockCount").value(0))
@@ -791,17 +940,28 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.version.[0].picURL.[0]").value(picURLs.get(0)))
                 .andExpect(jsonPath("$.res.version.[0].fileURL[0]").value(fileURLs.get(0)))
                 .andExpect(jsonPath("$.res.version.[0].temp").value(v1.get("temp")))
-                .andExpect(jsonPath("$.res.contributors").isEmpty())
                 .andExpect(jsonPath("$.res.postID").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.reference").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.best").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.res.public").value(request.get("public")))
-                .andExpect(jsonPath("$.res.submit").value(IsNull.nullValue()));
+                .andExpect(jsonPath("$.res.submit").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.headerUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.authorUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.liker").isEmpty())
+                .andExpect(jsonPath("$.res.buyer").isEmpty())
+                .andExpect(jsonPath("$.res.favoriter").isEmpty())
+                .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.buyerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.contributorUserObj").isEmpty())
+        ;
 
     }
 
     @Test
-    public void testUpdateNoteContent() throws Exception{
+    public void testUpdateNoteContent() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         Folder folder = folderRepository.findById(appUser.getFolders().get(3)).get();//Normal Folder
         Note note = noteRepository.findById(folder.getNotes().get(0)).get();
@@ -814,73 +974,22 @@ public class NoteTest {
                 .put("fileURL9");
         JSONArray picURLs = new JSONArray()
                 .put("picURL8");
-        JSONObject content =new JSONObject()
-                .put("mycustom_assets","stringstringstring")
-                .put("mycustom_components","stringstringstring")
-                .put("mycustom_html","stringstringstring")
-                .put("mycustom_styles","stringstringstring")
-                .put("mycustom_css","stringstringstring");
+        JSONObject content = new JSONObject()
+                .put("mycustom_assets", "stringstringstring")
+                .put("mycustom_components", "stringstringstring")
+                .put("mycustom_html", "stringstringstring")
+                .put("mycustom_styles", "stringstringstring")
+                .put("mycustom_css", "stringstringstring");
         JSONArray contentArray = new JSONArray()
                 .put(content);
         JSONObject v1 = new JSONObject()
-                .put("name","newName")
-                .put("slug","newSlug")
-                .put("fileURL",fileURLs)
-                .put("picURL",picURLs)
-                .put("temp",false)
-                .put("content",contentArray);
-        mockMvc.perform(put("/note/"+note.getId()+"/2")
-                .headers(httpHeaders)
-                .content(v1.toString()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.res..id").hasJsonPath())
-                .andExpect(jsonPath("$.res.name").value(v1.get("name")))
-                .andExpect(jsonPath("$.res.slug").value(v1.get("slug")))
-                .andExpect(jsonPath("$.res.content.[0].mycustom_html").value(content.get("mycustom_html")))
-                .andExpect(jsonPath("$.res.content.[0].mycustom_components").value(content.get("mycustom_components")))
-                .andExpect(jsonPath("$.res.content.[0].mycustom_assets").value(content.get("mycustom_assets")))
-                .andExpect(jsonPath("$.res.content.[0].mycustom_css").value(content.get("mycustom_css")))
-                .andExpect(jsonPath("$.res.content.[0].mycustom_styles").value(content.get("mycustom_styles")))
-                .andExpect(jsonPath("$.res.picURL.[0]").value(picURLs.get(0)))
-                .andExpect(jsonPath("$.res.fileURL[0]").value(fileURLs.get(0)))
-                .andExpect(jsonPath("$.res.fileURL[1]").value(fileURLs.get(1)))
-                .andExpect(jsonPath("$.res.fileURL[2]").value(fileURLs.get(2)))
-                .andExpect(jsonPath("$.res.fileURL[3]").value(fileURLs.get(3)))
-                .andExpect(jsonPath("$.res.fileURL[4]").value(fileURLs.get(4)))
-                .andExpect(jsonPath("$.res.fileURL[5]").value(fileURLs.get(5)))
-                .andExpect(jsonPath("$.res.temp").value(v1.get("temp")));
-    }
-
-    @Test
-    public void testAddNoteContent() throws Exception{
-        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        Folder folder = folderRepository.findById(appUser.getFolders().get(3)).get();//Normal Folder
-        Note note = noteRepository.findById(folder.getNotes().get(0)).get();
-        JSONArray fileURLs = new JSONArray()
-                .put("fileURL4")
-                .put("fileURL5")
-                .put("fileURL6")
-                .put("fileURL7")
-                .put("fileURL8")
-                .put("fileURL9");
-        JSONArray picURLs = new JSONArray()
-                .put("picURL8");
-        JSONObject content =new JSONObject()
-                .put("mycustom_assets","stringstringstring")
-                .put("mycustom_components","stringstringstring")
-                .put("mycustom_html","stringstringstring")
-                .put("mycustom_styles","stringstringstring")
-                .put("mycustom_css","stringstringstring");
-        JSONArray contentArray = new JSONArray()
-                .put(content);
-        JSONObject v1 = new JSONObject()
-                .put("name","newName")
-                .put("slug","newSlug")
-                .put("fileURL",fileURLs)
-                .put("picURL",picURLs)
-                .put("temp",false)
-                .put("content",contentArray);
-        mockMvc.perform(put("/note/"+note.getId()+"/4")
+                .put("name", "newName")
+                .put("slug", "newSlug")
+                .put("fileURL", fileURLs)
+                .put("picURL", picURLs)
+                .put("temp", false)
+                .put("content", contentArray);
+        mockMvc.perform(put("/note/" + note.getId() + "/2")
                         .headers(httpHeaders)
                         .content(v1.toString()))
                 .andExpect(status().isOk())
@@ -903,84 +1012,141 @@ public class NoteTest {
     }
 
     @Test
-    public void testSetManager() throws Exception{
+    public void testAddNoteContent() throws Exception {
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        Folder folder = folderRepository.findById(appUser.getFolders().get(3)).get();//Normal Folder
+        Note note = noteRepository.findById(folder.getNotes().get(0)).get();
+        JSONArray fileURLs = new JSONArray()
+                .put("fileURL4")
+                .put("fileURL5")
+                .put("fileURL6")
+                .put("fileURL7")
+                .put("fileURL8")
+                .put("fileURL9");
+        JSONArray picURLs = new JSONArray()
+                .put("picURL8");
+        JSONObject content = new JSONObject()
+                .put("mycustom_assets", "stringstringstring")
+                .put("mycustom_components", "stringstringstring")
+                .put("mycustom_html", "stringstringstring")
+                .put("mycustom_styles", "stringstringstring")
+                .put("mycustom_css", "stringstringstring");
+        JSONArray contentArray = new JSONArray()
+                .put(content);
+        JSONObject v1 = new JSONObject()
+                .put("name", "newName")
+                .put("slug", "newSlug")
+                .put("fileURL", fileURLs)
+                .put("picURL", picURLs)
+                .put("temp", false)
+                .put("content", contentArray);
+        mockMvc.perform(put("/note/" + note.getId() + "/4")
+                        .headers(httpHeaders)
+                        .content(v1.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res..id").hasJsonPath())
+                .andExpect(jsonPath("$.res.name").value(v1.get("name")))
+                .andExpect(jsonPath("$.res.slug").value(v1.get("slug")))
+                .andExpect(jsonPath("$.res.content.[0].mycustom_html").value(content.get("mycustom_html")))
+                .andExpect(jsonPath("$.res.content.[0].mycustom_components").value(content.get("mycustom_components")))
+                .andExpect(jsonPath("$.res.content.[0].mycustom_assets").value(content.get("mycustom_assets")))
+                .andExpect(jsonPath("$.res.content.[0].mycustom_css").value(content.get("mycustom_css")))
+                .andExpect(jsonPath("$.res.content.[0].mycustom_styles").value(content.get("mycustom_styles")))
+                .andExpect(jsonPath("$.res.picURL.[0]").value(picURLs.get(0)))
+                .andExpect(jsonPath("$.res.fileURL[0]").value(fileURLs.get(0)))
+                .andExpect(jsonPath("$.res.fileURL[1]").value(fileURLs.get(1)))
+                .andExpect(jsonPath("$.res.fileURL[2]").value(fileURLs.get(2)))
+                .andExpect(jsonPath("$.res.fileURL[3]").value(fileURLs.get(3)))
+                .andExpect(jsonPath("$.res.fileURL[4]").value(fileURLs.get(4)))
+                .andExpect(jsonPath("$.res.fileURL[5]").value(fileURLs.get(5)))
+                .andExpect(jsonPath("$.res.temp").value(v1.get("temp")));
+    }
+
+    @Test
+    public void testSetManager() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         AppUser manager = userRepository.findByEmail("user1@gmail.com");
         Folder folder = folderRepository.findById(appUser.getFolders().get(2)).get();
         Note note = noteRepository.findById(folder.getNotes().get(0)).get();
-        mockMvc.perform(put("/note/admin/"+note.getId()+"/"+manager.getEmail())
+        mockMvc.perform(put("/note/admin/" + note.getId() + "/" + manager.getEmail())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
-        if(!noteRepository.findById(note.getId()).get().getManagerEmail().equals(manager.getEmail())){
+        if (!noteRepository.findById(note.getId()).get().getManagerEmail().equals(manager.getEmail())) {
             System.out.println(noteRepository.findById(note.getId()).get().getManagerEmail());
             throw new Exception("Note Test : note's manager does wrong");
         }
     }
 
     @Test
-    public void testKickUserFromCollaboration() throws Exception{
+    public void testKickUserFromCollaboration() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         AppUser kickTarget = userRepository.findByEmail("user1@gmail.com");
         Folder folder = folderRepository.findById(appUser.getFolders().get(2)).get();
         Note note = noteRepository.findById(folder.getNotes().get(0)).get();
         Post post = postRepository.findById(note.getPostID()).get();
-        mockMvc.perform(put("/note/kick/"+note.getId()+"/"+kickTarget.getEmail())
+        mockMvc.perform(put("/note/kick/" + note.getId() + "/" + kickTarget.getEmail())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
-        if(noteRepository.findById(note.getId()).get().getAuthorEmail().contains(kickTarget.getEmail())){
+
+        if (noteRepository.findById(note.getId()).get().getAuthorEmail().contains(kickTarget.getEmail())) {
             throw new Exception("Note Test : Note's author's email still contain kickTarget");
         }
-        if(noteRepository.findById(note.getId()).get().getAuthorName().contains(kickTarget.getName())){
+        if (noteRepository.findById(note.getId()).get().getAuthorName().contains(kickTarget.getName())) {
             throw new Exception("Note Test : Note's author's email still contain kickTarget");
         }
         //踢人之後 共筆貼文的作者人數要減一
-        if(!postRepository.findById(post.getId()).get().getCollabNoteAuthorNumber().equals(post.getCollabNoteAuthorNumber()-1)){
+        if (!postRepository.findById(post.getId()).get().getCollabNoteAuthorNumber().equals(post.getCollabNoteAuthorNumber() - 1)) {
             throw new Exception("Note Test : Post's collabNoteAuthorNumber does not -1");
         }
         //若為管理員，note要移除管理員˙
-        if(!(noteRepository.findById(note.getId()).get().getManagerEmail()==null)){
+        if (!(noteRepository.findById(note.getId()).get().getManagerEmail() == null)) {
             throw new Exception("Note Test : Note's manager email does not clear");
         }
     }
 
     @Test
-    public void testCopyNoteToFolder() throws Exception{
+    public void testCopyNoteToFolder() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        Folder newFolder = createFolder("New","/New",null);
+        Folder newFolder = createFolder("New", "/New", null, appUser.getName());
         appUser.getFolders().add(newFolder.getId());
         userRepository.save(appUser);
         Folder oldFolder = folderRepository.findById(appUser.getFolders().get(3)).get();
         Note note = noteRepository.findById(oldFolder.getNotes().get(0)).get();
-        mockMvc.perform(put("/note/save/"+note.getId()+"/"+newFolder.getId())
-                .headers(httpHeaders))
+        mockMvc.perform(put("/note/save/" + note.getId() + "/" + newFolder.getId())
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(newFolder.getId()))
                 .andExpect(jsonPath("$.res.folderName").value(newFolder.getFolderName()))
                 .andExpect(jsonPath("$.res.path").value(newFolder.getPath()))
                 .andExpect(jsonPath("$.res.children").isEmpty())
-                .andExpect(jsonPath("$.res.notes.[0]").value(note.getId()))
+                .andExpect(jsonPath("$.res.notes.[0].id").value(note.getId()))
+                .andExpect(jsonPath("$.res.notes.[0].headerEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.notes.[0].headerName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.favorite").value(newFolder.getFavorite()))
-                .andExpect(jsonPath("$.res.public").value(newFolder.getPublic()));
+                .andExpect(jsonPath("$.res.public").value(newFolder.getPublic()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
 
-        if(!folderRepository.findById(oldFolder.getId()).get().getNotes().contains(note.getId())){
+        if (!folderRepository.findById(oldFolder.getId()).get().getNotes().contains(note.getId())) {
             throw new Exception("Note Test : Old Folder remove note id");
         }
     }
 
     @Test
-    public void testDeleteNoteToFolder() throws Exception{
+    public void testDeleteNoteToFolder() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        Folder newFolder = createFolder("New","/New",null);
+        Folder newFolder = createFolder("New", "/New", null, appUser.getName());
         appUser.getFolders().add(newFolder.getId());
         userRepository.save(appUser);
         Folder oldFolder = folderRepository.findById(appUser.getFolders().get(3)).get();
         Note note = noteRepository.findById(oldFolder.getNotes().get(0)).get();
         newFolder.getNotes().add(note.getId());
         folderRepository.save(newFolder);
-        mockMvc.perform(put("/note/delete/"+note.getId()+"/"+oldFolder.getId())
-                .headers(httpHeaders))
+        mockMvc.perform(put("/note/delete/" + note.getId() + "/" + oldFolder.getId())
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(oldFolder.getId()))
                 .andExpect(jsonPath("$.res.folderName").value(oldFolder.getFolderName()))
@@ -988,31 +1154,114 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.children").isEmpty())
                 .andExpect(jsonPath("$.res.notes").isEmpty())
                 .andExpect(jsonPath("$.res.favorite").value(oldFolder.getFavorite()))
-                .andExpect(jsonPath("$.res.public").value(oldFolder.getPublic()));
+                .andExpect(jsonPath("$.res.public").value(oldFolder.getPublic()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
 
-        if (!folderRepository.findById(newFolder.getId()).get().getNotes().contains(note.getId())){
+        if (!folderRepository.findById(newFolder.getId()).get().getNotes().contains(note.getId())) {
             throw new Exception("Note Test : new Folder's note be remove");
         }
     }
 
     @Test
-    public void testDeleteNoteToEmptyFolder() throws Exception{
+    public void testDeleteNoteToEmptyFolder() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        Folder newFolder = createFolder("New","/New",null);
+        Folder newFolder = createFolder("New", "/New", null, appUser.getName());
         appUser.getFolders().add(newFolder.getId());
         userRepository.save(appUser);
         Folder oldFolder = folderRepository.findById(appUser.getFolders().get(3)).get();
         Note note = noteRepository.findById(oldFolder.getNotes().get(0)).get();
-        mockMvc.perform(put("/note/delete/"+note.getId()+"/"+newFolder.getId())
+        mockMvc.perform(put("/note/delete/" + note.getId() + "/" + newFolder.getId())
                         .headers(httpHeaders))
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.msg").value("This folder hasn't contains the note."));
-        if (!folderRepository.findById(oldFolder.getId()).get().getNotes().contains(note.getId())){
+        if (!folderRepository.findById(oldFolder.getId()).get().getNotes().contains(note.getId())) {
             throw new Exception("Note Test : old Folder's note be remove");
         }
     }
+
+    @Test
+    public void testModifyVersionPublishStatus() throws Exception {
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        Folder appUserFolderForNormalNote = folderRepository.findById(userRepository.findByEmail(appUser.getEmail()).getFolders().get(3)).get();
+        Note note = noteRepository.findById(appUserFolderForNormalNote.getNotes().get(0)).get();//normal note
+
+        mockMvc.perform(put("/note/publish/" + note.getId() + "/0")
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(note.getVersion().get(0).getId()))
+                .andExpect(jsonPath("$.res.name").value(note.getVersion().get(0).getName()))
+                .andExpect(jsonPath("$.res.slug").value(note.getVersion().get(0).getSlug()))
+                .andExpect(jsonPath("$.res.content.[0].mycustom_html").value(note.getVersion().get(0).getContent().get(0).getMycustom_html()))
+                .andExpect(jsonPath("$.res.content.[0].mycustom_components").value(note.getVersion().get(0).getContent().get(0).getMycustom_components()))
+                .andExpect(jsonPath("$.res.content.[0].mycustom_assets").value(note.getVersion().get(0).getContent().get(0).getMycustom_assets()))
+                .andExpect(jsonPath("$.res.content.[0].mycustom_css").value(note.getVersion().get(0).getContent().get(0).getMycustom_css()))
+                .andExpect(jsonPath("$.res.content.[0].mycustom_styles").value(note.getVersion().get(0).getContent().get(0).getMycustom_styles()))
+                .andExpect(jsonPath("$.res.content.[1].mycustom_html").value(note.getVersion().get(0).getContent().get(1).getMycustom_html()))
+                .andExpect(jsonPath("$.res.content.[1].mycustom_components").value(note.getVersion().get(0).getContent().get(1).getMycustom_components()))
+                .andExpect(jsonPath("$.res.content.[1].mycustom_assets").value(note.getVersion().get(0).getContent().get(1).getMycustom_assets()))
+                .andExpect(jsonPath("$.res.content.[1].mycustom_css").value(note.getVersion().get(0).getContent().get(1).getMycustom_css()))
+                .andExpect(jsonPath("$.res.content.[1].mycustom_styles").value(note.getVersion().get(0).getContent().get(1).getMycustom_styles()))
+                .andExpect(jsonPath("$.res.content.[2].mycustom_html").value(note.getVersion().get(0).getContent().get(2).getMycustom_html()))
+                .andExpect(jsonPath("$.res.content.[2].mycustom_components").value(note.getVersion().get(0).getContent().get(2).getMycustom_components()))
+                .andExpect(jsonPath("$.res.content.[2].mycustom_assets").value(note.getVersion().get(0).getContent().get(2).getMycustom_assets()))
+                .andExpect(jsonPath("$.res.content.[2].mycustom_css").value(note.getVersion().get(0).getContent().get(2).getMycustom_css()))
+                .andExpect(jsonPath("$.res.content.[2].mycustom_styles").value(note.getVersion().get(0).getContent().get(2).getMycustom_styles()))
+                .andExpect(jsonPath("$.res.picURL").value(note.getVersion().get(0).getPicURL()))
+                .andExpect(jsonPath("$.res.fileURL").value(note.getVersion().get(0).getFileURL()))
+                .andExpect(jsonPath("$.res.temp").value(!note.getVersion().get(0).getTemp()));
+
+        Note newNote = noteRepository.findById(note.getId()).get();
+        if (!newNote.getVersion().get(0).getTemp().equals(!note.getVersion().get(0).getTemp())) {
+            throw new Exception("Note Test : version isTemp does not update");
+        }
+    }
+
+    @Test
+    public void testPublishNote() throws Exception {
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        Folder appUserFolderForNormalNote = folderRepository.findById(userRepository.findByEmail(appUser.getEmail()).getFolders().get(3)).get();
+        Note note = noteRepository.findById(appUserFolderForNormalNote.getNotes().get(0)).get();//normal note
+
+        mockMvc.perform(put("/note/publish/" + note.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
+
+        if (noteRepository.findById(note.getId()).get().getPublishDate() == null) {
+            throw new Exception("Note Test : note publishDate dose not change");
+        }
+    }
+
+    @Test
+    public void testSubmitRewardNote() throws Exception {
+        AppUser appUser = userRepository.findByEmail("user1@gmail.com");
+        Post post = createRewardPost();
+        Note rewardNote = createRewardNote(appUser.getEmail(), appUser.getName());
+        rewardNote.setPostID(post.getId());
+        noteRepository.save(rewardNote);
+        Folder tempRewardNote = folderRepository.findById(appUser.getFolders().get(4)).get();
+        tempRewardNote.getNotes().add(rewardNote.getId());
+        folderRepository.save(tempRewardNote);
+
+        mockMvc.perform(put("/note/submit/" + rewardNote.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
+
+        // check note remove from folder
+        if (folderRepository.findById(tempRewardNote.getId()).get().getNotes().contains(rewardNote.getId())) {
+            throw new Exception("Note Test : reward note does not remove");
+        }
+        //check post answer add noteID
+        if (!postRepository.findById(post.getId()).get().getAnswers().contains(rewardNote.getId())) {
+            throw new Exception("Note Test : post answer does not add reward noteID");
+        }
+    }
+
     @AfterEach
-    public void clear(){
+    public void clear() {
         userRepository.deleteAll();
         noteRepository.deleteAll();
         folderRepository.deleteAll();

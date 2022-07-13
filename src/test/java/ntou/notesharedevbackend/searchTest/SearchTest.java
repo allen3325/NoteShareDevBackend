@@ -99,7 +99,7 @@ public class SearchTest {
         return appUser;
     }
 
-    private Note createNormalNote(){
+    private Note createNormalNote() {
         Note note = new Note();
         note.setType("normal");
         note.setDepartment("CS");
@@ -240,6 +240,8 @@ public class SearchTest {
         post.setCommentCount(2);
         post.setBestPrice(30);
         post.setAnswers(new ArrayList<>());
+        post.setApplyEmail(new ArrayList<>());
+        post.setArchive(false);
         post = postRepository.insert(post);
         return post;
     }
@@ -377,6 +379,8 @@ public class SearchTest {
         answers.add(note.getId());
         answers.add(note1.getId());
         post.setAnswers(answers);
+        post.setArchive(false);
+        post.setApplyEmail(new ArrayList<>());
         post = postRepository.insert(post);
         return post;
     }
@@ -498,6 +502,8 @@ public class SearchTest {
         post.setType("collaboration");
         ArrayList<String> email = new ArrayList<>();
         email.add("yitingwu.1030@gmail.com");
+        email.add("user1@gmail.com");
+        email.add("user2@gmail.com");
         post.setEmail(email);
         post.setAuthor("yitingwu.1030@gmail.com");
         post.setAuthorName("Ting");
@@ -518,6 +524,11 @@ public class SearchTest {
         post.setComments(new ArrayList<Comment>());
         post.setCommentCount(0);
         post.setBestPrice(0);
+        post.setArchive(false);
+        ArrayList<String> applyEmails = new ArrayList<>();
+        applyEmails.add("user1@gmail.com");
+        applyEmails.add("user2@gmail.com");
+        post.setApplyEmail(applyEmails);
         post = postRepository.insert(post);
         return post;
     }
@@ -594,20 +605,20 @@ public class SearchTest {
         int offset = 0;
         int pageSize = 10;
 
-        mockMvc.perform(get("/search/note/"+offset+"/"+pageSize)
-                .headers(httpHeaders)
+        mockMvc.perform(get("/search/note/" + offset + "/" + pageSize)
+                        .headers(httpHeaders)
                         .param("keyword", keyword)
-                .param("school","NTOU")
-                .param("subject","OS")
-                .param("department","CS")
-                .param("professor","NoteShare")
-                .param("haveNormal","true")
-                .param("haveCollaboration","true")
-                .param("haveReward","true")
-                .param("favoriteCount","0")
-                .param("price","50")
-                .param("quotable","false")
-                .param("sortBy","unlockCount")
+                        .param("school", "NTOU")
+                        .param("subject", "OS")
+                        .param("department", "CS")
+                        .param("professor", "NoteShare")
+                        .param("haveNormal", "true")
+                        .param("haveCollaboration", "true")
+                        .param("haveReward", "true")
+                        .param("favoriteCount", "0")
+                        .param("price", "50")
+                        .param("quotable", "false")
+                        .param("sortBy", "unlockCount")
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.search.items.[0].id").value(normalNote.getId()))
@@ -615,8 +626,12 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[0].department").value(normalNote.getDepartment()))
                 .andExpect(jsonPath("$.search.items.[0].subject").value(normalNote.getSubject()))
                 .andExpect(jsonPath("$.search.items.[0].title").value(normalNote.getTitle()))
-                .andExpect(jsonPath("$.search.items.[0].email").value(normalNote.getHeaderEmail()))
-                .andExpect(jsonPath("$.search.items.[0].author.[0]").value(normalNote.getAuthorName().get(0)))
+                .andExpect(jsonPath("$.search.items.[0].headerEmailUserObj.userObjEmail").value(userRepository.findByEmail(normalNote.getHeaderEmail()).getEmail()))
+                .andExpect(jsonPath("$.search.items.[0].headerEmailUserObj.userObjName").value(userRepository.findByEmail(normalNote.getHeaderEmail()).getName()))
+                .andExpect(jsonPath("$.search.items.[0].headerEmailUserObj.userObjAvatar").value(userRepository.findByEmail(normalNote.getHeaderEmail()).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[0].authorEmailUserObj.[0].userObjEmail").value(userRepository.findByEmail(normalNote.getHeaderEmail()).getEmail()))
+                .andExpect(jsonPath("$.search.items.[0].authorEmailUserObj.[0].userObjName").value(userRepository.findByEmail(normalNote.getHeaderEmail()).getName()))
+                .andExpect(jsonPath("$.search.items.[0].authorEmailUserObj.[0].userObjAvatar").value(userRepository.findByEmail(normalNote.getHeaderEmail()).getHeadshotPhoto()))
                 .andExpect(jsonPath("$.search.items.[0].professor").value(normalNote.getProfessor()))
                 .andExpect(jsonPath("$.search.items.[0].school").value(normalNote.getSchool()))
                 .andExpect(jsonPath("$.search.items.[0].likeCount").value(normalNote.getLikeCount()))
@@ -633,10 +648,18 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[1].department").value(collaborationNote.getDepartment()))
                 .andExpect(jsonPath("$.search.items.[1].subject").value(collaborationNote.getSubject()))
                 .andExpect(jsonPath("$.search.items.[1].title").value(collaborationNote.getTitle()))
-                .andExpect(jsonPath("$.search.items.[1].email").value(collaborationNote.getHeaderEmail()))
-                .andExpect(jsonPath("$.search.items.[1].author.[0]").value(collaborationNote.getAuthorName().get(0)))
-                .andExpect(jsonPath("$.search.items.[1].author.[1]").value(collaborationNote.getAuthorName().get(1)))
-                .andExpect(jsonPath("$.search.items.[1].author.[2]").value(collaborationNote.getAuthorName().get(2)))
+                .andExpect(jsonPath("$.search.items.[1].headerEmailUserObj.userObjEmail").value(userRepository.findByEmail(collaborationNote.getHeaderEmail()).getEmail()))
+                .andExpect(jsonPath("$.search.items.[1].headerEmailUserObj.userObjName").value(userRepository.findByEmail(collaborationNote.getHeaderEmail()).getName()))
+                .andExpect(jsonPath("$.search.items.[1].headerEmailUserObj.userObjAvatar").value(userRepository.findByEmail(collaborationNote.getHeaderEmail()).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[0].userObjEmail").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[0].userObjName").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(0)).getName()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[0].userObjAvatar").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(0)).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[1].userObjEmail").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(1)).getEmail()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[1].userObjName").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(1)).getName()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[1].userObjAvatar").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(1)).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[2].userObjEmail").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(2)).getEmail()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[2].userObjName").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(2)).getName()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[2].userObjAvatar").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(2)).getHeadshotPhoto()))
                 .andExpect(jsonPath("$.search.items.[1].professor").value(collaborationNote.getProfessor()))
                 .andExpect(jsonPath("$.search.items.[1].school").value(collaborationNote.getSchool()))
                 .andExpect(jsonPath("$.search.items.[1].likeCount").value(collaborationNote.getLikeCount()))
@@ -653,7 +676,12 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[2].department").value(rewardNote1.getDepartment()))
                 .andExpect(jsonPath("$.search.items.[2].subject").value(rewardNote1.getSubject()))
                 .andExpect(jsonPath("$.search.items.[2].title").value(rewardNote1.getTitle()))
-                .andExpect(jsonPath("$.search.items.[2].email").value(rewardNote1.getHeaderEmail()))
+                .andExpect(jsonPath("$.search.items.[2].headerEmailUserObj.userObjEmail").value(userRepository.findByEmail(rewardNote1.getHeaderEmail()).getEmail()))
+                .andExpect(jsonPath("$.search.items.[2].headerEmailUserObj.userObjName").value(userRepository.findByEmail(rewardNote1.getHeaderEmail()).getName()))
+                .andExpect(jsonPath("$.search.items.[2].headerEmailUserObj.userObjAvatar").value(userRepository.findByEmail(rewardNote1.getHeaderEmail()).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[2].authorEmailUserObj.[0].userObjEmail").value(userRepository.findByEmail(rewardNote1.getHeaderEmail()).getEmail()))
+                .andExpect(jsonPath("$.search.items.[2].authorEmailUserObj.[0].userObjName").value(userRepository.findByEmail(rewardNote1.getHeaderEmail()).getName()))
+                .andExpect(jsonPath("$.search.items.[2].authorEmailUserObj.[0].userObjAvatar").value(userRepository.findByEmail(rewardNote1.getHeaderEmail()).getHeadshotPhoto()))
                 .andExpect(jsonPath("$.search.items.[2].professor").value(rewardNote1.getProfessor()))
                 .andExpect(jsonPath("$.search.items.[2].school").value(rewardNote1.getSchool()))
                 .andExpect(jsonPath("$.search.items.[2].likeCount").value(rewardNote1.getLikeCount()))
@@ -706,15 +734,18 @@ public class SearchTest {
                         .param("haveQA", "true")
                         .param("haveCollaboration", "true")
                         .param("haveReward", "true")
-                        .param("professor","professor")
+                        .param("professor", "professor")
 
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.search.items.[0].id").value(QAPost.getId()))
-                .andExpect(jsonPath("$.search.items.[0].email.[0]").value(QAPost.getEmail().get(0)))
+                .andExpect(jsonPath("$.search.items.[0].authorUserObj.userObjEmail").value(userRepository.findByEmail(QAPost.getEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.search.items.[0].authorUserObj.userObjName").value(userRepository.findByEmail(QAPost.getEmail().get(0)).getName()))
+                .andExpect(jsonPath("$.search.items.[0].authorUserObj.userObjAvatar").value(userRepository.findByEmail(QAPost.getEmail().get(0)).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[0].emailUserObj.[0].userObjEmail").value(userRepository.findByEmail(QAPost.getEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.search.items.[0].emailUserObj.[0].userObjName").value(userRepository.findByEmail(QAPost.getEmail().get(0)).getName()))
+                .andExpect(jsonPath("$.search.items.[0].emailUserObj.[0].userObjAvatar").value(userRepository.findByEmail(QAPost.getEmail().get(0)).getHeadshotPhoto()))
                 .andExpect(jsonPath("$.search.items.[0].type").value(QAPost.getType()))
-                .andExpect(jsonPath("$.search.items.[0].author").value(QAPost.getAuthor()))
-                .andExpect(jsonPath("$.search.items.[0].authorName").value(QAPost.getAuthorName()))
                 .andExpect(jsonPath("$.search.items.[0].department").value(QAPost.getDepartment()))
                 .andExpect(jsonPath("$.search.items.[0].school").value(QAPost.getSchool()))
                 .andExpect(jsonPath("$.search.items.[0].professor").value(QAPost.getProfessor()))
@@ -731,13 +762,16 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[0].publishDate").value(QAPost.getPublishDate()))
                 .andExpect(jsonPath("$.search.items.[0].vote").value(QAPost.getVote()))
                 .andExpect(jsonPath("$.search.items.[0].collabNoteAuthorNumber").value(QAPost.getCollabNoteAuthorNumber()))
-                .andExpect(jsonPath("$.search.items.[0].collabApply").value(QAPost.getCollabApply()))
+                .andExpect(jsonPath("$.search.items.[0].collabApply").isEmpty())
                 .andExpect(jsonPath("$.search.items.[0].public").value(QAPost.getPublic()))
                 .andExpect(jsonPath("$.search.items.[1].id").value(rewardPost.getId()))
-                .andExpect(jsonPath("$.search.items.[1].email.[0]").value(rewardPost.getEmail().get(0)))
                 .andExpect(jsonPath("$.search.items.[1].type").value(rewardPost.getType()))
-                .andExpect(jsonPath("$.search.items.[1].author").value(rewardPost.getAuthor()))
-                .andExpect(jsonPath("$.search.items.[1].authorName").value(rewardPost.getAuthorName()))
+                .andExpect(jsonPath("$.search.items.[1].authorUserObj.userObjEmail").value(userRepository.findByEmail(rewardPost.getEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.search.items.[1].authorUserObj.userObjName").value(userRepository.findByEmail(rewardPost.getEmail().get(0)).getName()))
+                .andExpect(jsonPath("$.search.items.[1].authorUserObj.userObjAvatar").value(userRepository.findByEmail(rewardPost.getEmail().get(0)).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[1].emailUserObj.[0].userObjEmail").value(userRepository.findByEmail(rewardPost.getEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.search.items.[1].emailUserObj.[0].userObjName").value(userRepository.findByEmail(rewardPost.getEmail().get(0)).getName()))
+                .andExpect(jsonPath("$.search.items.[1].emailUserObj.[0].userObjAvatar").value(userRepository.findByEmail(rewardPost.getEmail().get(0)).getHeadshotPhoto()))
                 .andExpect(jsonPath("$.search.items.[1].department").value(rewardPost.getDepartment()))
                 .andExpect(jsonPath("$.search.items.[1].school").value(rewardPost.getSchool()))
                 .andExpect(jsonPath("$.search.items.[1].professor").value(rewardPost.getProfessor()))
@@ -753,13 +787,16 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[1].publishDate").value(rewardPost.getPublishDate()))
                 .andExpect(jsonPath("$.search.items.[1].vote").value(rewardPost.getVote()))
                 .andExpect(jsonPath("$.search.items.[1].collabNoteAuthorNumber").value(rewardPost.getCollabNoteAuthorNumber()))
-                .andExpect(jsonPath("$.search.items.[1].collabApply").value(rewardPost.getCollabApply()))
+                .andExpect(jsonPath("$.search.items.[1].collabApply").isEmpty())
                 .andExpect(jsonPath("$.search.items.[1].public").value(rewardPost.getPublic()))
                 .andExpect(jsonPath("$.search.items.[2].id").value(collaborationPost.getId()))
-                .andExpect(jsonPath("$.search.items.[2].email.[0]").value(collaborationPost.getEmail().get(0)))
+                .andExpect(jsonPath("$.search.items.[2].emailUserObj.[0].userObjEmail").value(userRepository.findByEmail(collaborationPost.getEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.search.items.[2].emailUserObj.[0].userObjName").value(userRepository.findByEmail(collaborationPost.getEmail().get(0)).getName()))
+                .andExpect(jsonPath("$.search.items.[2].emailUserObj.[0].userObjAvatar").value(userRepository.findByEmail(collaborationPost.getEmail().get(0)).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[2].authorUserObj.userObjEmail").value(userRepository.findByEmail(collaborationPost.getEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.search.items.[2].authorUserObj.userObjName").value(userRepository.findByEmail(collaborationPost.getEmail().get(0)).getName()))
+                .andExpect(jsonPath("$.search.items.[2].authorUserObj.userObjAvatar").value(userRepository.findByEmail(collaborationPost.getEmail().get(0)).getHeadshotPhoto()))
                 .andExpect(jsonPath("$.search.items.[2].type").value(collaborationPost.getType()))
-                .andExpect(jsonPath("$.search.items.[2].author").value(collaborationPost.getAuthor()))
-                .andExpect(jsonPath("$.search.items.[2].authorName").value(collaborationPost.getAuthorName()))
                 .andExpect(jsonPath("$.search.items.[2].department").value(collaborationPost.getDepartment()))
                 .andExpect(jsonPath("$.search.items.[2].school").value(collaborationPost.getSchool()))
                 .andExpect(jsonPath("$.search.items.[2].professor").value(collaborationPost.getProfessor()))
@@ -775,7 +812,7 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[2].publishDate").value(collaborationPost.getPublishDate()))
                 .andExpect(jsonPath("$.search.items.[2].vote").value(collaborationPost.getVote()))
                 .andExpect(jsonPath("$.search.items.[2].collabNoteAuthorNumber").value(collaborationPost.getCollabNoteAuthorNumber()))
-                .andExpect(jsonPath("$.search.items.[2].collabApply").value(collaborationPost.getCollabApply()))
+                .andExpect(jsonPath("$.search.items.[2].collabApply").isEmpty())
                 .andExpect(jsonPath("$.search.items.[2].public").value(collaborationPost.getPublic()))
                 .andExpect(jsonPath("$.search.totalPages").value(1));
     }
@@ -784,22 +821,22 @@ public class SearchTest {
     public void testSearchFolderCreatorIsUser1() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         AppUser folderCreator = userRepository.findByEmail("user1@gmail.com");
-        Folder folder1 = createFolder("taldskfgjaldfjk", "/taldskfgjaldfjk", null,folderCreator.getEmail(), folderCreator.getName());
+        Folder folder1 = createFolder("taldskfgjaldfjk", "/taldskfgjaldfjk", null, folderCreator.getEmail(), folderCreator.getName());
 
         Folder folder2 = createFolder("taldskfgjaldfjk1111", "/taldskfgjaldfjk1111", null, folderCreator.getEmail(), folderCreator.getName());
         folder2.setPublic(false);
         folderRepository.save(folder2);
-        Folder folder11 = createFolder("tSecond", "/taldskfgjaldfjk/tSecond", folder1.getId(),folderCreator.getEmail(), folderCreator.getName());
+        Folder folder11 = createFolder("tSecond", "/taldskfgjaldfjk/tSecond", folder1.getId(), folderCreator.getEmail(), folderCreator.getName());
 
-        Folder folder111 = createFolder("tThird", "/taldskfgjaldfjk/tSecond/Third", folder11.getId(),folderCreator.getEmail(), folderCreator.getName());
+        Folder folder111 = createFolder("tThird", "/taldskfgjaldfjk/tSecond/Third", folder11.getId(), folderCreator.getEmail(), folderCreator.getName());
 
-        Folder folder1111 = createFolder("tUnPublic", "/taldskfgjaldfjk/tSecond/Third/tUnPublic", folder111.getId(),folderCreator.getEmail(), folderCreator.getName());
+        Folder folder1111 = createFolder("tUnPublic", "/taldskfgjaldfjk/tSecond/Third/tUnPublic", folder111.getId(), folderCreator.getEmail(), folderCreator.getName());
 
         String keyword = "t";
-        int offset =0;
+        int offset = 0;
         int pageSize = 10;
-        mockMvc.perform(get("/search/folder/"+offset+"/"+pageSize)
-                .headers(httpHeaders)
+        mockMvc.perform(get("/search/folder/" + offset + "/" + pageSize)
+                        .headers(httpHeaders)
                         .param("keyword", keyword)
                 )
                 .andExpect(status().isOk())
@@ -850,24 +887,24 @@ public class SearchTest {
     public void testSearchFolderCreatorIsTing() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         AppUser folderCreator = userRepository.findByEmail("user1@gmail.com");
-        Folder folder1 = createFolder("tFirst", "/tFirst", null,appUser.getEmail(), appUser.getName());
+        Folder folder1 = createFolder("tFirst", "/tFirst", null, appUser.getEmail(), appUser.getName());
 
         Folder folder2 = createFolder("tFirst111", "/tFirst111", null, folderCreator.getEmail(), folderCreator.getName());
         folder2.setPublic(false);
         folderRepository.save(folder2);
-        Folder folder11 = createFolder("tSecond", "/tFirst/tSecond", folder1.getId(),folderCreator.getEmail(), folderCreator.getName());
+        Folder folder11 = createFolder("tSecond", "/tFirst/tSecond", folder1.getId(), folderCreator.getEmail(), folderCreator.getName());
 
-        Folder folder111 = createFolder("tThird", "/tFirst/tSecond/Third", folder11.getId(),appUser.getEmail(), appUser.getName());
+        Folder folder111 = createFolder("tThird", "/tFirst/tSecond/Third", folder11.getId(), appUser.getEmail(), appUser.getName());
 
-        Folder folder1111 = createFolder("tUnPublic", "/tFirst/tSecond/Third/tUnPublic", folder111.getId(),folderCreator.getEmail(), folderCreator.getName());
+        Folder folder1111 = createFolder("tUnPublic", "/tFirst/tSecond/Third/tUnPublic", folder111.getId(), folderCreator.getEmail(), folderCreator.getName());
 
         String keyword = "t";
-        int offset =0;
+        int offset = 0;
         int pageSize = 10;
-        mockMvc.perform(get("/search/folder/"+offset+"/"+pageSize)
+        mockMvc.perform(get("/search/folder/" + offset + "/" + pageSize)
                         .headers(httpHeaders)
                         .param("keyword", keyword)
-                        .param("creator","Ting"))
+                        .param("creator", "Ting"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.search.items.[0].id").value(folder1.getId()))
                 .andExpect(jsonPath("$.search.items.[0].folderName").value(folder1.getFolderName()))

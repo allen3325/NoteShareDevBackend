@@ -2,8 +2,8 @@ package ntou.notesharedevbackend.userModule.service;
 
 import ntou.notesharedevbackend.folderModule.entity.FolderRequest;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
-import ntou.notesharedevbackend.notificationModule.entity.Message;
-import ntou.notesharedevbackend.userModule.entity.AppUser;
+import ntou.notesharedevbackend.notificationModule.entity.*;
+import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.verificationModule.entity.service.MailService;
@@ -28,32 +28,36 @@ public class AppUserService {
     @Lazy(value = true)
     private FolderService folderService;
 
-    public AppUserService(UserRepository userRepository){
+    public AppUserService(UserRepository userRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    public boolean hasExitUserByEmail(String email){
+    public boolean hasExitUserByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
 
-    public AppUser getUserById(String id){
+    public AppUser getUserById(String id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Can't find user."));
     }
 
-    public AppUser getUserByEmail(String email){
+    public AppUser getUserByName(String name) {
+        return userRepository.findByName(name);
+    }
+
+    public AppUser getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    public AppUser[] getAllUsers(){
+    public AppUser[] getAllUsers() {
         List<AppUser> tmp = userRepository.findAll();
         return tmp.toArray(new AppUser[0]);
     }
 
     public AppUser createUser(AppUser request) {
         // check email has existed
-        if(userRepository.existsByEmail(request.getEmail())){
+        if (userRepository.existsByEmail(request.getEmail())) {
             return null;
         }
         AppUser appUser = new AppUser();
@@ -69,28 +73,31 @@ public class AppUserService {
         appUser.setSubscribe(new ArrayList<String>());
         appUser.setBell(new ArrayList<String>());
         appUser.setFans(new ArrayList<String>());
+        appUser.setBelledBy(new ArrayList<String>());
         appUser.setCoin(300);
         appUser.setHeadshotPhoto(request.getHeadshotPhoto());
-        appUser.setNotification(new ArrayList<Message>());
+        appUser.setNotification(new ArrayList<MessageReturn>());
         appUser.setUnreadMessageCount(0);
         userRepository.insert(appUser);
         // create Buy and Favorite and default folder
         createFolderAtRoot(appUser.getEmail(), "Buy");
         createFolderAtRoot(appUser.getEmail(), "Favorite");
         createFolderAtRoot(appUser.getEmail(), "Folder");
+        createFolderAtRoot(appUser.getEmail(), "Temp Reward Note");//放未提交的reward note
         appUser = getUserById(appUser.getId());
         return appUser;
     }
-    public void createFolderAtRoot(String email,String name){
+
+    public void createFolderAtRoot(String email, String name) {
         FolderRequest folder = new FolderRequest();
         folder.setParent(null);
         folder.setFolderName(name);
         folder.setPublic(false);
-        folder.setPath("/"+name);
-        folderService.createFolder(email,folder);
+        folder.setPath("/" + name);
+        folderService.createFolder(email, folder);
     }
 
-    public AppUser replaceUser(AppUser request){
+    public AppUser replaceUser(AppUser request) {
         AppUser user = new AppUser();
 
         user.setId(request.getId());
@@ -110,7 +117,7 @@ public class AppUserService {
         user.setHeadshotPhoto(request.getHeadshotPhoto());
         user.setNotification(request.getNotification());
         user.setUnreadMessageCount(request.getUnreadMessageCount());
-
+        user.setBelledBy(request.getBelledBy());
         return userRepository.save(user);
     }
 
@@ -132,11 +139,11 @@ public class AppUserService {
         replaceUser(user);
     }
 
-    public static String randomCode(){
+    public static String randomCode() {
         char[] chars = new char[4];
         Random rnd = new Random();
-        for(int i = 0; i < 4; i++){
-            chars[i]=(char)('0'+rnd.nextInt(10));
+        for (int i = 0; i < 4; i++) {
+            chars[i] = (char) ('0' + rnd.nextInt(10));
         }
         return new String(chars);
     }
@@ -169,5 +176,60 @@ public class AppUserService {
         appUser.setName(newName);
         replaceUser(appUser);
         return appUser.getName();
+    }
+
+    public UserObj getUserInfo(String email) {
+        AppUser appUser = getUserByEmail(email);
+        UserObj userObj = new UserObj();
+        userObj.setUserObjEmail(email);
+        userObj.setUserObjName(appUser.getName());
+        userObj.setUserObjAvatar(appUser.getHeadshotPhoto());
+
+        return userObj;
+    }
+
+    public AppUserReturn getAppUserInfo(AppUser appUser) {
+        AppUserReturn appUserReturn = new AppUserReturn();
+        appUserReturn.setId(appUser.getId());
+        appUserReturn.setEmail(appUser.getEmail());
+        appUserReturn.setName(appUser.getName());
+        appUserReturn.setPassword(appUser.getPassword());
+        appUserReturn.setVerifyCode(appUser.getVerifyCode());
+        appUserReturn.setAdmin(appUser.isAdmin());
+        appUserReturn.setActivate(appUser.isActivate());
+        appUserReturn.setProfile(appUser.getProfile());
+        appUserReturn.setStrength(appUser.getStrength());
+        appUserReturn.setFolders(appUser.getFolders());
+        appUserReturn.setCoin(appUser.getCoin());
+        appUserReturn.setHeadshotPhoto(appUser.getHeadshotPhoto());
+        appUserReturn.setUnreadMessageCount(appUser.getUnreadMessageCount());
+        appUserReturn.setNotificationUserObj(appUserReturn.getNotificationUserObj());
+
+        ArrayList<UserObj> subscribe = new ArrayList<>();
+        for (String subscribeEmail : appUser.getSubscribe()) {
+            UserObj userObj = getUserInfo(subscribeEmail);
+            subscribe.add(userObj);
+        }
+        appUserReturn.setSubscribeUserObj(subscribe);
+        ArrayList<UserObj> bell = new ArrayList<>();
+        for (String bellEmail : appUser.getBell()) {
+            UserObj userObj = getUserInfo(bellEmail);
+            bell.add(userObj);
+        }
+        appUserReturn.setBellUserObj(bell);
+        ArrayList<UserObj> belledBy = new ArrayList<>();
+        for (String belledByEmail : appUser.getBelledBy()) {
+            UserObj userObj = getUserInfo(belledByEmail);
+            belledBy.add(userObj);
+        }
+        appUserReturn.setBelledByUserObj(belledBy);
+        ArrayList<UserObj> fans = new ArrayList<>();
+        for (String fansEmail : appUser.getFans()) {
+            UserObj userObj = getUserInfo(fansEmail);
+            fans.add(userObj);
+        }
+        appUserReturn.setFansUserObj(fans);
+
+        return appUserReturn;
     }
 }

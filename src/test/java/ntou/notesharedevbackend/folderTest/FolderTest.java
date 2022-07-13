@@ -2,11 +2,14 @@ package ntou.notesharedevbackend.folderTest;
 
 
 import ntou.notesharedevbackend.folderModule.entity.Folder;
+import ntou.notesharedevbackend.noteNodule.entity.Content;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.VersionContent;
 import ntou.notesharedevbackend.repository.FolderRepository;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
+import org.hamcrest.core.IsNull;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,8 +64,8 @@ public class FolderTest {
         JSONObject request = new JSONObject()
                 .put("folderName", "OS")
                 .put("public", true)
-                .put("path", "/Favorite/OS")
-                .put("parent", appUser.getFolders().get(1));//Favorite folder's id
+                .put("path", "/Folder/OS")
+                .put("parent", appUser.getFolders().get(2));//Folder Folder ID
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/folder/yitingwu.1030@gmail.com")
@@ -77,10 +80,14 @@ public class FolderTest {
                 .andExpect(jsonPath("$.res.public").value(request.getBoolean("public")))
                 .andExpect(jsonPath("$.res.path").value(request.getString("path")))
                 .andExpect(jsonPath("$.res.parent").value(request.getString("parent")))
+                .andExpect(jsonPath("$.res.children").isEmpty())
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
 
         //檢查user+(檢查parentFolder)
-        String folderID = userRepository.findByEmail("yitingwu.1030@gmail.com").getFolders().get(2);
+        String folderID = userRepository.findByEmail("yitingwu.1030@gmail.com").getFolders().get(4);
         if (!folderRepository.findById(folderID).isPresent()) {
             throw new Exception("Create Folder: folder does not in DB");
         }
@@ -97,9 +104,13 @@ public class FolderTest {
         appUser.setPassword("1234");
         Folder buyFolder = createFolder("Buy", "/Buy", null);
         Folder favoriteFolder = createFolder("Favorite", "/Favorite", null);
+        Folder folderFolder = createFolder("Folder", "/Folder", null);
+        Folder tempRewardFolder = createFolder("Temp Reward Note", "/Temp Reward Note", null);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());
+        folderList.add(folderFolder.getId());
+        folderList.add(tempRewardFolder.getId());
         appUser.setFolders(folderList);
         return appUser;
     }
@@ -113,12 +124,115 @@ public class FolderTest {
         folder.setNotes(new ArrayList<String>());
         folder.setChildren(new ArrayList<String>());
         folder.setPublic(false);
+        folder.setCreatorName("Ting");
         folderRepository.insert(folder);
         return folder;
     }
 
-    private Note createNote() {
+    private Note createNormalNote() {
         Note note = new Note();
+        note.setType("normal");
+        note.setDepartment("CS");
+        note.setSubject("OS");
+        note.setTitle("Interrupt");
+        note.setHeaderEmail("yitingwu.1030@gmail.com");
+        note.setHeaderName("Ting");
+        ArrayList<String> authorEmails = new ArrayList<>();
+        authorEmails.add("yitingwu.1030@gmail.com");
+        note.setAuthorEmail(authorEmails);
+        ArrayList<String> authorNames = new ArrayList<>();
+        authorNames.add("Ting");
+        note.setAuthorName(authorNames);
+        note.setProfessor("NoteShare");
+        note.setSchool("NTOU");
+        note.setPublic(false);
+        note.setPrice(50);
+        note.setLiker(new ArrayList<>());
+        note.setLikeCount(null);
+        note.setBuyer(new ArrayList<>());
+        note.setFavoriter(new ArrayList<>());
+        note.setFavoriteCount(null);
+        note.setUnlockCount(0);
+        note.setDownloadable(false);
+        note.setCommentCount(null);
+        note.setComments(new ArrayList<>());
+        note.setSubmit(null);
+        note.setQuotable(false);
+        ArrayList<String> tags = new ArrayList<>();
+        tags.add("tag1");
+        tags.add("tag2");
+        tags.add("tag3");
+        note.setTag(tags);
+        note.setHiddenTag(new ArrayList<>());
+        ArrayList<VersionContent> versionContents = new ArrayList<>();
+        VersionContent v1 = new VersionContent();
+        v1.setName("v1");
+        v1.setSlug("string");
+        ArrayList<String> fileURLs = new ArrayList<>();
+        fileURLs.add("fileURL1");
+        fileURLs.add("fileURL2");
+        fileURLs.add("fileURL3");
+        v1.setFileURL(fileURLs);
+        ArrayList<String> picURLs = new ArrayList<>();
+        picURLs.add("picURL1");
+        picURLs.add("picURL2");
+        picURLs.add("picURL3");
+        v1.setPicURL(picURLs);
+        v1.setTemp(true);
+        Content content1 = new Content();
+        content1.setMycustom_assets("string");
+        content1.setMycustom_components("string");
+        content1.setMycustom_css("string");
+        content1.setMycustom_html("string");
+        content1.setMycustom_styles("string");
+        Content content2 = new Content();
+        content2.setMycustom_assets("string");
+        content2.setMycustom_components("string");
+        content2.setMycustom_css("string");
+        content2.setMycustom_html("string");
+        content2.setMycustom_styles("string");
+        Content content3 = new Content();
+        content3.setMycustom_assets("string");
+        content3.setMycustom_components("string");
+        content3.setMycustom_css("string");
+        content3.setMycustom_html("string");
+        content3.setMycustom_styles("string");
+        ArrayList<Content> contents = new ArrayList<>();
+        contents.add(content1);
+        contents.add(content2);
+        contents.add(content3);
+        v1.setContent(contents);
+        VersionContent v2 = new VersionContent();
+        v2.setSlug("String");
+        v2.setFileURL(fileURLs);
+        v2.setPicURL(picURLs);
+        v2.setContent(contents);
+        v2.setName("v2");
+        v2.setTemp(false);
+        VersionContent v3 = new VersionContent();
+        v3.setSlug("String");
+        v3.setFileURL(fileURLs);
+        v3.setPicURL(picURLs);
+        v3.setContent(contents);
+        v3.setTemp(true);
+        v3.setName("v3");
+        VersionContent v4 = new VersionContent();
+        v4.setSlug("String");
+        v4.setFileURL(fileURLs);
+        v4.setPicURL(picURLs);
+        v4.setContent(contents);
+        v4.setName("v4");
+        v4.setTemp(false);
+        versionContents.add(v1);
+        versionContents.add(v2);
+        versionContents.add(v3);
+        versionContents.add(v4);
+        note.setVersion(versionContents);
+        note.setContributors(new ArrayList<>());
+        note.setPostID(null);
+        note.setReference(null);
+        note.setBest(null);
+        note.setManagerEmail(null);
         noteRepository.insert(note);
         return note;
     }
@@ -146,21 +260,49 @@ public class FolderTest {
                 .andExpect(jsonPath("$.res.[0].parent").value(folderRepository.findById(appUser.getFolders().get(0)).get().getParent()))
                 .andExpect(jsonPath("$.res.[0].path").value("/Buy"))
                 .andExpect(jsonPath("$.res.[0].public").value(false))
+                .andExpect(jsonPath("$.res[0].creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res[0].creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res[0].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.[1].id").value(appUser.getFolders().get(1)))
                 .andExpect(jsonPath("$.res.[1].folderName").value("Favorite"))
                 .andExpect(jsonPath("$.res.[1].parent").value(folderRepository.findById(appUser.getFolders().get(1)).get().getParent()))
                 .andExpect(jsonPath("$.res.[1].path").value("/Favorite"))
                 .andExpect(jsonPath("$.res.[1].public").value(false))
-                .andExpect(jsonPath("$.res.[2].id").value(folder3.getId()))
-                .andExpect(jsonPath("$.res.[2].folderName").value(folder3.getFolderName()))
-                .andExpect(jsonPath("$.res.[2].parent").value(folder3.getParent()))
-                .andExpect(jsonPath("$.res.[2].path").value(folder3.getPath()))
-                .andExpect(jsonPath("$.res.[2].public").value(folder3.getPublic()))
-                .andExpect(jsonPath("$.res.[3].id").value(folder33.getId()))
-                .andExpect(jsonPath("$.res.[3].folderName").value(folder33.getFolderName()))
-                .andExpect(jsonPath("$.res.[3].parent").value(folder33.getParent()))
-                .andExpect(jsonPath("$.res.[3].path").value(folder33.getPath()))
-                .andExpect(jsonPath("$.res.[3].public").value(folder33.getPublic()));
+                .andExpect(jsonPath("$.res[1].creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res[1].creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res[1].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[2].id").value(appUser.getFolders().get(2)))
+                .andExpect(jsonPath("$.res.[2].folderName").value("Folder"))
+                .andExpect(jsonPath("$.res.[2].parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.[2].path").value("/Folder"))
+                .andExpect(jsonPath("$.res.[2].public").value(false))
+                .andExpect(jsonPath("$.res[2].creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res[2].creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res[2].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[3].id").value(appUser.getFolders().get(3)))
+                .andExpect(jsonPath("$.res.[3].folderName").value("Temp Reward Note"))
+                .andExpect(jsonPath("$.res.[3].parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.[3].path").value("/Temp Reward Note"))
+                .andExpect(jsonPath("$.res.[3].public").value(false))
+                .andExpect(jsonPath("$.res[3].creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res[3].creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res[3].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[4].id").value(folder3.getId()))
+                .andExpect(jsonPath("$.res.[4].folderName").value(folder3.getFolderName()))
+                .andExpect(jsonPath("$.res.[4].parent").value(folder3.getParent()))
+                .andExpect(jsonPath("$.res.[4].path").value(folder3.getPath()))
+                .andExpect(jsonPath("$.res.[4].public").value(folder3.getPublic()))
+                .andExpect(jsonPath("$.res[4].creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res[4].creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res[4].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[5].id").value(folder33.getId()))
+                .andExpect(jsonPath("$.res.[5].folderName").value(folder33.getFolderName()))
+                .andExpect(jsonPath("$.res.[5].parent").value(folder33.getParent()))
+                .andExpect(jsonPath("$.res.[5].path").value(folder33.getPath()))
+                .andExpect(jsonPath("$.res.[5].public").value(folder33.getPublic()))
+                .andExpect(jsonPath("$.res[5].creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res[5].creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res[5].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
     }
 
     @Test
@@ -170,8 +312,8 @@ public class FolderTest {
         Folder firstChildrenFolder = createFolder("Ting", "/Buy/Ting", parentFolder.getId());
         Folder secondChildrenFolder = createFolder("Ting2", "/Buy/Ting2", parentFolder.getId());
         //建立note
-        Note firstNote = createNote();
-        Note secondNote = createNote();
+        Note firstNote = createNormalNote();
+        Note secondNote = createNormalNote();
         //note放入 parent folder
         parentFolder.getNotes().add(firstNote.getId());
         parentFolder.getNotes().add(secondNote.getId());
@@ -192,7 +334,10 @@ public class FolderTest {
                 .andExpect(jsonPath("$.res.children.[0].id").value(firstChildrenFolder.getId()))
                 .andExpect(jsonPath("$.res.children.[1].id").value(secondChildrenFolder.getId()))
                 .andExpect(jsonPath("$.res.notes.[0].id").value(firstNote.getId()))
-                .andExpect(jsonPath("$.res.notes.[1].id").value(secondNote.getId()));
+                .andExpect(jsonPath("$.res.notes.[1].id").value(secondNote.getId()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
     }
 
     @Test
@@ -212,7 +357,10 @@ public class FolderTest {
                 .andExpect(jsonPath("$.res.id").value(folder.getId()))
                 .andExpect(jsonPath("$.res.folderName").value(newName))
                 .andExpect(jsonPath("$.res.path").value(newPath))
-                .andExpect(jsonPath("$.res.parent").value(folder.getParent()));
+                .andExpect(jsonPath("$.res.parent").value(folder.getParent()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
         //檢查
         if (!folderRepository.findById(folder.getId()).get().getFolderName().equals(newName)) {
             throw new Exception("Folder Rename: target folder's name does not change => " + folderRepository.findById(folder.getId()).get().getFolderName());
@@ -248,7 +396,10 @@ public class FolderTest {
                 .andExpect(jsonPath("$.res.id").value(folder.getId()))
                 .andExpect(jsonPath("$.res.folderName").value(newName))
                 .andExpect(jsonPath("$.res.path").value(newPath))
-                .andExpect(jsonPath("$.res.parent").value(folder.getParent()));
+                .andExpect(jsonPath("$.res.parent").value(folder.getParent()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
         //檢查
         //target's name
         if (!folderRepository.findById(folder.getId()).get().getFolderName().equals("Yi")) {
@@ -296,7 +447,10 @@ public class FolderTest {
                 .andExpect(jsonPath("$.res.id").value(folder.getId()))
                 .andExpect(jsonPath("$.res.folderName").value(folder.getFolderName()))
                 .andExpect(jsonPath("$.res.path").value("/Buy/Alan"))
-                .andExpect(jsonPath("$.res.parent").value(appUser.getFolders().get(0)));
+                .andExpect(jsonPath("$.res.parent").value(appUser.getFolders().get(0)))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
         //檢查
         if (folderRepository.findById(parentFolder.getId()).get().getChildren().contains(folder.getId())) {
             throw new Exception("Folder Change Path: parentFolder's children does not remove folder");
@@ -340,7 +494,10 @@ public class FolderTest {
                 .andExpect(jsonPath("$.res.id").value(folder.getId()))
                 .andExpect(jsonPath("$.res.folderName").value(folder.getFolderName()))
                 .andExpect(jsonPath("$.res.path").value("/Alan"))
-                .andExpect(jsonPath("$.res.parent").doesNotExist());
+                .andExpect(jsonPath("$.res.parent").doesNotExist())
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
         //檢查
         if (folderRepository.findById(parentFolder.getId()).get().getChildren().contains(folder.getId())) {
             throw new Exception("Folder Change Path: parentFolder's children does not remove folder");
@@ -460,6 +617,102 @@ public class FolderTest {
         if (folderRepository.findById(appUser.getFolders().get(1)).get().getChildren().contains(folder.getId())) {
             throw new Exception("Delete Folder: favorite folder's children doesn't not remove folder's id");
         }
+
+    }
+
+    @Test
+    public void testGetRootFolderFromUser() throws Exception {
+        AppUser appUser = createUser();//建user
+        userRepository.insert(appUser);
+        mockMvc.perform(get("/folder/root/" + appUser.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.[0].id").value(appUser.getFolders().get(0)))
+                .andExpect(jsonPath("$.res.[0].folderName").value("Buy"))
+                .andExpect(jsonPath("$.res.[0].parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.[0].path").value("/Buy"))
+                .andExpect(jsonPath("$.res.[0].public").value(false))
+                .andExpect(jsonPath("$.res.[0].creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.[0].creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.[0].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[1].id").value(appUser.getFolders().get(1)))
+                .andExpect(jsonPath("$.res.[1].folderName").value("Favorite"))
+                .andExpect(jsonPath("$.res.[1].parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.[1].path").value("/Favorite"))
+                .andExpect(jsonPath("$.res.[1].public").value(false))
+                .andExpect(jsonPath("$.res.[1].creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.[1].creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.[1].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[2].id").value(appUser.getFolders().get(2)))
+                .andExpect(jsonPath("$.res.[2].folderName").value("Folder"))
+                .andExpect(jsonPath("$.res.[2].parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.[2].path").value("/Folder"))
+                .andExpect(jsonPath("$.res.[2].public").value(false))
+                .andExpect(jsonPath("$.res.[3].creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.[3].creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.[3].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[3].id").value(appUser.getFolders().get(3)))
+                .andExpect(jsonPath("$.res.[3].folderName").value("Temp Reward Note"))
+                .andExpect(jsonPath("$.res.[3].parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.[3].path").value("/Temp Reward Note"))
+                .andExpect(jsonPath("$.res.[3].public").value(false))
+                .andExpect(jsonPath("$.res.[3].creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.[3].creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.[3].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
+
+    }
+
+    @Test
+    public void testGetFavoriteFolderFromUser() throws Exception {
+        AppUser appUser = createUser();//建user
+        userRepository.insert(appUser);
+        mockMvc.perform(get("/folder/favorite/" + appUser.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(appUser.getFolders().get(1)))
+                .andExpect(jsonPath("$.res.folderName").value("Favorite"))
+                .andExpect(jsonPath("$.res.parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.path").value("/Favorite"))
+                .andExpect(jsonPath("$.res.public").value(false))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
+
+    }
+
+    @Test
+    public void testGetBuyFolderFromUser() throws Exception {
+        AppUser appUser = createUser();//建user
+        userRepository.insert(appUser);
+        mockMvc.perform(get("/folder/buy/" + appUser.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(appUser.getFolders().get(0)))
+                .andExpect(jsonPath("$.res.folderName").value("Buy"))
+                .andExpect(jsonPath("$.res.parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.path").value("/Buy"))
+                .andExpect(jsonPath("$.res.public").value(false))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
+
+    }
+
+    @Test
+    public void testGeTempRewardNoteFolderFromUser() throws Exception {
+        AppUser appUser = createUser();//建user
+        userRepository.insert(appUser);
+        mockMvc.perform(get("/folder/tempRewardNote/" + appUser.getEmail())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.id").value(appUser.getFolders().get(3)))
+                .andExpect(jsonPath("$.res.folderName").value("Temp Reward Note"))
+                .andExpect(jsonPath("$.res.parent").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.path").value("/Temp Reward Note"))
+                .andExpect(jsonPath("$.res.public").value(false))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));
 
     }
 

@@ -2,6 +2,8 @@ package ntou.notesharedevbackend.commentModule.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.commentModule.entity.CommentRequest;
+import ntou.notesharedevbackend.commentModule.entity.CommentReturn;
 import ntou.notesharedevbackend.commentModule.service.CommentService;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import org.apache.coyote.Response;
@@ -32,7 +34,12 @@ public class CommentController {
             res.put("msg","comment is empty.");
             return ResponseEntity.status(404).body(res);
         }else {
-            res.put("res",commentArrayList);
+            ArrayList<CommentReturn> commentReturnArrayList = new ArrayList<>();
+            for(Comment comment : commentArrayList){
+                CommentReturn commentReturn = commentService.getUserInfo(comment);
+                commentReturnArrayList.add(commentReturn);
+            }
+            res.put("res",commentReturnArrayList);
             return ResponseEntity.ok().body(res);
         }
     }
@@ -42,26 +49,29 @@ public class CommentController {
     public ResponseEntity<Object> getCommentByFloor(@PathVariable("ID") String id ,@PathVariable("floor") int floor){
         Comment comment = commentService.getCommentByFloor(id,floor);
         Map<String,Object> res = new HashMap<>();
-        res.put("res",comment);
+        CommentReturn commentReturn = commentService.getUserInfo(comment);
+        res.put("res",commentReturn);
         return ResponseEntity.ok().body(res);
     }
 
     @PostMapping("/{ID}")
     @Operation(summary = "create comment in the note or post", description = "ID填筆記或是貼文的都可以，body傳入一個author,email," +
             "content,picURL")
-    public ResponseEntity<Object> createComment(@PathVariable("ID") String id, @RequestBody Comment request){
+    public ResponseEntity<Object> createComment(@PathVariable("ID") String id, @RequestBody CommentRequest request){
         Comment comment = commentService.createComment(id, request);
         Map<String,Object> res = new HashMap<>();
-        res.put("res",comment);
+        CommentReturn commentReturn = commentService.getUserInfo(comment);
+        res.put("res",commentReturn);
         return ResponseEntity.ok().body(res);
     }
 
     @PutMapping("{ID}/{floor}")
     @Operation(summary = "update comment by floor in the note or post", description = "ID為筆記或是貼文的，在傳入幾樓想要修改")
-    public ResponseEntity<Object> updateComment(@PathVariable("ID") String id, @PathVariable("floor") Integer floor, @RequestBody Comment request){
+    public ResponseEntity<Object> updateComment(@PathVariable("ID") String id, @PathVariable("floor") Integer floor, @RequestBody CommentRequest request){
         Comment comment = commentService.updateComment(id, floor, request);
         Map<String,Object> res = new HashMap<>();
-        res.put("res",comment);
+        CommentReturn commentReturn = commentService.getUserInfo(comment);
+        res.put("res",commentReturn);
         return ResponseEntity.ok().body(res);
     }
 

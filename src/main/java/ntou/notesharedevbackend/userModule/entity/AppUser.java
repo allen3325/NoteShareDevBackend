@@ -51,11 +51,12 @@ public class AppUser {
 //    private ArrayList<Folder> folders;
     private ArrayList<String> folders; // folder's ID
     private ArrayList<String> subscribe;
-    private ArrayList<String> bell;
+    private ArrayList<String> bell; // 開啟誰的小鈴鐺
+    private ArrayList<String> belledBy; // 誰開啟我的小鈴鐺
     private ArrayList<String> fans;
     private Integer coin;
     private String headshotPhoto;
-    private ArrayList<Message> notification;
+    private ArrayList<MessageReturn> notification;
     private Integer unreadMessageCount;
 
     // constructor
@@ -167,6 +168,14 @@ public class AppUser {
         this.bell = bell;
     }
 
+    public ArrayList<String> getBelledBy() {
+        return belledBy;
+    }
+
+    public void setBelledBy(ArrayList<String> belledBy) {
+        this.belledBy = belledBy;
+    }
+
     public ArrayList<String> getFans() {
         return fans;
     }
@@ -183,11 +192,11 @@ public class AppUser {
         this.coin = coin;
     }
 
-    public ArrayList<Message> getNotification() {
+    public ArrayList<MessageReturn> getNotification() {
         return notification;
     }
 
-    public void setNotification(ArrayList<Message> notification) {
+    public void setNotification(ArrayList<MessageReturn> notification) {
         this.notification = notification;
     }
 

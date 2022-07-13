@@ -2,19 +2,20 @@ package ntou.notesharedevbackend.postModule.service;
 
 import ntou.notesharedevbackend.coinModule.entity.Coin;
 import ntou.notesharedevbackend.coinModule.service.CoinService;
-import ntou.notesharedevbackend.commentModule.entity.Comment;
+import ntou.notesharedevbackend.commentModule.entity.*;
+import ntou.notesharedevbackend.commentModule.service.*;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
+import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
-import ntou.notesharedevbackend.postModule.entity.Apply;
-import ntou.notesharedevbackend.postModule.entity.Post;
+import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.exception.NotFoundException;
-import ntou.notesharedevbackend.postModule.entity.PostRequest;
-import ntou.notesharedevbackend.postModule.entity.VoteRequest;
 import ntou.notesharedevbackend.repository.PostRepository;
+import ntou.notesharedevbackend.schedulerModule.entity.KickVoteRequest;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
+import ntou.notesharedevbackend.schedulerModule.entity.VoteReturn;
 import ntou.notesharedevbackend.schedulerModule.service.SchedulingService;
-import ntou.notesharedevbackend.userModule.entity.AppUser;
+import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -38,6 +39,9 @@ public class PostService {
     @Autowired
     @Lazy(value = true)
     private CoinService coinService;
+    @Autowired
+    @Lazy(value = true)
+    private CommentService commentService;
 
     public Post[] getAllTypeOfPost(String postType) {
         List<Post> postList = postRepository.findAllByType(postType);
@@ -75,6 +79,8 @@ public class PostService {
         post.setCollabApply(new ArrayList<Apply>());
         post.setPublishDate(request.getPublishDate());
         post.setVote(new ArrayList<Vote>());
+        post.setArchive(false);
+        post.setApplyEmail(new ArrayList<String>());
         if (request.getType().equals("collaboration")) {//若為共筆貼文，須建立共筆筆記
             post.setCollabNoteAuthorNumber(post.getEmail().size());
             Note note = new Note();
@@ -128,7 +134,8 @@ public class PostService {
         post.setPublishDate(request.getDate());
         post.setVote(request.getVote());
         post.setCollabNoteAuthorNumber(post.getEmail().size());
-
+        post.setApplyEmail(request.getApplyEmail());
+        post.setArchive(request.getArchive());
         return postRepository.save(post);
     }
 
@@ -138,22 +145,23 @@ public class PostService {
 
     public Post modifyPublishStatus(String id) {
         Post post = getPostById(id);
-        if (post.getPublic()) {
-            if (post.getType().equals("reward")) {
-                if (noteService.rewardNoteHaveAnswer(post.getAnswers())) {
+        if (post.getPublic()) {//想改成非公開
+            if (post.getType().equals("reward")) {//懸賞判斷有無best answer
+                if (post.getAnswers().size() != 0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
                     post.setPublic(!post.getPublic());
                 } else {
                     System.out.println("can't change publish state before you got best answer.");
                     return null;
                 }
-            } else if (post.getType().equals("QA")) {
+            } else if (post.getType().equals("QA")) {//QA判斷有無best answer
                 if (QAhaveBestAnswer(post.getComments())) {
                     post.setPublic(!post.getPublic());
                 } else {
                     System.out.println("can't change publish state before you got best answer.");
                     return null;
                 }
-
+            } else if (post.getType().equals("collaboration")) {//共筆無條件
+                post.setPublic(!post.getPublic());
             }
         } else {
             post.setPublic(!post.getPublic());
@@ -172,15 +180,19 @@ public class PostService {
         return false;
     }
 
-    public void applyCollaboration(String id, Apply applicant) {
+    public Boolean applyCollaboration(String id, Apply applicant) {
         Post post = getPostById(id);
+//        if (post.getApplyEmail().contains(applicant.getWantEnterUsersEmail())) {
+//            return false;
+//        }
+//        post.getApplyEmail().add(applicant.getWantEnterUsersEmail());
         // get all apply
         ArrayList<Apply> allApply = post.getCollabApply();
         allApply.add(applicant);
         // update apply in post
         post.setCollabApply(allApply);
-
         replacePost(post.getId(), post);
+        return true;
 //        postRepository.save(post);
     }
 
@@ -219,52 +231,48 @@ public class PostService {
         replacePost(post.getId(), post);
     }
 
-    public Task schedulerPublishTime(String postID, Task request) {
-        Post post = getPostById(postID);
-        if (post.getType().equals("collaboration")) {//check post is collaboration
-            Task task = new Task();
-            task.setPostID(postID);
-//            task.setType("publish");
-            task.setVoteID(post.getAnswers().get(0));
-            task.setYear(request.getYear());
-            task.setMonth(request.getMonth());
-            task.setDay(request.getDay());
-//            post.setTask(task);
-            replacePost(post.getId(), post);
-//            postRepository.save(post);
-            schedulingService.addSchedule(task);
-            return task;
-        } else {
-            return null;
-        }
-    }
-
-    public Task replacePublishTime(String postID, Task request) {
-        Post post = getPostById(postID);
-//        post.setTask(null);
-        replacePost(post.getId(), post);
-//        postRepository.save(post);
-        return schedulerPublishTime(postID, request);
-    }
-
-    public Vote addVote(String postID, Vote request) {
-        Vote vote = new Vote();
-//        vote.setType(request.getType());
-//        if(vote.getType().equals("kick")){
-//            vote.setKickTarget(request.getKickTarget());
+//    public Task schedulerPublishTime(String postID, Task request) {
+//        Post post = getPostById(postID);
+//        if (post.getType().equals("collaboration")) {//check post is collaboration
+//            Task task = new Task();
+//            task.setPostID(postID);
+////            task.setType("publish");
+//            task.setVoteID(post.getAnswers().get(0));
+//            task.setYear(request.getYear());
+//            task.setMonth(request.getMonth());
+//            task.setDay(request.getDay());
+////            post.setTask(task);
+//            replacePost(post.getId(), post);
+////            postRepository.save(post);
+//            schedulingService.addSchedule(task);
+//            return task;
+//        } else {
+//            return null;
 //        }
+//    }
+
+//    public Task replacePublishTime(String postID, Task request) {
+//        Post post = getPostById(postID);
+////        post.setTask(null);
+//        replacePost(post.getId(), post);
+////        postRepository.save(post);
+//        return schedulerPublishTime(postID, request);
+//    }
+
+    public Vote addVote(String postID, KickVoteRequest request) {
+        Vote vote = new Vote();
+        vote.setKickTarget(request.getKickTargetEmail());
         //set Task
         Task task = new Task();
-//        task.setType("vote");
         task.setVoteID(vote.getId());
-        task.setYear(request.getTask().getYear());
-        task.setMonth(request.getTask().getMonth());
-        task.setDay(request.getTask().getDay());
+        task.setYear(request.getYear());
+        task.setMonth(request.getMonth());
+        task.setDay(request.getDay());
         task.setPostID(postID);
         vote.setTask(task);
         schedulingService.addSchedule(vote.getTask());
         Post post = getPostById(postID);
-        ArrayList<Vote> voteArrayList = new ArrayList<Vote>();
+        ArrayList<Vote> voteArrayList = post.getVote();
         voteArrayList.add(vote);
         post.setVote(voteArrayList);
         replacePost(post.getId(), post);
@@ -272,33 +280,38 @@ public class PostService {
         return vote;
     }
 
-    public Vote replaceVote(String postID, String voteID, Vote request) {
+    public Vote replaceVote(String postID, String voteID, KickVoteRequest request) {
         Post post = getPostById(postID);
         ArrayList<Vote> voteArrayList = post.getVote();
         Vote newVote = new Vote();
         for (Vote v : voteArrayList) {
-            if (v.getId().equals(voteID)) {//find old vote
-                schedulingService.cancelSchedule(v.getTask().getId());//cancel old task
-                newVote.setId(v.getId());
+            //find old vote
+            if (v.getId().equals(voteID)) {
+                //取消原本的排程
+                schedulingService.cancelSchedule(v.getTask().getId());
+//                newVote.setId(v.getId());
 //                newVote.setType(request.getType());
-                Task newTask = new Task();//set new task
+                //set new task 設定新的排程
+                Task newTask = new Task();
                 newTask.setPostID(postID);
                 newTask.setVoteID(voteID);
-//                newTask.setType("vote");
-                newTask.setYear(request.getTask().getYear());
-                newTask.setMonth(request.getTask().getMonth());
-                newTask.setDay(request.getTask().getDay());
-                newVote.setTask(newTask);//set vote's task
-                schedulingService.addSchedule(newVote.getTask());
-                newVote.setAgree(request.getAgree());
-                newVote.setDisagree(request.getDisagree());
-                newVote.setKickTarget(request.getKickTarget());
-                newVote.setResult(request.getResult());
-                voteArrayList.set(voteArrayList.indexOf(v), newVote);//更新vote
+                newTask.setYear(request.getYear());
+                newTask.setMonth(request.getMonth());
+                newTask.setDay(request.getDay());
+                v.setTask(newTask);
+//                newVote.setTask(newTask);//set vote's task
+                schedulingService.addSchedule(v.getTask());
+//                schedulingService.addSchedule(newVote.getTask());
+//                newVote.setAgree(request.getAgree());
+//                newVote.setDisagree(request.getDisagree());
+//                newVote.setKickTarget(request.getKickTarget());
+//                newVote.setResult(request.getResult());
+//                voteArrayList.set(voteArrayList.indexOf(v), newVote);//更新vote
+                newVote = v;
                 break;
             }
         }
-        post.setVote(voteArrayList);
+//        post.setVote(voteArrayList);
         replacePost(post.getId(), post);
 //        postRepository.save(post);
         return newVote;
@@ -358,17 +371,15 @@ public class PostService {
         return false;
     }
 
-    public boolean rewardChooseBestAnswer(String postID, String answerID, String email) {
+    public boolean rewardChooseBestAnswer(String postID, String answerID) {
         Post post = getPostById(postID);
+        AppUser appUser = appUserService.getUserByEmail(post.getAuthor());
         String bestPrice = String.valueOf(post.getBestPrice());
-        if (post.getEmail().contains(email)) {//確認為貼文作者
-            Coin postAuthorCoin = new Coin();
-            postAuthorCoin.setCoin('-' + bestPrice);
-            coinService.changeCoin(email, postAuthorCoin);
-            noteService.rewardNoteBestAnswer(answerID, email, bestPrice);
-            return true;
-        }
-        return false;
+        Coin postAuthorCoin = new Coin();
+        postAuthorCoin.setCoin('-' + bestPrice);
+        coinService.changeCoin(appUser.getEmail(), postAuthorCoin);
+        noteService.rewardNoteBestAnswer(answerID, appUser.getEmail(), bestPrice);
+        return true;
     }
 
     public boolean QAChooseBestAnswer(String postID, String commentID) {
@@ -400,25 +411,24 @@ public class PostService {
         return true;
     }
 
-    public boolean rewardChooseReferenceAnswer(String postID, String answerID, String email) {
+    public boolean rewardChooseReferenceAnswer(String postID, String answerID) {
         Post post = getPostById(postID);
+        AppUser appUser = appUserService.getUserByEmail(post.getAuthor());
         String referencePrice = String.valueOf(post.getReferencePrice());
-        if (post.getEmail().contains(email)) {//確認為貼文作者
-            if (post.getReferenceNumber() > 0) {
-                post.setReferenceNumber(post.getReferenceNumber() - 1);
-                replacePost(postID, post);
-                Coin postAuthorCoin = new Coin();
-                postAuthorCoin.setCoin('-' + referencePrice);
-                coinService.changeCoin(email, postAuthorCoin);//作者扣點
-                noteService.rewardNoteReferenceAnswer(answerID, email, referencePrice);
-                return true;
-            } else return false;
+        if (post.getReferenceNumber() > 0) {
+            post.setReferenceNumber(post.getReferenceNumber() - 1);
+            replacePost(postID, post);
+            Coin postAuthorCoin = new Coin();
+            postAuthorCoin.setCoin('-' + referencePrice);
+            coinService.changeCoin(appUser.getEmail(), postAuthorCoin);//作者扣點
+            noteService.rewardNoteReferenceAnswer(answerID, appUser.getEmail(), referencePrice);
+            return true;
         }
         return false;
     }
 
     public ArrayList<Post> getUserAllPostByType(String email, String postType) {
-        List<Post> allPost = postRepository.findAllByAuthorAndType(email, postType);
+        List<Post> allPost = postRepository.findAllByEmailContainingAndType(email, postType);
         return new ArrayList<Post>(allPost);
     }
 
@@ -435,15 +445,133 @@ public class PostService {
         Post post = getPostById(postID);
         ArrayList<Apply> allApply = post.getCollabApply();
         // find deny in all apply
-        for(Apply applicant : allApply){
-            if(applicant.getWantEnterUsersEmail().equals(denyEmail)){
+        for (Apply applicant : allApply) {
+            if (applicant.getWantEnterUsersEmail().equals(denyEmail)) {
                 // find deny
                 allApply.remove(applicant);
                 break;
             }
         }
         post.setCollabApply(allApply);
-        replacePost(postID,post);
+        replacePost(postID, post);
+    }
+
+    public void deleteVote(String postID, String voteID) {
+        Post post = getPostById(postID);
+        ArrayList<Vote> voteArrayList = post.getVote();
+        for (Vote vote : voteArrayList) {
+            if (vote.getId().equals(voteID)) {
+                voteArrayList.remove(vote);
+                break;
+            }
+        }
+        post.setVote(voteArrayList);
+        replacePost(postID, post);
+    }
+
+    public PostReturn getUserInfo(Post post) {
+        PostReturn postReturn = new PostReturn();
+        postReturn.setId(post.getId());
+        postReturn.setType(post.getType());
+        postReturn.setDepartment(post.getDepartment());
+        postReturn.setSubject(post.getSubject());
+        postReturn.setSchool(post.getSchool());
+        postReturn.setProfessor(post.getProfessor());
+        postReturn.setTitle(post.getTitle());
+        postReturn.setContent(post.getContent());
+        postReturn.setDate(post.getDate());
+        postReturn.setBestPrice(post.getBestPrice());
+        postReturn.setReferencePrice(post.getReferencePrice());
+        postReturn.setReferenceNumber(post.getReferenceNumber());
+        postReturn.setPublic(post.getPublic());
+        postReturn.setComments(post.getComments());
+        ArrayList<CommentReturn> commentReturnArrayList = new ArrayList<>();
+        for (Comment comment : post.getComments()) {
+            CommentReturn commentReturn = commentService.getUserInfo(comment);
+            commentReturnArrayList.add(commentReturn);
+        }
+        postReturn.setCommentsUserObj(commentReturnArrayList);
+
+        postReturn.setCommentCount(post.getCommentCount());
+        postReturn.setAnswers(post.getAnswers());
+        postReturn.setPublishDate(post.getPublishDate());
+        postReturn.setVote(post.getVote());
+        ArrayList<VoteReturn> voteReturnArrayList = new ArrayList<>();
+        for (Vote vote : post.getVote()) {
+            voteReturnArrayList.add(schedulingService.getUserInfo(vote));
+        }
+        postReturn.setVoteUserObj(voteReturnArrayList);
+        postReturn.setCollabNoteAuthorNumber(post.getCollabNoteAuthorNumber());
+        ArrayList<ApplyReturn> collabApplyArrayList = new ArrayList<>();
+        if (post.getCollabApply() != null) {
+            for (Apply apply : post.getCollabApply()) {
+                ApplyReturn applyReturn = new ApplyReturn();
+                applyReturn.setUserObj(appUserService.getUserInfo(apply.getWantEnterUsersEmail()));
+                applyReturn.setCommentFromApplicant(apply.getCommentFromApplicant());
+                collabApplyArrayList.add(applyReturn);
+            }
+            postReturn.setCollabApply(post.getCollabApply());
+        }
+        postReturn.setCollabApplyUserObj(collabApplyArrayList);
+        UserObj userObj = appUserService.getUserInfo(post.getAuthor());
+        postReturn.setAuthorUserObj(userObj);
+        postReturn.setAuthorName(post.getAuthorName());
+        postReturn.setAuthor(post.getAuthor());
+        ArrayList<UserObj> emailUserObj = new ArrayList<>();
+        for (String email : post.getEmail()) {
+            UserObj userInfo = appUserService.getUserInfo(email);
+            emailUserObj.add(userInfo);
+        }
+        postReturn.setEmailUserObj(emailUserObj);
+        postReturn.setEmail(post.getEmail());
+        postReturn.setArchive(post.getArchive());
+//        ArrayList<UserObj> applyUserObj = new ArrayList<>();
+//        for (String applyEmail : post.getApplyEmail()) {
+//            UserObj userObjInfo = appUserService.getUserInfo(applyEmail);
+//            applyUserObj.add(userObjInfo);
+//        }
+//        postReturn.setApplyUserObj(applyUserObj);
+//        postReturn.setApplyEmail(post.getApplyEmail());
+        return postReturn;
+    }
+
+    public NoteReturn createRewardNote(String postID, String email, Note request) {
+        Note note = noteService.createRewardNote(postID, email, request);
+        return noteService.getUserinfo(note);
+    }
+
+    public Boolean archivePost(String postID) {
+        Post post = getPostById(postID);
+        if (!post.getArchive()) {//想封存
+            if (post.getType().equals("reward")) {//懸賞判斷有無best answer
+                if (post.getAnswers().size() != 0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
+                    post.setArchive(!post.getArchive());
+                    replacePost(postID, post);
+                    return true;
+                } else {
+                    System.out.println("can't change publish state before you got best answer.");
+                    return false;
+                }
+            } else if (post.getType().equals("QA")) {//QA判斷有無best answer
+                if (QAhaveBestAnswer(post.getComments())) {
+                    post.setArchive(!post.getArchive());
+                    replacePost(postID, post);
+                    return true;
+                } else {
+                    System.out.println("can't change publish state before you got best answer.");
+                    return false;
+                }
+            } else if (post.getType().equals("collaboration")) {//共筆無條件
+                post.setArchive(!post.getArchive());
+                replacePost(postID, post);
+                return true;
+            }
+        } else {//想解除封存
+            post.setArchive(!post.getArchive());
+            replacePost(postID, post);
+            return true;
+        }
+        return true;
     }
 
 }

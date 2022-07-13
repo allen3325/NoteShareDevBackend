@@ -1,18 +1,26 @@
 package ntou.notesharedevbackend.notificationModule.entity;
 
-import lombok.*;
 import ntou.notesharedevbackend.userModule.entity.*;
 
-@ToString
-public class Message {
+import java.util.*;
+
+public class MessageReturn {
     private String message;
     private String type;
     private UserObj userObj;
     private String id;
-    private String receiverEmail;
+    private Date date;
 
-    public Message() {
+    public MessageReturn() {
 
+    }
+
+    public MessageReturn(Message message) {
+        setMessage(message.getMessage());
+        setType(message.getType());
+        setUserObj(message.getUserObj());
+        setId(message.getId());
+        setDate(new Date());
     }
 
     public String getMessage() {
@@ -47,11 +55,11 @@ public class Message {
         this.id = id;
     }
 
-    public String getReceiverEmail() {
-        return receiverEmail;
+    public Date getDate() {
+        return date;
     }
 
-    public void setReceiverEmail(String receiverEmail) {
-        this.receiverEmail = receiverEmail;
+    public void setDate(Date date) {
+        this.date = date;
     }
 }
