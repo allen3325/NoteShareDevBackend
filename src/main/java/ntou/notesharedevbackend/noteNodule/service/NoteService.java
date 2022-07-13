@@ -10,6 +10,8 @@ import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.notificationModule.entity.MessageReturn;
+import ntou.notesharedevbackend.notificationModule.service.NotificationService;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
@@ -20,6 +22,7 @@ import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -41,7 +44,16 @@ public class NoteService {
     @Autowired
     @Lazy(value = true)
     private CommentService commentService;
+    @Autowired
+    @Lazy
+    private NotificationService notificationService;
 
+    protected final SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    protected NoteService(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
     public Note getNote(String id) {
         return noteRepository.findById(id)
@@ -175,6 +187,16 @@ public class NoteService {
         Post post = postService.getPostById(note.getPostID());
         post.getAnswers().add(noteID);
         postService.replacePost(post.getId(), post);
+        //通知懸賞人有人投稿筆記
+        UserObj userObj = appUserService.getUserInfo(note.getHeaderEmail());
+        MessageReturn messageReturn = new MessageReturn();
+        messageReturn.setDate(new Date());
+        messageReturn.setUserObj(userObj);
+        messageReturn.setMessage(userObj.getUserObjName() + " 對你投稿了懸賞筆記");
+        messageReturn.setType("reward");
+        messageReturn.setId(post.getId());
+        messagingTemplate.convertAndSendToUser(post.getAuthor(), "/topic/private-messages", messageReturn);
+        notificationService.saveNotificationPrivate(post.getAuthor(), messageReturn);
         return newNote;
     }
 

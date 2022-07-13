@@ -96,6 +96,8 @@ public class SearchTest {
         appUser.setFolders(folderList);
         appUser.setCoin(300);
         appUser.setHeadshotPhoto("headshotPhoto");
+        appUser.setNotification(new ArrayList<>());
+        appUser.setUnreadMessageCount(0);
         return appUser;
     }
 

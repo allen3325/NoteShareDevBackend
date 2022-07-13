@@ -112,6 +112,8 @@ public class FolderTest {
         folderList.add(folderFolder.getId());
         folderList.add(tempRewardFolder.getId());
         appUser.setFolders(folderList);
+        appUser.setNotification(new ArrayList<>());
+        appUser.setUnreadMessageCount(0);
         return appUser;
     }
 
