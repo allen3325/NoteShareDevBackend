@@ -45,10 +45,10 @@ public class PostService {
     @Lazy(value = true)
     private CommentService commentService;
 
-    private final SimpMessagingTemplate messagingTemplate;
+    public final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    private PostService(SimpMessagingTemplate messagingTemplate) { this.messagingTemplate = messagingTemplate; }
+    public PostService(SimpMessagingTemplate messagingTemplate) { this.messagingTemplate = messagingTemplate; }
 
     public Post[] getAllTypeOfPost(String postType) {
         List<Post> postList = postRepository.findAllByType(postType);
