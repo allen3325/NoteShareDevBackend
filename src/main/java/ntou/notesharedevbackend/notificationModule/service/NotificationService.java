@@ -88,4 +88,30 @@ public class NotificationService {
         messageReturn.setDate(new Date());
         return messageReturn;
     }
+
+    public MessageReturn getMessageReturnFromVotes(String result, String postID, boolean isKickTarget, String kickTarget) {
+        MessageReturn messageReturn = new MessageReturn();
+        UserObj kickTargetObj = appUserService.getUserInfo(kickTarget);
+        UserObj userObj = new UserObj();
+        userObj.setUserObjEmail("noteshare@gmail.com");
+        userObj.setUserObjName("NoteShare System");
+        userObj.setUserObjAvatar("system");
+        messageReturn.setUserObj(userObj);
+        messageReturn.setType("collaboration");
+        messageReturn.setId(postID);
+        messageReturn.setDate(new Date());
+        if (result.equals("agree kick")) {
+            if (isKickTarget)   //被踢出本人收到的訊息
+                messageReturn.setMessage("你已被踢出共筆群組");
+            else    //群組其他人收到的訊息
+                messageReturn.setMessage(kickTargetObj.getUserObjName() + "已被踢出共筆群組");
+        }
+        else if (result.equals("disagree kick")) {
+            messageReturn.setMessage(kickTargetObj.getUserObjName() + "沒有被踢出共筆群組");
+        }
+        else {
+            messageReturn.setMessage("投票無效");
+        }
+        return messageReturn;
+    }
 }
