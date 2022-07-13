@@ -10,6 +10,8 @@ import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.entity.AppUserReturn;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.messaging.simp.*;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Array;
@@ -22,10 +24,13 @@ public class CoinService {
     private final AppUserService appUserService;
     private final FolderService folderService;
 
-    public CoinService(AppUserService appUserService, NoteService noteService, FolderService folderService) {
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public CoinService(AppUserService appUserService, NoteService noteService, FolderService folderService, SimpMessagingTemplate messagingTemplate) {
         this.appUserService = appUserService;
         this.noteService = noteService;
         this.folderService = folderService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     public AppUser changeCoin(String email, Coin request) {
@@ -63,6 +68,8 @@ public class CoinService {
                 Integer noteAuthorCoin = noteAuthor.getCoin();
                 noteAuthor.setCoin(noteAuthorCoin + price);
                 appUserService.replaceUser(noteAuthor);
+
+
             }
             // check does this user bought the note and update folder and buyer
             Folder buyFolder = folderService.getBuyFolderByUserEmail(email);
