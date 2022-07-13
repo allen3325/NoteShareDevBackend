@@ -71,4 +71,16 @@ public class SearchController {
 
         return ResponseEntity.ok(map);
     }
+
+    @Operation(summary = "Get notes by tags", description = "找相似tag的筆記")
+    @GetMapping("/tag/{offset}/{pageSize}/{tag}")
+    public ResponseEntity<Map<String, Pages>> getNotesByTags(@PathVariable("offset") int offset,
+                                                             @PathVariable("pageSize") int pageSize,
+                                                             @PathVariable("tag") String tag) {
+        Pages notes = searchService.getNotesByTags(offset, pageSize, tag);
+        Map<String, Pages> map = new HashMap<>();
+        map.put("search", notes);
+
+        return ResponseEntity.ok(map);
+    }
 }

@@ -188,13 +188,14 @@ public class NoteService {
         post.getAnswers().add(noteID);
         postService.replacePost(post.getId(), post);
         //通知懸賞人有人投稿筆記
-        UserObj userObj = appUserService.getUserInfo(note.getHeaderEmail());
-        MessageReturn messageReturn = new MessageReturn();
-        messageReturn.setDate(new Date());
-        messageReturn.setUserObj(userObj);
-        messageReturn.setMessage(userObj.getUserObjName() + " 對你投稿了懸賞筆記");
-        messageReturn.setType("reward");
-        messageReturn.setId(post.getId());
+//        UserObj userObj = appUserService.getUserInfo(note.getHeaderEmail());
+//        MessageReturn messageReturn = new MessageReturn();
+//        messageReturn.setDate(new Date());
+//        messageReturn.setUserObj(userObj);
+//        messageReturn.setMessage(userObj.getUserObjName() + "對你投稿了懸賞筆記");
+//        messageReturn.setType("reward");
+//        messageReturn.setId(post.getId());
+        MessageReturn messageReturn = notificationService.getMessageReturn(note.getHeaderEmail(), "對你投稿了懸賞筆記", "reward", post.getId());
         messagingTemplate.convertAndSendToUser(post.getAuthor(), "/topic/private-messages", messageReturn);
         notificationService.saveNotificationPrivate(post.getAuthor(), messageReturn);
         return newNote;

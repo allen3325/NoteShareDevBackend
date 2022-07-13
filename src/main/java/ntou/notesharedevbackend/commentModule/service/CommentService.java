@@ -115,12 +115,13 @@ public class CommentService {
             note.setComments(commentArrayList);
             noteService.replaceNote(note, note.getId());
             //通知筆記作者
-            MessageReturn messageReturn = new MessageReturn();
-            messageReturn.setDate(new Date());
-            messageReturn.setMessage(comment.getAuthor() + "在你的筆記內留言");
-            messageReturn.setId(note.getId());
-            messageReturn.setType("note");
-            messageReturn.setUserObj(userObj);
+            MessageReturn messageReturn = notificationService.getMessageReturn(comment.getAuthor(), "在你的筆記內留言", "note", note.getId());
+//            messageReturn.setDate(new Date());
+//            messageReturn.setMessage(comment.getAuthor() + "在你的筆記內留言");
+//            messageReturn.setId(note.getId());
+//            messageReturn.setType("note");
+//            messageReturn.setUserObj(userObj);
+
             if (note.getType().equals("collaboration")) {//共筆要寄給所有作者
                 messagingTemplate.convertAndSend("/topic/group-messages/" + note.getId(), messageReturn);
                 notificationService.saveNotificationGroup(note.getId(), messageReturn);
