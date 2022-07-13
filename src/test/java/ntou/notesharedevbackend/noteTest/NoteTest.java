@@ -89,6 +89,8 @@ public class NoteTest {
         folderList.add(tempRewardNoteFolder.getId());
         appUser.setFolders(folderList);
         appUser.setCoin(300);
+        appUser.setNotification(new ArrayList<>());
+        appUser.setUnreadMessageCount(0);
         return appUser;
     }
 

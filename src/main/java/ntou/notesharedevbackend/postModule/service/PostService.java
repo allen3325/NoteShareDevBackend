@@ -7,6 +7,7 @@ import ntou.notesharedevbackend.commentModule.service.*;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
+import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.PostRepository;
@@ -19,6 +20,7 @@ import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.simp.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -42,6 +44,11 @@ public class PostService {
     @Autowired
     @Lazy(value = true)
     private CommentService commentService;
+
+//    protected final SimpMessagingTemplate messagingTemplate;
+//
+//    @Autowired
+//    protected PostService(SimpMessagingTemplate messagingTemplate) { this.messagingTemplate = messagingTemplate; }
 
     public Post[] getAllTypeOfPost(String postType) {
         List<Post> postList = postRepository.findAllByType(postType);
@@ -567,14 +574,14 @@ public class PostService {
                     notePostReturn.setDate(note.getPublishDate());
                     UserObj userObj1 = appUserService.getUserInfo(note.getHeaderEmail());
                     notePostReturn.setUserObj(userObj1);
-                    if(note.getReference()!=null && note.getReference()){
+                    if (note.getReference() != null && note.getReference()) {
                         notePostReturn.setReference(true);
-                    } else{
+                    } else {
                         notePostReturn.setReference(false);
                     }
-                    if(note.getBest()!=null && note.getBest()){
+                    if (note.getBest() != null && note.getBest()) {
                         notePostReturn.setBest(true);
-                    } else{
+                    } else {
                         notePostReturn.setBest(false);
                     }
                     answersUserObj.add(notePostReturn);
@@ -595,6 +602,7 @@ public class PostService {
 
     public NoteReturn createRewardNote(String postID, String email, Note request) {
         Note note = noteService.createRewardNote(postID, email, request);
+
         return noteService.getUserinfo(note);
     }
 
