@@ -109,6 +109,8 @@ public class PostTest {
         folderList.add(OSFolder.getId());
         appUser.setFolders(folderList);
         appUser.setCoin(300);
+        appUser.setNotification(new ArrayList<>());
+        appUser.setUnreadMessageCount(0);
         return appUser;
     }
 

@@ -45,10 +45,10 @@ public class PostService {
     @Lazy(value = true)
     private CommentService commentService;
 
-    public final SimpMessagingTemplate messagingTemplate;
-
-    @Autowired
-    public PostService(SimpMessagingTemplate messagingTemplate) { this.messagingTemplate = messagingTemplate; }
+//    protected final SimpMessagingTemplate messagingTemplate;
+//
+//    @Autowired
+//    protected PostService(SimpMessagingTemplate messagingTemplate) { this.messagingTemplate = messagingTemplate; }
 
     public Post[] getAllTypeOfPost(String postType) {
         List<Post> postList = postRepository.findAllByType(postType);
@@ -574,14 +574,14 @@ public class PostService {
                     notePostReturn.setDate(note.getPublishDate());
                     UserObj userObj1 = appUserService.getUserInfo(note.getHeaderEmail());
                     notePostReturn.setUserObj(userObj1);
-                    if(note.getReference()!=null && note.getReference()){
+                    if (note.getReference() != null && note.getReference()) {
                         notePostReturn.setReference(true);
-                    } else{
+                    } else {
                         notePostReturn.setReference(false);
                     }
-                    if(note.getBest()!=null && note.getBest()){
+                    if (note.getBest() != null && note.getBest()) {
                         notePostReturn.setBest(true);
-                    } else{
+                    } else {
                         notePostReturn.setBest(false);
                     }
                     answersUserObj.add(notePostReturn);
@@ -602,16 +602,6 @@ public class PostService {
 
     public NoteReturn createRewardNote(String postID, String email, Note request) {
         Note note = noteService.createRewardNote(postID, email, request);
-
-        UserObj userObj = appUserService.getUserInfo(email);
-        MessageReturn messageReturn = new MessageReturn();
-        messageReturn.setDate(new Date());
-        messageReturn.setUserObj(userObj);
-        messageReturn.setMessage(userObj.getUserObjName() + " 對你投稿了懸賞筆記");
-        messageReturn.setType("reward");
-        messageReturn.setId(postID);
-        Post post = getPostById(postID);
-        messagingTemplate.convertAndSendToUser(post.getAuthor(), "/topic/private-messages", messageReturn);
 
         return noteService.getUserinfo(note);
     }

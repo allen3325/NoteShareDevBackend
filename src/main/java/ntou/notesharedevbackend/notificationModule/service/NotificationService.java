@@ -78,10 +78,10 @@ public class NotificationService {
         userRepository.save(appUser);
     }
 
-    public MessageReturn getMessageReturn(String sender, String message, String type, String id) {
+    public MessageReturn getMessageReturn(String senderEmail, String message, String type, String id) {
         MessageReturn messageReturn = new MessageReturn();
-        UserObj userObj = appUserService.getUserInfo(sender);
-        messageReturn.setMessage(sender + message);
+        UserObj userObj = appUserService.getUserInfo(senderEmail);
+        messageReturn.setMessage(userObj.getUserObjName() + message);
         messageReturn.setUserObj(userObj);
         messageReturn.setType(type);
         messageReturn.setId(id);

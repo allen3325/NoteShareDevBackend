@@ -7,6 +7,8 @@ import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
+import ntou.notesharedevbackend.notificationModule.entity.*;
+import ntou.notesharedevbackend.notificationModule.service.*;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.entity.AppUserReturn;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
@@ -23,13 +25,14 @@ public class CoinService {
     private final NoteService noteService;
     private final AppUserService appUserService;
     private final FolderService folderService;
-
+    private final NotificationService notificationService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public CoinService(AppUserService appUserService, NoteService noteService, FolderService folderService, SimpMessagingTemplate messagingTemplate) {
+    public CoinService(AppUserService appUserService, NoteService noteService, FolderService folderService, NotificationService notificationService, SimpMessagingTemplate messagingTemplate) {
         this.appUserService = appUserService;
         this.noteService = noteService;
         this.folderService = folderService;
+        this.notificationService = notificationService;
         this.messagingTemplate = messagingTemplate;
     }
 
@@ -69,7 +72,10 @@ public class CoinService {
                 noteAuthor.setCoin(noteAuthorCoin + price);
                 appUserService.replaceUser(noteAuthor);
 
-
+                //通知作者有人購買筆記
+                MessageReturn messageReturn = notificationService.getMessageReturn(email, "向你購買了筆記", "note", noteID);
+                messagingTemplate.convertAndSendToUser(authorEmail, "/topic/private-messages", messageReturn);
+                notificationService.saveNotificationPrivate(authorEmail, messageReturn);
             }
             // check does this user bought the note and update folder and buyer
             Folder buyFolder = folderService.getBuyFolderByUserEmail(email);

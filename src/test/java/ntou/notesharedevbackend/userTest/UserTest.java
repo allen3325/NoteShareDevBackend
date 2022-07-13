@@ -80,6 +80,7 @@ public class UserTest {
         appUser.setSubscribe(new ArrayList<>());
         appUser.setFans(new ArrayList<>());
         appUser.setNotification(new ArrayList<>());
+        appUser.setUnreadMessageCount(0);
         appUser.setBelledBy(new ArrayList<>());
         return userRepository.insert(appUser);
     }

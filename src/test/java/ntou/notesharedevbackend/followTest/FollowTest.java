@@ -107,6 +107,8 @@ public class FollowTest {
         appUser.setFans(new ArrayList<String>());
         appUser.setHeadshotPhoto(null);
         appUser.setBelledBy(new ArrayList<>());
+        appUser.setNotification(new ArrayList<>());
+        appUser.setUnreadMessageCount(0);
         return appUser;
     }
 
