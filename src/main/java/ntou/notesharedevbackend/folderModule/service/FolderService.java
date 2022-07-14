@@ -373,4 +373,14 @@ public class FolderService {
         return null;
     }
 
+    public Folder getFolderFolderByEmail(String email) {
+        AppUser appUser = appUserService.getUserByEmail(email);
+        for (String folderID : appUser.getFolders()) {
+            if (getFolderByID(folderID).getFolderName().equals("Folder")) {
+                return getFolderByID(folderID);
+            }
+        }
+        return null;
+    }
+
 }

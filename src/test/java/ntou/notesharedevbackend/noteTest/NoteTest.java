@@ -89,6 +89,8 @@ public class NoteTest {
         folderList.add(tempRewardNoteFolder.getId());
         appUser.setFolders(folderList);
         appUser.setCoin(300);
+        appUser.setNotification(new ArrayList<>());
+        appUser.setUnreadMessageCount(0);
         return appUser;
     }
 
@@ -1164,22 +1166,22 @@ public class NoteTest {
         }
     }
 
-    @Test
-    public void testDeleteNoteToEmptyFolder() throws Exception {
-        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
-        Folder newFolder = createFolder("New", "/New", null, appUser.getName());
-        appUser.getFolders().add(newFolder.getId());
-        userRepository.save(appUser);
-        Folder oldFolder = folderRepository.findById(appUser.getFolders().get(3)).get();
-        Note note = noteRepository.findById(oldFolder.getNotes().get(0)).get();
-        mockMvc.perform(put("/note/delete/" + note.getId() + "/" + newFolder.getId())
-                        .headers(httpHeaders))
-                .andExpect(status().isNoContent())
-                .andExpect(jsonPath("$.msg").value("This folder hasn't contains the note."));
-        if (!folderRepository.findById(oldFolder.getId()).get().getNotes().contains(note.getId())) {
-            throw new Exception("Note Test : old Folder's note be remove");
-        }
-    }
+//    @Test
+//    public void testDeleteNoteToEmptyFolder() throws Exception {
+//        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+//        Folder newFolder = createFolder("New", "/New", null, appUser.getName());
+//        appUser.getFolders().add(newFolder.getId());
+//        userRepository.save(appUser);
+//        Folder oldFolder = folderRepository.findById(appUser.getFolders().get(3)).get();
+//        Note note = noteRepository.findById(oldFolder.getNotes().get(0)).get();
+//        mockMvc.perform(put("/note/delete/" + note.getId() + "/" + newFolder.getId())
+//                        .headers(httpHeaders))
+//                .andExpect(status().isNoContent())
+//                .andExpect(jsonPath("$.msg").value("This folder hasn't contains the note."));
+//        if (!folderRepository.findById(oldFolder.getId()).get().getNotes().contains(note.getId())) {
+//            throw new Exception("Note Test : old Folder's note be remove");
+//        }
+//    }
 
     @Test
     public void testModifyVersionPublishStatus() throws Exception {
@@ -1250,13 +1252,89 @@ public class NoteTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
-        // check note remove from folder
-        if (folderRepository.findById(tempRewardNote.getId()).get().getNotes().contains(rewardNote.getId())) {
-            throw new Exception("Note Test : reward note does not remove");
-        }
+
         //check post answer add noteID
         if (!postRepository.findById(post.getId()).get().getAnswers().contains(rewardNote.getId())) {
             throw new Exception("Note Test : post answer does not add reward noteID");
+        }
+    }
+
+    @Test
+    public void testWithdrawRewardNote() throws Exception {
+        AppUser appUser = userRepository.findByEmail("user1@gmail.com");
+        Post post = createRewardPost();
+        Note rewardNote = createRewardNote(appUser.getEmail(), appUser.getName());
+        rewardNote.setPostID(post.getId());
+        rewardNote.setSubmit(true);
+        noteRepository.save(rewardNote);
+        post.getAnswers().add(rewardNote.getId());
+        postRepository.save(post);
+        Folder tempRewardNote = folderRepository.findById(appUser.getFolders().get(4)).get();
+        tempRewardNote.getNotes().add(rewardNote.getId());
+        folderRepository.save(tempRewardNote);
+
+        mockMvc.perform(put("/note/withdraw/" + rewardNote.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("Success"));
+
+
+        //check post answer remove noteID
+        if (postRepository.findById(post.getId()).get().getAnswers().contains(rewardNote.getId())) {
+            throw new Exception("Note Test : post answer does not remove reward noteID");
+        }
+    }
+
+    @Test
+    public void testRemoveLastNoteFromFolder() throws Exception {
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        Note wantToDeleteNote = createNormalNote();
+        Folder OSFolder = folderRepository.findById(appUser.getFolders().get(3)).get();
+        OSFolder.getNotes().add(wantToDeleteNote.getId());
+        folderRepository.save(OSFolder);
+
+        mockMvc.perform(put("/note/delete/" + wantToDeleteNote.getId() + "/" + OSFolder.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().is(409))
+                .andExpect(jsonPath("$.res").value("Can't delete last note"));
+    }
+
+    @Test
+    public void testRemoveNoteFromBuyFolder() throws Exception {
+        AppUser appUser = userRepository.findByEmail("user1@gmail.com");
+        Note wantToDeleteNote = createNormalNote();
+        Folder buyFolder = folderRepository.findById(appUser.getFolders().get(0)).get();
+        buyFolder.getNotes().add(wantToDeleteNote.getId());
+        folderRepository.save(buyFolder);
+
+        mockMvc.perform(put("/note/delete/" + wantToDeleteNote.getId() + "/" + buyFolder.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().is(406))
+                .andExpect(jsonPath("$.res").value("Can't delete note which in Buy Folder"));
+    }
+
+    @Test
+    public void testRemoveNoteFromFolder() throws Exception {
+        AppUser appUser = userRepository.findByEmail("user1@gmail.com");
+        Note wantToDeleteNote = createNormalNote();
+        Folder buyFolder = folderRepository.findById(appUser.getFolders().get(0)).get();
+        buyFolder.getNotes().add(wantToDeleteNote.getId());
+        Folder OSFolder = folderRepository.findById(appUser.getFolders().get(3)).get();
+        OSFolder.getNotes().add(wantToDeleteNote.getId());
+        folderRepository.save(buyFolder);
+        folderRepository.save(OSFolder);
+
+        mockMvc.perform(put("/note/delete/" + wantToDeleteNote.getId() + "/" + OSFolder.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.res.id").value(OSFolder.getId()))
+                .andExpect(jsonPath("$.res.notes").isEmpty());
+
+        if (folderRepository.findById(OSFolder.getId()).get().getNotes().contains(wantToDeleteNote.getId())) {
+            throw new Exception("Note Test : note does not remove from folder");
+        }
+        if (!folderRepository.findById(buyFolder.getId()).get().getNotes().contains(wantToDeleteNote.getId())) {
+            throw new Exception("Note Test : note is removed from buy folder");
         }
     }
 

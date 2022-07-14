@@ -10,6 +10,8 @@ import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
 import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.notificationModule.entity.MessageReturn;
+import ntou.notesharedevbackend.notificationModule.service.NotificationService;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
@@ -20,6 +22,7 @@ import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -41,7 +44,16 @@ public class NoteService {
     @Autowired
     @Lazy(value = true)
     private CommentService commentService;
+    @Autowired
+    @Lazy
+    private NotificationService notificationService;
 
+    protected final SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    protected NoteService(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
     public Note getNote(String id) {
         return noteRepository.findById(id)
@@ -165,20 +177,47 @@ public class NoteService {
     public Note submitRewardNote(String noteID) {
         Note note = getNote(noteID);
         note.setSubmit(true);
+        note.setPublishDate(new Date());
         Note newNote = replaceNote(note, noteID);
-        AppUser appUser = appUserService.getUserByEmail(note.getHeaderEmail());
         //remove from folder
-        Folder tempRewardNoteFolder = folderService.getTempRewardNoteFolder(appUser.getEmail());
-        tempRewardNoteFolder.getNotes().remove(noteID);
-        folderService.replaceFolder(tempRewardNoteFolder);
-
+//        AppUser appUser = appUserService.getUserByEmail(note.getHeaderEmail());
+//        Folder tempRewardNoteFolder = folderService.getTempRewardNoteFolder(appUser.getEmail());
+//        tempRewardNoteFolder.getNotes().remove(noteID);
+//        folderService.replaceFolder(tempRewardNoteFolder);
         Post post = postService.getPostById(note.getPostID());
         post.getAnswers().add(noteID);
+        postService.replacePost(post.getId(), post);
+        //通知懸賞人有人投稿筆記
+//        UserObj userObj = appUserService.getUserInfo(note.getHeaderEmail());
+//        MessageReturn messageReturn = new MessageReturn();
+//        messageReturn.setDate(new Date());
+//        messageReturn.setUserObj(userObj);
+//        messageReturn.setMessage(userObj.getUserObjName() + "對你投稿了懸賞筆記");
+//        messageReturn.setType("reward");
+//        messageReturn.setId(post.getId());
+        MessageReturn messageReturn = notificationService.getMessageReturn(note.getHeaderEmail(), "對你投稿了懸賞筆記", "reward", post.getId());
+        messagingTemplate.convertAndSendToUser(post.getAuthor(), "/topic/private-messages", messageReturn);
+        notificationService.saveNotificationPrivate(post.getAuthor(), messageReturn);
+        return newNote;
+    }
+
+    public Note withdrawRewardNote(String noteID) {
+        Note note = getNote(noteID);
+        note.setSubmit(false);
+        Note newNote = replaceNote(note, noteID);
+        //remove from folder
+//        AppUser appUser = appUserService.getUserByEmail(note.getHeaderEmail());
+//        Folder tempRewardNoteFolder = folderService.getTempRewardNoteFolder(appUser.getEmail());
+//        tempRewardNoteFolder.getNotes().remove(noteID);
+//        folderService.replaceFolder(tempRewardNoteFolder);
+        Post post = postService.getPostById(note.getPostID());
+        post.getAnswers().remove(noteID);
         postService.replacePost(post.getId(), post);
         return newNote;
     }
 
     public void rewardNoteBestAnswer(String noteID, String email, String bestPrice) {
+        //email為懸賞人email
         Note note = getNote(noteID);
         note.setBest(true);
         Coin bestAnswerCoin = new Coin();
@@ -186,25 +225,35 @@ public class NoteService {
         coinService.changeCoin(note.getAuthorEmail().get(0), bestAnswerCoin);
         String contributor = note.getAuthorEmail().get(0);//投稿人email
         note.getContributors().add(contributor);//將投稿人放入contributor
-        //TODO 移除投稿人擁有權（投稿人可以看嗎？
-        note.getAuthorEmail().add(email);
-        String userName = appUserService.getUserByEmail(email).getName();
-        note.getAuthorName().add(userName);
         note = replaceNote(note, note.getId());
-        copyNoteToFolder(note.getId(), appUserService.getUserByEmail(email).getFolders().get(0));//筆記放入懸賞人的buy folder;
+//        note.getAuthorEmail().add(email);
+//        String userName = appUserService.getUserByEmail(email).getName();
+//        note.getAuthorName().add(userName);
+        Folder buyFolder = folderService.getBuyFolderByUserEmail(email);
+        copyNoteToFolder(note.getId(), buyFolder.getId());//筆記放入懸賞人的buy folder;
+        Folder tempRewardNote = folderService.getTempRewardNoteFolder(contributor);
+        tempRewardNote.getNotes().remove(noteID);
+        folderService.replaceFolder(tempRewardNote);
 //        noteRepository.save(note);
     }
 
     public void rewardNoteReferenceAnswer(String noteID, String email, String referencePrice) {
+        //email為懸賞人email
         Note note = getNote(noteID);
         note.setReference(true);
         Coin referenceAnswerCoin = new Coin();
         referenceAnswerCoin.setCoin('+' + referencePrice);
         coinService.changeCoin(note.getAuthorEmail().get(0), referenceAnswerCoin);//購買者增加點
-        note.getAuthorEmail().add(email);
-        String userName = appUserService.getUserByEmail(email).getName();
-        note.getAuthorName().add(userName);
+//        note.getAuthorEmail().add(email);
+//        String userName = appUserService.getUserByEmail(email).getName();
+//        note.getAuthorName().add(userName);
         replaceNote(note, note.getId());
+        //筆寄放入懸賞人buyFolder
+        Folder buyFolder = folderService.getBuyFolderByUserEmail(email);
+        copyNoteToFolder(noteID, buyFolder.getId());
+        Folder tempRewardNote = folderService.getTempRewardNoteFolder(note.getAuthorEmail().get(0));
+        tempRewardNote.getNotes().remove(noteID);
+        folderService.replaceFolder(tempRewardNote);
 //        noteRepository.save(note);
     }
 
@@ -324,6 +373,32 @@ public class NoteService {
         return false;
     }
 
+    public void returnRewardNoteToAuthor(String postID, ArrayList<String> answers) {
+        Post post = postService.getPostById(postID);
+        ArrayList<String> answersNotes = new ArrayList<>();
+        answersNotes.addAll(post.getAnswers());
+        for (String noteID : answers) {
+            Note note = getNote(noteID);
+            //非最佳解且非參考解 歸還原作者
+            if ((note.getBest() == null || note.getBest() == false) && (note.getReference() == null || note.getReference() == false)) {
+                String authorEmail = note.getHeaderEmail();
+                //移出tempRewardNote Folder
+                Folder tempRewardNote = folderService.getTempRewardNoteFolder(authorEmail);
+                tempRewardNote.getNotes().remove(noteID);
+                folderService.replaceFolder(tempRewardNote);
+                //移入Folder Folder
+                Folder defaultFolder = folderService.getFolderFolderByEmail(authorEmail);
+                copyNoteToFolder(noteID, defaultFolder.getId());
+                note.setPostID(null);
+                note.setType("normal");
+                replaceNote(note, noteID);
+                answersNotes.remove(noteID);
+            }
+        }
+        post.setAnswers(answersNotes);
+        postService.replacePost(postID, post);
+    }
+
     public NoteReturn getUserinfo(Note note) {
         NoteReturn noteReturn = new NoteReturn();
         noteReturn.setId(note.getId());
@@ -426,5 +501,36 @@ public class NoteService {
 
     public FolderReturn folderGetUserInfo(String folderID) {
         return folderService.getAllContentUnderFolderID(folderID);
+    }
+
+    public Folder removeNoteFromFolder(String noteID, String folderID) {
+        //判斷是否為buyFolder，裡面筆記不可刪除
+        Folder folder = folderService.getFolderByID(folderID);
+        if (folder.getFolderName().equals("Buy")) {
+            return folder;
+        }
+        //判斷是否為購買的筆記
+        Note note = getNote(noteID);
+        AppUser appUser = appUserService.getUserByName(folder.getCreatorName());
+        if (note.getHeaderName().equals(appUser.getName())) {//自己的筆記
+            //判斷是否為最後一份
+            ArrayList<Folder> folderArrayList = folderService.getAllFoldersFromUser(appUser.getEmail());
+            for (Folder f : folderArrayList) {
+                if (f.getId().equals(folderID)) continue;
+                ;
+                if (f.getNotes().contains(noteID)) {//其餘folder內也有
+                    folder.getNotes().remove(noteID);
+                    return folderService.replaceFolder(folder);
+                }
+            }
+        } else {//購買筆記可直接移出
+            folder.getNotes().remove(noteID);
+            return folderService.replaceFolder(folder);
+        }
+        return folder;//不可移出
+    }
+
+    public FolderReturn turnFolderToFolderReturn(Folder folder) {
+        return folderService.turnFolderToFolderReturn(folder);
     }
 }

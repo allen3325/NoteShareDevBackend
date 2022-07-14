@@ -75,12 +75,14 @@ public class JWTService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public boolean signUp(AppUser request) {
+    public String signUp(AppUser request) {
         if(appUserService.hasExitUserByEmail(request.getEmail())){
-            return false;
-        }else{
+            return "Email";
+        }else if(appUserService.hasSameUserName(request.getName())){
+            return "Name";
+        }else {
             appUserService.createUser(request);
-            return true;
+            return "Success";
         }
     }
 
