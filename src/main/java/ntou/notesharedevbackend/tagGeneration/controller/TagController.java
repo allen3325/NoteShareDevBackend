@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping(value = "/note/tag",produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/note/tag", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
     @Autowired
     private TagService tagService;
@@ -34,11 +34,11 @@ public class TagController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "add words into dictionary", description = "將使用者新增的tag加入字典")
+    @Operation(summary = "add words into dictionary", description = "將使用者新增的tag加入字典(注意Request body只有一個key名稱是 : words)")
     @PutMapping("/addWordToDict")
     public ResponseEntity<Object> addWordToDict(@RequestBody Map<String, String[]> request) {
         String[] words = request.get("words");
-        for (String word: words)
+        for (String word : words)
             tagService.addWordToDict(word);
 
         Map<String, Object> res = new HashMap<>();
