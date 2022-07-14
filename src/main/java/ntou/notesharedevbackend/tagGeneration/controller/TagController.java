@@ -1,8 +1,6 @@
 package ntou.notesharedevbackend.tagGeneration.controller;
 
-import com.fasterxml.jackson.databind.*;
-import ntou.notesharedevbackend.repository.*;
-import ntou.notesharedevbackend.tagGeneration.entity.*;
+import io.swagger.v3.oas.annotations.*;
 import ntou.notesharedevbackend.tagGeneration.service.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
@@ -16,6 +14,7 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
+    @Operation(summary = "store recommended tags in a note", description = "注意Request body只有一個key名稱是 : text")
     @PutMapping("/wordSuggestion/{noteID}")
     public ResponseEntity<Object> getWordSuggestion(@PathVariable("noteID") String noteID,
                                                     @RequestBody Map<String, String> request) {
@@ -26,6 +25,7 @@ public class TagController {
         return ResponseEntity.ok(res);
     }
 
+    @Operation(summary = "get recommended tags from input", description = "輸入machine，推薦machine learning")
     @GetMapping("/showPossibleWord")
     public ResponseEntity<Object> getPossibleInputWord(@RequestParam(value = "word", defaultValue = "") String word) {
         List<String> possibleInputWord = tagService.getPossibleInputWord(word);
@@ -33,7 +33,8 @@ public class TagController {
         res.put("possibleInputTags", possibleInputWord);
         return ResponseEntity.ok(res);
     }
-//
+
+    @Operation(summary = "add words into dictionary", description = "將使用者新增的tag加入字典")
     @PutMapping("/addWordToDict")
     public ResponseEntity<Object> addWordToDict(@RequestBody Map<String, String[]> request) {
         String[] words = request.get("words");
