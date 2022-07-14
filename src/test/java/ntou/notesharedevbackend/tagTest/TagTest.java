@@ -150,7 +150,7 @@ public class TagTest {
         return note;
     }
 
-//    @Test
+    @Test
     public void testGetWordSuggestion() throws Exception {
         Note note = createNormalNote();
 
@@ -185,7 +185,7 @@ public class TagTest {
         }
     }
 
-//    @Test
+    @Test
     public void testGetPossibleInputWord() throws Exception {
         mockMvc.perform(get("/note/tag/showPossibleWord?word=machine")
                         .headers(httpHeaders))

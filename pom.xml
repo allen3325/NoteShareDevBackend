@@ -184,18 +184,24 @@
 <!--            <version>1.0.0-SNAPSHOT</version>-->
 <!--        </dependency>-->
 
-        <dependency>
-            <groupId>org.manlier</groupId>
-            <artifactId>better-jieba</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath> ${project.basedir}/libs/better-jieba-1.0.0-SNAPSHOT.jar</systemPath>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.manlier</groupId>-->
+<!--            <artifactId>better-jieba</artifactId>-->
+<!--            <version>1.0.0-SNAPSHOT</version>-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath> ${project.basedir}/libs/better-jieba-1.0.0-SNAPSHOT.jar</systemPath>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>de.julielab</groupId>
             <artifactId>aliasi-lingpipe</artifactId>
             <version>4.1.2-JL1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>2.2.21</version>
         </dependency>
 
     </dependencies>
@@ -206,6 +212,29 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-install-plugin</artifactId>-->
+<!--                <version>2.5.2</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>install-external</id>-->
+<!--                        <phase>process-resources</phase>-->
+<!--                        <configuration>-->
+<!--                            <file>${project.basedir}/libs/better-jieba-1.0.0-SNAPSHOT.jar</file>-->
+<!--                            <repositoryLayout>default</repositoryLayout>-->
+<!--                            <groupId>org.manlier</groupId>-->
+<!--                            <artifactId>better-jieba</artifactId>-->
+<!--                            <version>1.0.0-SNAPSHOT</version>-->
+<!--                            <packaging>jar</packaging>-->
+<!--                            <generatePom>true</generatePom>-->
+<!--                        </configuration>-->
+<!--                        <goals>-->
+<!--                            <goal>install-file</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
