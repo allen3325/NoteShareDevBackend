@@ -77,4 +77,15 @@ public class NotificationService {
         appUser.setUnreadMessageCount(0);
         userRepository.save(appUser);
     }
+
+    public MessageReturn getMessageReturn(String senderEmail, String message, String type, String id) {
+        MessageReturn messageReturn = new MessageReturn();
+        UserObj userObj = appUserService.getUserInfo(senderEmail);
+        messageReturn.setMessage(userObj.getUserObjName() + message);
+        messageReturn.setUserObj(userObj);
+        messageReturn.setType(type);
+        messageReturn.setId(id);
+        messageReturn.setDate(new Date());
+        return messageReturn;
+    }
 }

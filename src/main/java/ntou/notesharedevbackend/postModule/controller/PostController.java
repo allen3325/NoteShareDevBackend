@@ -202,7 +202,7 @@ public class PostController {
     }
 
 
-    @Operation(summary = "reward choose reference answer.", description = "填入postID,最佳解留言ID")
+    @Operation(summary = "reward choose reference answer.", description = "填入postID,參考解筆記ID")
     @PutMapping("/reward/reference/{postID}/{answerID}")
     public ResponseEntity<Object> RewardChooseReferenceAnswer(@PathVariable("postID") String postID,
                                                               @PathVariable("answerID") String answerID) {
@@ -211,8 +211,8 @@ public class PostController {
             res.put("msg", "Success");
             return ResponseEntity.ok(res);
         } else {
-            res.put("msg", "Fail");
-            throw new NotFoundException("Can't not choose reference answer");
+            res.put("msg", "Reference Answer all be chosen");
+            return ResponseEntity.status(409).body(res);
         }
     }
 

@@ -9,10 +9,15 @@ import java.util.*;
 
 
 @Repository
-public interface UserRepository  extends MongoRepository<AppUser,String> {
+public interface UserRepository extends MongoRepository<AppUser, String> {
     AppUser findByName(String name);
+
     AppUser findByEmail(String email);
+
     @Query(value = "{'name': {$regex : ?0, $options: 'i'}}")
     Page<AppUser> findByNameRegex(String name, Pageable pageable);
+
     boolean existsByEmail(String email);
+
+    boolean existsByName(String name);
 }

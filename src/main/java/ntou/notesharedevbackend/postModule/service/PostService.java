@@ -7,6 +7,7 @@ import ntou.notesharedevbackend.commentModule.service.*;
 import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
+import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.PostRepository;
@@ -19,6 +20,7 @@ import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.simp.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -42,6 +44,11 @@ public class PostService {
     @Autowired
     @Lazy(value = true)
     private CommentService commentService;
+
+//    protected final SimpMessagingTemplate messagingTemplate;
+//
+//    @Autowired
+//    protected PostService(SimpMessagingTemplate messagingTemplate) { this.messagingTemplate = messagingTemplate; }
 
     public Post[] getAllTypeOfPost(String postType) {
         List<Post> postList = postRepository.findAllByType(postType);
@@ -149,6 +156,9 @@ public class PostService {
             if (post.getType().equals("reward")) {//懸賞判斷有無best answer
                 if (post.getAnswers().size() != 0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
                     post.setPublic(!post.getPublic());
+                    //歸還非最佳解且非參考解的筆記
+                    replacePost(post.getId(), post);
+                    noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
                 } else {
                     System.out.println("can't change publish state before you got best answer.");
                     return null;
@@ -156,19 +166,22 @@ public class PostService {
             } else if (post.getType().equals("QA")) {//QA判斷有無best answer
                 if (QAhaveBestAnswer(post.getComments())) {
                     post.setPublic(!post.getPublic());
+                    replacePost(post.getId(), post);
                 } else {
                     System.out.println("can't change publish state before you got best answer.");
                     return null;
                 }
             } else if (post.getType().equals("collaboration")) {//共筆無條件
                 post.setPublic(!post.getPublic());
+                replacePost(post.getId(), post);
             }
         } else {
             post.setPublic(!post.getPublic());
             Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
             post.setPublishDate(calendar.getTime());
+            replacePost(post.getId(), post);
         }
-        replacePost(post.getId(), post);
+
         return getPostById(id);
 //        postRepository.save(post);
     }
@@ -373,12 +386,17 @@ public class PostService {
 
     public boolean rewardChooseBestAnswer(String postID, String answerID) {
         Post post = getPostById(postID);
-        AppUser appUser = appUserService.getUserByEmail(post.getAuthor());
+        AppUser appUser = appUserService.getUserByEmail(post.getAuthor());//懸賞人
         String bestPrice = String.valueOf(post.getBestPrice());
         Coin postAuthorCoin = new Coin();
         postAuthorCoin.setCoin('-' + bestPrice);
         coinService.changeCoin(appUser.getEmail(), postAuthorCoin);
         noteService.rewardNoteBestAnswer(answerID, appUser.getEmail(), bestPrice);
+        //檢查是否選完最佳解和參考解
+        if (noteService.rewardNoteHaveAnswer(post.getAnswers()) && post.getReferenceNumber().equals(0)) {
+            //選完歸還剩餘筆記
+            noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
+        }
         return true;
     }
 
@@ -417,11 +435,16 @@ public class PostService {
         String referencePrice = String.valueOf(post.getReferencePrice());
         if (post.getReferenceNumber() > 0) {
             post.setReferenceNumber(post.getReferenceNumber() - 1);
-            replacePost(postID, post);
+            post = replacePost(postID, post);
             Coin postAuthorCoin = new Coin();
             postAuthorCoin.setCoin('-' + referencePrice);
             coinService.changeCoin(appUser.getEmail(), postAuthorCoin);//作者扣點
             noteService.rewardNoteReferenceAnswer(answerID, appUser.getEmail(), referencePrice);
+            //檢查是否選完最佳解和參考解
+            if (noteService.rewardNoteHaveAnswer(post.getAnswers()) && post.getReferenceNumber().equals(0)) {
+                //選完歸還剩餘筆記
+                noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
+            }
             return true;
         }
         return false;
@@ -525,6 +548,48 @@ public class PostService {
         postReturn.setEmailUserObj(emailUserObj);
         postReturn.setEmail(post.getEmail());
         postReturn.setArchive(post.getArchive());
+        ArrayList<NotePostReturn> answersUserObj = new ArrayList<>();
+        if (post.getAnswers() != null) {
+            if (post.getType().equals("QA") && !post.getAnswers().isEmpty()) {//為QA且有最佳解
+                NotePostReturn notePostReturn = new NotePostReturn();
+                String answerComment = post.getAnswers().get(0);
+                notePostReturn.setId(answerComment);
+                for (Comment comment : post.getComments()) {
+                    if (comment.getId().equals(answerComment)) {
+                        notePostReturn.setDate(comment.getDate());
+                        UserObj userObj1 = appUserService.getUserInfo(comment.getEmail());
+                        notePostReturn.setUserObj(userObj1);
+                        notePostReturn.setBest(true);
+                        notePostReturn.setReference(false);
+                        answersUserObj.add(notePostReturn);
+                        break;
+                    }
+                }
+            } else {
+                for (String noteID : post.getAnswers()) {
+                    NotePostReturn notePostReturn = new NotePostReturn();
+                    System.out.println(noteID);
+                    notePostReturn.setId(noteID);
+                    Note note = noteService.getNote(noteID);
+                    notePostReturn.setDate(note.getPublishDate());
+                    UserObj userObj1 = appUserService.getUserInfo(note.getHeaderEmail());
+                    notePostReturn.setUserObj(userObj1);
+                    if (note.getReference() != null && note.getReference()) {
+                        notePostReturn.setReference(true);
+                    } else {
+                        notePostReturn.setReference(false);
+                    }
+                    if (note.getBest() != null && note.getBest()) {
+                        notePostReturn.setBest(true);
+                    } else {
+                        notePostReturn.setBest(false);
+                    }
+                    answersUserObj.add(notePostReturn);
+                }
+
+            }
+        }
+        postReturn.setAnswersUserObj(answersUserObj);
 //        ArrayList<UserObj> applyUserObj = new ArrayList<>();
 //        for (String applyEmail : post.getApplyEmail()) {
 //            UserObj userObjInfo = appUserService.getUserInfo(applyEmail);
@@ -537,6 +602,7 @@ public class PostService {
 
     public NoteReturn createRewardNote(String postID, String email, Note request) {
         Note note = noteService.createRewardNote(postID, email, request);
+
         return noteService.getUserinfo(note);
     }
 
@@ -547,6 +613,8 @@ public class PostService {
                 if (post.getAnswers().size() != 0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
                     post.setArchive(!post.getArchive());
                     replacePost(postID, post);
+                    //歸還非最佳非參考的筆記
+                    noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
                     return true;
                 } else {
                     System.out.println("can't change publish state before you got best answer.");

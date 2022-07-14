@@ -232,4 +232,8 @@ public class AppUserService {
 
         return appUserReturn;
     }
+
+    public boolean hasSameUserName(String name) {
+        return userRepository.existsByName(name);
+    }
 }
