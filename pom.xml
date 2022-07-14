@@ -178,19 +178,19 @@
             <version>4.9.3</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.manlier</groupId>-->
-<!--            <artifactId>better-jieba</artifactId>-->
-<!--            <version>1.0.0-SNAPSHOT</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>org.manlier</groupId>
             <artifactId>better-jieba</artifactId>
             <version>1.0.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath> ${project.basedir}/libs/better-jieba-1.0.0-SNAPSHOT.jar</systemPath>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>org.manlier</groupId>-->
+<!--            <artifactId>better-jieba</artifactId>-->
+<!--            <version>1.0.0-SNAPSHOT</version>-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath> ${project.basedir}/libs/better-jieba-1.0.0-SNAPSHOT.jar</systemPath>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>de.julielab</groupId>
