@@ -168,6 +168,24 @@ public class NoteService {
             note.setPublic(true);
         } else {//collaboration
             note.setPublic(!note.getPublic());
+
+            //傳送通知給所有共筆作者
+            if (note.getPublic()) {
+                MessageReturn messageReturn = new MessageReturn();
+                messageReturn.setMessage("共筆筆記已發布");
+                UserObj userObj = new UserObj();
+                userObj.setUserObjEmail("noteshare@gmail.com");
+                userObj.setUserObjName("NoteShare System");
+                userObj.setUserObjAvatar("https://i.imgur.com/5V1waq3.png");
+                messageReturn.setUserObj(userObj);
+                messageReturn.setType("collaboration");
+                messageReturn.setId(noteID);
+                messageReturn.setDate(new Date());
+                for (String author : note.getAuthorEmail()) {
+                    messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
+                    notificationService.saveNotificationPrivate(author, messageReturn);
+                }
+            }
         }
         // update publish date
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));

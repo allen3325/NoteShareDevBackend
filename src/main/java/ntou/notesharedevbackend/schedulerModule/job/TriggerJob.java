@@ -95,6 +95,7 @@ public class TriggerJob implements Job {
                     boolean isKickTarget = author.equals(v.getKickTarget());
                     MessageReturn messageReturn = notificationService.getMessageReturnFromVotes(v.getResult(), postID, isKickTarget, v.getKickTarget());
                     messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
+                    notificationService.saveNotificationPrivate(author, messageReturn);
                 }
 
                 postService.replacePost(postID,post);

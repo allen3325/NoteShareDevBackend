@@ -8,6 +8,7 @@ import ntou.notesharedevbackend.noteNodule.entity.Note;
 import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.notificationModule.entity.*;
+import ntou.notesharedevbackend.notificationModule.service.*;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.PostRepository;
@@ -44,6 +45,12 @@ public class PostService {
     @Autowired
     @Lazy(value = true)
     private CommentService commentService;
+    @Autowired
+    @Lazy(value = true)
+    private NotificationService notificationService;
+    @Autowired
+    @Lazy(value = true)
+    private SimpMessagingTemplate messagingTemplate;
 
 //    protected final SimpMessagingTemplate messagingTemplate;
 //
@@ -205,6 +212,15 @@ public class PostService {
         // update apply in post
         post.setCollabApply(allApply);
         replacePost(post.getId(), post);
+
+        //傳送通知給管理員&共筆發起人
+        ArrayList<String> emails = post.getEmail();
+        for (String email : emails) {
+            MessageReturn messageReturn = notificationService.getMessageReturn(applicant.getWantEnterUsersEmail(), "向你申請了共筆", "collaboration", id);
+            messagingTemplate.convertAndSendToUser(email, "/topic/private-messages", messageReturn);
+            notificationService.saveNotificationPrivate(email, messageReturn);
+        }
+
         return true;
 //        postRepository.save(post);
     }
@@ -290,6 +306,23 @@ public class PostService {
         post.setVote(voteArrayList);
         replacePost(post.getId(), post);
 //        postRepository.save(post);
+
+        //傳送通知給所有共筆作者
+        MessageReturn messageReturn = new MessageReturn();
+        messageReturn.setMessage("有人在共筆內發起了投票");
+        UserObj userObj = new UserObj();
+        userObj.setUserObjEmail("noteshare@gmail.com");
+        userObj.setUserObjName("NoteShare System");
+        userObj.setUserObjAvatar("https://i.imgur.com/5V1waq3.png");
+        messageReturn.setUserObj(userObj);
+        messageReturn.setType("collaboration");
+        messageReturn.setId(postID);
+        messageReturn.setDate(new Date());
+        for (String author : post.getEmail()) {
+            messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
+            notificationService.saveNotificationPrivate(author, messageReturn);
+        }
+
         return vote;
     }
 

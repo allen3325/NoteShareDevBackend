@@ -35,17 +35,17 @@ public class NotificationService {
             saveNotificationPrivate(email, message);
     }
 
-    public void sendToManagerAndHeader(String noteID, MessageReturn message) {
-        Note note = noteService.getNote(noteID);
-        String managerEmail = note.getManagerEmail();
-        String headerEmail = note.getHeaderEmail();
-        if (managerEmail != null) {
-            messagingTemplate.convertAndSendToUser(managerEmail, "/topic/private-messages", message);
-            saveNotificationPrivate(managerEmail, message);
-        }
-        messagingTemplate.convertAndSendToUser(headerEmail, "/topic/private-messages", message);
-        saveNotificationPrivate(headerEmail, message);
-    }
+//    public void sendToManagerAndHeader(String noteID, MessageReturn message) {
+//        Note note = noteService.getNote(noteID);
+//        String managerEmail = note.getManagerEmail();
+//        String headerEmail = note.getHeaderEmail();
+//        if (managerEmail != null) {
+//            messagingTemplate.convertAndSendToUser(managerEmail, "/topic/private-messages", message);
+//            saveNotificationPrivate(managerEmail, message);
+//        }
+//        messagingTemplate.convertAndSendToUser(headerEmail, "/topic/private-messages", message);
+//        saveNotificationPrivate(headerEmail, message);
+//    }
 
     public void saveNotificationBell(String email, MessageReturn message) {
         AppUser appUser = appUserService.getUserByEmail(email);
@@ -95,7 +95,7 @@ public class NotificationService {
         UserObj userObj = new UserObj();
         userObj.setUserObjEmail("noteshare@gmail.com");
         userObj.setUserObjName("NoteShare System");
-        userObj.setUserObjAvatar("system");
+        userObj.setUserObjAvatar("https://i.imgur.com/5V1waq3.png");
         messageReturn.setUserObj(userObj);
         messageReturn.setType("collaboration");
         messageReturn.setId(postID);
