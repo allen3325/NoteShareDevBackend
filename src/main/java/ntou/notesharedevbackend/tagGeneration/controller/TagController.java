@@ -46,4 +46,11 @@ public class TagController {
         return ResponseEntity.ok(res);
     }
 
+    @PutMapping("/updateTags/{noteID}")
+    public ResponseEntity<Object> updateTags(@PathVariable("noteID") String noteID,
+                                             @RequestBody Map<String, ArrayList<String>> request) {
+        ArrayList<String> tags = request.get("tags");
+        tagService.updateTags(tags, noteID);
+        return ResponseEntity.status(204).build();
+    }
 }

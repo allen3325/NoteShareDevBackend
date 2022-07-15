@@ -59,4 +59,16 @@ public class TagService {
             dictionaryRepository.save(alreadyExist);
         }
     }
+
+    public void updateTags(ArrayList<String> tags, String noteID) {
+        Note note = noteService.getNote(noteID);
+        for (String tag : tags) {
+            if (note.getTag().contains(tag))    //重複新增的tag不更改字典
+                continue;
+            addWordToDict(tag);
+        }
+
+        note.setTag(tags);
+        noteRepository.save(note);
+    }
 }
