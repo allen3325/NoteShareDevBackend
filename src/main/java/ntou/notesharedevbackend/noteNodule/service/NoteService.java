@@ -129,8 +129,11 @@ public class NoteService {
         note.setPostID(request.getPostID());
         note.setReference(request.getReference());
         note.setBest(request.getBest());
-        note.setDescription("");
-
+        if(request.getDescription()!= null){
+            note.setDescription(request.getDescription());
+        } else{
+            note.setDescription("");
+        }
         return noteRepository.insert(note);
     }
 
