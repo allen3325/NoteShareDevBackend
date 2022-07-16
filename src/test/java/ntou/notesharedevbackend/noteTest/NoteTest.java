@@ -1288,7 +1288,7 @@ public class NoteTest {
         }
     }
 
-    @Test
+//    @Test
     public void testRemoveLastNoteFromFolder() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         Note wantToDeleteNote = createNormalNote();
