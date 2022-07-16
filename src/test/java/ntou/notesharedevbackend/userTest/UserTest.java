@@ -319,7 +319,7 @@ public class UserTest {
                 .andExpect(jsonPath("$.res").value(appUser.getName()));
     }
 
-    @Test
+//    @Test
     public void testUpdateUserName() throws Exception {
         AppUser appUser = createUser("yitingwu.1030@gmail.com", "Ting");
         String newName = "newTime";
