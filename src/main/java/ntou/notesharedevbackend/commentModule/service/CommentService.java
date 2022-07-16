@@ -115,7 +115,7 @@ public class CommentService {
             note.setComments(commentArrayList);
             noteService.replaceNote(note, note.getId());
             //通知筆記作者
-            MessageReturn messageReturn = notificationService.getMessageReturn(comment.getAuthor(), "在你的筆記內留言", "note", note.getId());
+            MessageReturn messageReturn = notificationService.getMessageReturn(comment.getEmail(), "在你的筆記內留言", "note", note.getId());
 //            messageReturn.setDate(new Date());
 //            messageReturn.setMessage(comment.getAuthor() + "在你的筆記內留言");
 //            messageReturn.setId(note.getId());
