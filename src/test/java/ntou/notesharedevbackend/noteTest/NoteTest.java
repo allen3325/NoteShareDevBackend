@@ -91,6 +91,9 @@ public class NoteTest {
         appUser.setCoin(300);
         appUser.setNotification(new ArrayList<>());
         appUser.setUnreadMessageCount(0);
+        appUser.setBelledBy(new ArrayList<>());
+        appUser.setSubscribe(new ArrayList<>());
+        appUser.setFans(new ArrayList<>());
         return appUser;
     }
 
