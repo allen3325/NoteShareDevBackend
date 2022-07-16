@@ -1,6 +1,8 @@
 package ntou.notesharedevbackend.schedulerModule.job;
 
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
+import ntou.notesharedevbackend.notificationModule.entity.*;
+import ntou.notesharedevbackend.notificationModule.service.*;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
@@ -8,6 +10,7 @@ import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import ntou.notesharedevbackend.schedulerModule.service.SchedulingService;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.*;
 
 import java.text.*;
 import java.util.*;
@@ -22,6 +25,11 @@ public class TriggerJob implements Job {
     private PostService postService;
     @Autowired
     private SchedulingService schedulingService;
+    @Autowired
+    private NotificationService notificationService;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         //JobExecutionContext include :執行此job的scheduler、觸發執行的trigger、jobDetail對象
@@ -82,6 +90,14 @@ public class TriggerJob implements Job {
                     //無效投票
                     v.setResult("invalid");
                 }
+                //傳送投票結果通知
+                for (String author : post.getEmail()) {
+                    boolean isKickTarget = author.equals(v.getKickTarget());
+                    MessageReturn messageReturn = notificationService.getMessageReturnFromVotes(v.getResult(), postID, isKickTarget, v.getKickTarget());
+                    messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
+                    notificationService.saveNotificationPrivate(author, messageReturn);
+                }
+
                 postService.replacePost(postID,post);
                 break;
             }

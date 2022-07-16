@@ -1,12 +1,17 @@
 package ntou.notesharedevbackend.followModule.service;
 
+import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.noteNodule.service.*;
 import ntou.notesharedevbackend.repository.*;
+import ntou.notesharedevbackend.searchModule.entity.*;
 import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.*;
 
 import java.util.*;
+import java.util.stream.*;
 
 @Service
 public class FollowService {
@@ -14,6 +19,10 @@ public class FollowService {
     private UserRepository userRepository;
     @Autowired
     private AppUserService appUserService;
+    @Autowired
+    private NoteRepository noteRepository;
+    @Autowired
+    private NoteService noteService;
 
     public String[] getFollowers(String email) {
         AppUser appUser = userRepository.findByEmail(email);
@@ -97,5 +106,27 @@ public class FollowService {
         } else {
             return new ArrayList<String>();
         }
+    }
+
+    public Pages getFollowingNotes(String email, int offset, int pageSize) {
+        String[] following = getFollowing(email);
+        List<Note> noteList = new ArrayList<>();
+        List<NoteReturn> noteReturnList = new ArrayList<>();
+        for (String follow : following)
+            noteList.addAll(noteRepository.findAllByHeaderEmail(follow));
+        for (Note note : noteList)
+            noteReturnList.add(noteService.getUserinfo(note));
+        if (noteReturnList.isEmpty())
+            return new Pages(null, 0);
+        noteReturnList = noteReturnList.stream()
+                .filter((NoteReturn n) -> n.getPublic().equals(true))
+                .collect(Collectors.toList());
+
+        Pageable paging = PageRequest.of(offset, pageSize, Sort.by("title").descending());
+        int start = Math.min((int)paging.getOffset(), noteReturnList.size());
+        int end = Math.min((start + paging.getPageSize()), noteReturnList.size());
+        Page<NoteReturn> page = new PageImpl<>(noteReturnList.subList(start, end), paging, noteReturnList.size());
+
+        return new Pages(page.getContent(), page.getTotalPages());
     }
 }

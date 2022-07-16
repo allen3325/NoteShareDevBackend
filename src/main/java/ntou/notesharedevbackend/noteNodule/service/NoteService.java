@@ -129,9 +129,9 @@ public class NoteService {
         note.setPostID(request.getPostID());
         note.setReference(request.getReference());
         note.setBest(request.getBest());
-        if(request.getDescription()!= null){
+        if (request.getDescription() != null) {
             note.setDescription(request.getDescription());
-        } else{
+        } else {
             note.setDescription("");
         }
         return noteRepository.insert(note);
@@ -168,7 +168,34 @@ public class NoteService {
             note.setPublic(true);
         } else {//collaboration
             note.setPublic(!note.getPublic());
+
+            //傳送通知給所有共筆作者、開啟bell使用者
+            if (note.getPublic()) {
+                MessageReturn messageReturn = new MessageReturn();
+                messageReturn.setMessage("共筆筆記已發布");
+                UserObj userObj = new UserObj();
+                userObj.setUserObjEmail("noteshare@gmail.com");
+                userObj.setUserObjName("NoteShare System");
+                userObj.setUserObjAvatar("https://i.imgur.com/5V1waq3.png");
+                messageReturn.setUserObj(userObj);
+                messageReturn.setType("collaboration");
+                messageReturn.setId(noteID);
+                messageReturn.setDate(new Date());
+                for (String author : note.getAuthorEmail()) {
+                    messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
+                    notificationService.saveNotificationPrivate(author, messageReturn);
+                }
+            }
         }
+
+        if (note.getPublic()) {
+            for (String author : note.getAuthorEmail()) {
+                MessageReturn messageReturnForBell = notificationService.getMessageReturn(author, "發布了筆記", "note", noteID);
+                messagingTemplate.convertAndSend("/topic/bell-messages/" + author, messageReturnForBell);
+                notificationService.saveNotificationBell(author, messageReturnForBell);
+            }
+        }
+
         // update publish date
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
         note.setPublishDate(calendar.getTime());
@@ -513,24 +540,26 @@ public class NoteService {
             return folder;
         }
         //判斷是否為購買的筆記
-        Note note = getNote(noteID);
-        AppUser appUser = appUserService.getUserByName(folder.getCreatorName());
-        if (note.getHeaderName().equals(appUser.getName())) {//自己的筆記
-            //判斷是否為最後一份
-            ArrayList<Folder> folderArrayList = folderService.getAllFoldersFromUser(appUser.getEmail());
-            for (Folder f : folderArrayList) {
-                if (f.getId().equals(folderID)) continue;
-                ;
-                if (f.getNotes().contains(noteID)) {//其餘folder內也有
-                    folder.getNotes().remove(noteID);
-                    return folderService.replaceFolder(folder);
-                }
-            }
-        } else {//購買筆記可直接移出
-            folder.getNotes().remove(noteID);
-            return folderService.replaceFolder(folder);
-        }
-        return folder;//不可移出
+//        Note note = getNote(noteID);
+//        AppUser appUser = appUserService.getUserByName(folder.getCreatorName());
+//        if (note.getHeaderName().equals(appUser.getName())) {//自己的筆記
+//            //判斷是否為最後一份
+//            ArrayList<Folder> folderArrayList = folderService.getAllFoldersFromUser(appUser.getEmail());
+//            for (Folder f : folderArrayList) {
+//                if (f.getId().equals(folderID)) continue;
+//                ;
+//                if (f.getNotes().contains(noteID)) {//其餘folder內也有
+//                    folder.getNotes().remove(noteID);
+//                    return folderService.replaceFolder(folder);
+//                }
+//            }
+//        } else {//購買筆記可直接移出
+//            folder.getNotes().remove(noteID);
+//            return folderService.replaceFolder(folder);
+//        }
+        folder.getNotes().remove(noteID);
+        return folderService.replaceFolder(folder);
+//        return folder;//不可移出
     }
 
     public FolderReturn turnFolderToFolderReturn(Folder folder) {

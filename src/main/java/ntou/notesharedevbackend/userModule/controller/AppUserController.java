@@ -93,15 +93,15 @@ public class AppUserController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "Modify user's name")
-    @PutMapping("/name/{email}/{newName}")
-    public ResponseEntity<Object> updateUserName(@PathVariable("email") String email, @PathVariable("newName")String newName) {
-        String name = appUserService.updateUserName(email,newName);
-        Map<String, Object> res = new HashMap<>();
-
-        res.put("res", name);
-        return ResponseEntity.ok(res);
-    }
+//    @Operation(summary = "Modify user's name")
+//    @PutMapping("/name/{email}/{newName}")
+//    public ResponseEntity<Object> updateUserName(@PathVariable("email") String email, @PathVariable("newName")String newName) {
+//        String name = appUserService.updateUserName(email,newName);
+//        Map<String, Object> res = new HashMap<>();
+//
+//        res.put("res", name);
+//        return ResponseEntity.ok(res);
+//    }
 
     @Operation(summary = "Modify user's headshotPhoto")
     @PutMapping("/head/{email}")

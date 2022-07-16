@@ -9,15 +9,14 @@ import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
 import ntou.notesharedevbackend.noteNodule.service.NoteService;
 import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.notificationModule.service.*;
-import ntou.notesharedevbackend.userModule.entity.AppUser;
-import ntou.notesharedevbackend.userModule.entity.AppUserReturn;
+import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.messaging.simp.*;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
+import java.util.*;
 
 @Service
 public class CoinService {
@@ -51,6 +50,23 @@ public class CoinService {
         }
         appUser.setCoin(oldCoin + newCoin);
         appUserService.replaceUser(appUser);
+
+        MessageReturn messageReturn = new MessageReturn();
+        if (newCoin < 0)
+            messageReturn.setMessage("你已花" + (-newCoin) + "點");
+        else
+            messageReturn.setMessage("你已獲得" + newCoin + "點");
+        UserObj userObj = new UserObj();
+        userObj.setUserObjEmail("noteshare@gmail.com");
+        userObj.setUserObjName("NoteShare System");
+        userObj.setUserObjAvatar("https://i.imgur.com/5V1waq3.png");
+        messageReturn.setUserObj(userObj);
+//        messageReturn.setType("collaboration");
+//        messageReturn.setId(postID);
+        messageReturn.setDate(new Date());
+        messagingTemplate.convertAndSendToUser(email, "/topic/private-messages", messageReturn);
+        notificationService.saveNotificationPrivate(email, messageReturn);
+
         return appUser;
     }
 

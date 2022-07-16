@@ -21,20 +21,20 @@ public class MessageController {
         this.messagingTemplate = messagingTemplate;
     }
 
-    @MessageMapping("/group-messages/{noteID}")
-    public void getGroupMessage(@DestinationVariable String noteID, final Message message) throws InterruptedException {
-        Thread.sleep(1000);
-        MessageReturn messageReturn = new MessageReturn(message);
-        messagingTemplate.convertAndSend("/topic/group-messages/" + noteID, messageReturn);
-        notificationService.saveNotificationGroup(noteID, messageReturn);
-    }
-
-    @MessageMapping("/group-messages-manager/{noteID}")
-    public void getGroupMessageForManager(@DestinationVariable String noteID, final Message message) throws InterruptedException {
-        Thread.sleep(1000);
-        MessageReturn messageReturn = new MessageReturn(message);
-        notificationService.sendToManagerAndHeader(noteID, messageReturn);
-    }
+//    @MessageMapping("/group-messages/{noteID}")
+//    public void getGroupMessage(@DestinationVariable String noteID, final Message message) throws InterruptedException {
+//        Thread.sleep(1000);
+//        MessageReturn messageReturn = new MessageReturn(message);
+//        messagingTemplate.convertAndSend("/topic/group-messages/" + noteID, messageReturn);
+//        notificationService.saveNotificationGroup(noteID, messageReturn);
+//    }
+//
+//    @MessageMapping("/group-messages-manager/{noteID}")
+//    public void getGroupMessageForManager(@DestinationVariable String noteID, final Message message) throws InterruptedException {
+//        Thread.sleep(1000);
+//        MessageReturn messageReturn = new MessageReturn(message);
+//        notificationService.sendToManagerAndHeader(noteID, messageReturn);
+//    }
 
     @MessageMapping("/bell-messages/{email}")
     public void getBellMessage(@DestinationVariable String email, final Message message) throws  InterruptedException {
