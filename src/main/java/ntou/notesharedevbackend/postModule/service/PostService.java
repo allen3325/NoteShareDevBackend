@@ -187,6 +187,14 @@ public class PostService {
             Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
             post.setPublishDate(calendar.getTime());
             replacePost(post.getId(), post);
+
+            //傳送訊息給開啟bell的使用者
+            List<String> emails = post.getEmail();
+            for (String email : emails) {
+                MessageReturn messageReturn = notificationService.getMessageReturn(email, "發布了貼文", post.getType().toLowerCase(), id);
+                messagingTemplate.convertAndSend("/topic/bell-messages/" + email, messageReturn);
+                notificationService.saveNotificationBell(email, messageReturn);
+            }
         }
 
         return getPostById(id);
@@ -430,6 +438,13 @@ public class PostService {
             //選完歸還剩餘筆記
             noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
         }
+        //傳送通知給懸賞筆記contributor
+        MessageReturn messageReturn = notificationService.getMessageReturn(appUser.getEmail(), "將你的懸賞筆記設為最佳解", "reward", postID);
+        Note note = noteService.getNote(answerID);
+        String contributor = note.getAuthorEmail().get(0);
+        messagingTemplate.convertAndSendToUser(contributor,"/topic/private-messages", messageReturn);
+        notificationService.saveNotificationPrivate(contributor, messageReturn);
+
         return true;
     }
 
@@ -452,10 +467,16 @@ public class PostService {
                     // minus post's author's money.
                     coin.setCoin("-" + price);
                     coinService.changeCoin(post.getEmail().get(0), coin);
+
+                    //傳送通知給QA最佳解使用者
+                    MessageReturn messageReturn = notificationService.getMessageReturn(post.getAuthor(), "將你的答案設為最佳解", "qa", postID);
+                    messagingTemplate.convertAndSendToUser(comment.getEmail(),"/topic/private-messages", messageReturn);
+                    notificationService.saveNotificationPrivate(comment.getEmail(), messageReturn);
                 }
             }
             post.setComments(allComments);
             replacePost(post.getId(), post);
+
         } else {
             return false;
         }
@@ -478,6 +499,13 @@ public class PostService {
                 //選完歸還剩餘筆記
                 noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
             }
+            //傳送通知給懸賞筆記contributor
+            MessageReturn messageReturn = notificationService.getMessageReturn(appUser.getEmail(), "將你的懸賞筆記設為參考解", "reward", postID);
+            Note note = noteService.getNote(answerID);
+            String contributor = note.getAuthorEmail().get(0);
+            messagingTemplate.convertAndSendToUser(contributor,"/topic/private-messages", messageReturn);
+            notificationService.saveNotificationPrivate(contributor, messageReturn);
+
             return true;
         }
         return false;

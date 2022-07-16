@@ -169,7 +169,7 @@ public class NoteService {
         } else {//collaboration
             note.setPublic(!note.getPublic());
 
-            //傳送通知給所有共筆作者
+            //傳送通知給所有共筆作者、開啟bell使用者
             if (note.getPublic()) {
                 MessageReturn messageReturn = new MessageReturn();
                 messageReturn.setMessage("共筆筆記已發布");
@@ -187,6 +187,15 @@ public class NoteService {
                 }
             }
         }
+
+        if (note.getPublic()) {
+            for (String author : note.getAuthorEmail()) {
+                MessageReturn messageReturnForBell = notificationService.getMessageReturn(author, "發布了筆記", "note", noteID);
+                messagingTemplate.convertAndSend("/topic/bell-messages/" + author, messageReturnForBell);
+                notificationService.saveNotificationBell(author, messageReturnForBell);
+            }
+        }
+
         // update publish date
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
         note.setPublishDate(calendar.getTime());
