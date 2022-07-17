@@ -563,8 +563,4 @@ public class NoteService {
     public FolderReturn turnFolderToFolderReturn(Folder folder) {
         return folderService.turnFolderToFolderReturn(folder);
     }
-
-    public ArrayList<Note> getAllNoteByTags(String tag) {
-        return (ArrayList<Note>) noteRepository.findAllByTag(tag);
-    }
 }

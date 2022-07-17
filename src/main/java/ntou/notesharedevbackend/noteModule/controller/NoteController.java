@@ -213,13 +213,4 @@ public class NoteController {
             return ResponseEntity.ok(res);
         }
     }
-
-    @GetMapping("/tmp/{tag}")
-    public ResponseEntity<Object> test(@PathVariable("tag") String tag){
-        ArrayList<Note> ans = noteService.getAllNoteByTags(tag);
-        Map<String,Object> res = new HashMap<>();
-        res.put("res",ans);
-        return ResponseEntity.ok(res);
-    }
-
 }
