@@ -1,8 +1,6 @@
 package ntou.notesharedevbackend.folderModule.entity;
 
-import ntou.notesharedevbackend.noteNodule.entity.Note;
-import ntou.notesharedevbackend.noteNodule.entity.NoteFolderReturn;
-import ntou.notesharedevbackend.searchModule.entity.NoteBasicReturn;
+import ntou.notesharedevbackend.noteModule.entity.NoteFolderReturn;
 import ntou.notesharedevbackend.userModule.entity.UserObj;
 
 import java.util.ArrayList;

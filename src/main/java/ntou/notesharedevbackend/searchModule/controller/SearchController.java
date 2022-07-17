@@ -1,12 +1,8 @@
 package ntou.notesharedevbackend.searchModule.controller;
 
 import io.swagger.v3.oas.annotations.*;
-import ntou.notesharedevbackend.folderModule.entity.*;
-import ntou.notesharedevbackend.noteNodule.entity.*;
-import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.searchModule.entity.*;
 import ntou.notesharedevbackend.searchModule.service.*;
-import ntou.notesharedevbackend.userModule.entity.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;

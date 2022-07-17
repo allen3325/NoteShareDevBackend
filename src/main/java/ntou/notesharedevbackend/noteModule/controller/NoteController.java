@@ -1,17 +1,15 @@
-package ntou.notesharedevbackend.noteNodule.controller;
+package ntou.notesharedevbackend.noteModule.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
-import ntou.notesharedevbackend.noteNodule.entity.*;
-import ntou.notesharedevbackend.noteNodule.service.NoteService;
+import ntou.notesharedevbackend.noteModule.entity.*;
+import ntou.notesharedevbackend.noteModule.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.*;
 
 @RestController
@@ -214,6 +212,14 @@ public class NoteController {
             res.put("res", noteService.folderGetUserInfo(folder.getId()));
             return ResponseEntity.ok(res);
         }
+    }
+
+    @GetMapping("/tmp/{tag}")
+    public ResponseEntity<Object> test(@PathVariable("tag") String tag){
+        ArrayList<Note> ans = noteService.getAllNoteByTags(tag);
+        Map<String,Object> res = new HashMap<>();
+        res.put("res",ans);
+        return ResponseEntity.ok(res);
     }
 
 }

@@ -1,16 +1,13 @@
-package ntou.notesharedevbackend.noteNodule.entity;
+package ntou.notesharedevbackend.noteModule.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ntou.notesharedevbackend.commentModule.entity.Comment;
-import org.springframework.data.mongodb.core.mapping.Document;
+import ntou.notesharedevbackend.commentModule.entity.*;
+import ntou.notesharedevbackend.userModule.entity.UserObj;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-@Document(collection = "note")
-public class Note {
-
-    // attributes
+public class NoteReturn {
     private String id;
     private String type; // normal, reward, collaboration
     private String department;
@@ -32,6 +29,7 @@ public class Note {
     private Boolean downloadable;
     private Integer commentCount;
     private ArrayList<Comment> comments;
+    private ArrayList<CommentReturn> commentsUserObj;
     private Integer price;
     private Boolean isPublic; // 筆記是否公開
     private Boolean isSubmit; // 用於懸賞區投稿
@@ -47,30 +45,19 @@ public class Note {
     private Date publishDate; // publish 後更新，預設為 NULL
     private String description;
 
-    // constructors
-    public Note() {}
+    private UserObj headerUserObj;
+    private UserObj managerUserObj;
+    private ArrayList<UserObj> authorUserObj;
+    private ArrayList<UserObj> likerUserObj;
+    private ArrayList<UserObj> buyerUserObj;
+    private ArrayList<UserObj> favoriterUserObj;
+    private ArrayList<UserObj> contributorUserObj;
 
-
-    // getter and setter
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public NoteReturn() {
     }
 
     public String getId() {
         return id;
-    }
-
-    public Boolean getReference() {
-        return isReference;
-    }
-
-    public void setReference(Boolean reference) {
-        isReference = reference;
     }
 
     public void setId(String id) {
@@ -101,46 +88,14 @@ public class Note {
         this.subject = subject;
     }
 
-
-    public String getHeaderEmail() {
-        return headerEmail;
+    public String getTitle() {
+        return title;
     }
 
-    public void setHeaderEmail(String headerEmail) {
-        this.headerEmail = headerEmail;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getHeaderName() {
-        return headerName;
-    }
-
-    public void setHeaderName(String headerName) {
-        this.headerName = headerName;
-    }
-
-    public ArrayList<String> getAuthorEmail() {
-        return authorEmail;
-    }
-
-    public void setAuthorEmail(ArrayList<String> authorEmail) {
-        this.authorEmail = authorEmail;
-    }
-
-    public ArrayList<String> getAuthorName() {
-        return authorName;
-    }
-
-    public void setAuthorName(ArrayList<String> authorName) {
-        this.authorName = authorName;
-    }
-
-    public String getManagerEmail() {
-        return managerEmail;
-    }
-
-    public void setManagerEmail(String managerEmail) {
-        this.managerEmail = managerEmail;
-    }
 
     public String getProfessor() {
         return professor;
@@ -157,7 +112,6 @@ public class Note {
     public void setSchool(String school) {
         this.school = school;
     }
-
 
     public Integer getLikeCount() {
         return likeCount;
@@ -205,6 +159,14 @@ public class Note {
 
     public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
+    }
+
+    public ArrayList<CommentReturn> getCommentsUserObj() {
+        return commentsUserObj;
+    }
+
+    public void setCommentsUserObj(ArrayList<CommentReturn> commentsUserObj) {
+        this.commentsUserObj = commentsUserObj;
     }
 
     public Integer getPrice() {
@@ -263,20 +225,20 @@ public class Note {
         this.version = version;
     }
 
-    public ArrayList<String> getContributors() {
-        return contributors;
-    }
-
-    public void setContributors(ArrayList<String> contributors) {
-        this.contributors = contributors;
-    }
-
     public String getPostID() {
         return postID;
     }
 
     public void setPostID(String postID) {
         this.postID = postID;
+    }
+
+    public Boolean getReference() {
+        return isReference;
+    }
+
+    public void setReference(Boolean reference) {
+        isReference = reference;
     }
 
     public Boolean getBest() {
@@ -287,12 +249,116 @@ public class Note {
         isBest = best;
     }
 
-    public String getTitle() {
-        return title;
+    public Date getPublishDate() {
+        return publishDate;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setPublishDate(Date publishDate) {
+        this.publishDate = publishDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public UserObj getHeaderUserObj() {
+        return headerUserObj;
+    }
+
+    public void setHeaderUserObj(UserObj headerUserObj) {
+        this.headerUserObj = headerUserObj;
+    }
+
+    public UserObj getManagerUserObj() {
+        return managerUserObj;
+    }
+
+    public void setManagerUserObj(UserObj managerUserObj) {
+        this.managerUserObj = managerUserObj;
+    }
+
+    public ArrayList<UserObj> getAuthorUserObj() {
+        return authorUserObj;
+    }
+
+    public void setAuthorUserObj(ArrayList<UserObj> authorUserObj) {
+        this.authorUserObj = authorUserObj;
+    }
+
+    public ArrayList<UserObj> getLikerUserObj() {
+        return likerUserObj;
+    }
+
+    public void setLikerUserObj(ArrayList<UserObj> likerUserObj) {
+        this.likerUserObj = likerUserObj;
+    }
+
+    public ArrayList<UserObj> getBuyerUserObj() {
+        return buyerUserObj;
+    }
+
+    public void setBuyerUserObj(ArrayList<UserObj> buyerUserObj) {
+        this.buyerUserObj = buyerUserObj;
+    }
+
+    public ArrayList<UserObj> getFavoriterUserObj() {
+        return favoriterUserObj;
+    }
+
+    public void setFavoriterUserObj(ArrayList<UserObj> favoriterUserObj) {
+        this.favoriterUserObj = favoriterUserObj;
+    }
+
+    public ArrayList<UserObj> getContributorUserObj() {
+        return contributorUserObj;
+    }
+
+    public void setContributorUserObj(ArrayList<UserObj> contributorUserObj) {
+        this.contributorUserObj = contributorUserObj;
+    }
+
+    public String getHeaderEmail() {
+        return headerEmail;
+    }
+
+    public void setHeaderEmail(String headerEmail) {
+        this.headerEmail = headerEmail;
+    }
+
+    public String getHeaderName() {
+        return headerName;
+    }
+
+    public void setHeaderName(String headerName) {
+        this.headerName = headerName;
+    }
+
+    public ArrayList<String> getAuthorEmail() {
+        return authorEmail;
+    }
+
+    public void setAuthorEmail(ArrayList<String> authorEmail) {
+        this.authorEmail = authorEmail;
+    }
+
+    public ArrayList<String> getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(ArrayList<String> authorName) {
+        this.authorName = authorName;
+    }
+
+    public String getManagerEmail() {
+        return managerEmail;
+    }
+
+    public void setManagerEmail(String managerEmail) {
+        this.managerEmail = managerEmail;
     }
 
     public ArrayList<String> getLiker() {
@@ -319,11 +385,11 @@ public class Note {
         this.favoriter = favoriter;
     }
 
-    public Date getPublishDate() {
-        return publishDate;
+    public ArrayList<String> getContributors() {
+        return contributors;
     }
 
-    public void setPublishDate(Date publishDate) {
-        this.publishDate = publishDate;
+    public void setContributors(ArrayList<String> contributors) {
+        this.contributors = contributors;
     }
 }

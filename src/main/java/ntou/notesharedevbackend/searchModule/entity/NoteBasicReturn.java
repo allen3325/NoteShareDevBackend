@@ -1,7 +1,7 @@
 package ntou.notesharedevbackend.searchModule.entity;
 
 import com.fasterxml.jackson.annotation.*;
-import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.noteModule.entity.*;
 import ntou.notesharedevbackend.userModule.entity.*;
 
 import java.util.*;

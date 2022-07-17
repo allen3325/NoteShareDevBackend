@@ -1,21 +1,18 @@
 package ntou.notesharedevbackend.coinModule.service;
 
 import ntou.notesharedevbackend.coinModule.entity.Coin;
-import ntou.notesharedevbackend.exception.BadRequestException;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
-import ntou.notesharedevbackend.noteNodule.entity.Note;
-import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
-import ntou.notesharedevbackend.noteNodule.service.NoteService;
+import ntou.notesharedevbackend.noteModule.entity.Note;
+import ntou.notesharedevbackend.noteModule.entity.NoteReturn;
+import ntou.notesharedevbackend.noteModule.service.NoteService;
 import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.notificationModule.service.*;
 import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
-import org.springframework.beans.factory.annotation.*;
 import org.springframework.messaging.simp.*;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 @Service

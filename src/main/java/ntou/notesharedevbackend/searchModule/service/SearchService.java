@@ -1,7 +1,7 @@
 package ntou.notesharedevbackend.searchModule.service;
 
 import ntou.notesharedevbackend.folderModule.entity.*;
-import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.noteModule.entity.*;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.*;
 import ntou.notesharedevbackend.repository.*;
