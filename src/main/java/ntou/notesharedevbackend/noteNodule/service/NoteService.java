@@ -129,9 +129,9 @@ public class NoteService {
         note.setPostID(request.getPostID());
         note.setReference(request.getReference());
         note.setBest(request.getBest());
-        if(request.getDescription()!= null){
+        if (request.getDescription() != null) {
             note.setDescription(request.getDescription());
-        } else{
+        } else {
             note.setDescription("");
         }
         return noteRepository.insert(note);
@@ -540,24 +540,26 @@ public class NoteService {
             return folder;
         }
         //判斷是否為購買的筆記
-        Note note = getNote(noteID);
-        AppUser appUser = appUserService.getUserByName(folder.getCreatorName());
-        if (note.getHeaderName().equals(appUser.getName())) {//自己的筆記
-            //判斷是否為最後一份
-            ArrayList<Folder> folderArrayList = folderService.getAllFoldersFromUser(appUser.getEmail());
-            for (Folder f : folderArrayList) {
-                if (f.getId().equals(folderID)) continue;
-                ;
-                if (f.getNotes().contains(noteID)) {//其餘folder內也有
-                    folder.getNotes().remove(noteID);
-                    return folderService.replaceFolder(folder);
-                }
-            }
-        } else {//購買筆記可直接移出
-            folder.getNotes().remove(noteID);
-            return folderService.replaceFolder(folder);
-        }
-        return folder;//不可移出
+//        Note note = getNote(noteID);
+//        AppUser appUser = appUserService.getUserByName(folder.getCreatorName());
+//        if (note.getHeaderName().equals(appUser.getName())) {//自己的筆記
+//            //判斷是否為最後一份
+//            ArrayList<Folder> folderArrayList = folderService.getAllFoldersFromUser(appUser.getEmail());
+//            for (Folder f : folderArrayList) {
+//                if (f.getId().equals(folderID)) continue;
+//                ;
+//                if (f.getNotes().contains(noteID)) {//其餘folder內也有
+//                    folder.getNotes().remove(noteID);
+//                    return folderService.replaceFolder(folder);
+//                }
+//            }
+//        } else {//購買筆記可直接移出
+//            folder.getNotes().remove(noteID);
+//            return folderService.replaceFolder(folder);
+//        }
+        folder.getNotes().remove(noteID);
+        return folderService.replaceFolder(folder);
+//        return folder;//不可移出
     }
 
     public FolderReturn turnFolderToFolderReturn(Folder folder) {
