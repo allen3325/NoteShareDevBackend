@@ -95,6 +95,7 @@ public class FolderService {
                 authorUserObj.add(userObj);
             }
             noteBasicReturn.setAuthorUserObj(authorUserObj);
+            noteBasicReturn.setParent(folderID);
             notes.add(noteBasicReturn);
         }
 
