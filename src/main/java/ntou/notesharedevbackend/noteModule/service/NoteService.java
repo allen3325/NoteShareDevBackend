@@ -156,7 +156,6 @@ public class NoteService {
             note.setManagerEmail(null);
         }
         replaceNote(note, note.getId());
-        postService.kickUserFromCollaboration(note.getPostID(), email);
 //        noteRepository.save(note);
     }
 

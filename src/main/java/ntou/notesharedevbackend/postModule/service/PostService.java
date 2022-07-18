@@ -384,6 +384,10 @@ public class PostService {
 
     public boolean voteCollaborationVote(String postID, String voteID, String email, VoteRequest request) {
         Post post = getPostById(postID);
+        //檢查是否為此共筆作者
+        if (!post.getEmail().contains(email)) {
+            return false;
+        }
         for (Vote v : post.getVote()) {
             if (v.getId().equals(voteID)) {
                 if (v.getAgree().contains(email)) {//原本投同意

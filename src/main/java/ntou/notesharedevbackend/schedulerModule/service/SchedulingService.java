@@ -97,14 +97,7 @@ public class SchedulingService {
         if (timeBeforeNow(request.getYear(), request.getMonth(), request.getDay())) {
             return null;
         }
-
-//        Post post = postService.getPostById(postID);
-//        for(Vote v : post.getVote()){
-//            if(v.getId().equals(voteID)){
-//                cancelSchedule((v.getTask().getId()));//cancel old task
-//                break;
-//            }
-//        }
+        //cancel old task and add new task
         return postService.replaceVote(postID, voteID, request);
     }
 
