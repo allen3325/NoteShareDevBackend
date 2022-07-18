@@ -219,10 +219,14 @@ public class PostController {
     @Operation(summary = "delete post.")
     @DeleteMapping("/{postID}")
     public ResponseEntity<Object> deletePost(@PathVariable("postID") String id) {
-        postService.deletePost(id);
         Map<String, Object> res = new HashMap<>();
-        res.put("msg", "Success");
-        return ResponseEntity.status(204).body(res);
+        if (postService.deletePost(id)) {
+            res.put("msg", "Success");
+            return ResponseEntity.status(204).body(res);
+        } else {
+            res.put("msg", "Failed");
+            return ResponseEntity.status(409).body(res);
+        }
     }
 
     @Operation(summary = "create reward note", description = "postID為要投稿的reward post ID，email要放投稿人email")

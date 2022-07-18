@@ -153,8 +153,19 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public void deletePost(String id) {
-        postRepository.deleteById(id);
+    public boolean deletePost(String id) {
+        Post post = getPostById(id);
+        if (post.getType().equals("reward")) {
+            //已選最佳解
+            if (post.getAnswers().size() != 0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
+                postRepository.deleteById(id);
+                return true;
+            } else {
+                return false;
+            }
+        } else { //QA跟共筆不能刪
+            return false;
+        }
     }
 
     public Post modifyPublishStatus(String id) {
@@ -442,7 +453,7 @@ public class PostService {
         MessageReturn messageReturn = notificationService.getMessageReturn(appUser.getEmail(), "將你的懸賞筆記設為最佳解", "reward", postID);
         Note note = noteService.getNote(answerID);
         String contributor = note.getAuthorEmail().get(0);
-        messagingTemplate.convertAndSendToUser(contributor,"/topic/private-messages", messageReturn);
+        messagingTemplate.convertAndSendToUser(contributor, "/topic/private-messages", messageReturn);
         notificationService.saveNotificationPrivate(contributor, messageReturn);
 
         return true;
@@ -470,7 +481,7 @@ public class PostService {
 
                     //傳送通知給QA最佳解使用者
                     MessageReturn messageReturn = notificationService.getMessageReturn(post.getAuthor(), "將你的答案設為最佳解", "qa", postID);
-                    messagingTemplate.convertAndSendToUser(comment.getEmail(),"/topic/private-messages", messageReturn);
+                    messagingTemplate.convertAndSendToUser(comment.getEmail(), "/topic/private-messages", messageReturn);
                     notificationService.saveNotificationPrivate(comment.getEmail(), messageReturn);
                 }
             }
@@ -503,7 +514,7 @@ public class PostService {
             MessageReturn messageReturn = notificationService.getMessageReturn(appUser.getEmail(), "將你的懸賞筆記設為參考解", "reward", postID);
             Note note = noteService.getNote(answerID);
             String contributor = note.getAuthorEmail().get(0);
-            messagingTemplate.convertAndSendToUser(contributor,"/topic/private-messages", messageReturn);
+            messagingTemplate.convertAndSendToUser(contributor, "/topic/private-messages", messageReturn);
             notificationService.saveNotificationPrivate(contributor, messageReturn);
 
             return true;
