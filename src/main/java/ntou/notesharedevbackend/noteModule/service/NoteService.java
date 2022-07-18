@@ -1,4 +1,4 @@
-package ntou.notesharedevbackend.noteNodule.service;
+package ntou.notesharedevbackend.noteModule.service;
 
 import ntou.notesharedevbackend.coinModule.entity.Coin;
 import ntou.notesharedevbackend.coinModule.service.CoinService;
@@ -9,17 +9,15 @@ import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
-import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.noteModule.entity.*;
 import ntou.notesharedevbackend.notificationModule.entity.MessageReturn;
 import ntou.notesharedevbackend.notificationModule.service.NotificationService;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
-import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.entity.UserObj;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

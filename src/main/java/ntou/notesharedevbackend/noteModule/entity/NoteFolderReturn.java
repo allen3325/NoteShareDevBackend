@@ -1,4 +1,4 @@
-package ntou.notesharedevbackend.noteNodule.entity;
+package ntou.notesharedevbackend.noteModule.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ntou.notesharedevbackend.userModule.entity.UserObj;

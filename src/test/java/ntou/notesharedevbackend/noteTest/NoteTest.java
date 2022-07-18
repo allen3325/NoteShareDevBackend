@@ -2,9 +2,9 @@ package ntou.notesharedevbackend.noteTest;
 
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
-import ntou.notesharedevbackend.noteNodule.entity.Content;
-import ntou.notesharedevbackend.noteNodule.entity.Note;
-import ntou.notesharedevbackend.noteNodule.entity.VersionContent;
+import ntou.notesharedevbackend.noteModule.entity.Content;
+import ntou.notesharedevbackend.noteModule.entity.Note;
+import ntou.notesharedevbackend.noteModule.entity.VersionContent;
 import ntou.notesharedevbackend.postModule.entity.Apply;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.repository.FolderRepository;

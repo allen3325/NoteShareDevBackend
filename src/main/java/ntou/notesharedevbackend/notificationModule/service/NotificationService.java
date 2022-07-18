@@ -1,7 +1,7 @@
 package ntou.notesharedevbackend.notificationModule.service;
 
-import ntou.notesharedevbackend.noteNodule.entity.*;
-import ntou.notesharedevbackend.noteNodule.service.*;
+import ntou.notesharedevbackend.noteModule.entity.*;
+import ntou.notesharedevbackend.noteModule.service.*;
 import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.repository.*;
 import ntou.notesharedevbackend.userModule.entity.*;

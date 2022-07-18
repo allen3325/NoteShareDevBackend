@@ -2,7 +2,7 @@ package ntou.notesharedevbackend.basicFunctionTest;
 
 import ntou.notesharedevbackend.commentModule.entity.*;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
-import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.noteModule.entity.*;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.repository.*;
 import ntou.notesharedevbackend.userModule.entity.AppUser;

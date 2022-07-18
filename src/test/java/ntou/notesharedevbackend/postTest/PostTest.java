@@ -1,18 +1,15 @@
 package ntou.notesharedevbackend.postTest;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.*;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
-import ntou.notesharedevbackend.noteNodule.entity.Content;
-import ntou.notesharedevbackend.noteNodule.entity.Note;
-import ntou.notesharedevbackend.noteNodule.entity.VersionContent;
+import ntou.notesharedevbackend.noteModule.entity.Content;
+import ntou.notesharedevbackend.noteModule.entity.Note;
+import ntou.notesharedevbackend.noteModule.entity.VersionContent;
 import ntou.notesharedevbackend.postModule.entity.*;
-import ntou.notesharedevbackend.postModule.service.*;
 import ntou.notesharedevbackend.repository.*;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
-import org.checkerframework.checker.units.qual.A;
 import org.hamcrest.core.IsNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,17 +20,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 

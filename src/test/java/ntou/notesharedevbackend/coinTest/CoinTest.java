@@ -2,8 +2,8 @@ package ntou.notesharedevbackend.coinTest;
 
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
-import ntou.notesharedevbackend.noteNodule.entity.Note;
-import ntou.notesharedevbackend.noteNodule.entity.VersionContent;
+import ntou.notesharedevbackend.noteModule.entity.Note;
+import ntou.notesharedevbackend.noteModule.entity.VersionContent;
 import ntou.notesharedevbackend.repository.FolderRepository;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.UserRepository;

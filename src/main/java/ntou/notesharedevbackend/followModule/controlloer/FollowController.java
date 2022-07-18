@@ -2,7 +2,6 @@ package ntou.notesharedevbackend.followModule.controlloer;
 
 import io.swagger.v3.oas.annotations.*;
 import ntou.notesharedevbackend.followModule.service.*;
-import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.searchModule.entity.*;
 import ntou.notesharedevbackend.userModule.entity.*;
 import org.springframework.beans.factory.annotation.*;

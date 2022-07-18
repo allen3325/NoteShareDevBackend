@@ -1,6 +1,6 @@
 package ntou.notesharedevbackend.schedulerModule.job;
 
-import ntou.notesharedevbackend.noteNodule.service.NoteService;
+import ntou.notesharedevbackend.noteModule.service.NoteService;
 import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.notificationModule.service.*;
 import ntou.notesharedevbackend.postModule.entity.Post;

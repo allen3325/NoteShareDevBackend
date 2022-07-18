@@ -1,4 +1,4 @@
-package ntou.notesharedevbackend.noteNodule.entity;
+package ntou.notesharedevbackend.noteModule.entity;
 
 public class Content {
     private String mycustom_html;
