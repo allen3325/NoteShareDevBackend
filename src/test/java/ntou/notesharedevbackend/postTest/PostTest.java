@@ -1017,13 +1017,25 @@ public class PostTest {
     }
 
     @Test
-    public void testDeletePost() throws Exception {
-        Post post = createQAPost();
-
+    public void testDeletePostSuccess() throws Exception {
+        Post post = createRewardPost();
+        Note note = noteRepository.findById(post.getAnswers().get(0)).get();
+        note.setBest(true);
+        noteRepository.save(note);
         mockMvc.perform(delete("/post/" + post.getId())
                         .headers(httpHeaders))
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.msg").value("Success"));
+    }
+
+    @Test
+    public void testDeletePostFailed() throws Exception {
+        Post post = createQAPost();
+
+        mockMvc.perform(delete("/post/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().is(409))
+                .andExpect(jsonPath("$.msg").value("Failed"));
     }
 
     @Test
