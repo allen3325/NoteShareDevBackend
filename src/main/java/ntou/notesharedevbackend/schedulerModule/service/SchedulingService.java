@@ -51,6 +51,15 @@ public class SchedulingService {
     }
 
     public void addSchedule(Task request) {
+        int i = 0;
+        Post post = postService.getPostById(request.getPostID());
+        for (Vote vote : post.getVote()) {
+            Task task = vote.getTask();
+            if (task.getDay() == request.getDay() && task.getMonth() == request.getMonth() && task.getYear() == request.getYear()) {
+                i = i + 5;
+            }
+        }
+        System.out.println("second = " + i);
         //setting scheduleJob
         try {
             JobDetail jobDetail = JobBuilder.newJob(TriggerJob.class).withIdentity(request.getId()).build();
@@ -60,7 +69,7 @@ public class SchedulingService {
             //dateOf(hour,minute,second,day,month,year)
             SimpleTrigger trigger = (SimpleTrigger) newTrigger()
                     .withIdentity(request.getId())
-                    .startAt(DateBuilder.dateOf(0, 0, 0, request.getDay(), request.getMonth(), request.getYear()))
+                    .startAt(DateBuilder.dateOf(0, 0, i, request.getDay(), request.getMonth(), request.getYear()))
                     .build();
             Scheduler scheduler = quartzConfig.schedulerFactoryBean().getScheduler();
             scheduler.scheduleJob(jobDetail, trigger);
@@ -97,14 +106,7 @@ public class SchedulingService {
         if (timeBeforeNow(request.getYear(), request.getMonth(), request.getDay())) {
             return null;
         }
-
-//        Post post = postService.getPostById(postID);
-//        for(Vote v : post.getVote()){
-//            if(v.getId().equals(voteID)){
-//                cancelSchedule((v.getTask().getId()));//cancel old task
-//                break;
-//            }
-//        }
+        //cancel old task and add new task
         return postService.replaceVote(postID, voteID, request);
     }
 

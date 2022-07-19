@@ -926,6 +926,7 @@ public class PostTest {
         ArrayList<Vote> voteArrayList = new ArrayList<>();
         voteArrayList.add(vote);
         post.setVote(voteArrayList);
+        post.getEmail().add("user1@gmail.com");
         postRepository.save(post);
         AppUser appUser = userRepository.findByEmail("user1@gmail.com");
         JSONObject request = new JSONObject()

@@ -165,7 +165,7 @@ public class PostController {
             return ResponseEntity.ok(res);
         } else {
             res.put("msg", "Fail");
-            throw new NotFoundException("Can not vote");
+            return ResponseEntity.status(409).body(res);
         }
     }
 

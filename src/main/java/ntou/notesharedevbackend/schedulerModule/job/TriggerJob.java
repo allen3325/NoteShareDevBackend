@@ -5,6 +5,7 @@ import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.notificationModule.service.*;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
+import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import ntou.notesharedevbackend.schedulerModule.service.SchedulingService;
@@ -24,11 +25,11 @@ public class TriggerJob implements Job {
     @Autowired
     private PostService postService;
     @Autowired
-    private SchedulingService schedulingService;
-    @Autowired
     private NotificationService notificationService;
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private PostRepository postRepository;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -43,50 +44,32 @@ public class TriggerJob implements Job {
 //
 //        }
         vote(dataMap.getString("voteID"), dataMap.getString("postID"));//vote result
-        System.out.println("job execution"+taskID);
+        System.out.println("job execution taskID = " + taskID);
     }
-//    public void publish(String noteID){
+
+    //    public void publish(String noteID){
 //        noteService.publishOrSubmit(noteID);
 //        System.out.println(" Publish "+noteID);
 //    }
-    public void vote( String voteID, String postID){//need post -> vote -> type ->result
+    public void vote(String voteID, String postID) {//need post -> vote -> type ->result
         Post post = postService.getPostById(postID);
-        for(Vote v : post.getVote()){//find target vote
-            if(v.getId().equals(voteID)){
-//                Vote newVote = v;
+        int i = 0;
+        for (Vote v : post.getVote()) {//find target vote
+            if (v.getId().equals(voteID)) {
                 //總投票人數
-                int totalVote = v.getAgree().size()+v.getDisagree().size();
+                int totalVote = v.getAgree().size() + v.getDisagree().size();
                 //共筆總人數
                 int totalPerson = post.getEmail().size();
                 //有效投票->總投票人數要大於共筆總人數
-                if(totalVote > (totalPerson/2)){
+                if (totalVote > (totalPerson / 2)) {
                     //需要同意大於不同意才算同意
-                    if(v.getAgree().size()>v.getDisagree().size()) {//agree kick
-                        noteService.kickUserFromCollaboration(post.getAnswers().get(0),v.getKickTarget());
-                        postService.kickUserFromCollaboration(post.getId(),v.getKickTarget());
+                    if (v.getAgree().size() > v.getDisagree().size()) {//agree kick
+                        noteService.triggerKickUserFromCollaboration(post.getAnswers().get(0), v.getKickTarget());
                         v.setResult("agree kick");
                     } else {
                         v.setResult("disagree kick");
                     }
-//                    if(newVote.getType().equals("kick")){//vote target kick
-//                        if(newVote.getAgree().size()>newVote.getDisagree().size()) {//agree kick
-//                            noteService.kickUserFromCollaboration(post.getAnswers().get(0),newVote.getKickTarget());
-//                            newVote.setResult("agree kick ");
-//                        } else {
-//                            newVote.setResult("disagree kick");
-//                        }
-//                    }
-//                    else{//vote target collaboration publish
-//                        if(newVote.getAgree().size()>newVote.getDisagree().size()) {//agree publish
-//                            noteService.publishOrSubmit(post.getAnswers().get(0));
-//                            newVote.setResult("agree publish");
-//                        }else{//add a week
-//                            newVote.setResult("disagree, postpone");
-//                            newVote.setTask(postponeTask(newVote.getTask(),7));
-//                            schedulingService.modifyVoteSchedule(postID, voteID, newVote);
-//                        }
-//                    }
-                }else{
+                } else {
                     //無效投票
                     v.setResult("invalid");
                 }
@@ -97,14 +80,25 @@ public class TriggerJob implements Job {
                     messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
                     notificationService.saveNotificationPrivate(author, messageReturn);
                 }
-
-                postService.replacePost(postID,post);
+                //更新投票結果
+                System.out.println("kickTarget " + v.getKickTarget() + " result " + v.getResult());
+                post = postService.getPostById(postID);
+                post.getVote().get(i).setResult(v.getResult());
+                postRepository.save(post);
+                //踢人
+                if (v.getResult().equals("agree kick")) {
+                    post = postService.getPostById(postID);
+                    post.getEmail().remove(v.getKickTarget());
+                    postRepository.save(post);
+                }
                 break;
             }
+            i++;
         }
-        System.out.println("Vote "+postID);
+        System.out.println("Vote's post ID " + postID);
     }
-    public Task postponeTask(Task request,int postponeDay) {
+
+    public Task postponeTask(Task request, int postponeDay) {
         Task task = new Task();
 //        task.setType(request.getType());
         task.setVoteID(request.getVoteID());
@@ -119,18 +113,18 @@ public class TriggerJob implements Job {
         DateFormat parser = new SimpleDateFormat("dd-MM-yyyy");
         String dateString = "";
         // 處理字串格式並 parse 成 Date 格式
-        if(day < 10){
-            dateString+="0"+Integer.toString(day);
-        }else{
-            dateString+=Integer.toString(day);
+        if (day < 10) {
+            dateString += "0" + Integer.toString(day);
+        } else {
+            dateString += Integer.toString(day);
         }
-        dateString+="-";
-        if(month < 10){
-            dateString+="0"+Integer.toString(month);
-        }else{
-            dateString+=Integer.toString(month);
+        dateString += "-";
+        if (month < 10) {
+            dateString += "0" + Integer.toString(month);
+        } else {
+            dateString += Integer.toString(month);
         }
-        dateString+="-"+Integer.toString(year);
+        dateString += "-" + Integer.toString(year);
 
         try {
             Date date = (Date) parser.parse(dateString);
