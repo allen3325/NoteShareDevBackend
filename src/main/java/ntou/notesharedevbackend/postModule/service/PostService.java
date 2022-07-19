@@ -644,7 +644,7 @@ public class PostService {
             } else {
                 for (String noteID : post.getAnswers()) {
                     NotePostReturn notePostReturn = new NotePostReturn();
-                    System.out.println(noteID);
+//                    System.out.println(noteID);
                     notePostReturn.setId(noteID);
                     Note note = noteService.getNote(noteID);
                     notePostReturn.setDate(note.getPublishDate());

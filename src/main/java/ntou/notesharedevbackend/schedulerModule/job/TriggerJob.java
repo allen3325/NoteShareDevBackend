@@ -5,6 +5,7 @@ import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.notificationModule.service.*;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
+import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import ntou.notesharedevbackend.schedulerModule.service.SchedulingService;
@@ -24,11 +25,11 @@ public class TriggerJob implements Job {
     @Autowired
     private PostService postService;
     @Autowired
-    private SchedulingService schedulingService;
-    @Autowired
     private NotificationService notificationService;
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private PostRepository postRepository;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -43,7 +44,7 @@ public class TriggerJob implements Job {
 //
 //        }
         vote(dataMap.getString("voteID"), dataMap.getString("postID"));//vote result
-        System.out.println("job execution" + taskID);
+        System.out.println("job execution taskID = " + taskID);
     }
 
     //    public void publish(String noteID){
@@ -52,6 +53,7 @@ public class TriggerJob implements Job {
 //    }
     public void vote(String voteID, String postID) {//need post -> vote -> type ->result
         Post post = postService.getPostById(postID);
+        int i = 0;
         for (Vote v : post.getVote()) {//find target vote
             if (v.getId().equals(voteID)) {
                 //總投票人數
@@ -79,15 +81,21 @@ public class TriggerJob implements Job {
                     notificationService.saveNotificationPrivate(author, messageReturn);
                 }
                 //更新投票結果
-                postService.replacePost(postID, post);
+                System.out.println("kickTarget " + v.getKickTarget() + " result " + v.getResult());
+                post = postService.getPostById(postID);
+                post.getVote().get(i).setResult(v.getResult());
+                postRepository.save(post);
                 //踢人
                 if (v.getResult().equals("agree kick")) {
-                    postService.kickUserFromCollaboration(post.getId(), v.getKickTarget());
+                    post = postService.getPostById(postID);
+                    post.getEmail().remove(v.getKickTarget());
+                    postRepository.save(post);
                 }
                 break;
             }
+            i++;
         }
-        System.out.println("Vote " + postID);
+        System.out.println("Vote's post ID " + postID);
     }
 
     public Task postponeTask(Task request, int postponeDay) {
