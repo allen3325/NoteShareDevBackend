@@ -27,7 +27,7 @@ public class JWTController {
     @Lazy
     private AppUserService appUserService;
 
-    @Operation(summary = "sign up", description = "註冊,body裡，只需填email,name,password,headshotPhoto")
+    @Operation(summary = "sign up", description = "註冊,body裡，只需填email,name,password,headshotPhoto 406->重複名字，409->重複信箱，201->註冊成功")
     @PostMapping("/signup")
     public ResponseEntity<Object> signUp(@RequestBody AppUser request) {
         Map<String, Object> res = new HashMap<>();
