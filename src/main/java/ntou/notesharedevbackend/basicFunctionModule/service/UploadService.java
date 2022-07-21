@@ -2,8 +2,8 @@ package ntou.notesharedevbackend.basicFunctionModule.service;
 
 import ntou.notesharedevbackend.basicFunctionModule.config.*;
 import ntou.notesharedevbackend.basicFunctionModule.entity.*;
-import ntou.notesharedevbackend.noteNodule.entity.*;
-import ntou.notesharedevbackend.noteNodule.service.*;
+import ntou.notesharedevbackend.noteModule.entity.*;
+import ntou.notesharedevbackend.noteModule.service.*;
 import ntou.notesharedevbackend.repository.*;
 import org.apache.tomcat.util.http.fileupload.*;
 import org.springframework.beans.factory.annotation.*;

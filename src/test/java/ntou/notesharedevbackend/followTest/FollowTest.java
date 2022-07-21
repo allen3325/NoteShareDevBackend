@@ -1,5 +1,11 @@
 package ntou.notesharedevbackend.followTest;
 
+import ntou.notesharedevbackend.folderModule.entity.Folder;
+import ntou.notesharedevbackend.noteModule.entity.Content;
+import ntou.notesharedevbackend.noteModule.entity.Note;
+import ntou.notesharedevbackend.noteModule.entity.VersionContent;
+import ntou.notesharedevbackend.repository.FolderRepository;
+import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import org.junit.jupiter.api.AfterEach;
@@ -14,13 +20,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -39,13 +40,19 @@ public class FollowTest {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
+    private FolderRepository folderRepository;
+    @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private NoteRepository noteRepository;
 
     @BeforeEach
     public void init() {
         httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         userRepository.deleteAll();
+        noteRepository.deleteAll();
+        folderRepository.deleteAll();
         AppUser appUser = createInitUser();
         userRepository.insert(appUser);
     }
@@ -99,7 +106,20 @@ public class FollowTest {
         appUser.setName(name);
         appUser.setPassword(passwordEncoder.encode("1234"));
         appUser.setVerifyCode("1111");
-        appUser.setFolders(new ArrayList<>());
+        Folder folder = new Folder();
+        folder.setCreatorName(name);
+        folder.setFolderName("Folder");
+        folder.setChildren(new ArrayList<>());
+        folder.setNotes(new ArrayList<>());
+        folder.setParent(null);
+        folder.setPath("/Folder");
+        folder.setFavorite(false);
+        folder.setPublic(false);
+        folder.getNotes().add(createNormalNote(email, name).getId());
+        ArrayList<String> folderArrayList = new ArrayList<>();
+        folderArrayList.add(folder.getId());
+        folderRepository.insert(folder);
+        appUser.setFolders(folderArrayList);
         // 張哲瑋：因為我把appUser的建構子修改過，以下空陣列為原本建構子裡做的事情
         appUser.setStrength(new ArrayList<String>());
         appUser.setSubscribe(new ArrayList<String>());
@@ -107,7 +127,117 @@ public class FollowTest {
         appUser.setFans(new ArrayList<String>());
         appUser.setHeadshotPhoto(null);
         appUser.setBelledBy(new ArrayList<>());
+        appUser.setNotification(new ArrayList<>());
+        appUser.setUnreadMessageCount(0);
         return appUser;
+    }
+
+    private Note createNormalNote(String email, String name) {
+        Note note = new Note();
+        note.setType("normal");
+        note.setDepartment("CS");
+        note.setSubject("OS");
+        note.setTitle("Interrupt");
+        note.setHeaderEmail(email);
+        note.setHeaderName(name);
+        ArrayList<String> authorEmails = new ArrayList<>();
+        authorEmails.add(email);
+        note.setAuthorEmail(authorEmails);
+        ArrayList<String> authorNames = new ArrayList<>();
+        authorNames.add(name);
+        note.setAuthorName(authorNames);
+        note.setProfessor("NoteShare");
+        note.setSchool("NTOU");
+        note.setPublic(true);
+        note.setPrice(50);
+        note.setLiker(new ArrayList<>());
+        note.setLikeCount(null);
+        note.setBuyer(new ArrayList<>());
+        note.setFavoriter(new ArrayList<>());
+        note.setFavoriteCount(null);
+        note.setUnlockCount(0);
+        note.setDownloadable(false);
+        note.setCommentCount(null);
+        note.setComments(new ArrayList<>());
+        note.setSubmit(null);
+        note.setQuotable(false);
+        ArrayList<String> tags = new ArrayList<>();
+        tags.add("tag1");
+        tags.add("tag2");
+        tags.add("tag3");
+        note.setTag(tags);
+        note.setHiddenTag(new ArrayList<>());
+        ArrayList<VersionContent> versionContents = new ArrayList<>();
+        VersionContent v1 = new VersionContent();
+        v1.setName("v1");
+        v1.setSlug("string");
+        ArrayList<String> fileURLs = new ArrayList<>();
+        fileURLs.add("fileURL1");
+        fileURLs.add("fileURL2");
+        fileURLs.add("fileURL3");
+        v1.setFileURL(fileURLs);
+        ArrayList<String> picURLs = new ArrayList<>();
+        picURLs.add("picURL1");
+        picURLs.add("picURL2");
+        picURLs.add("picURL3");
+        v1.setPicURL(picURLs);
+        v1.setTemp(true);
+        Content content1 = new Content();
+        content1.setMycustom_assets("string");
+        content1.setMycustom_components("string");
+        content1.setMycustom_css("string");
+        content1.setMycustom_html("string");
+        content1.setMycustom_styles("string");
+        Content content2 = new Content();
+        content2.setMycustom_assets("string");
+        content2.setMycustom_components("string");
+        content2.setMycustom_css("string");
+        content2.setMycustom_html("string");
+        content2.setMycustom_styles("string");
+        Content content3 = new Content();
+        content3.setMycustom_assets("string");
+        content3.setMycustom_components("string");
+        content3.setMycustom_css("string");
+        content3.setMycustom_html("string");
+        content3.setMycustom_styles("string");
+        ArrayList<Content> contents = new ArrayList<>();
+        contents.add(content1);
+        contents.add(content2);
+        contents.add(content3);
+        v1.setContent(contents);
+        VersionContent v2 = new VersionContent();
+        v2.setSlug("String");
+        v2.setFileURL(fileURLs);
+        v2.setPicURL(picURLs);
+        v2.setContent(contents);
+        v2.setName("v2");
+        v2.setTemp(false);
+        VersionContent v3 = new VersionContent();
+        v3.setSlug("String");
+        v3.setFileURL(fileURLs);
+        v3.setPicURL(picURLs);
+        v3.setContent(contents);
+        v3.setTemp(true);
+        v3.setName("v3");
+        VersionContent v4 = new VersionContent();
+        v4.setSlug("String");
+        v4.setFileURL(fileURLs);
+        v4.setPicURL(picURLs);
+        v4.setContent(contents);
+        v4.setName("v4");
+        v4.setTemp(false);
+        versionContents.add(v1);
+        versionContents.add(v2);
+        versionContents.add(v3);
+        versionContents.add(v4);
+        note.setVersion(versionContents);
+        note.setContributors(new ArrayList<>());
+        note.setPostID(null);
+        note.setReference(null);
+        note.setBest(null);
+        note.setManagerEmail(null);
+        noteRepository.insert(note);
+        return note;
     }
 
     @Test
@@ -173,10 +303,10 @@ public class FollowTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
         if (userRepository.findByEmail(wantUnFollow.getEmail()).getSubscribe().contains(beUnFollowed.getEmail())) {
-            throw new Exception();
+            throw new Exception("Follow Test : wantUnFollow's subscribe doesn't update");
         }
         if (userRepository.findByEmail(beUnFollowed.getEmail()).getFans().contains(wantUnFollow.getEmail())) {
-            throw new Exception();
+            throw new Exception("Follow Test : beUnFollowed's fans doesn't update");
         }
     }
 
@@ -246,8 +376,32 @@ public class FollowTest {
                 .andExpect(jsonPath("$.res.[0].userObjAvatar").value(appUser.getHeadshotPhoto()));
     }
 
+    @Test
+    public void testGetFollowingNotes() throws Exception {
+        AppUser following1 = userRepository.findByEmail("alan@gmail.com");
+        AppUser following2 = userRepository.findByEmail("eva@gmail.com");
+        Folder folderOfF1 = folderRepository.findById(following1.getFolders().get(0)).get();
+        Note noteOfF1 = noteRepository.findById(folderOfF1.getNotes().get(0)).get();
+        Folder folderOfF2 = folderRepository.findById(following2.getFolders().get(0)).get();
+        Note noteOfF2 = noteRepository.findById(folderOfF2.getNotes().get(0)).get();
+        String email = "yitingwu.1030@gmail.com";
+        int offset = 0;
+        int pageSize = 10;
+        mockMvc.perform(get("/note/following/" + email + "/" + offset + "/" + pageSize)
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.items.[0].id").value(noteOfF1.getId()))
+                .andExpect(jsonPath("$.res.items.[0].headerEmail").value(following1.getEmail()))
+                .andExpect(jsonPath("$.res.items.[1].id").value(noteOfF2.getId()))
+                .andExpect(jsonPath("$.res.items.[1].headerEmail").value(following2.getEmail()))
+        ;
+
+    }
+
     @AfterEach
     public void clear() {
         userRepository.deleteAll();
+        noteRepository.deleteAll();
+        folderRepository.deleteAll();
     }
 }

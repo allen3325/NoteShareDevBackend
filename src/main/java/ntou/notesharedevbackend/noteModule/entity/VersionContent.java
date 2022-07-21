@@ -4,7 +4,7 @@
 //    圖片picURL [string]
 //    檔案filesURL [string]
 //    markdown [string]
-package ntou.notesharedevbackend.noteNodule.entity;
+package ntou.notesharedevbackend.noteModule.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.bson.types.ObjectId;

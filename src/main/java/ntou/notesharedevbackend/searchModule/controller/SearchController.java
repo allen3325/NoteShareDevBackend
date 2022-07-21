@@ -1,12 +1,8 @@
 package ntou.notesharedevbackend.searchModule.controller;
 
 import io.swagger.v3.oas.annotations.*;
-import ntou.notesharedevbackend.folderModule.entity.*;
-import ntou.notesharedevbackend.noteNodule.entity.*;
-import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.searchModule.entity.*;
 import ntou.notesharedevbackend.searchModule.service.*;
-import ntou.notesharedevbackend.userModule.entity.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +64,18 @@ public class SearchController {
         Pages folders = searchService.getSearchedFolderByKeyword(keyword, offset, pageSize, creator);
         Map<String, Pages> map = new HashMap<>();
         map.put("search", folders);
+
+        return ResponseEntity.ok(map);
+    }
+
+    @Operation(summary = "Get notes by tags", description = "找相似tag的筆記")
+    @GetMapping("/tag/{offset}/{pageSize}/{tag}")
+    public ResponseEntity<Map<String, Pages>> getNotesByTags(@PathVariable("offset") int offset,
+                                                             @PathVariable("pageSize") int pageSize,
+                                                             @PathVariable("tag") String tag) {
+        Pages notes = searchService.getNotesByTags(offset, pageSize, tag);
+        Map<String, Pages> map = new HashMap<>();
+        map.put("search", notes);
 
         return ResponseEntity.ok(map);
     }

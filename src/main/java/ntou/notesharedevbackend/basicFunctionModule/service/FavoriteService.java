@@ -1,12 +1,16 @@
 package ntou.notesharedevbackend.basicFunctionModule.service;
 
 import ntou.notesharedevbackend.commentModule.entity.*;
-import ntou.notesharedevbackend.noteNodule.entity.*;
-import ntou.notesharedevbackend.noteNodule.service.*;
+import ntou.notesharedevbackend.exception.NotFoundException;
+import ntou.notesharedevbackend.folderModule.entity.Folder;
+import ntou.notesharedevbackend.folderModule.service.FolderService;
+import ntou.notesharedevbackend.noteModule.entity.*;
+import ntou.notesharedevbackend.noteModule.service.*;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.*;
 import ntou.notesharedevbackend.repository.*;
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.*;
 
 import java.util.*;
@@ -21,14 +25,9 @@ public class FavoriteService {
     private NoteService noteService;
     @Autowired
     private PostService postService;
-
-//    public void favoriteNote(String id) {
-//        Note note = noteService.getNote(id);
-//        if (note.getFavorite() != null) {
-//            note.setFavorite(!note.getFavorite());
-//            noteRepository.save(note);
-//        }
-//    }
+    @Autowired
+    @Lazy
+    private FolderService folderService;
 
     public void favoriteNoteComment(String noteID, String commentID, String email) {
         Note note = noteService.getNote(noteID);
@@ -44,7 +43,7 @@ public class FavoriteService {
             }
         }
         note.setComments(comments);
-        noteService.replaceNote(note,note.getId());
+        noteService.replaceNote(note, note.getId());
 //        noteRepository.save(note);
     }
 
@@ -97,5 +96,36 @@ public class FavoriteService {
         }
         post.setComments(comments);
         postRepository.save(post);
+    }
+
+    public void favoriteNote(String noteID, String email) {
+        boolean isRemove = false;
+        if (noteRepository.existsById(noteID)) {
+            // update note's favorite info.
+            Note note = noteService.getNote(noteID);
+            if (note.getFavoriter() != null) {
+                ArrayList<String> noteFavoriter = note.getFavoriter();
+                if (noteFavoriter.contains(email)) {
+                    noteFavoriter.remove(email);
+                    isRemove = true;
+                } else {
+                    noteFavoriter.add(email);
+                }
+                noteService.replaceNote(note, note.getId());
+            }
+            Folder favFolder = folderService.getFavoriteFolderByUserEmail(email);
+            ArrayList<String> favNotes = favFolder.getNotes();
+            if (isRemove) {
+                // remove the note from user's favorite folder.
+                favNotes.remove(noteID);
+            } else {
+                // put the note into user's favorite folder.
+                favNotes.add(noteID);
+            }
+            favFolder.setNotes(favNotes);
+            folderService.replaceFolder(favFolder);
+        } else {
+            throw new NotFoundException("note is not found");
+        }
     }
 }

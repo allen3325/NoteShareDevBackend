@@ -1,18 +1,15 @@
 package ntou.notesharedevbackend.postTest;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.*;
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
-import ntou.notesharedevbackend.noteNodule.entity.Content;
-import ntou.notesharedevbackend.noteNodule.entity.Note;
-import ntou.notesharedevbackend.noteNodule.entity.VersionContent;
+import ntou.notesharedevbackend.noteModule.entity.Content;
+import ntou.notesharedevbackend.noteModule.entity.Note;
+import ntou.notesharedevbackend.noteModule.entity.VersionContent;
 import ntou.notesharedevbackend.postModule.entity.*;
-import ntou.notesharedevbackend.postModule.service.*;
 import ntou.notesharedevbackend.repository.*;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
-import org.checkerframework.checker.units.qual.A;
 import org.hamcrest.core.IsNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,17 +20,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 
@@ -109,6 +100,11 @@ public class PostTest {
         folderList.add(OSFolder.getId());
         appUser.setFolders(folderList);
         appUser.setCoin(300);
+        appUser.setNotification(new ArrayList<>());
+        appUser.setUnreadMessageCount(0);
+        appUser.setBelledBy(new ArrayList<>());
+        appUser.setSubscribe(new ArrayList<>());
+        appUser.setFans(new ArrayList<>());
         return appUser;
     }
 
@@ -179,7 +175,7 @@ public class PostTest {
         note.setDownloadable(false);
         note.setCommentCount(null);
         note.setComments(new ArrayList<>());
-        note.setSubmit(null);
+        note.setSubmit(true);
         note.setQuotable(false);
         ArrayList<String> tags = new ArrayList<>();
         tags.add("tag1");
@@ -256,6 +252,7 @@ public class PostTest {
         note.setReference(null);
         note.setBest(null);
         note.setManagerEmail(null);
+        note.setPublishDate(new Date());
         noteRepository.insert(note);
         return note;
     }
@@ -497,12 +494,17 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.commentsUserObj.[1].userObj.userObjName").value(commentAuthor1.getName()))
                 .andExpect(jsonPath("$.res.commentsUserObj.[1].userObj.userObjAvatar").value(commentAuthor1.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.commentsUserObj.[1].likerUserObj").isEmpty())
-                .andExpect(jsonPath("$.res.commentCount").value(post.getCommentCount()));
+                .andExpect(jsonPath("$.res.commentCount").value(post.getCommentCount()))
+                .andExpect(jsonPath("$.res.answersUserObj").isEmpty());
     }
 
     @Test
     public void testGetRewardPost() throws Exception {
         Post post = createRewardPost();
+        Note note1 = noteRepository.findById(post.getAnswers().get(0)).get();
+        AppUser appUser1 = userRepository.findByEmail(note1.getHeaderEmail());
+        Note note2 = noteRepository.findById(post.getAnswers().get(1)).get();
+        AppUser appUser2 = userRepository.findByEmail(note2.getHeaderEmail());
         AppUser appUser = userRepository.findByEmail(post.getEmail().get(0));
         mockMvc.perform(get("/post/" + post.getId())
                         .headers(httpHeaders))
@@ -529,13 +531,29 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.authorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()));
+                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].id").value(note1.getId()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].date").hasJsonPath())
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjEmail").value(appUser1.getEmail()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjName").value(appUser1.getName()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].best").value(false))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].reference").value(false))
+                .andExpect(jsonPath("$.res.answersUserObj.[1].id").value(note2.getId()))
+                .andExpect(jsonPath("$.res.answersUserObj.[1].date").hasJsonPath())
+                .andExpect(jsonPath("$.res.answersUserObj.[1].userObj.userObjEmail").value(appUser2.getEmail()))
+                .andExpect(jsonPath("$.res.answersUserObj.[1].userObj.userObjName").value(appUser2.getName()))
+                .andExpect(jsonPath("$.res.answersUserObj.[1].userObj.userObjAvatar").value(appUser2.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[1].best").value(false))
+                .andExpect(jsonPath("$.res.answersUserObj.[1].reference").value(false))
+        ;
     }
 
     @Test
     public void testGetCollaborationPost() throws Exception {
         Post post = createCollaborationPost();
         AppUser appUser = userRepository.findByEmail(post.getEmail().get(0));
+        Note note = noteRepository.findById(post.getAnswers().get(0)).get();
         mockMvc.perform(get("/post/" + post.getId())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
@@ -562,6 +580,14 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.collabApply").isEmpty())
+                .andExpect(jsonPath("$.res.answersUserObj.[0].id").value(note.getId()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].date").hasJsonPath())
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].best").value(false))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].reference").value(false))
+
 //                .andExpect(jsonPath("$.res.applyEmail").isEmpty())
 //                .andExpect(jsonPath("$.res.applyUserObj").isEmpty())
         ;
@@ -612,6 +638,7 @@ public class PostTest {
                 .andExpect(jsonPath("$.res[0].commentsUserObj.[1].likerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res[0].commentCount").value(post1.getCommentCount()))
                 .andExpect(jsonPath("$.res[0].public").value(post1.getPublic()))
+                .andExpect(jsonPath("$.res[0].answersUserObj").isEmpty())
                 .andExpect(jsonPath("$.res[1].id").value(post2.getId()))
                 .andExpect(jsonPath("$.res[1].type").value(post2.getType()))
                 .andExpect(jsonPath("$.res[1].email.[0]").value(userRepository.findByEmail(post2.getEmail().get(0)).getEmail()))
@@ -649,6 +676,7 @@ public class PostTest {
                 .andExpect(jsonPath("$.res[1].commentsUserObj.[1].likerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res[1].commentCount").value(post2.getCommentCount()))
                 .andExpect(jsonPath("$.res[1].public").value(post2.getPublic()))
+                .andExpect(jsonPath("$.res[1].answersUserObj").isEmpty())
                 .andExpect(jsonPath("$.res[2].id").value(post3.getId()))
                 .andExpect(jsonPath("$.res[2].type").value(post3.getType()))
                 .andExpect(jsonPath("$.res[2].email.[0]").value(userRepository.findByEmail(post3.getEmail().get(0)).getEmail()))
@@ -685,7 +713,9 @@ public class PostTest {
                 .andExpect(jsonPath("$.res[2].commentsUserObj.[1].userObj.userObjAvatar").value(userRepository.findByEmail(post3.getComments().get(1).getEmail()).getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res[2].commentsUserObj.[1].likerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res[2].commentCount").value(post3.getCommentCount()))
-                .andExpect(jsonPath("$.res[2].public").value(post3.getPublic()));
+                .andExpect(jsonPath("$.res[2].public").value(post3.getPublic()))
+                .andExpect(jsonPath("$.res[2].answersUserObj").isEmpty())
+        ;
 
     }
 
@@ -732,7 +762,9 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.authorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()));
+                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj").isEmpty())
+        ;
     }
 
     @Test
@@ -832,7 +864,8 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.commentsUserObj.[1].userObj.userObjName").value(commentAuthor1.getName()))
                 .andExpect(jsonPath("$.res.commentsUserObj.[1].userObj.userObjAvatar").value(commentAuthor1.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.commentsUserObj.[1].likerUserObj").isEmpty())
-                .andExpect(jsonPath("$.res.commentCount").value(post.getCommentCount()));
+                .andExpect(jsonPath("$.res.commentCount").value(post.getCommentCount()))
+                .andExpect(jsonPath("$.res.answersUserObj").isEmpty());
     }
 
     @Test
@@ -893,6 +926,7 @@ public class PostTest {
         ArrayList<Vote> voteArrayList = new ArrayList<>();
         voteArrayList.add(vote);
         post.setVote(voteArrayList);
+        post.getEmail().add("user1@gmail.com");
         postRepository.save(post);
         AppUser appUser = userRepository.findByEmail("user1@gmail.com");
         JSONObject request = new JSONObject()
@@ -984,13 +1018,25 @@ public class PostTest {
     }
 
     @Test
-    public void testDeletePost() throws Exception {
-        Post post = createQAPost();
-
+    public void testDeletePostSuccess() throws Exception {
+        Post post = createRewardPost();
+        Note note = noteRepository.findById(post.getAnswers().get(0)).get();
+        note.setBest(true);
+        noteRepository.save(note);
         mockMvc.perform(delete("/post/" + post.getId())
                         .headers(httpHeaders))
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.msg").value("Success"));
+    }
+
+    @Test
+    public void testDeletePostFailed() throws Exception {
+        Post post = createQAPost();
+
+        mockMvc.perform(delete("/post/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().is(409))
+                .andExpect(jsonPath("$.msg").value("Failed"));
     }
 
     @Test
@@ -1028,6 +1074,7 @@ public class PostTest {
         AppUser appUser = userRepository.findByEmail(post.getEmail().get(0));
         Note answerNote = noteRepository.findById(post.getAnswers().get(0)).get();
         answerNote.setBest(true);
+        AppUser appUser1 = userRepository.findByEmail(answerNote.getHeaderEmail());
         noteRepository.save(answerNote);
         ArrayList<String> newAnswers = new ArrayList<>();
         newAnswers.addAll(post.getAnswers());
@@ -1057,7 +1104,15 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.authorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()));
+                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].id").value(answerNote.getId()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].date").hasJsonPath())
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjEmail").value(appUser1.getEmail()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjName").value(appUser1.getName()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].best").value(true))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].reference").value(false))
+        ;
 
         if (postRepository.findById(post.getId()).get().getPublic().equals(true)) {
             throw new Exception("Post Test: post is still public");
@@ -1075,6 +1130,8 @@ public class PostTest {
     public void testQAPostModifyPublishStatusAfterChooseBestAnswer() throws Exception {
         Post post = createQAPost();
         post.getComments().get(0).setBest(true);
+        Comment comment = post.getComments().get(0);
+        AppUser appUser1 = userRepository.findByEmail(comment.getEmail());
         postRepository.save(post);
         AppUser appUser = userRepository.findByEmail(post.getEmail().get(0));
 
@@ -1103,7 +1160,9 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.authorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()));
+                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj").isEmpty())
+        ;
         if (postRepository.findById(post.getId()).get().getPublic().equals(true)) {
             throw new Exception("Post Test: post is still public");
         }
@@ -1115,7 +1174,8 @@ public class PostTest {
         post.setPublic(false);
         postRepository.save(post);
         AppUser appUser = userRepository.findByEmail(post.getEmail().get(0));
-
+        Note note = noteRepository.findById(post.getAnswers().get(0)).get();
+        AppUser appUser1 = userRepository.findByEmail(note.getHeaderEmail());
         mockMvc.perform(put("/post/publish/" + post.getId())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
@@ -1141,7 +1201,15 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.authorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()));
+                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].id").value(note.getId()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].date").hasJsonPath())
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjEmail").value(appUser1.getEmail()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjName").value(appUser1.getName()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].best").value(false))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].reference").value(false))
+        ;
         if (postRepository.findById(post.getId()).get().getPublic().equals(false)) {
             throw new Exception("Post Test: post is still public");
         }
@@ -1203,6 +1271,7 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.commentsUserObj.[1].userObj.userObjName").value(commentAuthor1.getName()))
                 .andExpect(jsonPath("$.res.commentsUserObj.[1].userObj.userObjAvatar").value(commentAuthor1.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.commentsUserObj.[1].likerUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.answersUserObj").isEmpty())
         ;
         if (postRepository.findById(post.getId()).get().getPublic().equals(false)) {
             throw new Exception("Post Test: post is still public");
@@ -1322,7 +1391,8 @@ public class PostTest {
     public void testCollaborationPostModifyPublishStatusToUnPublish() throws Exception {
         Post post = createCollaborationPost();
         AppUser appUser = userRepository.findByEmail(post.getAuthor());
-
+        Note note = noteRepository.findById(post.getAnswers().get(0)).get();
+        AppUser appUser1 = userRepository.findByEmail(note.getHeaderEmail());
         mockMvc.perform(put("/post/publish/" + post.getId())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
@@ -1348,7 +1418,15 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.authorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()));
+                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].id").value(note.getId()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].date").hasJsonPath())
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjEmail").value(appUser1.getEmail()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjName").value(appUser1.getName()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].best").value(false))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].reference").value(false))
+        ;
         if (postRepository.findById(post.getId()).get().getPublic().equals(post.getPublic())) {
             throw new Exception("Post Test : publish does not update");
         }
@@ -1360,7 +1438,8 @@ public class PostTest {
         post.setPublic(false);
         postRepository.save(post);
         AppUser appUser = userRepository.findByEmail(post.getAuthor());
-
+        Note note = noteRepository.findById(post.getAnswers().get(0)).get();
+        AppUser appUser1 = userRepository.findByEmail(note.getHeaderEmail());
         mockMvc.perform(put("/post/publish/" + post.getId())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
@@ -1386,7 +1465,15 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.authorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.emailUserObj.[0].userObjName").value(appUser.getName()))
-                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()));
+                .andExpect(jsonPath("$.res.emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].id").value(note.getId()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].date").hasJsonPath())
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjEmail").value(appUser1.getEmail()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjName").value(appUser1.getName()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].userObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].best").value(false))
+                .andExpect(jsonPath("$.res.answersUserObj.[0].reference").value(false))
+        ;
         if (postRepository.findById(post.getId()).get().getPublic().equals(post.getPublic())) {
             throw new Exception("Post Test : publish does not update");
         }
@@ -1418,6 +1505,8 @@ public class PostTest {
 //        post.getApplyEmail().add(appUser.getEmail());
         post.getEmail().add(appUser.getEmail());
         postRepository.save(post);
+        Note note = noteRepository.findById(post.getAnswers().get(0)).get();
+        AppUser appUser1 = userRepository.findByEmail(note.getHeaderEmail());
         mockMvc.perform(get("/post/" + appUser.getEmail() + "/collaboration")
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
@@ -1450,6 +1539,13 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.[0].emailUserObj.[1].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.[0].emailUserObj.[1].userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.[0].emailUserObj.[1].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[0].answersUserObj.[0].id").value(note.getId()))
+                .andExpect(jsonPath("$.res.[0].answersUserObj.[0].date").hasJsonPath())
+                .andExpect(jsonPath("$.res.[0].answersUserObj.[0].userObj.userObjEmail").value(appUser1.getEmail()))
+                .andExpect(jsonPath("$.res.[0].answersUserObj.[0].userObj.userObjName").value(appUser1.getName()))
+                .andExpect(jsonPath("$.res.[0].answersUserObj.[0].userObj.userObjAvatar").value(appUser1.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.[0].answersUserObj.[0].best").value(false))
+                .andExpect(jsonPath("$.res.[0].answersUserObj.[0].reference").value(false))
         ;
     }
 

@@ -2,21 +2,16 @@ package ntou.notesharedevbackend.postModule.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.exception.NotFoundException;
-import ntou.notesharedevbackend.noteNodule.entity.Note;
-import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
+import ntou.notesharedevbackend.noteModule.entity.Note;
+import ntou.notesharedevbackend.noteModule.entity.NoteReturn;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.PostService;
-import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.*;
-import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -170,7 +165,7 @@ public class PostController {
             return ResponseEntity.ok(res);
         } else {
             res.put("msg", "Fail");
-            throw new NotFoundException("Can not vote");
+            return ResponseEntity.status(409).body(res);
         }
     }
 
@@ -219,10 +214,14 @@ public class PostController {
     @Operation(summary = "delete post.")
     @DeleteMapping("/{postID}")
     public ResponseEntity<Object> deletePost(@PathVariable("postID") String id) {
-        postService.deletePost(id);
         Map<String, Object> res = new HashMap<>();
-        res.put("msg", "Success");
-        return ResponseEntity.status(204).body(res);
+        if (postService.deletePost(id)) {
+            res.put("msg", "Success");
+            return ResponseEntity.status(204).body(res);
+        } else {
+            res.put("msg", "Failed");
+            return ResponseEntity.status(409).body(res);
+        }
     }
 
     @Operation(summary = "create reward note", description = "postID為要投稿的reward post ID，email要放投稿人email")

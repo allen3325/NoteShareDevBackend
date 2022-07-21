@@ -4,9 +4,11 @@ import ntou.notesharedevbackend.coinModule.entity.Coin;
 import ntou.notesharedevbackend.coinModule.service.CoinService;
 import ntou.notesharedevbackend.commentModule.entity.*;
 import ntou.notesharedevbackend.commentModule.service.*;
-import ntou.notesharedevbackend.noteNodule.entity.Note;
-import ntou.notesharedevbackend.noteNodule.entity.NoteReturn;
-import ntou.notesharedevbackend.noteNodule.service.NoteService;
+import ntou.notesharedevbackend.noteModule.entity.Note;
+import ntou.notesharedevbackend.noteModule.entity.NoteReturn;
+import ntou.notesharedevbackend.noteModule.service.NoteService;
+import ntou.notesharedevbackend.notificationModule.entity.*;
+import ntou.notesharedevbackend.notificationModule.service.*;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.repository.PostRepository;
@@ -19,6 +21,7 @@ import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.simp.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -42,6 +45,17 @@ public class PostService {
     @Autowired
     @Lazy(value = true)
     private CommentService commentService;
+    @Autowired
+    @Lazy(value = true)
+    private NotificationService notificationService;
+    @Autowired
+    @Lazy(value = true)
+    private SimpMessagingTemplate messagingTemplate;
+
+//    protected final SimpMessagingTemplate messagingTemplate;
+//
+//    @Autowired
+//    protected PostService(SimpMessagingTemplate messagingTemplate) { this.messagingTemplate = messagingTemplate; }
 
     public Post[] getAllTypeOfPost(String postType) {
         List<Post> postList = postRepository.findAllByType(postType);
@@ -139,8 +153,19 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public void deletePost(String id) {
-        postRepository.deleteById(id);
+    public boolean deletePost(String id) {
+        Post post = getPostById(id);
+        if (post.getType().equals("reward")) {
+            //已選最佳解
+            if (post.getAnswers().size() != 0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
+                postRepository.deleteById(id);
+                return true;
+            } else {
+                return false;
+            }
+        } else { //QA跟共筆不能刪
+            return false;
+        }
     }
 
     public Post modifyPublishStatus(String id) {
@@ -173,6 +198,14 @@ public class PostService {
             Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
             post.setPublishDate(calendar.getTime());
             replacePost(post.getId(), post);
+
+            //傳送訊息給開啟bell的使用者
+            List<String> emails = post.getEmail();
+            for (String email : emails) {
+                MessageReturn messageReturn = notificationService.getMessageReturn(email, "發布了貼文", post.getType().toLowerCase(), id);
+                messagingTemplate.convertAndSend("/topic/bell-messages/" + email, messageReturn);
+                notificationService.saveNotificationBell(email, messageReturn);
+            }
         }
 
         return getPostById(id);
@@ -198,6 +231,15 @@ public class PostService {
         // update apply in post
         post.setCollabApply(allApply);
         replacePost(post.getId(), post);
+
+        //傳送通知給管理員&共筆發起人
+        ArrayList<String> emails = post.getEmail();
+        for (String email : emails) {
+            MessageReturn messageReturn = notificationService.getMessageReturn(applicant.getWantEnterUsersEmail(), "向你申請了共筆", "collaboration", id);
+            messagingTemplate.convertAndSendToUser(email, "/topic/private-messages", messageReturn);
+            notificationService.saveNotificationPrivate(email, messageReturn);
+        }
+
         return true;
 //        postRepository.save(post);
     }
@@ -283,6 +325,23 @@ public class PostService {
         post.setVote(voteArrayList);
         replacePost(post.getId(), post);
 //        postRepository.save(post);
+
+        //傳送通知給所有共筆作者
+        MessageReturn messageReturn = new MessageReturn();
+        messageReturn.setMessage("有人在共筆內發起了投票");
+        UserObj userObj = new UserObj();
+        userObj.setUserObjEmail("noteshare@gmail.com");
+        userObj.setUserObjName("NoteShare System");
+        userObj.setUserObjAvatar("https://i.imgur.com/5V1waq3.png");
+        messageReturn.setUserObj(userObj);
+        messageReturn.setType("collaboration");
+        messageReturn.setId(postID);
+        messageReturn.setDate(new Date());
+        for (String author : post.getEmail()) {
+            messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
+            notificationService.saveNotificationPrivate(author, messageReturn);
+        }
+
         return vote;
     }
 
@@ -325,6 +384,10 @@ public class PostService {
 
     public boolean voteCollaborationVote(String postID, String voteID, String email, VoteRequest request) {
         Post post = getPostById(postID);
+        //檢查是否為此共筆作者
+        if (!post.getEmail().contains(email)) {
+            return false;
+        }
         for (Vote v : post.getVote()) {
             if (v.getId().equals(voteID)) {
                 if (v.getAgree().contains(email)) {//原本投同意
@@ -390,6 +453,13 @@ public class PostService {
             //選完歸還剩餘筆記
             noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
         }
+        //傳送通知給懸賞筆記contributor
+        MessageReturn messageReturn = notificationService.getMessageReturn(appUser.getEmail(), "將你的懸賞筆記設為最佳解", "reward", postID);
+        Note note = noteService.getNote(answerID);
+        String contributor = note.getAuthorEmail().get(0);
+        messagingTemplate.convertAndSendToUser(contributor, "/topic/private-messages", messageReturn);
+        notificationService.saveNotificationPrivate(contributor, messageReturn);
+
         return true;
     }
 
@@ -412,10 +482,16 @@ public class PostService {
                     // minus post's author's money.
                     coin.setCoin("-" + price);
                     coinService.changeCoin(post.getEmail().get(0), coin);
+
+                    //傳送通知給QA最佳解使用者
+                    MessageReturn messageReturn = notificationService.getMessageReturn(post.getAuthor(), "將你的答案設為最佳解", "qa", postID);
+                    messagingTemplate.convertAndSendToUser(comment.getEmail(), "/topic/private-messages", messageReturn);
+                    notificationService.saveNotificationPrivate(comment.getEmail(), messageReturn);
                 }
             }
             post.setComments(allComments);
             replacePost(post.getId(), post);
+
         } else {
             return false;
         }
@@ -438,6 +514,13 @@ public class PostService {
                 //選完歸還剩餘筆記
                 noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
             }
+            //傳送通知給懸賞筆記contributor
+            MessageReturn messageReturn = notificationService.getMessageReturn(appUser.getEmail(), "將你的懸賞筆記設為參考解", "reward", postID);
+            Note note = noteService.getNote(answerID);
+            String contributor = note.getAuthorEmail().get(0);
+            messagingTemplate.convertAndSendToUser(contributor, "/topic/private-messages", messageReturn);
+            notificationService.saveNotificationPrivate(contributor, messageReturn);
+
             return true;
         }
         return false;
@@ -541,6 +624,48 @@ public class PostService {
         postReturn.setEmailUserObj(emailUserObj);
         postReturn.setEmail(post.getEmail());
         postReturn.setArchive(post.getArchive());
+        ArrayList<NotePostReturn> answersUserObj = new ArrayList<>();
+        if (post.getAnswers() != null) {
+            if (post.getType().equals("QA") && !post.getAnswers().isEmpty()) {//為QA且有最佳解
+                NotePostReturn notePostReturn = new NotePostReturn();
+                String answerComment = post.getAnswers().get(0);
+                notePostReturn.setId(answerComment);
+                for (Comment comment : post.getComments()) {
+                    if (comment.getId().equals(answerComment)) {
+                        notePostReturn.setDate(comment.getDate());
+                        UserObj userObj1 = appUserService.getUserInfo(comment.getEmail());
+                        notePostReturn.setUserObj(userObj1);
+                        notePostReturn.setBest(true);
+                        notePostReturn.setReference(false);
+                        answersUserObj.add(notePostReturn);
+                        break;
+                    }
+                }
+            } else {
+                for (String noteID : post.getAnswers()) {
+                    NotePostReturn notePostReturn = new NotePostReturn();
+//                    System.out.println(noteID);
+                    notePostReturn.setId(noteID);
+                    Note note = noteService.getNote(noteID);
+                    notePostReturn.setDate(note.getPublishDate());
+                    UserObj userObj1 = appUserService.getUserInfo(note.getHeaderEmail());
+                    notePostReturn.setUserObj(userObj1);
+                    if (note.getReference() != null && note.getReference()) {
+                        notePostReturn.setReference(true);
+                    } else {
+                        notePostReturn.setReference(false);
+                    }
+                    if (note.getBest() != null && note.getBest()) {
+                        notePostReturn.setBest(true);
+                    } else {
+                        notePostReturn.setBest(false);
+                    }
+                    answersUserObj.add(notePostReturn);
+                }
+
+            }
+        }
+        postReturn.setAnswersUserObj(answersUserObj);
 //        ArrayList<UserObj> applyUserObj = new ArrayList<>();
 //        for (String applyEmail : post.getApplyEmail()) {
 //            UserObj userObjInfo = appUserService.getUserInfo(applyEmail);
@@ -553,6 +678,7 @@ public class PostService {
 
     public NoteReturn createRewardNote(String postID, String email, Note request) {
         Note note = noteService.createRewardNote(postID, email, request);
+
         return noteService.getUserinfo(note);
     }
 

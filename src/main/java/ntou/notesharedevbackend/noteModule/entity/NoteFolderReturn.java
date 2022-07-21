@@ -1,4 +1,4 @@
-package ntou.notesharedevbackend.noteNodule.entity;
+package ntou.notesharedevbackend.noteModule.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ntou.notesharedevbackend.userModule.entity.UserObj;
@@ -23,6 +23,7 @@ public class NoteFolderReturn {
     private UserObj headerUserObj;
     private UserObj managerUserObj;
     private ArrayList<UserObj> authorUserObj;
+    private String parent;  // 父資料夾
 
     // constructor
     public NoteFolderReturn(Note note) {
@@ -149,5 +150,13 @@ public class NoteFolderReturn {
 
     public void setAuthorUserObj(ArrayList<UserObj> authorUserObj) {
         this.authorUserObj = authorUserObj;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 }

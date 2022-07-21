@@ -2,6 +2,7 @@ package ntou.notesharedevbackend.followModule.controlloer;
 
 import io.swagger.v3.oas.annotations.*;
 import ntou.notesharedevbackend.followModule.service.*;
+import ntou.notesharedevbackend.searchModule.entity.*;
 import ntou.notesharedevbackend.userModule.entity.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
@@ -106,6 +107,17 @@ public class FollowController {
             bellByUserObj.add(followService.getUserInfo(bellByEmail));
         }
         res.put("res", bellByUserObj);
+        return ResponseEntity.ok(res);
+    }
+
+    @Operation(summary = "get a user's following notes")
+    @GetMapping("/note/following/{email}/{offset}/{pageSize}")
+    public ResponseEntity<Object> getFollowingNotes(@PathVariable("email") String email,
+                                                    @PathVariable("offset") int offset,
+                                                    @PathVariable("pageSize") int pageSize) {
+        Pages noteLists = followService.getFollowingNotes(email, offset, pageSize);
+        Map<String, Object> res = new HashMap<>();
+        res.put("res", noteLists);
         return ResponseEntity.ok(res);
     }
 }

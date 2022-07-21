@@ -1,7 +1,7 @@
 package ntou.notesharedevbackend.searchModule.service;
 
 import ntou.notesharedevbackend.folderModule.entity.*;
-import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.noteModule.entity.*;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.*;
 import ntou.notesharedevbackend.repository.*;
@@ -279,7 +279,6 @@ public class SearchService {
         List<FolderBasicReturn> folderBasicReturnList = new ArrayList<>();
         for (Folder folder : copyFolderList) {
             String creatorName = folder.getCreatorName();
-            System.out.println(creatorName);
             AppUser appUser = userRepository.findByName(creatorName);
             FolderBasicReturn folderBasicReturn = new FolderBasicReturn(folder, appUser);
             folderBasicReturnList.add(folderBasicReturn);
@@ -289,6 +288,53 @@ public class SearchService {
         int start = Math.min((int)paging.getOffset(), folderBasicReturnList.size());
         int end = Math.min((start + paging.getPageSize()), folderBasicReturnList.size());
         Page<FolderBasicReturn> page = new PageImpl<>(folderBasicReturnList.subList(start, end), paging, folderBasicReturnList.size());
+
+        return new Pages(page.getContent(), page.getTotalPages());
+    }
+
+    public Pages getNotesByTags(int offset, int pageSize, String tag) {
+        List<Note> notes = noteRepository.findAll();
+        notes = notes.stream()
+                .filter((Note n) -> n.getPublic().equals(true))
+                .collect(Collectors.toList());
+
+        List<Note> tempNoteList = new ArrayList<>();
+        for (Note note : notes) {
+            if (note.getTag().size() == 0)
+                continue;
+            ArrayList<String> noteTag = note.getTag();
+            boolean find = false;
+            for (String value : noteTag) {
+                if (value.contains(tag)) {
+                    find = true;
+                    break;
+                }
+            }
+            if (find)
+                tempNoteList.add(note);
+        }
+        notes = tempNoteList;
+
+        List<NoteBasicReturn> noteBasicReturns = new ArrayList<>();
+        for (Note note : notes) {
+            NoteBasicReturn noteBasicReturn = new NoteBasicReturn(note);
+            UserObj userObj = appUserService.getUserInfo(note.getHeaderEmail());
+            noteBasicReturn.setHeaderEmailUserObj(userObj);
+
+            ArrayList<UserObj> userObjs = new ArrayList<>();
+            for (String email : note.getAuthorEmail()) {
+                UserObj userInfo = appUserService.getUserInfo(email);
+                userObjs.add(userInfo);
+            }
+            noteBasicReturn.setAuthorEmailUserObj(userObjs);
+
+            noteBasicReturns.add(noteBasicReturn);
+        }
+
+        Pageable paging = PageRequest.of(offset, pageSize, Sort.by("title").descending());
+        int start = Math.min((int)paging.getOffset(), noteBasicReturns.size());
+        int end = Math.min((start + paging.getPageSize()), noteBasicReturns.size());
+        Page<NoteBasicReturn> page = new PageImpl<>(noteBasicReturns.subList(start, end), paging, noteBasicReturns.size());
 
         return new Pages(page.getContent(), page.getTotalPages());
     }

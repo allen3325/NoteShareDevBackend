@@ -1,6 +1,5 @@
 package ntou.notesharedevbackend.repository;
 
-import ntou.notesharedevbackend.noteNodule.entity.*;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.repository.*;

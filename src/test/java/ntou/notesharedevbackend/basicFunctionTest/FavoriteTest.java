@@ -1,15 +1,18 @@
 package ntou.notesharedevbackend.basicFunctionTest;
 
 import ntou.notesharedevbackend.commentModule.entity.*;
-import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.folderModule.entity.Folder;
+import ntou.notesharedevbackend.noteModule.entity.*;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.repository.*;
+import ntou.notesharedevbackend.userModule.entity.AppUser;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.test.autoconfigure.web.servlet.*;
 import org.springframework.boot.test.context.*;
 import org.springframework.http.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.*;
 import org.springframework.test.web.servlet.*;
 
@@ -29,6 +32,11 @@ public class FavoriteTest {
     private PostRepository postRepository;
     @Autowired
     private NoteRepository noteRepository;
+    @Autowired
+    private UserRepository userRepository;
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private FolderRepository folderRepository;
 
     public Note createNote() {
         Note note = new Note();
@@ -38,6 +46,7 @@ public class FavoriteTest {
         note.setLiker(new ArrayList<String>());
         note.setBuyer(new ArrayList<String>());
         note.setFavoriter(new ArrayList<String>());
+        note.setFavoriteCount(0);
         note.setComments(new ArrayList<Comment>());
         note.setTag(new ArrayList<String>());
         note.setHiddenTag(new ArrayList<String>());
@@ -70,6 +79,44 @@ public class FavoriteTest {
         return post;
     }
 
+    private Folder createFolder(String folderName, String path, String parent) {
+        Folder folder = new Folder();
+        folder.setFolderName(folderName);
+        folder.setFavorite(false);
+        folder.setParent(parent);
+        folder.setPath(path);
+        folder.setNotes(new ArrayList<String>());
+        folder.setChildren(new ArrayList<String>());
+        folder.setPublic(false);
+        folderRepository.insert(folder);
+        return folder;
+    }
+
+    private AppUser createUser(String email, String name, Integer coin) {
+        AppUser appUser = new AppUser();
+        appUser.setEmail(email);
+        appUser.setActivate(true);
+        appUser.setName(name);
+        appUser.setPassword(passwordEncoder.encode("1234"));
+        Folder buyFolder = createFolder("Buy", "/Buy", null);
+        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null);
+        ArrayList<String> folderList = new ArrayList<>();
+        folderList.add(buyFolder.getId());
+        folderList.add(favoriteFolder.getId());
+        appUser.setFolders(folderList);
+        appUser.setCoin(coin);
+        appUser.setNotification(new ArrayList<>());
+        appUser.setSubscribe(new ArrayList<>());
+        appUser.setBell(new ArrayList<>());
+        appUser.setBelledBy(new ArrayList<>());
+        appUser.setFans(new ArrayList<>());
+        appUser.setHeadshotPhoto("headshotPhoto");
+        appUser.setStrength(new ArrayList<>());
+        appUser.setProfile("profile");
+        appUser.setUnreadMessageCount(0);
+        return appUser;
+    }
+
     public Comment createComment(boolean isFavorite) {
         Comment comment = new Comment();
         comment.setAuthor("Gene");
@@ -87,8 +134,45 @@ public class FavoriteTest {
     public void init() {
         postRepository.deleteAll();
         noteRepository.deleteAll();
+        userRepository.deleteAll();
+        folderRepository.deleteAll();
         httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+    }
+
+    @Test
+    public void testFavoriteNote() throws Exception{
+        Note note = createNote();
+        noteRepository.insert(note);
+        AppUser favoriter = createUser("yitingwu.1030@gmail.com","Ting",300);
+        userRepository.insert(favoriter);
+        // favorite
+        mockMvc.perform(put("/favorite/note/{noteID}/{email}",note.getId(),favoriter.getEmail()).headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("success"));
+
+        if(!noteRepository.findById(note.getId()).get().getFavoriter().contains(favoriter.getEmail())){
+            throw new Exception("Favorite Test : note's favoriter does not update.");
+        }
+        if(!noteRepository.findById(note.getId()).get().getFavoriteCount().equals(note.getFavoriteCount()+1)){
+            throw new Exception("Favorite Test : note's favorite count does not update.");
+        }
+        if(!folderRepository.findById(userRepository.findByEmail(favoriter.getEmail()).getFolders().get(1)).get().getNotes().contains(note.getId())){
+            throw new Exception("Favorite Test : favoriter's favorite folder does not update.");
+        }
+        // unFavorite
+        mockMvc.perform(put("/favorite/note/{noteID}/{email}",note.getId(),favoriter.getEmail()).headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg").value("success"));
+        if(noteRepository.findById(note.getId()).get().getFavoriter().contains(favoriter.getEmail())){
+            throw new Exception("Favorite Test (unFavorite) : note's favoriter does not update.");
+        }
+        if(noteRepository.findById(note.getId()).get().getFavoriteCount().equals(note.getFavoriteCount()+1)){
+            throw new Exception("Favorite Test (unFavorite) : note's favorite count does not update.");
+        }
+        if(userRepository.findByEmail(favoriter.getEmail()).getFolders().get(1).contains(note.getId())){
+            throw new Exception("Favorite Test (unFavorite) : favoriter's favorite folder does not update.");
+        }
     }
 
     @Test

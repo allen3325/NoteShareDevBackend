@@ -2,9 +2,9 @@ package ntou.notesharedevbackend.searchTest;
 
 import ntou.notesharedevbackend.commentModule.entity.Comment;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
-import ntou.notesharedevbackend.noteNodule.entity.Content;
-import ntou.notesharedevbackend.noteNodule.entity.Note;
-import ntou.notesharedevbackend.noteNodule.entity.VersionContent;
+import ntou.notesharedevbackend.noteModule.entity.Content;
+import ntou.notesharedevbackend.noteModule.entity.Note;
+import ntou.notesharedevbackend.noteModule.entity.VersionContent;
 import ntou.notesharedevbackend.postModule.entity.Apply;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.repository.FolderRepository;
@@ -12,7 +12,6 @@ import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.repository.UserRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
-import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.ArrayList;
 
@@ -96,6 +94,8 @@ public class SearchTest {
         appUser.setFolders(folderList);
         appUser.setCoin(300);
         appUser.setHeadshotPhoto("headshotPhoto");
+        appUser.setNotification(new ArrayList<>());
+        appUser.setUnreadMessageCount(0);
         return appUser;
     }
 
@@ -129,9 +129,9 @@ public class SearchTest {
         note.setSubmit(null);
         note.setQuotable(false);
         ArrayList<String> tags = new ArrayList<>();
-        tags.add("tag1");
-        tags.add("tag2");
-        tags.add("tag3");
+//        tags.add("tag1");
+//        tags.add("tag2");
+//        tags.add("tag3");
         note.setTag(tags);
         note.setHiddenTag(new ArrayList<>());
         ArrayList<VersionContent> versionContents = new ArrayList<>();
@@ -276,9 +276,9 @@ public class SearchTest {
         note.setSubmit(null);
         note.setQuotable(false);
         ArrayList<String> tags = new ArrayList<>();
-        tags.add("tag1");
-        tags.add("tag2");
-        tags.add("tag3");
+//        tags.add("tag1");
+//        tags.add("tag2");
+//        tags.add("tag3");
         note.setTag(tags);
         note.setHiddenTag(new ArrayList<>());
         ArrayList<VersionContent> versionContents = new ArrayList<>();
@@ -419,9 +419,9 @@ public class SearchTest {
         note.setSubmit(null);
         note.setQuotable(false);
         ArrayList<String> tags = new ArrayList<>();
-        tags.add("tag1");
-        tags.add("tag2");
-        tags.add("tag3");
+//        tags.add("tag1");
+//        tags.add("tag2");
+//        tags.add("tag3");
         note.setTag(tags);
         note.setHiddenTag(new ArrayList<>());
         ArrayList<VersionContent> versionContents = new ArrayList<>();
@@ -581,13 +581,21 @@ public class SearchTest {
 
     @Test
     public void testSearchNote() throws Exception {
+        ArrayList<String> tags = new ArrayList<>();
+        tags.add("tag1");
+        tags.add("tag2");
+        tags.add("tag3");
         Post rewardPost = createRewardPost();
         Note rewardNote1 = noteRepository.findById(rewardPost.getAnswers().get(0)).get();
+        rewardNote1.setTag(tags);
+        noteRepository.save(rewardNote1);
         Note rewardNote2 = noteRepository.findById(rewardPost.getAnswers().get(1)).get();
         rewardNote2.setQuotable(true);
         noteRepository.save(rewardNote2);
         Post collaborationPost = createCollaborationPost();
         Note collaborationNote = noteRepository.findById(collaborationPost.getAnswers().get(0)).get();
+        collaborationNote.setTag(tags);
+        noteRepository.save(collaborationNote);
         Post collaborationPostUnPublic = createCollaborationPost();
         Note collaborationNoteUnPublic = noteRepository.findById(collaborationPostUnPublic.getAnswers().get(0)).get();
         collaborationNoteUnPublic.setPublic(false);
@@ -595,12 +603,14 @@ public class SearchTest {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         Folder folder = folderRepository.findById(appUser.getFolders().get(2)).get();
         Note normalNote = createNormalNote();
+        normalNote.setTag(tags);
+        noteRepository.save(normalNote);
         Note normalNote1 = createNormalNote();
         normalNote1.setPublic(false);
         noteRepository.save(normalNote1);
         folder.getNotes().add(normalNote.getId());
         folder.getNotes().add(normalNote1.getId());
-
+        folderRepository.save(folder);
         String keyword = "Interrupt";
         int offset = 0;
         int pageSize = 10;
@@ -926,6 +936,123 @@ public class SearchTest {
                 .andExpect(jsonPath("$.search.items.[1].favorite").value(folder111.getFavorite()))
                 .andExpect(jsonPath("$.search.items.[1].headshotPhoto").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.search.items.[1].creatorName").value(appUser.getName()))
+                .andExpect(jsonPath("$.search.totalPages").value(1));
+    }
+
+
+    @Test
+    public void testSearchNoteByTag() throws Exception {
+        ArrayList<String> tags = new ArrayList<>();
+        tags.add("tag1");
+        tags.add("tag2");
+        tags.add("tag3");
+        Post rewardPost = createRewardPost();
+        Note rewardNote1 = noteRepository.findById(rewardPost.getAnswers().get(0)).get();
+        rewardNote1.setTag(tags);
+        noteRepository.save(rewardNote1);
+        Note rewardNote2 = noteRepository.findById(rewardPost.getAnswers().get(1)).get();
+        rewardNote2.setQuotable(true);
+        noteRepository.save(rewardNote2);
+        Post collaborationPost = createCollaborationPost();
+        Note collaborationNote = noteRepository.findById(collaborationPost.getAnswers().get(0)).get();
+        collaborationNote.setTag(tags);
+        noteRepository.save(collaborationNote);
+        Post collaborationPostUnPublic = createCollaborationPost();
+        Note collaborationNoteUnPublic = noteRepository.findById(collaborationPostUnPublic.getAnswers().get(0)).get();
+        collaborationNoteUnPublic.setPublic(false);
+        noteRepository.save(collaborationNoteUnPublic);
+        AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
+        Folder folder = folderRepository.findById(appUser.getFolders().get(2)).get();
+        Note normalNote = createNormalNote();
+        normalNote.setTag(tags);
+        noteRepository.save(normalNote);
+        Note normalNote1 = createNormalNote();
+        normalNote1.setPublic(false);
+        noteRepository.save(normalNote1);
+        folder.getNotes().add(normalNote.getId());
+        folder.getNotes().add(normalNote1.getId());
+        folderRepository.save(folder);
+
+        String keyword = "Interrupt";
+        int offset = 0;
+        int pageSize = 10;
+        String tag = "tag1";
+        mockMvc.perform(get("/search/tag/" + offset + "/" + pageSize + "/" + tag)
+                        .headers(httpHeaders)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.search.items.[2].id").value(normalNote.getId()))
+                .andExpect(jsonPath("$.search.items.[2].type").value(normalNote.getType()))
+                .andExpect(jsonPath("$.search.items.[2].department").value(normalNote.getDepartment()))
+                .andExpect(jsonPath("$.search.items.[2].subject").value(normalNote.getSubject()))
+                .andExpect(jsonPath("$.search.items.[2].title").value(normalNote.getTitle()))
+                .andExpect(jsonPath("$.search.items.[2].headerEmailUserObj.userObjEmail").value(userRepository.findByEmail(normalNote.getHeaderEmail()).getEmail()))
+                .andExpect(jsonPath("$.search.items.[2].headerEmailUserObj.userObjName").value(userRepository.findByEmail(normalNote.getHeaderEmail()).getName()))
+                .andExpect(jsonPath("$.search.items.[2].headerEmailUserObj.userObjAvatar").value(userRepository.findByEmail(normalNote.getHeaderEmail()).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[2].authorEmailUserObj.[0].userObjEmail").value(userRepository.findByEmail(normalNote.getHeaderEmail()).getEmail()))
+                .andExpect(jsonPath("$.search.items.[2].authorEmailUserObj.[0].userObjName").value(userRepository.findByEmail(normalNote.getHeaderEmail()).getName()))
+                .andExpect(jsonPath("$.search.items.[2].authorEmailUserObj.[0].userObjAvatar").value(userRepository.findByEmail(normalNote.getHeaderEmail()).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[2].professor").value(normalNote.getProfessor()))
+                .andExpect(jsonPath("$.search.items.[2].school").value(normalNote.getSchool()))
+                .andExpect(jsonPath("$.search.items.[2].likeCount").value(normalNote.getLikeCount()))
+                .andExpect(jsonPath("$.search.items.[2].favoriteCount").value(normalNote.getFavoriteCount()))
+                .andExpect(jsonPath("$.search.items.[2].unlockCount").value(normalNote.getUnlockCount()))
+                .andExpect(jsonPath("$.search.items.[2].downloadable").value(normalNote.getDownloadable()))
+                .andExpect(jsonPath("$.search.items.[2].commentCount").value(normalNote.getCommentCount()))
+                .andExpect(jsonPath("$.search.items.[2].price").value(normalNote.getPrice()))
+                .andExpect(jsonPath("$.search.items.[2].tag.[0]").value(normalNote.getTag().get(0)))
+                .andExpect(jsonPath("$.search.items.[2].tag.[1]").value(normalNote.getTag().get(1)))
+                .andExpect(jsonPath("$.search.items.[2].tag.[2]").value(normalNote.getTag().get(2)))
+                .andExpect(jsonPath("$.search.items.[1].id").value(collaborationNote.getId()))
+                .andExpect(jsonPath("$.search.items.[1].type").value(collaborationNote.getType()))
+                .andExpect(jsonPath("$.search.items.[1].department").value(collaborationNote.getDepartment()))
+                .andExpect(jsonPath("$.search.items.[1].subject").value(collaborationNote.getSubject()))
+                .andExpect(jsonPath("$.search.items.[1].title").value(collaborationNote.getTitle()))
+                .andExpect(jsonPath("$.search.items.[1].headerEmailUserObj.userObjEmail").value(userRepository.findByEmail(collaborationNote.getHeaderEmail()).getEmail()))
+                .andExpect(jsonPath("$.search.items.[1].headerEmailUserObj.userObjName").value(userRepository.findByEmail(collaborationNote.getHeaderEmail()).getName()))
+                .andExpect(jsonPath("$.search.items.[1].headerEmailUserObj.userObjAvatar").value(userRepository.findByEmail(collaborationNote.getHeaderEmail()).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[0].userObjEmail").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(0)).getEmail()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[0].userObjName").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(0)).getName()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[0].userObjAvatar").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(0)).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[1].userObjEmail").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(1)).getEmail()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[1].userObjName").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(1)).getName()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[1].userObjAvatar").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(1)).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[2].userObjEmail").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(2)).getEmail()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[2].userObjName").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(2)).getName()))
+                .andExpect(jsonPath("$.search.items.[1].authorEmailUserObj.[2].userObjAvatar").value(userRepository.findByEmail(collaborationNote.getAuthorEmail().get(2)).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[1].professor").value(collaborationNote.getProfessor()))
+                .andExpect(jsonPath("$.search.items.[1].school").value(collaborationNote.getSchool()))
+                .andExpect(jsonPath("$.search.items.[1].likeCount").value(collaborationNote.getLikeCount()))
+                .andExpect(jsonPath("$.search.items.[1].favoriteCount").value(collaborationNote.getFavoriteCount()))
+                .andExpect(jsonPath("$.search.items.[1].unlockCount").value(collaborationNote.getUnlockCount()))
+                .andExpect(jsonPath("$.search.items.[1].downloadable").value(collaborationNote.getDownloadable()))
+                .andExpect(jsonPath("$.search.items.[1].commentCount").value(collaborationNote.getCommentCount()))
+                .andExpect(jsonPath("$.search.items.[1].price").value(collaborationNote.getPrice()))
+                .andExpect(jsonPath("$.search.items.[1].tag.[0]").value(collaborationNote.getTag().get(0)))
+                .andExpect(jsonPath("$.search.items.[1].tag.[1]").value(collaborationNote.getTag().get(1)))
+                .andExpect(jsonPath("$.search.items.[1].tag.[2]").value(collaborationNote.getTag().get(2)))
+                .andExpect(jsonPath("$.search.items.[0].id").value(rewardNote1.getId()))
+                .andExpect(jsonPath("$.search.items.[0].type").value(rewardNote1.getType()))
+                .andExpect(jsonPath("$.search.items.[0].department").value(rewardNote1.getDepartment()))
+                .andExpect(jsonPath("$.search.items.[0].subject").value(rewardNote1.getSubject()))
+                .andExpect(jsonPath("$.search.items.[0].title").value(rewardNote1.getTitle()))
+                .andExpect(jsonPath("$.search.items.[0].headerEmailUserObj.userObjEmail").value(userRepository.findByEmail(rewardNote1.getHeaderEmail()).getEmail()))
+                .andExpect(jsonPath("$.search.items.[0].headerEmailUserObj.userObjName").value(userRepository.findByEmail(rewardNote1.getHeaderEmail()).getName()))
+                .andExpect(jsonPath("$.search.items.[0].headerEmailUserObj.userObjAvatar").value(userRepository.findByEmail(rewardNote1.getHeaderEmail()).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[0].authorEmailUserObj.[0].userObjEmail").value(userRepository.findByEmail(rewardNote1.getHeaderEmail()).getEmail()))
+                .andExpect(jsonPath("$.search.items.[0].authorEmailUserObj.[0].userObjName").value(userRepository.findByEmail(rewardNote1.getHeaderEmail()).getName()))
+                .andExpect(jsonPath("$.search.items.[0].authorEmailUserObj.[0].userObjAvatar").value(userRepository.findByEmail(rewardNote1.getHeaderEmail()).getHeadshotPhoto()))
+                .andExpect(jsonPath("$.search.items.[0].professor").value(rewardNote1.getProfessor()))
+                .andExpect(jsonPath("$.search.items.[0].school").value(rewardNote1.getSchool()))
+                .andExpect(jsonPath("$.search.items.[0].likeCount").value(rewardNote1.getLikeCount()))
+                .andExpect(jsonPath("$.search.items.[0].favoriteCount").value(rewardNote1.getFavoriteCount()))
+                .andExpect(jsonPath("$.search.items.[0].unlockCount").value(rewardNote1.getUnlockCount()))
+                .andExpect(jsonPath("$.search.items.[0].downloadable").value(rewardNote1.getDownloadable()))
+                .andExpect(jsonPath("$.search.items.[0].commentCount").value(rewardNote1.getCommentCount()))
+                .andExpect(jsonPath("$.search.items.[0].price").value(rewardNote1.getPrice()))
+                .andExpect(jsonPath("$.search.items.[0].tag.[0]").value(rewardNote1.getTag().get(0)))
+                .andExpect(jsonPath("$.search.items.[0].tag.[1]").value(rewardNote1.getTag().get(1)))
+                .andExpect(jsonPath("$.search.items.[0].tag.[2]").value(rewardNote1.getTag().get(2)))
                 .andExpect(jsonPath("$.search.totalPages").value(1));
     }
 

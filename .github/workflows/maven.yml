@@ -25,7 +25,9 @@ jobs:
       with:
         java-version: '11'
         distribution: 'zulu'
-        cache: maven    
+        cache: maven
+    - run: mvn clean
+    - run: mvn install:install-file -Dfile=libs/better-jieba-1.0.0-SNAPSHOT.jar -DgroupId=org.manlier -DartifactId=better-jieba -Dversion=1.0.0-SNAPSHOT -Dpackaging=jar
     - run: mvn --batch-mode --update-snapshots verify
     - run: mkdir staging && cp target/*.jar staging
     - uses: actions/upload-artifact@v3

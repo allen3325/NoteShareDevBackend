@@ -2,9 +2,9 @@ package ntou.notesharedevbackend.folderTest;
 
 
 import ntou.notesharedevbackend.folderModule.entity.Folder;
-import ntou.notesharedevbackend.noteNodule.entity.Content;
-import ntou.notesharedevbackend.noteNodule.entity.Note;
-import ntou.notesharedevbackend.noteNodule.entity.VersionContent;
+import ntou.notesharedevbackend.noteModule.entity.Content;
+import ntou.notesharedevbackend.noteModule.entity.Note;
+import ntou.notesharedevbackend.noteModule.entity.VersionContent;
 import ntou.notesharedevbackend.repository.FolderRepository;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.UserRepository;
@@ -112,6 +112,8 @@ public class FolderTest {
         folderList.add(folderFolder.getId());
         folderList.add(tempRewardFolder.getId());
         appUser.setFolders(folderList);
+        appUser.setNotification(new ArrayList<>());
+        appUser.setUnreadMessageCount(0);
         return appUser;
     }
 
@@ -334,7 +336,41 @@ public class FolderTest {
                 .andExpect(jsonPath("$.res.children.[0].id").value(firstChildrenFolder.getId()))
                 .andExpect(jsonPath("$.res.children.[1].id").value(secondChildrenFolder.getId()))
                 .andExpect(jsonPath("$.res.notes.[0].id").value(firstNote.getId()))
+                .andExpect(jsonPath("$.res.notes.[0].subject").value(firstNote.getSubject()))
+                .andExpect(jsonPath("$.res.notes.[0].title").value(firstNote.getTitle()))
+                .andExpect(jsonPath("$.res.notes.[0].description").value(firstNote.getDescription()))
+                .andExpect(jsonPath("$.res.notes.[0].publishDate").value(firstNote.getPublishDate()))
+                .andExpect(jsonPath("$.res.notes.[0].public").value(firstNote.getPublic()))
+                .andExpect(jsonPath("$.res.notes.[0].headerEmail").value(firstNote.getHeaderEmail()))
+                .andExpect(jsonPath("$.res.notes.[0].headerName").value(firstNote.getHeaderName()))
+                .andExpect(jsonPath("$.res.notes.[0].authorEmail.[0]").value(firstNote.getAuthorEmail().get(0)))
+                .andExpect(jsonPath("$.res.notes.[0].authorName.[0]").value(firstNote.getAuthorName().get(0)))
+                .andExpect(jsonPath("$.res.notes.[0].managerEmail").value(firstNote.getManagerEmail()))
+                .andExpect(jsonPath("$.res.notes.[0].headerUserObj.userObjEmail").value(firstNote.getHeaderEmail()))
+                .andExpect(jsonPath("$.res.notes.[0].headerUserObj.userObjName").value(firstNote.getHeaderName()))
+                .andExpect(jsonPath("$.res.notes.[0].headerUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.notes.[0].authorUserObj.[0].userObjEmail").value(firstNote.getHeaderEmail()))
+                .andExpect(jsonPath("$.res.notes.[0].authorUserObj.[0].userObjName").value(firstNote.getHeaderName()))
+                .andExpect(jsonPath("$.res.notes.[0].authorUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.notes.[0].parent").value(parentFolder.getId()))
                 .andExpect(jsonPath("$.res.notes.[1].id").value(secondNote.getId()))
+                .andExpect(jsonPath("$.res.notes.[1].subject").value(secondNote.getSubject()))
+                .andExpect(jsonPath("$.res.notes.[1].title").value(secondNote.getTitle()))
+                .andExpect(jsonPath("$.res.notes.[1].description").value(secondNote.getDescription()))
+                .andExpect(jsonPath("$.res.notes.[1].publishDate").value(secondNote.getPublishDate()))
+                .andExpect(jsonPath("$.res.notes.[1].public").value(secondNote.getPublic()))
+                .andExpect(jsonPath("$.res.notes.[1].headerEmail").value(secondNote.getHeaderEmail()))
+                .andExpect(jsonPath("$.res.notes.[1].headerName").value(secondNote.getHeaderName()))
+                .andExpect(jsonPath("$.res.notes.[1].authorEmail.[0]").value(secondNote.getAuthorEmail().get(0)))
+                .andExpect(jsonPath("$.res.notes.[1].authorName.[0]").value(secondNote.getAuthorName().get(0)))
+                .andExpect(jsonPath("$.res.notes.[1].managerEmail").value(secondNote.getManagerEmail()))
+                .andExpect(jsonPath("$.res.notes.[1].headerUserObj.userObjEmail").value(secondNote.getHeaderEmail()))
+                .andExpect(jsonPath("$.res.notes.[1].headerUserObj.userObjName").value(secondNote.getHeaderName()))
+                .andExpect(jsonPath("$.res.notes.[1].headerUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.notes.[1].authorUserObj.[0].userObjEmail").value(secondNote.getHeaderEmail()))
+                .andExpect(jsonPath("$.res.notes.[1].authorUserObj.[0].userObjName").value(secondNote.getHeaderName()))
+                .andExpect(jsonPath("$.res.notes.[1].authorUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.notes.[1].parent").value(parentFolder.getId()))
                 .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()));

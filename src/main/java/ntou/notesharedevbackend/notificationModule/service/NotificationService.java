@@ -1,7 +1,7 @@
 package ntou.notesharedevbackend.notificationModule.service;
 
-import ntou.notesharedevbackend.noteNodule.entity.*;
-import ntou.notesharedevbackend.noteNodule.service.*;
+import ntou.notesharedevbackend.noteModule.entity.*;
+import ntou.notesharedevbackend.noteModule.service.*;
 import ntou.notesharedevbackend.notificationModule.entity.*;
 import ntou.notesharedevbackend.repository.*;
 import ntou.notesharedevbackend.userModule.entity.*;
@@ -35,17 +35,17 @@ public class NotificationService {
             saveNotificationPrivate(email, message);
     }
 
-    public void sendToManagerAndHeader(String noteID, MessageReturn message) {
-        Note note = noteService.getNote(noteID);
-        String managerEmail = note.getManagerEmail();
-        String headerEmail = note.getHeaderEmail();
-        if (managerEmail != null) {
-            messagingTemplate.convertAndSendToUser(managerEmail, "/topic/private-messages", message);
-            saveNotificationPrivate(managerEmail, message);
-        }
-        messagingTemplate.convertAndSendToUser(headerEmail, "/topic/private-messages", message);
-        saveNotificationPrivate(headerEmail, message);
-    }
+//    public void sendToManagerAndHeader(String noteID, MessageReturn message) {
+//        Note note = noteService.getNote(noteID);
+//        String managerEmail = note.getManagerEmail();
+//        String headerEmail = note.getHeaderEmail();
+//        if (managerEmail != null) {
+//            messagingTemplate.convertAndSendToUser(managerEmail, "/topic/private-messages", message);
+//            saveNotificationPrivate(managerEmail, message);
+//        }
+//        messagingTemplate.convertAndSendToUser(headerEmail, "/topic/private-messages", message);
+//        saveNotificationPrivate(headerEmail, message);
+//    }
 
     public void saveNotificationBell(String email, MessageReturn message) {
         AppUser appUser = appUserService.getUserByEmail(email);
@@ -76,5 +76,42 @@ public class NotificationService {
         AppUser appUser = appUserService.getUserByEmail(email);
         appUser.setUnreadMessageCount(0);
         userRepository.save(appUser);
+    }
+
+    public MessageReturn getMessageReturn(String senderEmail, String message, String type, String id) {
+        MessageReturn messageReturn = new MessageReturn();
+        UserObj userObj = appUserService.getUserInfo(senderEmail);
+        messageReturn.setMessage(userObj.getUserObjName() + message);
+        messageReturn.setUserObj(userObj);
+        messageReturn.setType(type);
+        messageReturn.setId(id);
+        messageReturn.setDate(new Date());
+        return messageReturn;
+    }
+
+    public MessageReturn getMessageReturnFromVotes(String result, String postID, boolean isKickTarget, String kickTarget) {
+        MessageReturn messageReturn = new MessageReturn();
+        UserObj kickTargetObj = appUserService.getUserInfo(kickTarget);
+        UserObj userObj = new UserObj();
+        userObj.setUserObjEmail("noteshare@gmail.com");
+        userObj.setUserObjName("NoteShare System");
+        userObj.setUserObjAvatar("https://i.imgur.com/5V1waq3.png");
+        messageReturn.setUserObj(userObj);
+        messageReturn.setType("collaboration");
+        messageReturn.setId(postID);
+        messageReturn.setDate(new Date());
+        if (result.equals("agree kick")) {
+            if (isKickTarget)   //被踢出本人收到的訊息
+                messageReturn.setMessage("你已被踢出共筆群組");
+            else    //群組其他人收到的訊息
+                messageReturn.setMessage(kickTargetObj.getUserObjName() + "已被踢出共筆群組");
+        }
+        else if (result.equals("disagree kick")) {
+            messageReturn.setMessage(kickTargetObj.getUserObjName() + "沒有被踢出共筆群組");
+        }
+        else {
+            messageReturn.setMessage("投票無效");
+        }
+        return messageReturn;
     }
 }

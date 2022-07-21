@@ -1,4 +1,4 @@
-package ntou.notesharedevbackend.noteNodule.service;
+package ntou.notesharedevbackend.noteModule.service;
 
 import ntou.notesharedevbackend.coinModule.entity.Coin;
 import ntou.notesharedevbackend.coinModule.service.CoinService;
@@ -9,17 +9,18 @@ import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.folderModule.service.FolderService;
-import ntou.notesharedevbackend.noteNodule.entity.*;
+import ntou.notesharedevbackend.noteModule.entity.*;
+import ntou.notesharedevbackend.notificationModule.entity.MessageReturn;
+import ntou.notesharedevbackend.notificationModule.service.NotificationService;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
-import ntou.notesharedevbackend.repository.PostRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.entity.UserObj;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -41,7 +42,16 @@ public class NoteService {
     @Autowired
     @Lazy(value = true)
     private CommentService commentService;
+    @Autowired
+    @Lazy
+    private NotificationService notificationService;
 
+    protected final SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    protected NoteService(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
     public Note getNote(String id) {
         return noteRepository.findById(id)
@@ -117,8 +127,11 @@ public class NoteService {
         note.setPostID(request.getPostID());
         note.setReference(request.getReference());
         note.setBest(request.getBest());
-        note.setDescription("");
-
+        if (request.getDescription() != null) {
+            note.setDescription(request.getDescription());
+        } else {
+            note.setDescription("");
+        }
         return noteRepository.insert(note);
     }
 
@@ -147,13 +160,57 @@ public class NoteService {
 //        noteRepository.save(note);
     }
 
+    public void triggerKickUserFromCollaboration(String noteId, String email) {
+        Note note = getNote(noteId);
+        ArrayList<String> currentEmails = note.getAuthorEmail();
+        ArrayList<String> currentNames = note.getAuthorName();
+        int userIndex = currentEmails.indexOf(email);
+
+        currentEmails.remove(userIndex);
+        currentNames.remove(userIndex);
+        note.setAuthorEmail(currentEmails);
+        note.setAuthorName(currentNames);
+        if (note.getManagerEmail() != null && note.getManagerEmail().equals(email)) {//檢查踢除人是否為管理員
+            note.setManagerEmail(null);
+        }
+        replaceNote(note, note.getId());
+//        noteRepository.save(note);
+    }
+
     public Note publishNote(String noteID) {
         Note note = getNote(noteID);
         if (note.getType().equals("normal")) {
             note.setPublic(true);
         } else {//collaboration
             note.setPublic(!note.getPublic());
+
+            //傳送通知給所有共筆作者、開啟bell使用者
+            if (note.getPublic()) {
+                MessageReturn messageReturn = new MessageReturn();
+                messageReturn.setMessage("共筆筆記已發布");
+                UserObj userObj = new UserObj();
+                userObj.setUserObjEmail("noteshare@gmail.com");
+                userObj.setUserObjName("NoteShare System");
+                userObj.setUserObjAvatar("https://i.imgur.com/5V1waq3.png");
+                messageReturn.setUserObj(userObj);
+                messageReturn.setType("collaboration");
+                messageReturn.setId(noteID);
+                messageReturn.setDate(new Date());
+                for (String author : note.getAuthorEmail()) {
+                    messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
+                    notificationService.saveNotificationPrivate(author, messageReturn);
+                }
+            }
         }
+
+        if (note.getPublic()) {
+            for (String author : note.getAuthorEmail()) {
+                MessageReturn messageReturnForBell = notificationService.getMessageReturn(author, "發布了筆記", "note", noteID);
+                messagingTemplate.convertAndSend("/topic/bell-messages/" + author, messageReturnForBell);
+                notificationService.saveNotificationBell(author, messageReturnForBell);
+            }
+        }
+
         // update publish date
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
         note.setPublishDate(calendar.getTime());
@@ -165,6 +222,7 @@ public class NoteService {
     public Note submitRewardNote(String noteID) {
         Note note = getNote(noteID);
         note.setSubmit(true);
+        note.setPublishDate(new Date());
         Note newNote = replaceNote(note, noteID);
         //remove from folder
 //        AppUser appUser = appUserService.getUserByEmail(note.getHeaderEmail());
@@ -174,6 +232,17 @@ public class NoteService {
         Post post = postService.getPostById(note.getPostID());
         post.getAnswers().add(noteID);
         postService.replacePost(post.getId(), post);
+        //通知懸賞人有人投稿筆記
+//        UserObj userObj = appUserService.getUserInfo(note.getHeaderEmail());
+//        MessageReturn messageReturn = new MessageReturn();
+//        messageReturn.setDate(new Date());
+//        messageReturn.setUserObj(userObj);
+//        messageReturn.setMessage(userObj.getUserObjName() + "對你投稿了懸賞筆記");
+//        messageReturn.setType("reward");
+//        messageReturn.setId(post.getId());
+        MessageReturn messageReturn = notificationService.getMessageReturn(note.getHeaderEmail(), "對你投稿了懸賞筆記", "reward", post.getId());
+        messagingTemplate.convertAndSendToUser(post.getAuthor(), "/topic/private-messages", messageReturn);
+        notificationService.saveNotificationPrivate(post.getAuthor(), messageReturn);
         return newNote;
     }
 
@@ -477,5 +546,38 @@ public class NoteService {
 
     public FolderReturn folderGetUserInfo(String folderID) {
         return folderService.getAllContentUnderFolderID(folderID);
+    }
+
+    public Folder removeNoteFromFolder(String noteID, String folderID) {
+        //判斷是否為buyFolder，裡面筆記不可刪除
+        Folder folder = folderService.getFolderByID(folderID);
+        if (folder.getFolderName().equals("Buy")) {
+            return folder;
+        }
+        //判斷是否為購買的筆記
+//        Note note = getNote(noteID);
+//        AppUser appUser = appUserService.getUserByName(folder.getCreatorName());
+//        if (note.getHeaderName().equals(appUser.getName())) {//自己的筆記
+//            //判斷是否為最後一份
+//            ArrayList<Folder> folderArrayList = folderService.getAllFoldersFromUser(appUser.getEmail());
+//            for (Folder f : folderArrayList) {
+//                if (f.getId().equals(folderID)) continue;
+//                ;
+//                if (f.getNotes().contains(noteID)) {//其餘folder內也有
+//                    folder.getNotes().remove(noteID);
+//                    return folderService.replaceFolder(folder);
+//                }
+//            }
+//        } else {//購買筆記可直接移出
+//            folder.getNotes().remove(noteID);
+//            return folderService.replaceFolder(folder);
+//        }
+        folder.getNotes().remove(noteID);
+        return folderService.replaceFolder(folder);
+//        return folder;//不可移出
+    }
+
+    public FolderReturn turnFolderToFolderReturn(Folder folder) {
+        return folderService.turnFolderToFolderReturn(folder);
     }
 }

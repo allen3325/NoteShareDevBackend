@@ -75,7 +75,11 @@ public class AppUserService {
         appUser.setFans(new ArrayList<String>());
         appUser.setBelledBy(new ArrayList<String>());
         appUser.setCoin(300);
-        appUser.setHeadshotPhoto(request.getHeadshotPhoto());
+        if(request.getHeadshotPhoto()!=null) {
+            appUser.setHeadshotPhoto(request.getHeadshotPhoto());
+        } else {
+            appUser.setHeadshotPhoto("https://joeschmoe.io/api/v1/james");
+        }
         appUser.setNotification(new ArrayList<MessageReturn>());
         appUser.setUnreadMessageCount(0);
         userRepository.insert(appUser);
