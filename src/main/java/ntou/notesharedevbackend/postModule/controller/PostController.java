@@ -8,6 +8,7 @@ import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.userModule.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +46,7 @@ public class PostController {
     @GetMapping("/{postID}")
     public ResponseEntity<Object> getPostById(@PathVariable("postID") String id) {
         Post post = postService.getPostById(id);
+        postService.updateClick(id);//更新點擊次數
         PostReturn postReturn = postService.getUserInfo(post);
         Map<String, Object> res = new HashMap<>();
 
@@ -244,4 +246,17 @@ public class PostController {
         }
         return ResponseEntity.ok().body(res);
     }
+
+    @Operation(summary = "get hot posts", description = "offset頁數，pageSize一頁顯示貼文的數量")
+    @GetMapping("/hotPosts/{offset}/{pageSize}")
+    public ResponseEntity<Object> getHotPosts(@PathVariable("offset") int offset,
+                                              @PathVariable("pageSize") int pageSize) {
+        Page<PostReturn> posts = postService.getHotPosts(offset, pageSize);
+        Integer totalPage = postService.getTotalPage(pageSize);
+        Map<String, Object> res = new HashMap<>();
+        res.put("res", posts);
+        res.put("totalPage", totalPage);
+        return ResponseEntity.ok(res);
+    }
+
 }

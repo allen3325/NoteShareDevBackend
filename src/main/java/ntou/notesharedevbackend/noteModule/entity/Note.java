@@ -46,9 +46,12 @@ public class Note {
     @JsonFormat(timezone = "GMT+08:00")
     private Date publishDate; // publish 後更新，預設為 NULL
     private String description;
+    private ArrayList<Long> clickDate;
+    private Integer clickNum;
 
     // constructors
-    public Note() {}
+    public Note() {
+    }
 
 
     // getter and setter
@@ -325,5 +328,21 @@ public class Note {
 
     public void setPublishDate(Date publishDate) {
         this.publishDate = publishDate;
+    }
+
+    public ArrayList<Long> getClickDate() {
+        return clickDate;
+    }
+
+    public void setClickDate(ArrayList<Long> clickDate) {
+        this.clickDate = clickDate;
+    }
+
+    public Integer getClickNum() {
+        return clickNum;
+    }
+
+    public void setClickNum(Integer clickNum) {
+        this.clickNum = clickNum;
     }
 }
