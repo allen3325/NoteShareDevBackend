@@ -1642,8 +1642,8 @@ public class PostTest {
         AppUser appUser = userRepository.findByEmail(post.getAuthor());
         int offset = 0;
         int pageSize = 1;
-        mockMvc.perform(get("/post/hotPosts/"+offset+"/"+pageSize)
-                .headers(httpHeaders))
+        mockMvc.perform(get("/post/hotPosts/" + offset + "/" + pageSize)
+                        .headers(httpHeaders))
                 .andExpect(jsonPath("$.res.content.[0].id").value(post.getId()))
                 .andExpect(jsonPath("$.res.content.[0].type").value(post.getType()))
                 .andExpect(jsonPath("$.res.content.[0].author").value(post.getAuthor()))
