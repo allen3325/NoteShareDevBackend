@@ -142,6 +142,8 @@ public class CoinTest {
         note.setReference(null);
         note.setBest(null);
         note.setManagerEmail(null);
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         noteRepository.insert(note);
         return note;
     }

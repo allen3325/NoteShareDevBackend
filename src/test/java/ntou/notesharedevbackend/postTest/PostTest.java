@@ -144,7 +144,8 @@ public class PostTest {
         post.setAnswers(new ArrayList<>());
         post.setArchive(false);
         post.setApplyEmail(new ArrayList<>());
-
+        post.setClickDate(new ArrayList<>());
+        post.setClickNum(0);
         return postRepository.insert(post);
     }
 
@@ -253,6 +254,8 @@ public class PostTest {
         note.setBest(null);
         note.setManagerEmail(null);
         note.setPublishDate(new Date());
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         noteRepository.insert(note);
         return note;
     }
@@ -285,6 +288,8 @@ public class PostTest {
         post.setAnswers(answers);
         post.setArchive(false);
         post.setApplyEmail(new ArrayList<>());
+        post.setClickDate(new ArrayList<>());
+        post.setClickNum(0);
         return postRepository.insert(post);
     }
 
@@ -396,6 +401,8 @@ public class PostTest {
         note.setReference(null);
         note.setBest(null);
         note.setManagerEmail(null);
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         note = noteRepository.insert(note);
         return note;
     }
@@ -429,6 +436,8 @@ public class PostTest {
         post.setCommentCount(0);
         post.setArchive(false);
         post.setApplyEmail(new ArrayList<>());
+        post.setClickDate(new ArrayList<>());
+        post.setClickNum(0);
         post = postRepository.insert(post);
         return post;
     }

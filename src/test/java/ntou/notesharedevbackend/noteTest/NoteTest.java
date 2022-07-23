@@ -119,6 +119,8 @@ public class NoteTest {
         post.setPublic(true);
         post.setComments(new ArrayList<Comment>());
         post.setCommentCount(0);
+        post.setClickDate(new ArrayList<>());
+        post.setClickNum(0);
         post = postRepository.insert(post);
         return post;
     }
@@ -227,6 +229,8 @@ public class NoteTest {
         note.setReference(null);
         note.setBest(null);
         note.setManagerEmail(null);
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         noteRepository.insert(note);
         return note;
     }
@@ -335,6 +339,8 @@ public class NoteTest {
         note.setReference(null);
         note.setBest(null);
         note.setManagerEmail(null);
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         noteRepository.insert(note);
         return note;
     }
@@ -360,6 +366,8 @@ public class NoteTest {
         post.setComments(new ArrayList<Comment>());
         ArrayList<String> answers = new ArrayList<>();
         post.setAnswers(answers);
+        post.setClickDate(new ArrayList<>());
+        post.setClickNum(0);
         return postRepository.insert(post);
     }
 
@@ -470,6 +478,8 @@ public class NoteTest {
         note.setReference(null);
         note.setBest(null);
         note.setManagerEmail("user1@gmail.com");
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         Post post = createCollaborationPost();
         note.setPostID(post.getId());
         noteRepository.insert(note);
