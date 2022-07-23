@@ -8,9 +8,17 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 
 @Repository
-public interface NoteRepository extends MongoRepository<Note,String> {
+public interface NoteRepository extends MongoRepository<Note, String> {
     @Query(value = "{'title': {$regex : ?0, $options: 'i'}}")
     List<Note> findNoteByTitleRegex(String title, Sort sort);
 
     List<Note> findAllByHeaderEmail(String email);
+
+    // "{\"_id\": {\"$oid\": \"629c22e636b09e5b52527f5b\"}}"
+    @Query(value = "{ tag: { $all: ?0 } }", fields = "{_id : 1}")
+    List<String> findAllByTags(Set<String> tags);
+
+    @Query(value = "{ hiddenTag: { $all: ?0 } }", fields = "{_id : 1}")
+    List<String> findAllByHiddenTags(Set<String> tags);
+
 }

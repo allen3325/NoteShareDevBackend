@@ -20,6 +20,7 @@ import ntou.notesharedevbackend.userModule.entity.UserObj;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -563,4 +564,62 @@ public class NoteService {
     public FolderReturn turnFolderToFolderReturn(Folder folder) {
         return folderService.turnFolderToFolderReturn(folder);
     }
+
+    // findAllByTags's return "{\"_id\": {\"$oid\": \"629c22e636b09e5b52527f5b\"}}"
+    public void checkNotePlagiarismAndSave(String noteID) {
+        Note mainNote = getNote(noteID);
+        if (mainNote.getTag().isEmpty() && mainNote.getHiddenTag().isEmpty()) {
+            // bell user that this note doesn't have tag.
+        } else {
+            // TODO: 1. use Set get Note's by similar tag until proper number of notes
+            //  2. put in articleArray
+            //  3. run
+            String author = mainNote.getHeaderEmail();
+            // 1. use Set get Note's by similar tag until proper number of notes
+            // 1-1. use Set get Note's tag
+            ArrayList<String> allTags = mainNote.getTag();
+            allTags.addAll(mainNote.getHiddenTag());
+            Set<String> tags = new HashSet<>(allTags);
+            // 1-2. use tags to find proper number of notes
+            // find All similar note's ID
+            // TODO: 用tag 一個一個找，找出最大相對集合及合適數量（例如：用java去篩->用 java + SpringBoot 去篩）
+            //  或是乾脆直接看都只用一個tag中最少或最多的數量的。
+            //  -> 用排列組合，從取 n 開始倒數， n-1 n-2 n-3 ... 1，過程中若是超過最低合適數量，就 break
+            List<String> similarNotesID = noteRepository.findAllByTags(tags);
+
+            // 2.
+            // 3.
+            // plagiarismPointChecker(articleArray,self);
+        }
+
+    }
+
+    public void plagiarismPointChecker(ArrayList<String> articleArray, String self) {
+        // TODO: 內容在 mycustom_html，記得清掉 html tag
+
+    }
+
+    public String cleanArticle(String article) {
+        // remove HTML tag -> replace useless space into one space -> all English into UpperCase
+        String containHtmlTagRegex = "<.*?>";
+        String containUselessSpaceRegex = "\\s{2,}";
+        article = article.replaceAll(containHtmlTagRegex, "");
+        article = article.replaceAll(containUselessSpaceRegex, " ");
+        article = article.replaceAll(System.lineSeparator(),"");
+        article = article.toUpperCase();
+        return article;
+    }
+
+    public int getDuplicateNoteNumber(ArrayList<Note> articleArrayTmp){
+        Set<String> similarNotesSet = new HashSet<>();
+        int ans = 0;
+        for (Note note : articleArrayTmp) {
+            if (!similarNotesSet.add(note.getId())) {
+                // duplicate note's ID
+                ans++;
+            }
+        }
+        return ans;
+    }
+
 }
