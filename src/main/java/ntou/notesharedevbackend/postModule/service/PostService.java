@@ -21,10 +21,12 @@ import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.*;
 import org.springframework.messaging.simp.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PostService {
@@ -95,6 +97,8 @@ public class PostService {
         post.setVote(new ArrayList<Vote>());
         post.setArchive(false);
         post.setApplyEmail(new ArrayList<String>());
+        post.setClickDate(new ArrayList<>());
+        post.setClickNum(0);
         if (request.getType().equals("collaboration")) {//若為共筆貼文，須建立共筆筆記
             post.setCollabNoteAuthorNumber(post.getEmail().size());
             Note note = new Note();
@@ -150,6 +154,8 @@ public class PostService {
         post.setCollabNoteAuthorNumber(post.getEmail().size());
         post.setApplyEmail(request.getApplyEmail());
         post.setArchive(request.getArchive());
+        post.setClickDate(oldPost.getClickDate());
+        post.setClickNum(post.getClickDate().size());
         return postRepository.save(post);
     }
 
@@ -718,4 +724,37 @@ public class PostService {
         return true;
     }
 
+    public void updateClick(String postID) {
+        Post post = getPostById(postID);
+        Date date = new Date();
+        Long gap = TimeUnit.MILLISECONDS.convert(3, TimeUnit.DAYS);
+        //刪除三天前的點擊
+        for (Long clickDate : post.getClickDate()) {
+            if (clickDate < date.getTime() - gap) {
+                post.getClickDate().remove(clickDate);
+            }
+        }
+        post.getClickDate().add(date.getTime());
+        post.setClickNum(post.getClickDate().size());
+        postRepository.save(post);
+    }
+
+    public Page<PostReturn> getHotPosts(int offset, int pageSize) {
+        Page<Post> listPage = postRepository.findAllByIsPublicTrue(PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "clickNum")));
+        ArrayList<PostReturn> postReturns = new ArrayList<>();
+        listPage.forEach(post -> {
+            PostReturn postReturn = getUserInfo(post);
+            postReturns.add(postReturn);
+        });
+        return new PageImpl<>(postReturns);
+    }
+
+    public Integer getTotalPage(int pageSize) {
+        int totalPostsNum = postRepository.findAllByIsPublicTrue().size();
+        if ((totalPostsNum % pageSize) == 0) {
+            return totalPostsNum / pageSize;
+        } else {
+            return totalPostsNum / pageSize + 1;
+        }
+    }
 }
