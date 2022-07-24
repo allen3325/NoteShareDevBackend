@@ -45,11 +45,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/verification/signup").permitAll()
                 .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 //                .anyRequest().permitAll() // tmp for testing
-                .anyRequest().authenticated() // 對剩下的 API 定義規則
-                .and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .anyRequest().authenticated() // 對剩下的 API 定義規則
+//                .and()
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .csrf().disable()
                 .cors().and();
