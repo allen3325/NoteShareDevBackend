@@ -8,9 +8,13 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 
 @Repository
-public interface NoteRepository extends MongoRepository<Note,String> {
+public interface NoteRepository extends MongoRepository<Note, String> {
     @Query(value = "{'title': {$regex : ?0, $options: 'i'}}")
     List<Note> findNoteByTitleRegex(String title, Sort sort);
 
     List<Note> findAllByHeaderEmail(String email);
+
+    Page<Note> findAllByIsPublicTrue(Pageable pageable);
+
+    List<Note> findAllByIsPublicTrue();
 }

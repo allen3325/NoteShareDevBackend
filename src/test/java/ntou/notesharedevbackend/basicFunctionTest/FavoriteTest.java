@@ -52,6 +52,8 @@ public class FavoriteTest {
         note.setHiddenTag(new ArrayList<String>());
         note.setVersion(new ArrayList<VersionContent>());
         note.setContributors(new ArrayList<String>());
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         return note;
     }
 

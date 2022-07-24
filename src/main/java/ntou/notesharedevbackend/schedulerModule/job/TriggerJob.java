@@ -89,6 +89,7 @@ public class TriggerJob implements Job {
                 if (v.getResult().equals("agree kick")) {
                     post = postService.getPostById(postID);
                     post.getEmail().remove(v.getKickTarget());
+                    post.setCollabNoteAuthorNumber(post.getEmail().size());
                     postRepository.save(post);
                 }
                 break;

@@ -44,6 +44,8 @@ public class Post {
     private ArrayList<Apply> collabApply;
     private Boolean isArchive;
     private ArrayList<String> applyEmail;
+    private ArrayList<Long> clickDate;
+    private Integer clickNum;
 
     // constructors
     public Post() {
@@ -266,5 +268,21 @@ public class Post {
 
     public void setApplyEmail(ArrayList<String> applyEmail) {
         this.applyEmail = applyEmail;
+    }
+
+    public ArrayList<Long> getClickDate() {
+        return clickDate;
+    }
+
+    public void setClickDate(ArrayList<Long> clickDate) {
+        this.clickDate = clickDate;
+    }
+
+    public Integer getClickNum() {
+        return clickNum;
+    }
+
+    public void setClickNum(Integer clickNum) {
+        this.clickNum = clickNum;
     }
 }
