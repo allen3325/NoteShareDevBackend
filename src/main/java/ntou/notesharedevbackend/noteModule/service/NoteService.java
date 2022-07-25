@@ -16,6 +16,7 @@ import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.searchModule.entity.NoteBasicReturn;
+import ntou.notesharedevbackend.searchModule.entity.Pages;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.entity.UserObj;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
@@ -606,17 +607,17 @@ public class NoteService {
     }
 
     public Integer getTotalPage(int pageSize) {
-        int totalNotesNum = noteRepository.findAllByIsPublicTrue().size();
+        int totalNotesNum = noteRepository.findAllByIsPublicTrueAndTypeNot("reward").size();
         if ((totalNotesNum % pageSize) == 0) {
-            return totalNotesNum / pageSize;
+            return totalNotesNum / pageSize - 1;
         } else {
-            return totalNotesNum / pageSize + 1;
+            return totalNotesNum / pageSize ;
         }
     }
 
 
-    public Page<NoteBasicReturn> getHotNotes(int offset, int pageSize) {
-        Page<Note> listPage = noteRepository.findAllByIsPublicTrue(PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "clickNum")));
+    public Pages getHotNotes(int offset, int pageSize) {
+        Page<Note> listPage = noteRepository.findAllByIsPublicTrueAndTypeNot(PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "clickNum")),"reward");
         ArrayList<NoteBasicReturn> noteBasicReturns = new ArrayList<>();
         listPage.forEach(note -> {
             NoteBasicReturn noteBasicReturn = new NoteBasicReturn(note);
@@ -630,6 +631,7 @@ public class NoteService {
             noteBasicReturn.setAuthorEmailUserObj(authorsUserObj);
             noteBasicReturns.add(noteBasicReturn);
         });
-        return new PageImpl<>(noteBasicReturns);
+        Page page =new PageImpl<>(noteBasicReturns);
+        return new Pages(page.getContent(),getTotalPage(pageSize));
     }
 }
