@@ -5,9 +5,8 @@ import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.noteModule.entity.*;
 import ntou.notesharedevbackend.noteModule.service.NoteService;
-import ntou.notesharedevbackend.searchModule.entity.NoteBasicReturn;
+import ntou.notesharedevbackend.searchModule.entity.Pages;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -221,11 +220,9 @@ public class NoteController {
     @GetMapping("/hotNotes/{offset}/{pageSize}")
     public ResponseEntity<Object> getHotNote(@PathVariable("offset") int offset,
                                              @PathVariable("pageSize") int pageSize) {
-        Page<NoteBasicReturn> noteBasicReturns = noteService.getHotNotes(offset, pageSize);
-        Integer totalPage = noteService.getTotalPage(pageSize);
+        Pages noteBasicReturns = noteService.getHotNotes(offset, pageSize);
         Map<String, Object> res = new HashMap<>();
         res.put("res", noteBasicReturns);
-        res.put("totalPage", totalPage);
         return ResponseEntity.ok(res);
     }
 
