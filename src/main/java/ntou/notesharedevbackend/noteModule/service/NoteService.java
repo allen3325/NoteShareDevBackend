@@ -606,8 +606,8 @@ public class NoteService {
         noteRepository.save(note);
     }
 
-    public Integer getTotalPage(int pageSize) {
-        int totalNotesNum = noteRepository.findAllByIsPublicTrueAndTypeNot("reward").size();
+    public long getTotalPage(int pageSize) {
+        long totalNotesNum = noteRepository.countAllByIsPublicTrueAndTypeNot("reward");
         if ((totalNotesNum % pageSize) == 0) {
             return totalNotesNum / pageSize - 1;
         } else {
@@ -632,6 +632,6 @@ public class NoteService {
             noteBasicReturns.add(noteBasicReturn);
         });
         Page page =new PageImpl<>(noteBasicReturns);
-        return new Pages(page.getContent(),getTotalPage(pageSize));
+        return new Pages(page.getContent(),(int)getTotalPage(pageSize));
     }
 }

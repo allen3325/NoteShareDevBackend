@@ -748,11 +748,11 @@ public class PostService {
             postReturns.add(postReturn);
         });
         Page page = new PageImpl<>(postReturns);
-        return new Pages(page.getContent(), getTotalPage(pageSize, type));
+        return new Pages(page.getContent(), (int)getTotalPage(pageSize, type));
     }
 
-    public Integer getTotalPage(int pageSize, String type) {
-        int totalPostsNum = postRepository.findAllByIsPublicTrueAndType(type).size();
+    public long getTotalPage(int pageSize, String type) {
+        long totalPostsNum = postRepository.countAllByIsPublicTrueAndType(type);
         if ((totalPostsNum % pageSize) == 0) {
 
             return totalPostsNum / pageSize - 1;

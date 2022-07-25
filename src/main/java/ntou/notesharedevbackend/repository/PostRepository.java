@@ -20,5 +20,5 @@ public interface PostRepository extends MongoRepository<Post, String> {
 
     Page<Post> findAllByIsPublicTrueAndType(Pageable pageable, String type);
 
-    List<Post> findAllByIsPublicTrueAndType(String type);
+    Long countAllByIsPublicTrueAndType(String type);
 }

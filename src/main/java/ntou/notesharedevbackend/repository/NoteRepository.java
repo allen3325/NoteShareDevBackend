@@ -16,5 +16,6 @@ public interface NoteRepository extends MongoRepository<Note, String> {
 
     Page<Note> findAllByIsPublicTrueAndTypeNot(Pageable pageable,String type);
 
-    List<Note> findAllByIsPublicTrueAndTypeNot(String type);
+    Long countAllByIsPublicTrueAndTypeNot(String type);
+
 }
