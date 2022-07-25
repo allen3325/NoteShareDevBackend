@@ -29,6 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -119,6 +120,8 @@ public class NoteTest {
         post.setPublic(true);
         post.setComments(new ArrayList<Comment>());
         post.setCommentCount(0);
+        post.setClickDate(new ArrayList<>());
+        post.setClickNum(0);
         post = postRepository.insert(post);
         return post;
     }
@@ -227,6 +230,8 @@ public class NoteTest {
         note.setReference(null);
         note.setBest(null);
         note.setManagerEmail(null);
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         noteRepository.insert(note);
         return note;
     }
@@ -335,6 +340,8 @@ public class NoteTest {
         note.setReference(null);
         note.setBest(null);
         note.setManagerEmail(null);
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         noteRepository.insert(note);
         return note;
     }
@@ -360,6 +367,8 @@ public class NoteTest {
         post.setComments(new ArrayList<Comment>());
         ArrayList<String> answers = new ArrayList<>();
         post.setAnswers(answers);
+        post.setClickDate(new ArrayList<>());
+        post.setClickNum(0);
         return postRepository.insert(post);
     }
 
@@ -470,6 +479,8 @@ public class NoteTest {
         note.setReference(null);
         note.setBest(null);
         note.setManagerEmail("user1@gmail.com");
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         Post post = createCollaborationPost();
         note.setPostID(post.getId());
         noteRepository.insert(note);
@@ -1288,7 +1299,7 @@ public class NoteTest {
         }
     }
 
-//    @Test
+    //    @Test
     public void testRemoveLastNoteFromFolder() throws Exception {
         AppUser appUser = userRepository.findByEmail("yitingwu.1030@gmail.com");
         Note wantToDeleteNote = createNormalNote();
@@ -1339,6 +1350,46 @@ public class NoteTest {
         if (!folderRepository.findById(buyFolder.getId()).get().getNotes().contains(wantToDeleteNote.getId())) {
             throw new Exception("Note Test : note is removed from buy folder");
         }
+    }
+
+    @Test
+    public void testGetHotNote() throws Exception {
+        Note note = createNormalNote();
+        note.getClickDate().add(new Date().getTime());
+        note.setClickNum(1);
+        note.setPublic(true);
+        noteRepository.save(note);
+        AppUser appUser = userRepository.findByEmail(note.getHeaderEmail());
+        int offset = 0;
+        int pageSize = 1;
+        mockMvc.perform(get("/note/hotNotes/" + offset + "/" + pageSize)
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.content.[0].id").value(note.getId()))
+                .andExpect(jsonPath("$.res.content.[0].type").value(note.getType()))
+                .andExpect(jsonPath("$.res.content.[0].department").value(note.getDepartment()))
+                .andExpect(jsonPath("$.res.content.[0].subject").value(note.getSubject()))
+                .andExpect(jsonPath("$.res.content.[0].title").value(note.getTitle()))
+                .andExpect(jsonPath("$.res.content.[0].professor").value(note.getProfessor()))
+                .andExpect(jsonPath("$.res.content.[0].school").value(note.getSchool()))
+                .andExpect(jsonPath("$.res.content.[0].likeCount").value(note.getLikeCount()))
+                .andExpect(jsonPath("$.res.content.[0].favoriteCount").value(note.getFavoriteCount()))
+                .andExpect(jsonPath("$.res.content.[0].unlockCount").value(note.getUnlockCount()))
+                .andExpect(jsonPath("$.res.content.[0].downloadable").value(note.getDownloadable()))
+                .andExpect(jsonPath("$.res.content.[0].commentCount").value(note.getCommentCount()))
+                .andExpect(jsonPath("$.res.content.[0].price").value(note.getPrice()))
+                .andExpect(jsonPath("$.res.content.[0].tag.[0]").value(note.getTag().get(0)))
+                .andExpect(jsonPath("$.res.content.[0].tag.[1]").value(note.getTag().get(1)))
+                .andExpect(jsonPath("$.res.content.[0].tag.[2]").value(note.getTag().get(2)))
+                .andExpect(jsonPath("$.res.content.[0].publishDate").value(note.getPublishDate()))
+                .andExpect(jsonPath("$.res.content.[0].description").value(note.getDescription()))
+                .andExpect(jsonPath("$.res.content.[0].headerEmailUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.content.[0].headerEmailUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.content.[0].headerEmailUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.content.[0].authorEmailUserObj.[0].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.content.[0].authorEmailUserObj.[0].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.content.[0].authorEmailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.totalPage").value(2));//init 有一個共筆筆記
     }
 
     @AfterEach

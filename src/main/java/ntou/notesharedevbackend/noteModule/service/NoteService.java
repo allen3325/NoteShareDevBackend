@@ -15,15 +15,21 @@ import ntou.notesharedevbackend.notificationModule.service.NotificationService;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
+import ntou.notesharedevbackend.searchModule.entity.NoteBasicReturn;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.entity.UserObj;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class NoteService {
@@ -132,6 +138,8 @@ public class NoteService {
         } else {
             note.setDescription("");
         }
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         return noteRepository.insert(note);
     }
 
@@ -347,7 +355,8 @@ public class NoteService {
         note.setBest(request.getBest());
         note.setPublishDate(request.getPublishDate());
         note.setDescription(request.getDescription());
-
+        note.setClickDate(oldNote.getClickDate());
+        note.setClickNum(note.getClickDate().size());
         return noteRepository.save(note);
     }
 
@@ -579,5 +588,48 @@ public class NoteService {
 
     public FolderReturn turnFolderToFolderReturn(Folder folder) {
         return folderService.turnFolderToFolderReturn(folder);
+    }
+
+    public void updateClick(String noteID) {
+        Note note = getNote(noteID);
+        Date date = new Date();
+        Long gap = TimeUnit.MILLISECONDS.convert(3, TimeUnit.DAYS);
+        //刪除三天前的點擊
+        for (Long clickDate : note.getClickDate()) {
+            if (clickDate < date.getTime() - gap) {
+                note.getClickDate().remove(clickDate);
+            }
+        }
+        note.getClickDate().add(date.getTime());
+        note.setClickNum(note.getClickDate().size());
+        noteRepository.save(note);
+    }
+
+    public Integer getTotalPage(int pageSize) {
+        int totalNotesNum = noteRepository.findAllByIsPublicTrue().size();
+        if ((totalNotesNum % pageSize) == 0) {
+            return totalNotesNum / pageSize;
+        } else {
+            return totalNotesNum / pageSize + 1;
+        }
+    }
+
+
+    public Page<NoteBasicReturn> getHotNotes(int offset, int pageSize) {
+        Page<Note> listPage = noteRepository.findAllByIsPublicTrue(PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "clickNum")));
+        ArrayList<NoteBasicReturn> noteBasicReturns = new ArrayList<>();
+        listPage.forEach(note -> {
+            NoteBasicReturn noteBasicReturn = new NoteBasicReturn(note);
+            UserObj headerUserObj = appUserService.getUserInfo(note.getHeaderEmail());
+            noteBasicReturn.setHeaderEmailUserObj(headerUserObj);
+            ArrayList<UserObj> authorsUserObj = new ArrayList<>();
+            for (String email : note.getAuthorEmail()) {
+                UserObj authorUserObj = appUserService.getUserInfo(email);
+                authorsUserObj.add(authorUserObj);
+            }
+            noteBasicReturn.setAuthorEmailUserObj(authorsUserObj);
+            noteBasicReturns.add(noteBasicReturn);
+        });
+        return new PageImpl<>(noteBasicReturns);
     }
 }
