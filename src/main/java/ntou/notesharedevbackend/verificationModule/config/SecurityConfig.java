@@ -1,15 +1,19 @@
 package ntou.notesharedevbackend.verificationModule.config;
 
+import ntou.notesharedevbackend.verificationModule.filter.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -21,7 +25,11 @@ import java.util.List;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
+    @Lazy
     private UserDetailsService userDetailsService;
+    @Autowired
+    @Lazy
+    private JWTAuthenticationFilter jwtAuthenticationFilter;
 
     @Override // setting the rules of API's authentication
     protected void configure(HttpSecurity http) throws Exception {
@@ -32,12 +40,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // authorizeRequests 方法開始自訂授權規則。使用 antMatchers 方法，傳入 HTTP 請求方法與 API 路徑，後面接著授權方式，
         http
                 .authorizeHttpRequests()
-//                .antMatchers("/login").permitAll()
-//                .antMatchers("/user").permitAll()
-//                .anyRequest().authenticated() // anyRequest(): 對剩下的 API 定義規則
-                .antMatchers(HttpMethod.POST, "/verification").permitAll()
+                .antMatchers(HttpMethod.POST, "/verification/login").permitAll()
                 .antMatchers(HttpMethod.POST, "/verification/parse").permitAll()
-                .anyRequest().permitAll() // tmp for testing
+                .antMatchers(HttpMethod.POST, "/verification/signup").permitAll()
+                .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+//                .anyRequest().permitAll() // tmp for testing
+//                .anyRequest().authenticated() // 對剩下的 API 定義規則
+//                .and()
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .csrf().disable()
                 .cors().and();
@@ -57,14 +69,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource()
-    {
+    CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000/"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(List.of("Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
                 "Access-Control-Request-Method", "Access-Control-Request-Headers", "Origin", "Cache-Control", "Content-Type", "Authorization"));
-        configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
