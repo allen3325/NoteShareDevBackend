@@ -6,9 +6,9 @@ import ntou.notesharedevbackend.noteModule.entity.Note;
 import ntou.notesharedevbackend.noteModule.entity.NoteReturn;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.PostService;
+import ntou.notesharedevbackend.searchModule.entity.Pages;
 import ntou.notesharedevbackend.userModule.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -247,15 +247,14 @@ public class PostController {
         return ResponseEntity.ok().body(res);
     }
 
-    @Operation(summary = "get hot posts", description = "offset頁數，pageSize一頁顯示貼文的數量")
-    @GetMapping("/hotPosts/{offset}/{pageSize}")
+    @Operation(summary = "get hot posts", description = "offset頁數，pageSize一頁顯示貼文的數量，type: collaboration, reward ,QA")
+    @GetMapping("/hotPosts/{offset}/{pageSize}/{type}")
     public ResponseEntity<Object> getHotPosts(@PathVariable("offset") int offset,
-                                              @PathVariable("pageSize") int pageSize) {
-        Page<PostReturn> posts = postService.getHotPosts(offset, pageSize);
-        Integer totalPage = postService.getTotalPage(pageSize);
+                                              @PathVariable("pageSize") int pageSize,
+                                              @PathVariable("type") String type) {
+        Pages posts = postService.getHotPosts(type, offset, pageSize);
         Map<String, Object> res = new HashMap<>();
         res.put("res", posts);
-        res.put("totalPage", totalPage);
         return ResponseEntity.ok(res);
     }
 

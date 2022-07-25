@@ -17,6 +17,7 @@ import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import ntou.notesharedevbackend.schedulerModule.entity.VoteReturn;
 import ntou.notesharedevbackend.schedulerModule.service.SchedulingService;
+import ntou.notesharedevbackend.searchModule.entity.Pages;
 import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -739,22 +740,24 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public Page<PostReturn> getHotPosts(int offset, int pageSize) {
-        Page<Post> listPage = postRepository.findAllByIsPublicTrue(PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "clickNum")));
+    public Pages getHotPosts(String type, int offset, int pageSize) {
+        Page<Post> listPage = postRepository.findAllByIsPublicTrueAndType(PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "clickNum")), type);
         ArrayList<PostReturn> postReturns = new ArrayList<>();
         listPage.forEach(post -> {
             PostReturn postReturn = getUserInfo(post);
             postReturns.add(postReturn);
         });
-        return new PageImpl<>(postReturns);
+        Page page = new PageImpl<>(postReturns);
+        return new Pages(page.getContent(), (int)getTotalPage(pageSize, type));
     }
 
-    public Integer getTotalPage(int pageSize) {
-        int totalPostsNum = postRepository.findAllByIsPublicTrue().size();
+    public long getTotalPage(int pageSize, String type) {
+        long totalPostsNum = postRepository.countAllByIsPublicTrueAndType(type);
         if ((totalPostsNum % pageSize) == 0) {
-            return totalPostsNum / pageSize;
+
+            return totalPostsNum / pageSize - 1;
         } else {
-            return totalPostsNum / pageSize + 1;
+            return totalPostsNum / pageSize;
         }
     }
 }
