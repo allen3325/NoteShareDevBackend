@@ -247,7 +247,7 @@ public class PostController {
         return ResponseEntity.ok().body(res);
     }
 
-    @Operation(summary = "get hot posts", description = "offset頁數，pageSize一頁顯示貼文的數量")
+    @Operation(summary = "get hot posts", description = "offset頁數，pageSize一頁顯示貼文的數量，type: collaboration, reward ,QA")
     @GetMapping("/hotPosts/{offset}/{pageSize}/{type}")
     public ResponseEntity<Object> getHotPosts(@PathVariable("offset") int offset,
                                               @PathVariable("pageSize") int pageSize,
