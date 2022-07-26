@@ -17,14 +17,17 @@ import ntou.notesharedevbackend.schedulerModule.entity.Task;
 import ntou.notesharedevbackend.schedulerModule.entity.Vote;
 import ntou.notesharedevbackend.schedulerModule.entity.VoteReturn;
 import ntou.notesharedevbackend.schedulerModule.service.SchedulingService;
+import ntou.notesharedevbackend.searchModule.entity.Pages;
 import ntou.notesharedevbackend.userModule.entity.*;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.*;
 import org.springframework.messaging.simp.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PostService {
@@ -95,6 +98,8 @@ public class PostService {
         post.setVote(new ArrayList<Vote>());
         post.setArchive(false);
         post.setApplyEmail(new ArrayList<String>());
+        post.setClickDate(new ArrayList<>());
+        post.setClickNum(0);
         if (request.getType().equals("collaboration")) {//若為共筆貼文，須建立共筆筆記
             post.setCollabNoteAuthorNumber(post.getEmail().size());
             Note note = new Note();
@@ -150,11 +155,24 @@ public class PostService {
         post.setCollabNoteAuthorNumber(post.getEmail().size());
         post.setApplyEmail(request.getApplyEmail());
         post.setArchive(request.getArchive());
+        post.setClickDate(oldPost.getClickDate());
+        post.setClickNum(post.getClickDate().size());
         return postRepository.save(post);
     }
 
-    public void deletePost(String id) {
-        postRepository.deleteById(id);
+    public boolean deletePost(String id) {
+        Post post = getPostById(id);
+        if (post.getType().equals("reward")) {
+            //已選最佳解
+            if (post.getAnswers().size() != 0 && noteService.rewardNoteHaveAnswer(post.getAnswers())) {
+                postRepository.deleteById(id);
+                return true;
+            } else {
+                return false;
+            }
+        } else { //QA跟共筆不能刪
+            return false;
+        }
     }
 
     public Post modifyPublishStatus(String id) {
@@ -373,6 +391,10 @@ public class PostService {
 
     public boolean voteCollaborationVote(String postID, String voteID, String email, VoteRequest request) {
         Post post = getPostById(postID);
+        //檢查是否為此共筆作者
+        if (!post.getEmail().contains(email)) {
+            return false;
+        }
         for (Vote v : post.getVote()) {
             if (v.getId().equals(voteID)) {
                 if (v.getAgree().contains(email)) {//原本投同意
@@ -442,7 +464,7 @@ public class PostService {
         MessageReturn messageReturn = notificationService.getMessageReturn(appUser.getEmail(), "將你的懸賞筆記設為最佳解", "reward", postID);
         Note note = noteService.getNote(answerID);
         String contributor = note.getAuthorEmail().get(0);
-        messagingTemplate.convertAndSendToUser(contributor,"/topic/private-messages", messageReturn);
+        messagingTemplate.convertAndSendToUser(contributor, "/topic/private-messages", messageReturn);
         notificationService.saveNotificationPrivate(contributor, messageReturn);
 
         return true;
@@ -470,7 +492,7 @@ public class PostService {
 
                     //傳送通知給QA最佳解使用者
                     MessageReturn messageReturn = notificationService.getMessageReturn(post.getAuthor(), "將你的答案設為最佳解", "qa", postID);
-                    messagingTemplate.convertAndSendToUser(comment.getEmail(),"/topic/private-messages", messageReturn);
+                    messagingTemplate.convertAndSendToUser(comment.getEmail(), "/topic/private-messages", messageReturn);
                     notificationService.saveNotificationPrivate(comment.getEmail(), messageReturn);
                 }
             }
@@ -503,7 +525,7 @@ public class PostService {
             MessageReturn messageReturn = notificationService.getMessageReturn(appUser.getEmail(), "將你的懸賞筆記設為參考解", "reward", postID);
             Note note = noteService.getNote(answerID);
             String contributor = note.getAuthorEmail().get(0);
-            messagingTemplate.convertAndSendToUser(contributor,"/topic/private-messages", messageReturn);
+            messagingTemplate.convertAndSendToUser(contributor, "/topic/private-messages", messageReturn);
             notificationService.saveNotificationPrivate(contributor, messageReturn);
 
             return true;
@@ -629,7 +651,7 @@ public class PostService {
             } else {
                 for (String noteID : post.getAnswers()) {
                     NotePostReturn notePostReturn = new NotePostReturn();
-                    System.out.println(noteID);
+//                    System.out.println(noteID);
                     notePostReturn.setId(noteID);
                     Note note = noteService.getNote(noteID);
                     notePostReturn.setDate(note.getPublishDate());
@@ -703,4 +725,39 @@ public class PostService {
         return true;
     }
 
+    public void updateClick(String postID) {
+        Post post = getPostById(postID);
+        Date date = new Date();
+        Long gap = TimeUnit.MILLISECONDS.convert(3, TimeUnit.DAYS);
+        //刪除三天前的點擊
+        for (Long clickDate : post.getClickDate()) {
+            if (clickDate < date.getTime() - gap) {
+                post.getClickDate().remove(clickDate);
+            }
+        }
+        post.getClickDate().add(date.getTime());
+        post.setClickNum(post.getClickDate().size());
+        postRepository.save(post);
+    }
+
+    public Pages getHotPosts(String type, int offset, int pageSize) {
+        Page<Post> listPage = postRepository.findAllByIsPublicTrueAndType(PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "clickNum")), type);
+        ArrayList<PostReturn> postReturns = new ArrayList<>();
+        listPage.forEach(post -> {
+            PostReturn postReturn = getUserInfo(post);
+            postReturns.add(postReturn);
+        });
+        Page page = new PageImpl<>(postReturns);
+        return new Pages(page.getContent(), (int)getTotalPage(pageSize, type));
+    }
+
+    public long getTotalPage(int pageSize, String type) {
+        long totalPostsNum = postRepository.countAllByIsPublicTrueAndType(type);
+        if ((totalPostsNum % pageSize) == 0) {
+
+            return totalPostsNum / pageSize - 1;
+        } else {
+            return totalPostsNum / pageSize;
+        }
+    }
 }

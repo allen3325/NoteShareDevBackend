@@ -5,6 +5,7 @@ import ntou.notesharedevbackend.folderModule.entity.Folder;
 import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.noteModule.entity.*;
 import ntou.notesharedevbackend.noteModule.service.NoteService;
+import ntou.notesharedevbackend.searchModule.entity.Pages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ public class NoteController {
     @GetMapping("/{noteID}")
     public ResponseEntity<Object> getNoteById(@PathVariable("noteID") String id) {
         Note note = noteService.getNote(id);
+        noteService.updateClick(id);//更新點擊次數
         NoteReturn noteReturn = noteService.getUserinfo(note);
         Map<String, Object> res = new HashMap<>();
 
@@ -233,6 +235,16 @@ public class NoteController {
     @GetMapping("/plagiarism/{noteID}")
     public void checkNotePlagiarismAndSave(@PathVariable("noteID")String noteID) {
         noteService.checkNotePlagiarismAndSave(noteID);
+    }
+
+    @Operation(summary = "get hot notes", description = "offset頁數，pageSize一頁顯示筆記的數量")
+    @GetMapping("/hotNotes/{offset}/{pageSize}")
+    public ResponseEntity<Object> getHotNote(@PathVariable("offset") int offset,
+                                             @PathVariable("pageSize") int pageSize) {
+        Pages noteBasicReturns = noteService.getHotNotes(offset, pageSize);
+        Map<String, Object> res = new HashMap<>();
+        res.put("res", noteBasicReturns);
+        return ResponseEntity.ok(res);
     }
 
 }

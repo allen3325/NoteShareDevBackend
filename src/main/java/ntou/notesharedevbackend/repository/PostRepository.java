@@ -17,4 +17,8 @@ public interface PostRepository extends MongoRepository<Post, String> {
 
     @Query(value = "{'title': {$regex : ?0, $options: 'i'}}")
     List<Post> findPostByTitleRegex(String title, Sort sort);
+
+    Page<Post> findAllByIsPublicTrueAndType(Pageable pageable, String type);
+
+    Long countAllByIsPublicTrueAndType(String type);
 }

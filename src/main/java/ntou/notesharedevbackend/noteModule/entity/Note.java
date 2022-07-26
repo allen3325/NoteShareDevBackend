@@ -50,9 +50,13 @@ public class Note {
     private String plagiarismPointResult;
     private Float quotePoint;
     private String quotePointResult;
+    private ArrayList<Long> clickDate;
+    private Integer clickNum;
+
 
     // constructors
-    public Note() {}
+    public Note() {
+    }
 
 
     // getter and setter
@@ -361,5 +365,21 @@ public class Note {
 
     public void setPublishDate(Date publishDate) {
         this.publishDate = publishDate;
+    }
+
+    public ArrayList<Long> getClickDate() {
+        return clickDate;
+    }
+
+    public void setClickDate(ArrayList<Long> clickDate) {
+        this.clickDate = clickDate;
+    }
+
+    public Integer getClickNum() {
+        return clickNum;
+    }
+
+    public void setClickNum(Integer clickNum) {
+        this.clickNum = clickNum;
     }
 }

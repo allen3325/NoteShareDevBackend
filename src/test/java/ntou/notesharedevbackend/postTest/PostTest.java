@@ -144,7 +144,8 @@ public class PostTest {
         post.setAnswers(new ArrayList<>());
         post.setArchive(false);
         post.setApplyEmail(new ArrayList<>());
-
+        post.setClickDate(new ArrayList<>());
+        post.setClickNum(0);
         return postRepository.insert(post);
     }
 
@@ -253,6 +254,8 @@ public class PostTest {
         note.setBest(null);
         note.setManagerEmail(null);
         note.setPublishDate(new Date());
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         noteRepository.insert(note);
         return note;
     }
@@ -285,6 +288,8 @@ public class PostTest {
         post.setAnswers(answers);
         post.setArchive(false);
         post.setApplyEmail(new ArrayList<>());
+        post.setClickDate(new ArrayList<>());
+        post.setClickNum(0);
         return postRepository.insert(post);
     }
 
@@ -396,6 +401,8 @@ public class PostTest {
         note.setReference(null);
         note.setBest(null);
         note.setManagerEmail(null);
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         note = noteRepository.insert(note);
         return note;
     }
@@ -429,6 +436,8 @@ public class PostTest {
         post.setCommentCount(0);
         post.setArchive(false);
         post.setApplyEmail(new ArrayList<>());
+        post.setClickDate(new ArrayList<>());
+        post.setClickNum(0);
         post = postRepository.insert(post);
         return post;
     }
@@ -926,6 +935,7 @@ public class PostTest {
         ArrayList<Vote> voteArrayList = new ArrayList<>();
         voteArrayList.add(vote);
         post.setVote(voteArrayList);
+        post.getEmail().add("user1@gmail.com");
         postRepository.save(post);
         AppUser appUser = userRepository.findByEmail("user1@gmail.com");
         JSONObject request = new JSONObject()
@@ -1017,13 +1027,25 @@ public class PostTest {
     }
 
     @Test
-    public void testDeletePost() throws Exception {
-        Post post = createQAPost();
-
+    public void testDeletePostSuccess() throws Exception {
+        Post post = createRewardPost();
+        Note note = noteRepository.findById(post.getAnswers().get(0)).get();
+        note.setBest(true);
+        noteRepository.save(note);
         mockMvc.perform(delete("/post/" + post.getId())
                         .headers(httpHeaders))
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.msg").value("Success"));
+    }
+
+    @Test
+    public void testDeletePostFailed() throws Exception {
+        Post post = createQAPost();
+
+        mockMvc.perform(delete("/post/" + post.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().is(409))
+                .andExpect(jsonPath("$.msg").value("Failed"));
     }
 
     @Test
@@ -1610,6 +1632,68 @@ public class PostTest {
         }
     }
 
+    @Test
+    public void testGetHotPost() throws Exception {
+        Post post = createQAPost();
+        post.getClickDate().add(new Date().getTime());
+        post.setClickNum(1);
+        post.setPublic(true);
+        postRepository.save(post);
+        AppUser appUser = userRepository.findByEmail(post.getAuthor());
+        int offset = 0;
+        int pageSize = 1;
+        mockMvc.perform(get("/post/hotPosts/" + offset + "/" + pageSize+"/QA")
+                        .headers(httpHeaders))
+                .andExpect(jsonPath("$.res.items.[0].id").value(post.getId()))
+                .andExpect(jsonPath("$.res.items.[0].type").value(post.getType()))
+                .andExpect(jsonPath("$.res.items.[0].author").value(post.getAuthor()))
+                .andExpect(jsonPath("$.res.items.[0].email.[0]").value(post.getEmail().get(0)))
+                .andExpect(jsonPath("$.res.items.[0].department").value(post.getDepartment()))
+                .andExpect(jsonPath("$.res.items.[0].subject").value(post.getSubject()))
+                .andExpect(jsonPath("$.res.items.[0].title").value(post.getTitle()))
+                .andExpect(jsonPath("$.res.items.[0].professor").value(post.getProfessor()))
+                .andExpect(jsonPath("$.res.items.[0].school").value(post.getSchool()))
+                .andExpect(jsonPath("$.res.items.[0].content").value(post.getContent()))
+                .andExpect(jsonPath("$.res.items.[0].date").hasJsonPath())
+                .andExpect(jsonPath("$.res.items.[0].bestPrice").value(post.getBestPrice()))
+                .andExpect(jsonPath("$.res.items.[0].referencePrice").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.items.[0].referenceNumber").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[0].id").value(post.getComments().get(0).getId()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[0].author").value(post.getComments().get(0).getAuthor()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[0].email").value(post.getComments().get(0).getEmail()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[0].content").value(post.getComments().get(0).getContent()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[0].likeCount").value(post.getComments().get(0).getLikeCount()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[0].liker").isEmpty())
+                .andExpect(jsonPath("$.res.items.[0].comments.[0].floor").value(post.getComments().get(0).getFloor()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[0].date").value(post.getComments().get(0).getDate()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[0].picURL").isEmpty())
+                .andExpect(jsonPath("$.res.items.[0].comments.[0].best").value(post.getComments().get(0).getBest()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[1].id").value(post.getComments().get(1).getId()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[1].author").value(post.getComments().get(1).getAuthor()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[1].email").value(post.getComments().get(1).getEmail()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[1].content").value(post.getComments().get(1).getContent()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[1].likeCount").value(post.getComments().get(1).getLikeCount()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[1].liker").isEmpty())
+                .andExpect(jsonPath("$.res.items.[0].comments.[1].floor").value(post.getComments().get(1).getFloor()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[1].date").value(post.getComments().get(1).getDate()))
+                .andExpect(jsonPath("$.res.items.[0].comments.[1].picURL").isEmpty())
+                .andExpect(jsonPath("$.res.items.[0].comments.[1].best").value(post.getComments().get(1).getBest()))
+                .andExpect(jsonPath("$.res.items.[0].commentCount").value(post.getCommentCount()))
+                .andExpect(jsonPath("$.res.items.[0].answers").isEmpty())
+                .andExpect(jsonPath("$.res.items.[0].vote").isEmpty())
+                .andExpect(jsonPath("$.res.items.[0].voteUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.items.[0].collabNoteAuthorNumber").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.items.[0].collabApplyUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.items.[0].collabApply").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.res.items.[0].publishDate").value(post.getPublishDate()))
+                .andExpect(jsonPath("$.res.items.[0].authorUserObj.userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.items.[0].authorUserObj.userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.items.[0].authorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.items.[0].emailUserObj.[0].userObjEmail").value(appUser.getEmail()))
+                .andExpect(jsonPath("$.res.items.[0].emailUserObj.[0].userObjName").value(appUser.getName()))
+                .andExpect(jsonPath("$.res.items.[0].emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
+                .andExpect(jsonPath("$.res.totalPages").value(0));
+    }
 
     @AfterEach
     public void clear() {

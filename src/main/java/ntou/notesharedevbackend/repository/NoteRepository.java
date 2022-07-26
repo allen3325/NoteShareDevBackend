@@ -25,4 +25,9 @@ public interface NoteRepository extends MongoRepository<Note, String> {
 
     @Query(value = "{ _id: ?0 }", fields = "{_id: 0,'version' : 1}")
     Note findVersionById(String id);
+
+    Page<Note> findAllByIsPublicTrueAndTypeNot(Pageable pageable,String type);
+
+    Long countAllByIsPublicTrueAndTypeNot(String type);
+
 }

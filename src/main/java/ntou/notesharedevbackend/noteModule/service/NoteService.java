@@ -16,11 +16,17 @@ import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.PlagiarismDictionaryRepository;
+import ntou.notesharedevbackend.searchModule.entity.NoteBasicReturn;
+import ntou.notesharedevbackend.searchModule.entity.Pages;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.entity.UserObj;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class NoteService {
@@ -141,6 +148,8 @@ public class NoteService {
         } else {
             note.setDescription("");
         }
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         return noteRepository.insert(note);
     }
 
@@ -166,6 +175,23 @@ public class NoteService {
         }
         replaceNote(note, note.getId());
         postService.kickUserFromCollaboration(note.getPostID(), email);
+//        noteRepository.save(note);
+    }
+
+    public void triggerKickUserFromCollaboration(String noteId, String email) {
+        Note note = getNote(noteId);
+        ArrayList<String> currentEmails = note.getAuthorEmail();
+        ArrayList<String> currentNames = note.getAuthorName();
+        int userIndex = currentEmails.indexOf(email);
+
+        currentEmails.remove(userIndex);
+        currentNames.remove(userIndex);
+        note.setAuthorEmail(currentEmails);
+        note.setAuthorName(currentNames);
+        if (note.getManagerEmail() != null && note.getManagerEmail().equals(email)) {//檢查踢除人是否為管理員
+            note.setManagerEmail(null);
+        }
+        replaceNote(note, note.getId());
 //        noteRepository.save(note);
     }
 
@@ -339,7 +365,8 @@ public class NoteService {
         note.setBest(request.getBest());
         note.setPublishDate(request.getPublishDate());
         note.setDescription(request.getDescription());
-
+        note.setClickDate(oldNote.getClickDate());
+        note.setClickNum(note.getClickDate().size());
         return noteRepository.save(note);
     }
 
@@ -719,4 +746,47 @@ public class NoteService {
         return result;
     }
 
+    public void updateClick(String noteID) {
+        Note note = getNote(noteID);
+        Date date = new Date();
+        Long gap = TimeUnit.MILLISECONDS.convert(3, TimeUnit.DAYS);
+        //刪除三天前的點擊
+        for (Long clickDate : note.getClickDate()) {
+            if (clickDate < date.getTime() - gap) {
+                note.getClickDate().remove(clickDate);
+            }
+        }
+        note.getClickDate().add(date.getTime());
+        note.setClickNum(note.getClickDate().size());
+        noteRepository.save(note);
+    }
+
+    public long getTotalPage(int pageSize) {
+        long totalNotesNum = noteRepository.countAllByIsPublicTrueAndTypeNot("reward");
+        if ((totalNotesNum % pageSize) == 0) {
+            return totalNotesNum / pageSize - 1;
+        } else {
+            return totalNotesNum / pageSize ;
+        }
+    }
+
+
+    public Pages getHotNotes(int offset, int pageSize) {
+        Page<Note> listPage = noteRepository.findAllByIsPublicTrueAndTypeNot(PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "clickNum")),"reward");
+        ArrayList<NoteBasicReturn> noteBasicReturns = new ArrayList<>();
+        listPage.forEach(note -> {
+            NoteBasicReturn noteBasicReturn = new NoteBasicReturn(note);
+            UserObj headerUserObj = appUserService.getUserInfo(note.getHeaderEmail());
+            noteBasicReturn.setHeaderEmailUserObj(headerUserObj);
+            ArrayList<UserObj> authorsUserObj = new ArrayList<>();
+            for (String email : note.getAuthorEmail()) {
+                UserObj authorUserObj = appUserService.getUserInfo(email);
+                authorsUserObj.add(authorUserObj);
+            }
+            noteBasicReturn.setAuthorEmailUserObj(authorsUserObj);
+            noteBasicReturns.add(noteBasicReturn);
+        });
+        Page page =new PageImpl<>(noteBasicReturns);
+        return new Pages(page.getContent(),(int)getTotalPage(pageSize));
+    }
 }

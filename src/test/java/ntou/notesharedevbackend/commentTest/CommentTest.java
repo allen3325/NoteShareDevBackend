@@ -220,6 +220,8 @@ public class CommentTest {
         note.setReference(null);
         note.setBest(null);
         note.setManagerEmail(null);
+        note.setClickDate(new ArrayList<>());
+        note.setClickNum(0);
         return noteRepository.insert(note);
     }
 
@@ -255,6 +257,8 @@ public class CommentTest {
         post.setCommentCount(2);
         post.setBestPrice(10);
         post.setAnswers(new ArrayList<>());
+        post.setClickDate(new ArrayList<>());
+        post.setClickNum(0);
         post = postRepository.insert(post);
         return post;
     }

@@ -6,6 +6,7 @@ import ntou.notesharedevbackend.noteModule.entity.Note;
 import ntou.notesharedevbackend.noteModule.entity.NoteReturn;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.PostService;
+import ntou.notesharedevbackend.searchModule.entity.Pages;
 import ntou.notesharedevbackend.userModule.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -45,6 +46,7 @@ public class PostController {
     @GetMapping("/{postID}")
     public ResponseEntity<Object> getPostById(@PathVariable("postID") String id) {
         Post post = postService.getPostById(id);
+        postService.updateClick(id);//更新點擊次數
         PostReturn postReturn = postService.getUserInfo(post);
         Map<String, Object> res = new HashMap<>();
 
@@ -165,7 +167,7 @@ public class PostController {
             return ResponseEntity.ok(res);
         } else {
             res.put("msg", "Fail");
-            throw new NotFoundException("Can not vote");
+            return ResponseEntity.status(409).body(res);
         }
     }
 
@@ -214,10 +216,14 @@ public class PostController {
     @Operation(summary = "delete post.")
     @DeleteMapping("/{postID}")
     public ResponseEntity<Object> deletePost(@PathVariable("postID") String id) {
-        postService.deletePost(id);
         Map<String, Object> res = new HashMap<>();
-        res.put("msg", "Success");
-        return ResponseEntity.status(204).body(res);
+        if (postService.deletePost(id)) {
+            res.put("msg", "Success");
+            return ResponseEntity.status(204).body(res);
+        } else {
+            res.put("msg", "Failed");
+            return ResponseEntity.status(409).body(res);
+        }
     }
 
     @Operation(summary = "create reward note", description = "postID為要投稿的reward post ID，email要放投稿人email")
@@ -240,4 +246,16 @@ public class PostController {
         }
         return ResponseEntity.ok().body(res);
     }
+
+    @Operation(summary = "get hot posts", description = "offset頁數，pageSize一頁顯示貼文的數量，type: collaboration, reward ,QA")
+    @GetMapping("/hotPosts/{offset}/{pageSize}/{type}")
+    public ResponseEntity<Object> getHotPosts(@PathVariable("offset") int offset,
+                                              @PathVariable("pageSize") int pageSize,
+                                              @PathVariable("type") String type) {
+        Pages posts = postService.getHotPosts(type, offset, pageSize);
+        Map<String, Object> res = new HashMap<>();
+        res.put("res", posts);
+        return ResponseEntity.ok(res);
+    }
+
 }
