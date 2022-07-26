@@ -76,6 +76,21 @@ public class NoteController {
         return ResponseEntity.status(201).body(res);
     }
 
+
+    @Operation(summary = "create note doesn't has folder.")
+    @PostMapping("/{email}")
+    public ResponseEntity<Object> createNoteWithoutFolder(@PathVariable("email") String email,
+                                                          @RequestBody Note request) {
+
+        Map<String, Object> res = new HashMap<>();
+        Note note = noteService.createNote(request, email);
+        NoteReturn noteReturn = noteService.getUserinfo(note);
+
+        res.put("res", noteReturn);
+
+        return ResponseEntity.status(201).body(res);
+    }
+
     @Operation(summary = "update whole note.", description = "body should be complete full and correct.")
     @PutMapping("/{id}")
     public ResponseEntity<Object> saveNote(@PathVariable("id") String id, @RequestBody Note request) {
