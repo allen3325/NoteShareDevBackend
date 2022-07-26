@@ -46,8 +46,13 @@ public class Note {
     @JsonFormat(timezone = "GMT+08:00")
     private Date publishDate; // publish 後更新，預設為 NULL
     private String description;
+    private Float plagiarismPoint;
+    private String plagiarismPointResult;
+    private Float quotePoint;
+    private String quotePointResult;
     private ArrayList<Long> clickDate;
     private Integer clickNum;
+
 
     // constructors
     public Note() {
@@ -55,6 +60,38 @@ public class Note {
 
 
     // getter and setter
+
+    public String getPlagiarismPointResult() {
+        return plagiarismPointResult;
+    }
+
+    public void setPlagiarismPointResult(String plagiarismPointResult) {
+        this.plagiarismPointResult = plagiarismPointResult;
+    }
+
+    public String getQuotePointResult() {
+        return quotePointResult;
+    }
+
+    public void setQuotePointResult(String quotePointResult) {
+        this.quotePointResult = quotePointResult;
+    }
+
+    public Float getPlagiarismPoint() {
+        return plagiarismPoint;
+    }
+
+    public void setPlagiarismPoint(Float plagiarismPoint) {
+        this.plagiarismPoint = plagiarismPoint;
+    }
+
+    public Float getQuotePoint() {
+        return quotePoint;
+    }
+
+    public void setQuotePoint(Float quotePoint) {
+        this.quotePoint = quotePoint;
+    }
 
     public String getDescription() {
         return description;

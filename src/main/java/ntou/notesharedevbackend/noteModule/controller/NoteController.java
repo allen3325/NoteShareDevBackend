@@ -78,6 +78,21 @@ public class NoteController {
         return ResponseEntity.status(201).body(res);
     }
 
+
+    @Operation(summary = "create note doesn't has folder.")
+    @PostMapping("/{email}")
+    public ResponseEntity<Object> createNoteWithoutFolder(@PathVariable("email") String email,
+                                                          @RequestBody Note request) {
+
+        Map<String, Object> res = new HashMap<>();
+        Note note = noteService.createNote(request, email);
+        NoteReturn noteReturn = noteService.getUserinfo(note);
+
+        res.put("res", noteReturn);
+
+        return ResponseEntity.status(201).body(res);
+    }
+
     @Operation(summary = "update whole note.", description = "body should be complete full and correct.")
     @PutMapping("/{id}")
     public ResponseEntity<Object> saveNote(@PathVariable("id") String id, @RequestBody Note request) {
@@ -214,6 +229,12 @@ public class NoteController {
             res.put("res", noteService.folderGetUserInfo(folder.getId()));
             return ResponseEntity.ok(res);
         }
+    }
+
+    @Operation(summary = "check the note's plagirism point and save to db.",description = "前端使用直接不用等回傳，好了會用socket通知使用者")
+    @GetMapping("/plagiarism/{noteID}")
+    public void checkNotePlagiarismAndSave(@PathVariable("noteID")String noteID) {
+        noteService.checkNotePlagiarismAndSave(noteID);
     }
 
     @Operation(summary = "get hot notes", description = "offset頁數，pageSize一頁顯示筆記的數量")
