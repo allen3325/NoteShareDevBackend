@@ -15,15 +15,18 @@ import ntou.notesharedevbackend.notificationModule.service.NotificationService;
 import ntou.notesharedevbackend.postModule.entity.Post;
 import ntou.notesharedevbackend.postModule.service.PostService;
 import ntou.notesharedevbackend.repository.NoteRepository;
+import ntou.notesharedevbackend.repository.PlagiarismDictionaryRepository;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.entity.UserObj;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 
 @Service
@@ -46,6 +49,12 @@ public class NoteService {
     @Autowired
     @Lazy
     private NotificationService notificationService;
+    @Autowired
+    @Lazy
+    private PlagiarismService plagiarismService;
+    @Autowired
+    @Lazy
+    private PlagiarismDictionaryRepository plagiarismDictionaryRepository;
 
     protected final SimpMessagingTemplate messagingTemplate;
 
@@ -55,8 +64,7 @@ public class NoteService {
     }
 
     public Note getNote(String id) {
-        return noteRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Can't find note."));
+        return noteRepository.findById(id).orElseThrow(() -> new NotFoundException("Can't find note."));
     }
 
     public VersionContent getNoteVersion(String id, int version) {
@@ -565,61 +573,146 @@ public class NoteService {
         return folderService.turnFolderToFolderReturn(folder);
     }
 
-    // findAllByTags's return "{\"_id\": {\"$oid\": \"629c22e636b09e5b52527f5b\"}}"
+    public MessageReturn getMessageReturnFromPlagiarism(String result, String noteID) {
+        MessageReturn messageReturn = new MessageReturn();
+        UserObj userObj = new UserObj();
+        userObj.setUserObjEmail("noteshare@gmail.com");
+        userObj.setUserObjName("NoteShare System");
+        userObj.setUserObjAvatar("https://i.imgur.com/5V1waq3.png");
+        messageReturn.setUserObj(userObj);
+        messageReturn.setType("plagiarism notification");
+        messageReturn.setId(noteID);
+        messageReturn.setDate(new Date());
+        messageReturn.setMessage(result);
+
+        return messageReturn;
+    }
+
+    // TODO: 1. use Set get Note's by similar tag until proper number of notes
+    //  2. put in noteIDArray
+    //  3. run
+    @Transactional
     public void checkNotePlagiarismAndSave(String noteID) {
         Note mainNote = getNote(noteID);
+        String author = mainNote.getHeaderEmail();
         if (mainNote.getTag().isEmpty() && mainNote.getHiddenTag().isEmpty()) {
             // bell user that this note doesn't have tag.
+            MessageReturn messageReturn = getMessageReturnFromPlagiarism("該筆記tag為空，請新增tag。",noteID);
+            messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
+            notificationService.saveNotificationPrivate(author, messageReturn);
         } else {
-            // TODO: 1. use Set get Note's by similar tag until proper number of notes
-            //  2. put in articleArray
-            //  3. run
-            String author = mainNote.getHeaderEmail();
             // 1. use Set get Note's by similar tag until proper number of notes
             // 1-1. use Set get Note's tag
+            long startTime = System.currentTimeMillis();
             ArrayList<String> allTags = mainNote.getTag();
             allTags.addAll(mainNote.getHiddenTag());
             Set<String> tags = new HashSet<>(allTags);
+            allTags = null;
+            String[] inputArray = tags.toArray(String[]::new);
+            tags = null;
             // 1-2. use tags to find proper number of notes
-            // find All similar note's ID
-            // TODO: 用tag 一個一個找，找出最大相對集合及合適數量（例如：用java去篩->用 java + SpringBoot 去篩）
-            //  或是乾脆直接看都只用一個tag中最少或最多的數量的。
-            //  -> 用排列組合，從取 n 開始倒數， n-1 n-2 n-3 ... 1，過程中若是超過最低合適數量，就 break
-            List<String> similarNotesID = noteRepository.findAllByTags(tags);
+            // TODO: 用排列組合，從取 n 開始倒數， n-1 n-2 n-3 ... 1，過程中若是超過最低合適數量，就 break
+            // use this into find note
+            // per(Input_Array, i) is combination of i
+            Set<String> similarNotesID = new HashSet<>();
+            for (int i = inputArray.length; i > 0; i--) {
+                if (similarNotesID.size() >= 10) {
+                    break;
+                }
+                System.out.println("C" + inputArray.length + "取" + i);
+                for (String[] combination : per(inputArray, i)) {
+                    // if exceed number (10) -> break;
+                    similarNotesID.addAll(noteRepository.findAllByTags(combination));
+                }
+            }
+            // 2. put in noteIDArray
+            // get real ID of [{"_id": {"$oid": "629c24609e3e584beaed7cdf"}}
+            ArrayList<String> realIDArray = new ArrayList<>();
+            for (String tmpID : similarNotesID) {
+                System.out.println(tmpID);
+                String realID = tmpID.substring(18, tmpID.length() - 3);
+                realIDArray.add(realID);
+            }
+            // remove self.
+            realIDArray.remove(noteID);
+            similarNotesID = null;
+            // 3. run
+            HashMap<String, Float> result = new HashMap<>();
+            String mainNoteHtmlCode = mainNote.getVersion().get(0).getContent().get(0).getMycustom_html();
+            int selfLength = 0;
+            if (mainNoteHtmlCode != null) {
+                Article self = new Article(mainNoteHtmlCode);
+                selfLength = self.getArticle().length();
+                result = plagiarismService.plagiarismPointChecker(realIDArray, self.getArticle());
+                System.out.println("article is " + self.getArticle());
+                // self.length() + "字有" + totalTextEqual + "字疑似抄襲，" + lls.length() + "字疑似引用"
+            }
+            // compare done.
+            // 如果之後要做迴圈，以下三者取最大，或是每個version都要有抄襲指數
+            float maxPoint = result.get("point");
+            float maxTotalTextEqual = result.get("totalTextEqual");
+            float maxLls = result.get("lls");
+            mainNote.setPlagiarismPoint(maxPoint);
 
-            // 2.
-            // 3.
-            // plagiarismPointChecker(articleArray,self);
+            if (result.get("tiger") == 0F) {
+                mainNote.setPlagiarismPointResult(selfLength + "字有" + maxTotalTextEqual + "字疑似抄襲");
+                mainNote.setQuotePointResult("查無引用可能");
+                mainNote.setQuotePoint(0F);
+            } else {
+                mainNote.setPlagiarismPointResult(selfLength + "字有" + maxTotalTextEqual + "字疑似抄襲（已扣除引用字數）");
+                mainNote.setQuotePointResult(selfLength + "字有" + maxLls + "字疑似引用");
+                mainNote.setQuotePoint((Float) (selfLength / maxLls));
+            }
+            noteRepository.save(mainNote);
+            long endTime = System.currentTimeMillis();
+            NumberFormat formatter = new DecimalFormat("#0.0000000000000");
+            System.out.print("Execution time is " + formatter.format((endTime - startTime) / 1000d) + " seconds\n");
+            System.out.println("similarNotesID.size is " + realIDArray.size());
+            MessageReturn messageReturn = getMessageReturnFromPlagiarism(mainNote.getPlagiarismPointResult(),noteID);
+            messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
+            notificationService.saveNotificationPrivate(author, messageReturn);
+//            System.out.println(max);
         }
 
     }
 
-    public void plagiarismPointChecker(ArrayList<String> articleArray, String self) {
-        // TODO: 內容在 mycustom_html，記得清掉 html tag
+    public List<String[]> per(String[] input, int k) {
+        // input = {"a", "b", "c", "d", "e"};    // input array
+        // k = 3;                             // sequence length
 
-    }
+        List<String[]> subsets = new ArrayList<>();
 
-    public String cleanArticle(String article) {
-        // remove HTML tag -> replace useless space into one space -> all English into UpperCase
-        String containHtmlTagRegex = "<.*?>";
-        String containUselessSpaceRegex = "\\s{2,}";
-        article = article.replaceAll(containHtmlTagRegex, "");
-        article = article.replaceAll(containUselessSpaceRegex, " ");
-        article = article.replaceAll(System.lineSeparator(),"");
-        article = article.toUpperCase();
-        return article;
-    }
+        int[] s = new int[k];                  // save indices
+        // pointing to elements in input array
 
-    public int getDuplicateNoteNumber(ArrayList<Note> articleArrayTmp){
-        Set<String> similarNotesSet = new HashSet<>();
-        int ans = 0;
-        for (Note note : articleArrayTmp) {
-            if (!similarNotesSet.add(note.getId())) {
-                // duplicate note's ID
-                ans++;
+        if (k <= input.length) {
+            // first index sequence: 0, 1, 2, ...
+            for (int i = 0; (s[i] = i) < k - 1; i++) ;
+            subsets.add(getSubset(input, s));
+            for (; ; ) {
+                int i;
+                // find position of item that can be incremented
+                for (i = k - 1; i >= 0 && s[i] == input.length - k + i; i--) ;
+                if (i < 0) {
+                    break;
+                }
+                s[i]++;                    // increment this item
+                for (++i; i < k; i++) {    // fill up remaining items
+                    s[i] = s[i - 1] + 1;
+                }
+                subsets.add(getSubset(input, s));
             }
         }
-        return ans;
+
+        return subsets;
+    }
+
+    // generate actual subset by index sequence
+    static String[] getSubset(String[] input, int[] subset) {
+        String[] result = new String[subset.length];
+        for (int i = 0; i < subset.length; i++)
+            result[i] = input[subset[i]];
+        return result;
     }
 
 }
