@@ -99,13 +99,13 @@ public class TagTest {
         content1.setMycustom_styles("string");
         Content content2 = new Content();
         content2.setMycustom_assets("string");
-        content2.setMycustom_components("string");
+        content2.setMycustom_components("python, machine learning, tag3, deep learning");
         content2.setMycustom_css("string");
         content2.setMycustom_html("string");
         content2.setMycustom_styles("string");
         Content content3 = new Content();
         content3.setMycustom_assets("string");
-        content3.setMycustom_components("string");
+        content3.setMycustom_components("python, machine learning, tag3, deep learning");
         content3.setMycustom_css("string");
         content3.setMycustom_html("string");
         content3.setMycustom_styles("string");
@@ -153,16 +153,13 @@ public class TagTest {
     public void testGetWordSuggestion() throws Exception {
         Note note = createNormalNote();
 
-        JSONObject request = new JSONObject()
-                .put("text", note.getVersion().get(1).getContent().get(0).getMycustom_components());
-        System.out.println(note.getVersion().get(1).getContent().get(0).getMycustom_components());
         mockMvc.perform(put("/note/tag/wordSuggestion/" + note.getId())
-                        .headers(httpHeaders)
-                        .content(request.toString()))
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.generatedTags.[0]").value("deep learning"))
                 .andExpect(jsonPath("$.generatedTags.[1]").value("machine learning"))
                 .andExpect(jsonPath("$.generatedTags.[2]").value("python"));
+
         note = noteRepository.findById(note.getId()).get();
         if (!note.getTag().contains("python")) {
             throw new Exception("Tag Test : note's tag doesn't update");

@@ -14,12 +14,10 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
-    @Operation(summary = "store recommended tags in a note", description = "注意Request body只有一個key名稱是 : text")
+    @Operation(summary = "store recommended tags in a note")
     @PutMapping("/wordSuggestion/{noteID}")
-    public ResponseEntity<Object> getWordSuggestion(@PathVariable("noteID") String noteID,
-                                                    @RequestBody Map<String, String> request) {
-        String text = request.get("text");
-        List<String> generatedTags = tagService.getWordSuggestion(noteID, text);
+    public ResponseEntity<Object> getWordSuggestion(@PathVariable("noteID") String noteID) {
+        List<String> generatedTags = tagService.getWordSuggestion(noteID);
         Map<String, Object> res = new HashMap<>();
         res.put("generatedTags", generatedTags);
         return ResponseEntity.ok(res);

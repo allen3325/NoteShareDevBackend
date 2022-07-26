@@ -19,18 +19,39 @@ public class TagService {
     @Autowired
     private DictionaryRepository dictionaryRepository;
 
-    public List<String> getWordSuggestion(String noteID, String text) {
+    public List<String> getWordSuggestion(String noteID) {
         Note note = noteService.getNote(noteID);
+        ArrayList<VersionContent> versionContent = note.getVersion();
+        int newestVersion = versionContent.size() - 1;
+        ArrayList<Content> contents = versionContent.get(newestVersion).getContent();
+        int newestContent = contents.size() - 1;
+        String text = contents.get(newestContent).getMycustom_components();
+        text = text.replaceAll("\"","");    // get rid of double quotation marks
+
         TagGeneration tagGeneration = new TagGeneration();
         List<String> generatedTags = tagGeneration.wordSuggestion(text);
         ArrayList<String> tags = note.getTag();
         ArrayList<String> hiddenTags = note.getHiddenTag();
-        tags.addAll(generatedTags);
-        hiddenTags.addAll(generatedTags);
-        note.setTag(tags);
-        note.setHiddenTag(hiddenTags);
-        noteRepository.save(note);
+        if (!tags.isEmpty()) {
+            for (String generatedTag : generatedTags) {
+                if (tags.contains(generatedTag))
+                    continue;
+                tags.add(generatedTag);
+            }
+        }
+        else
+            tags.addAll(generatedTags);
+        if (!hiddenTags.isEmpty()) {
+            for (String generatedTag : generatedTags) {
+                if (hiddenTags.contains(generatedTag))
+                    continue;
+                hiddenTags.add(generatedTag);
+            }
+        }
+        else
+            hiddenTags.addAll(generatedTags);
 
+        noteRepository.save(note);
         return generatedTags;
     }
 
