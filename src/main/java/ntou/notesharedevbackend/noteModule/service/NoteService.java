@@ -439,6 +439,10 @@ public class NoteService {
     public NoteReturn getUserinfo(Note note) {
         NoteReturn noteReturn = new NoteReturn();
         noteReturn.setId(note.getId());
+        noteReturn.setPlagiarismPoint(note.getPlagiarismPoint());
+        noteReturn.setPlagiarismPointResult(note.getPlagiarismPointResult());
+        noteReturn.setQuotePoint(note.getQuotePoint());
+        noteReturn.setQuotePointResult(note.getQuotePointResult());
         noteReturn.setType(note.getType());
         noteReturn.setDepartment(note.getDepartment());
         noteReturn.setSubject(note.getSubject());
