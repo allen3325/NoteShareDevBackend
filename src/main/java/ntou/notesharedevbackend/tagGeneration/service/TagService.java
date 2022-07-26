@@ -39,6 +39,8 @@ public class TagService {
                 tags.add(generatedTag);
             }
         }
+        else
+            tags.addAll(generatedTags);
         if (!hiddenTags.isEmpty()) {
             for (String generatedTag : generatedTags) {
                 if (hiddenTags.contains(generatedTag))
@@ -46,6 +48,8 @@ public class TagService {
                 hiddenTags.add(generatedTag);
             }
         }
+        else
+            hiddenTags.addAll(generatedTags);
 
         noteRepository.save(note);
         return generatedTags;
