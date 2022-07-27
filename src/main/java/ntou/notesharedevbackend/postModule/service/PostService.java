@@ -123,6 +123,16 @@ public class PostService {
             noteService.collaborationNoteSetPostID(createdNote.getId(), newPost.getId());
             return newPost;
         }
+
+        //傳送訊息給開啟bell的使用者
+        if (post.getPublic()) {
+            List<String> emails = post.getEmail();
+            for (String author : emails) {
+                MessageReturn messageReturn = notificationService.getMessageReturn(author, "發布了貼文", post.getType().toLowerCase(), post.getId());
+                messagingTemplate.convertAndSend("/topic/bell-messages/" + author, messageReturn);
+                notificationService.saveNotificationBell(author, messageReturn);
+            }
+        }
         return postRepository.insert(post);
     }
 
