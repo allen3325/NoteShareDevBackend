@@ -26,7 +26,7 @@ public class TagService {
         ArrayList<Content> contents = versionContent.get(newestVersion).getContent();
         int newestContent = contents.size() - 1;
         String text = contents.get(newestContent).getMycustom_components();
-        text = text.replaceAll("\"","");    // get rid of double quotation marks
+        text = cleanArticle(text);    // get rid of html code
 
         TagGeneration tagGeneration = new TagGeneration();
         List<String> generatedTags = tagGeneration.wordSuggestion(text);
@@ -91,5 +91,15 @@ public class TagService {
 
         note.setTag(tags);
         noteRepository.save(note);
+    }
+
+    public String cleanArticle(String article) {
+        // remove HTML tag -> replace useless space into one space -> all English into UpperCase
+        String containHtmlTagRegex = "<.*?>";
+        String containUselessSpaceRegex = "\\s{2,}";
+        article = article.replaceAll(containHtmlTagRegex, "     ");
+        article = article.replaceAll(containUselessSpaceRegex, " ");
+        article = article.replaceAll(System.lineSeparator(),"");
+        return article;
     }
 }
