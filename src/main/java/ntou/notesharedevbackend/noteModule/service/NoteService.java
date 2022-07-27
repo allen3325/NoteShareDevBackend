@@ -150,6 +150,15 @@ public class NoteService {
         }
         note.setClickDate(new ArrayList<>());
         note.setClickNum(0);
+
+        if (note.getPublic()) {
+            for (String author : note.getAuthorEmail()) {
+                MessageReturn messageReturnForBell = notificationService.getMessageReturn(author, "發布了筆記", "note", note.getId());
+                messagingTemplate.convertAndSend("/topic/bell-messages/" + author, messageReturnForBell);
+                notificationService.saveNotificationBell(author, messageReturnForBell);
+            }
+        }
+
         return noteRepository.insert(note);
     }
 
