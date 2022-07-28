@@ -44,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/verification/parse").permitAll()
                 .antMatchers(HttpMethod.POST, "/verification/signup").permitAll()
                 .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .antMatchers("/websocket/**").permitAll()
 //                .anyRequest().permitAll() // tmp for testing
 //                .anyRequest().authenticated() // 對剩下的 API 定義規則
 //                .and()
