@@ -84,6 +84,7 @@ public class NoteService {
         ArrayList<VersionContent> oldVersionContent = note.getVersion();
         if (oldVersionContent.size() > version) {
             oldVersionContent.set(version, newVersionContent);
+            oldVersionContent.get(version).setDate();
         } else {
             oldVersionContent.add(newVersionContent);
         }
