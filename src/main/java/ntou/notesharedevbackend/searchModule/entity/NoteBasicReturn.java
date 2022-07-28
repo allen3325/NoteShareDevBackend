@@ -25,6 +25,9 @@ public class NoteBasicReturn {
     @JsonFormat(timezone = "GMT+08:00")
     private Date publishDate; // publish 後更新，預設為 NULL
     private String description;
+    private ArrayList<String> buyer; // 購買筆記的人
+    private ArrayList<String> authorEmail; // 所有作者
+    private ArrayList<String> liker; // 喜灣筆記的人
 
     private UserObj headerEmailUserObj;
     private ArrayList<UserObj> authorEmailUserObj;
@@ -46,6 +49,33 @@ public class NoteBasicReturn {
         this.tag = note.getTag();
         this.publishDate = note.getPublishDate();
         this.description = note.getDescription();
+        this.buyer = note.getBuyer();
+        this.authorEmail = note.getAuthorEmail();
+        this.liker = note.getLiker();
+    }
+
+    public ArrayList<String> getLiker() {
+        return liker;
+    }
+
+    public void setLiker(ArrayList<String> liker) {
+        this.liker = liker;
+    }
+
+    public ArrayList<String> getBuyer() {
+        return buyer;
+    }
+
+    public void setBuyer(ArrayList<String> buyer) {
+        this.buyer = buyer;
+    }
+
+    public ArrayList<String> getAuthorEmail() {
+        return authorEmail;
+    }
+
+    public void setAuthorEmail(ArrayList<String> authorEmail) {
+        this.authorEmail = authorEmail;
     }
 
     public String getId() {

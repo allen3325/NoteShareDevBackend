@@ -110,7 +110,26 @@ public class NoteController {
                                                     @PathVariable("version") int version) {
         Map<String, Object> res = new HashMap<>();
 
+        if(version>5){
+            res.put("res","over the size.");
+            return ResponseEntity.status(400).body(res);
+        }
+
         Note note = noteService.updateNoteVersion(id, version, versionContent);
+
+        res.put("res", note.getVersion().get(version));
+
+        return ResponseEntity.ok(res);
+    }
+
+    @Operation(summary = "modify the version's name.")
+    @PutMapping("/{noteID}/{version}/{name}")
+    public ResponseEntity<Object> updateNoteContentName(@PathVariable("noteID") String id,
+                                                        @PathVariable("version") int version,
+                                                        @PathVariable("name")String name) {
+        Map<String, Object> res = new HashMap<>();
+
+        Note note = noteService.updateNoteContentName(id, version, name);
 
         res.put("res", note.getVersion().get(version));
 

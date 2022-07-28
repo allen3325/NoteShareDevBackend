@@ -798,4 +798,13 @@ public class NoteService {
         Page page = new PageImpl<>(noteBasicReturns);
         return new Pages(page.getContent(), (int) getTotalPage(pageSize));
     }
+
+    public Note updateNoteContentName(String id, int version, String name) {
+        Note note = getNote(id);
+        note.getVersion().get(version).setName(name);
+        noteRepository.save(note);
+
+        return getNote(id);
+    }
+
 }
