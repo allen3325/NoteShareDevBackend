@@ -1389,7 +1389,7 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.items.[0].authorEmailUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.items.[0].authorEmailUserObj.[0].userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.items.[0].authorEmailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
-                .andExpect(jsonPath("$.res.totalPages").value(1));//init 有一個共筆筆記
+                .andExpect(jsonPath("$.res.totalPages").value(2));//init 有一個共筆筆記
     }
 
     @AfterEach
