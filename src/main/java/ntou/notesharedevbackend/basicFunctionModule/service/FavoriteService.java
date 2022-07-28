@@ -128,4 +128,22 @@ public class FavoriteService {
             throw new NotFoundException("note is not found");
         }
     }
+
+    public void likeNote(String id, String email) {
+        Note note = noteService.getNote(id);
+        ArrayList<String> liker = note.getLiker();
+        liker.add(email);
+        note.setLiker(liker);
+        note.setLikeCount(liker.size());
+        noteRepository.save(note);
+    }
+
+    public void unlikeNote(String id, String email) {
+        Note note = noteService.getNote(id);
+        ArrayList<String> liker = note.getLiker();
+        liker.remove(email);
+        note.setLiker(liker);
+        note.setLikeCount(liker.size());
+        noteRepository.save(note);
+    }
 }

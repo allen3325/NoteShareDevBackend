@@ -25,6 +25,16 @@ public class FavoriteController {
         return ResponseEntity.ok().body(res);
     }
 
+    @Operation(summary = "like a note",description = "email給此用戶")
+    @PutMapping("/like/note/{noteID}/{email}")
+    public ResponseEntity<Object> likeNote(@PathVariable("noteID") String id,@PathVariable("email") String email) {
+        favoriteService.likeNote(id,email);
+        Map<String,Object> res = new HashMap<>();
+
+        res.put("msg","success");
+        return ResponseEntity.ok().body(res);
+    }
+
     @Operation(summary = "Favorite a comment from a note", description = "email是傳誰做favorite的動作")
     @PutMapping("/favorite/note/{noteID}/{commentID}/{email}")
     public ResponseEntity<Map<String, String>> favoriteNoteComment(@PathVariable("noteID") String noteID, @PathVariable("commentID") String commentID, @PathVariable("email") String email) {
@@ -62,5 +72,15 @@ public class FavoriteController {
         map.put("msg", "Success");
 
         return ResponseEntity.ok(map);
+    }
+
+    @Operation(summary = "unlike a note",description = "email給此用戶")
+    @PutMapping("/unlike/note/{noteID}/{email}")
+    public ResponseEntity<Object> unlikeNote(@PathVariable("noteID") String id,@PathVariable("email") String email) {
+        favoriteService.unlikeNote(id,email);
+        Map<String,Object> res = new HashMap<>();
+
+        res.put("msg","success");
+        return ResponseEntity.ok().body(res);
     }
 }

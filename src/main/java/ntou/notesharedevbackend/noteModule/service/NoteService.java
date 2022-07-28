@@ -84,6 +84,7 @@ public class NoteService {
         ArrayList<VersionContent> oldVersionContent = note.getVersion();
         if (oldVersionContent.size() > version) {
             oldVersionContent.set(version, newVersionContent);
+            oldVersionContent.get(version).setDate();
         } else {
             oldVersionContent.add(newVersionContent);
         }
@@ -798,4 +799,13 @@ public class NoteService {
         Page page = new PageImpl<>(noteBasicReturns);
         return new Pages(page.getContent(), (int) getTotalPage(pageSize));
     }
+
+    public Note updateNoteContentName(String id, int version, String name) {
+        Note note = getNote(id);
+        note.getVersion().get(version).setName(name);
+        noteRepository.save(note);
+
+        return getNote(id);
+    }
+
 }
