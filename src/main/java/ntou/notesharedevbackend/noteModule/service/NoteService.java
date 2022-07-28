@@ -637,7 +637,7 @@ public class NoteService {
         String author = mainNote.getHeaderEmail();
         if (mainNote.getTag().isEmpty() && mainNote.getHiddenTag().isEmpty()) {
             // bell user that this note doesn't have tag.
-            MessageReturn messageReturn = getMessageReturnFromPlagiarism("該筆記tag為空，請新增tag。",noteID);
+            MessageReturn messageReturn = getMessageReturnFromPlagiarism("該筆記tag為空，請新增tag。", noteID);
             messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
             notificationService.saveNotificationPrivate(author, messageReturn);
         } else {
@@ -708,7 +708,7 @@ public class NoteService {
             NumberFormat formatter = new DecimalFormat("#0.0000000000000");
             System.out.print("Execution time is " + formatter.format((endTime - startTime) / 1000d) + " seconds\n");
             System.out.println("similarNotesID.size is " + realIDArray.size());
-            MessageReturn messageReturn = getMessageReturnFromPlagiarism(mainNote.getPlagiarismPointResult(),noteID);
+            MessageReturn messageReturn = getMessageReturnFromPlagiarism(mainNote.getPlagiarismPointResult(), noteID);
             messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
             notificationService.saveNotificationPrivate(author, messageReturn);
 //            System.out.println(max);
@@ -773,15 +773,15 @@ public class NoteService {
     public long getTotalPage(int pageSize) {
         long totalNotesNum = noteRepository.countAllByIsPublicTrueAndTypeNot("reward");
         if ((totalNotesNum % pageSize) == 0) {
-            return totalNotesNum / pageSize - 1;
+            return totalNotesNum / pageSize;
         } else {
-            return totalNotesNum / pageSize ;
+            return totalNotesNum / pageSize + 1;
         }
     }
 
 
     public Pages getHotNotes(int offset, int pageSize) {
-        Page<Note> listPage = noteRepository.findAllByIsPublicTrueAndTypeNot(PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "clickNum")),"reward");
+        Page<Note> listPage = noteRepository.findAllByIsPublicTrueAndTypeNot(PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "clickNum")), "reward");
         ArrayList<NoteBasicReturn> noteBasicReturns = new ArrayList<>();
         listPage.forEach(note -> {
             NoteBasicReturn noteBasicReturn = new NoteBasicReturn(note);
@@ -795,7 +795,7 @@ public class NoteService {
             noteBasicReturn.setAuthorEmailUserObj(authorsUserObj);
             noteBasicReturns.add(noteBasicReturn);
         });
-        Page page =new PageImpl<>(noteBasicReturns);
-        return new Pages(page.getContent(),(int)getTotalPage(pageSize));
+        Page page = new PageImpl<>(noteBasicReturns);
+        return new Pages(page.getContent(), (int) getTotalPage(pageSize));
     }
 }

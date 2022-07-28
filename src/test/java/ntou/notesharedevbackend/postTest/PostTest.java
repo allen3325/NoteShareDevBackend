@@ -1642,7 +1642,7 @@ public class PostTest {
         AppUser appUser = userRepository.findByEmail(post.getAuthor());
         int offset = 0;
         int pageSize = 1;
-        mockMvc.perform(get("/post/hotPosts/" + offset + "/" + pageSize+"/QA")
+        mockMvc.perform(get("/post/hotPosts/" + offset + "/" + pageSize + "/QA")
                         .headers(httpHeaders))
                 .andExpect(jsonPath("$.res.items.[0].id").value(post.getId()))
                 .andExpect(jsonPath("$.res.items.[0].type").value(post.getType()))
@@ -1692,7 +1692,7 @@ public class PostTest {
                 .andExpect(jsonPath("$.res.items.[0].emailUserObj.[0].userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.items.[0].emailUserObj.[0].userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.items.[0].emailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
-                .andExpect(jsonPath("$.res.totalPages").value(0));
+                .andExpect(jsonPath("$.res.totalPages").value(1));
     }
 
     @AfterEach
