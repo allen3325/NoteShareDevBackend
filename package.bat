@@ -1,0 +1,1 @@
+mvn clean && mvn install:install-file -Dfile=libs/better-jieba-1.0.0-SNAPSHOT.jar -DgroupId=org.manlier -DartifactId=better-jieba -Dversion=1.0.0-SNAPSHOT -Dpackaging=jar && mvn package -Dmaven.test.skip
