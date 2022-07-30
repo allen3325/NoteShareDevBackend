@@ -28,12 +28,12 @@ public class NotificationService {
         this.messagingTemplate = messagingTemplate;
     }
 
-    public void saveNotificationGroup(String noteID, MessageReturn message) {
-        Note note = noteService.getNote(noteID);
-        ArrayList<String> authorEmail = note.getAuthorEmail();
-        for (String email: authorEmail)
-            saveNotificationPrivate(email, message);
-    }
+//    public void saveNotificationGroup(String noteID, MessageReturn message) {
+//        Note note = noteService.getNote(noteID);
+//        ArrayList<String> authorEmail = note.getAuthorEmail();
+//        for (String email: authorEmail)
+//            saveNotificationPrivate(email, message);
+//    }
 
 //    public void sendToManagerAndHeader(String noteID, MessageReturn message) {
 //        Note note = noteService.getNote(noteID);
@@ -102,15 +102,15 @@ public class NotificationService {
         messageReturn.setDate(new Date());
         if (result.equals("agree kick")) {
             if (isKickTarget)   //被踢出本人收到的訊息
-                messageReturn.setMessage("你已被踢出共筆群組");
+                messageReturn.setMessage("You are kicked out from the Collaboration");
             else    //群組其他人收到的訊息
-                messageReturn.setMessage(kickTargetObj.getUserObjName() + "已被踢出共筆群組");
+                messageReturn.setMessage(kickTargetObj.getUserObjName() + " has been kicked out from the Collaboration");
         }
         else if (result.equals("disagree kick")) {
-            messageReturn.setMessage(kickTargetObj.getUserObjName() + "沒有被踢出共筆群組");
+            messageReturn.setMessage(kickTargetObj.getUserObjName() + " has not been kicked out from the Collaboration");
         }
         else {
-            messageReturn.setMessage("投票無效");
+            messageReturn.setMessage("Invalid vote");
         }
         return messageReturn;
     }

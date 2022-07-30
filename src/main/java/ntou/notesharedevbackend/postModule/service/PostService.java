@@ -123,16 +123,6 @@ public class PostService {
             noteService.collaborationNoteSetPostID(createdNote.getId(), newPost.getId());
             return newPost;
         }
-
-        //傳送訊息給開啟bell的使用者
-        if (post.getPublic()) {
-            List<String> emails = post.getEmail();
-            for (String author : emails) {
-                MessageReturn messageReturn = notificationService.getMessageReturn(author, "發布了貼文", post.getType().toLowerCase(), post.getId());
-                messagingTemplate.convertAndSend("/topic/bell-messages/" + author, messageReturn);
-                notificationService.saveNotificationBell(author, messageReturn);
-            }
-        }
         return postRepository.insert(post);
     }
 
@@ -215,14 +205,6 @@ public class PostService {
             Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Taipei"));
             post.setPublishDate(calendar.getTime());
             replacePost(post.getId(), post);
-
-            //傳送訊息給開啟bell的使用者
-            List<String> emails = post.getEmail();
-            for (String email : emails) {
-                MessageReturn messageReturn = notificationService.getMessageReturn(email, "發布了貼文", post.getType().toLowerCase(), id);
-                messagingTemplate.convertAndSend("/topic/bell-messages/" + email, messageReturn);
-                notificationService.saveNotificationBell(email, messageReturn);
-            }
         }
 
         return getPostById(id);
@@ -252,7 +234,7 @@ public class PostService {
         //傳送通知給管理員&共筆發起人
         ArrayList<String> emails = post.getEmail();
         for (String email : emails) {
-            MessageReturn messageReturn = notificationService.getMessageReturn(applicant.getWantEnterUsersEmail(), "向你申請了共筆", "collaboration", id);
+            MessageReturn messageReturn = notificationService.getMessageReturn(applicant.getWantEnterUsersEmail(), " has applied for your Collaboration", "collaboration", id);
             messagingTemplate.convertAndSendToUser(email, "/topic/private-messages", messageReturn);
             notificationService.saveNotificationPrivate(email, messageReturn);
         }
@@ -345,7 +327,7 @@ public class PostService {
 
         //傳送通知給所有共筆作者
         MessageReturn messageReturn = new MessageReturn();
-        messageReturn.setMessage("有人在共筆內發起了投票");
+        messageReturn.setMessage("Someone has created a vote in a Collaboration");
         UserObj userObj = new UserObj();
         userObj.setUserObjEmail("noteshare@gmail.com");
         userObj.setUserObjName("NoteShare System");
@@ -471,7 +453,7 @@ public class PostService {
             noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
         }
         //傳送通知給懸賞筆記contributor
-        MessageReturn messageReturn = notificationService.getMessageReturn(appUser.getEmail(), "將你的懸賞筆記設為最佳解", "reward", postID);
+        MessageReturn messageReturn = notificationService.getMessageReturn(appUser.getEmail(), " set your Reward as best answer", "reward", postID);
         Note note = noteService.getNote(answerID);
         String contributor = note.getAuthorEmail().get(0);
         messagingTemplate.convertAndSendToUser(contributor, "/topic/private-messages", messageReturn);
@@ -501,7 +483,7 @@ public class PostService {
                     coinService.changeCoin(post.getEmail().get(0), coin);
 
                     //傳送通知給QA最佳解使用者
-                    MessageReturn messageReturn = notificationService.getMessageReturn(post.getAuthor(), "將你的答案設為最佳解", "qa", postID);
+                    MessageReturn messageReturn = notificationService.getMessageReturn(post.getAuthor(), " set your answer in QA as best answer", "qa", postID);
                     messagingTemplate.convertAndSendToUser(comment.getEmail(), "/topic/private-messages", messageReturn);
                     notificationService.saveNotificationPrivate(comment.getEmail(), messageReturn);
                 }
@@ -532,7 +514,7 @@ public class PostService {
                 noteService.returnRewardNoteToAuthor(post.getId(), post.getAnswers());
             }
             //傳送通知給懸賞筆記contributor
-            MessageReturn messageReturn = notificationService.getMessageReturn(appUser.getEmail(), "將你的懸賞筆記設為參考解", "reward", postID);
+            MessageReturn messageReturn = notificationService.getMessageReturn(appUser.getEmail(), " has set your Reward as reference answer", "reward", postID);
             Note note = noteService.getNote(answerID);
             String contributor = note.getAuthorEmail().get(0);
             messagingTemplate.convertAndSendToUser(contributor, "/topic/private-messages", messageReturn);
