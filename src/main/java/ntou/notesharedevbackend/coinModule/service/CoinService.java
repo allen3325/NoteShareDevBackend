@@ -50,9 +50,9 @@ public class CoinService {
 
         MessageReturn messageReturn = new MessageReturn();
         if (newCoin < 0)
-            messageReturn.setMessage("你已花" + (-newCoin) + "點");
+            messageReturn.setMessage("You have spent " + (-newCoin) + " points");
         else
-            messageReturn.setMessage("你已獲得" + newCoin + "點");
+            messageReturn.setMessage("You have got " + newCoin + " points");
         UserObj userObj = new UserObj();
         userObj.setUserObjEmail("noteshare@gmail.com");
         userObj.setUserObjName("NoteShare System");
@@ -86,7 +86,7 @@ public class CoinService {
                 appUserService.replaceUser(noteAuthor);
 
                 //通知作者有人購買筆記
-                MessageReturn messageReturn = notificationService.getMessageReturn(email, "向你購買了筆記", "note", noteID);
+                MessageReturn messageReturn = notificationService.getMessageReturn(email, " has bought your note", "note", noteID);
                 messagingTemplate.convertAndSendToUser(authorEmail, "/topic/private-messages", messageReturn);
                 notificationService.saveNotificationPrivate(authorEmail, messageReturn);
             }

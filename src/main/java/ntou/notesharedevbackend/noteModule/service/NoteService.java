@@ -154,7 +154,7 @@ public class NoteService {
 
         if (note.getPublic()) {
             for (String author : note.getAuthorEmail()) {
-                MessageReturn messageReturnForBell = notificationService.getMessageReturn(author, "發布了筆記", "note", note.getId());
+                MessageReturn messageReturnForBell = notificationService.getMessageReturn(author, " has posted a note", "note", note.getId());
                 messagingTemplate.convertAndSend("/topic/bell-messages/" + author, messageReturnForBell);
                 notificationService.saveNotificationBell(author, messageReturnForBell);
             }
@@ -215,7 +215,7 @@ public class NoteService {
             //傳送通知給所有共筆作者、開啟bell使用者
             if (note.getPublic()) {
                 MessageReturn messageReturn = new MessageReturn();
-                messageReturn.setMessage("共筆筆記已發布");
+                messageReturn.setMessage("Collaboration has been posted");
                 UserObj userObj = new UserObj();
                 userObj.setUserObjEmail("noteshare@gmail.com");
                 userObj.setUserObjName("NoteShare System");
@@ -233,7 +233,7 @@ public class NoteService {
 
         if (note.getPublic()) {
             for (String author : note.getAuthorEmail()) {
-                MessageReturn messageReturnForBell = notificationService.getMessageReturn(author, "發布了筆記", "note", noteID);
+                MessageReturn messageReturnForBell = notificationService.getMessageReturn(author, " has posted a note", "note", noteID);
                 messagingTemplate.convertAndSend("/topic/bell-messages/" + author, messageReturnForBell);
                 notificationService.saveNotificationBell(author, messageReturnForBell);
             }
@@ -268,7 +268,7 @@ public class NoteService {
 //        messageReturn.setMessage(userObj.getUserObjName() + "對你投稿了懸賞筆記");
 //        messageReturn.setType("reward");
 //        messageReturn.setId(post.getId());
-        MessageReturn messageReturn = notificationService.getMessageReturn(note.getHeaderEmail(), "對你投稿了懸賞筆記", "reward", post.getId());
+        MessageReturn messageReturn = notificationService.getMessageReturn(note.getHeaderEmail(), " has applied for your Reward", "reward", post.getId());
         messagingTemplate.convertAndSendToUser(post.getAuthor(), "/topic/private-messages", messageReturn);
         notificationService.saveNotificationPrivate(post.getAuthor(), messageReturn);
         return newNote;
@@ -638,7 +638,7 @@ public class NoteService {
         String author = mainNote.getHeaderEmail();
         if (mainNote.getTag().isEmpty() && mainNote.getHiddenTag().isEmpty()) {
             // bell user that this note doesn't have tag.
-            MessageReturn messageReturn = getMessageReturnFromPlagiarism("該筆記tag為空，請新增tag。", noteID);
+            MessageReturn messageReturn = getMessageReturnFromPlagiarism("There is no tag in the note. Please create one", noteID);
             messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
             notificationService.saveNotificationPrivate(author, messageReturn);
         } else {
@@ -696,12 +696,15 @@ public class NoteService {
             mainNote.setPlagiarismPoint(maxPoint);
 
             if (result.get("tiger") == 0F) {
-                mainNote.setPlagiarismPointResult(selfLength + "字有" + maxTotalTextEqual + "字疑似抄襲");
-                mainNote.setQuotePointResult("查無引用可能");
+//                mainNote.setPlagiarismPointResult("There are " + selfLength + "字有" + maxTotalTextEqual + "字疑似抄襲");
+                mainNote.setPlagiarismPointResult("There are " + mainNoteHtmlCode + " words that suspected plagiarism in " + selfLength + " words");
+                mainNote.setQuotePointResult("No citations");
                 mainNote.setQuotePoint(0F);
             } else {
-                mainNote.setPlagiarismPointResult(selfLength + "字有" + maxTotalTextEqual + "字疑似抄襲（已扣除引用字數）");
-                mainNote.setQuotePointResult(selfLength + "字有" + maxLls + "字疑似引用");
+//                mainNote.setPlagiarismPointResult(selfLength + "字有" + maxTotalTextEqual + "字疑似抄襲（已扣除引用字數）");
+                mainNote.setPlagiarismPointResult("There are " + mainNoteHtmlCode + " words(excluding citations) that suspected plagiarism in " + selfLength + " words");
+//                mainNote.setQuotePointResult(selfLength + "字有" + maxLls + "字疑似引用");
+                mainNote.setPlagiarismPointResult("There are " + mainNoteHtmlCode + " words that could be citations in " + selfLength + " words");
                 mainNote.setQuotePoint((Float) (selfLength / maxLls));
             }
             noteRepository.save(mainNote);
