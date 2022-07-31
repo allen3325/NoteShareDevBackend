@@ -169,7 +169,7 @@ public class ChatController {
 
     }
     @EventListener
-    private void handleSessionDisconnect(SessionDisconnectEvent event) {
+    public void handleSessionDisconnect(SessionDisconnectEvent event) {
 
             // get user's sessionId
             String sessionId = event.getSessionId();
