@@ -35,7 +35,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
             Map<String, Object> claims = jwtService.parseToken(accessToken);
             String email = (String) claims.get("email");
-            System.out.println("email is "+email);
+//            System.out.println("email is "+email);
             UserDetails userDetails = springUserService.loadUserByUsername(email);
 
             Authentication authentication =
