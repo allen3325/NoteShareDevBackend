@@ -764,11 +764,13 @@ public class NoteService {
         Date date = new Date();
         Long gap = TimeUnit.MILLISECONDS.convert(3, TimeUnit.DAYS);
         //刪除三天前的點擊
+        ArrayList<Long> tmpClickDate = new ArrayList<>(note.getClickDate());
         for (Long clickDate : note.getClickDate()) {
             if (clickDate < date.getTime() - gap) {
-                note.getClickDate().remove(clickDate);
+                tmpClickDate.remove(clickDate);
             }
         }
+        note.setClickDate(tmpClickDate);
         note.getClickDate().add(date.getTime());
         note.setClickNum(note.getClickDate().size());
         noteRepository.save(note);
