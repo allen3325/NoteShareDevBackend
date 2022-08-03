@@ -725,7 +725,7 @@ public class NoteService {
             NumberFormat formatter = new DecimalFormat("#0.0000000000000");
             System.out.print("Execution time is " + formatter.format((endTime - startTime) / 1000d) + " seconds\n");
             System.out.println("similarNotesID.size is " + realIDArray.size());
-            String plagiarismPointReturn = "The plagiarism rate of the note " + mainNote.getTitle() + "+ is " + (mainNote.getPlagiarismPoint()) + "%";
+            String plagiarismPointReturn = "The plagiarism rate of the note " + mainNote.getTitle() + " is " + (mainNote.getPlagiarismPoint()) + "%";
             MessageReturn messageReturn = getMessageReturnFromPlagiarism(plagiarismPointReturn, noteID);
             messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
             notificationService.saveNotificationPrivate(author, messageReturn);
