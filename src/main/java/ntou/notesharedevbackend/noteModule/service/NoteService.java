@@ -686,7 +686,7 @@ public class NoteService {
                 notificationService.saveNotificationPrivate(author, messageReturn);
                 return;
             }
-            String mainNoteHtmlCode = mainNote.getVersion().get(0).getContent().get(0).getMycustom_html();
+            String mainNoteHtmlCode = mainNote.getVersion().get(1).getContent().get(0).getMycustom_html();
             int selfLength = 0;
             if (mainNoteHtmlCode == null || mainNoteHtmlCode.equals("")) {
                 MessageReturn messageReturn = getMessageReturnFromPlagiarism("There is no content in the note. Please" +
