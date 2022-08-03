@@ -681,11 +681,17 @@ public class NoteService {
             HashMap<String, Float> result = new HashMap<>();
             String mainNoteHtmlCode = mainNote.getVersion().get(0).getContent().get(0).getMycustom_html();
             int selfLength = 0;
-            if (mainNoteHtmlCode != null) {
+            if (mainNoteHtmlCode == null || mainNoteHtmlCode.equals("")) {
+                MessageReturn messageReturn = getMessageReturnFromPlagiarism("There is no content in the note. Please" +
+                        " create one", noteID);
+                messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
+                notificationService.saveNotificationPrivate(author, messageReturn);
+                return;
+            } else {
                 Article self = new Article(mainNoteHtmlCode);
                 selfLength = self.getArticle().length();
                 result = plagiarismService.plagiarismPointChecker(realIDArray, self.getArticle());
-                System.out.println("article is " + self.getArticle());
+//                System.out.println("article is " + self.getArticle());
                 // self.length() + "字有" + totalTextEqual + "字疑似抄襲，" + lls.length() + "字疑似引用"
             }
             // compare done.
@@ -697,22 +703,23 @@ public class NoteService {
 
             if (result.get("tiger") == 0F) {
 //                mainNote.setPlagiarismPointResult("There are " + selfLength + "字有" + maxTotalTextEqual + "字疑似抄襲");
-                mainNote.setPlagiarismPointResult("There are " + mainNoteHtmlCode + " words that suspected plagiarism in " + selfLength + " words");
+                mainNote.setPlagiarismPointResult("There are " + selfLength + " words that suspected plagiarism in " + (int) maxTotalTextEqual + " words");
                 mainNote.setQuotePointResult("No citations");
                 mainNote.setQuotePoint(0F);
             } else {
 //                mainNote.setPlagiarismPointResult(selfLength + "字有" + maxTotalTextEqual + "字疑似抄襲（已扣除引用字數）");
-                mainNote.setPlagiarismPointResult("There are " + mainNoteHtmlCode + " words(excluding citations) that suspected plagiarism in " + selfLength + " words");
+                mainNote.setPlagiarismPointResult("There are " + selfLength + " words(excluding citations) that suspected plagiarism in " + (int) maxTotalTextEqual + " words");
 //                mainNote.setQuotePointResult(selfLength + "字有" + maxLls + "字疑似引用");
-                mainNote.setPlagiarismPointResult("There are " + mainNoteHtmlCode + " words that could be citations in " + selfLength + " words");
-                mainNote.setQuotePoint((Float) (selfLength / maxLls));
+                mainNote.setPlagiarismPointResult("There are " + selfLength + " words that could be citations in " + (int) maxTotalTextEqual + " words");
+                mainNote.setQuotePoint(selfLength / maxLls);
             }
             noteRepository.save(mainNote);
             long endTime = System.currentTimeMillis();
             NumberFormat formatter = new DecimalFormat("#0.0000000000000");
             System.out.print("Execution time is " + formatter.format((endTime - startTime) / 1000d) + " seconds\n");
             System.out.println("similarNotesID.size is " + realIDArray.size());
-            MessageReturn messageReturn = getMessageReturnFromPlagiarism(mainNote.getPlagiarismPointResult(), noteID);
+            String plagiarismPointReturn = (mainNote.getPlagiarismPoint() * 100) + "%";
+            MessageReturn messageReturn = getMessageReturnFromPlagiarism(plagiarismPointReturn, noteID);
             messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
             notificationService.saveNotificationPrivate(author, messageReturn);
 //            System.out.println(max);
