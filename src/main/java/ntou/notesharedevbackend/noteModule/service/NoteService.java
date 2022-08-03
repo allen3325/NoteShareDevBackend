@@ -621,7 +621,7 @@ public class NoteService {
         userObj.setUserObjName("NoteShare System");
         userObj.setUserObjAvatar("https://i.imgur.com/5V1waq3.png");
         messageReturn.setUserObj(userObj);
-        messageReturn.setType("plagiarism notification");
+        messageReturn.setType("note");
         messageReturn.setId(noteID);
         messageReturn.setDate(new Date());
         messageReturn.setMessage(result);
@@ -679,6 +679,13 @@ public class NoteService {
             similarNotesID = null;
             // 3. run
             HashMap<String, Float> result = new HashMap<>();
+            if(mainNote.getVersion().size()==0){
+                MessageReturn messageReturn = getMessageReturnFromPlagiarism("There is no content in the note. Please" +
+                        " create one", noteID);
+                messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
+                notificationService.saveNotificationPrivate(author, messageReturn);
+                return;
+            }
             String mainNoteHtmlCode = mainNote.getVersion().get(0).getContent().get(0).getMycustom_html();
             int selfLength = 0;
             if (mainNoteHtmlCode == null || mainNoteHtmlCode.equals("")) {
@@ -718,7 +725,7 @@ public class NoteService {
             NumberFormat formatter = new DecimalFormat("#0.0000000000000");
             System.out.print("Execution time is " + formatter.format((endTime - startTime) / 1000d) + " seconds\n");
             System.out.println("similarNotesID.size is " + realIDArray.size());
-            String plagiarismPointReturn = (mainNote.getPlagiarismPoint() * 100) + "%";
+            String plagiarismPointReturn = "The plagiarism rate of the note " + mainNote.getTitle() + "+ is " + (mainNote.getPlagiarismPoint()) + "%";
             MessageReturn messageReturn = getMessageReturnFromPlagiarism(plagiarismPointReturn, noteID);
             messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
             notificationService.saveNotificationPrivate(author, messageReturn);
