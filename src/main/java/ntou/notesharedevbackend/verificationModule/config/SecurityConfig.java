@@ -40,21 +40,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // authorizeRequests 方法開始自訂授權規則。使用 antMatchers 方法，傳入 HTTP 請求方法與 API 路徑，後面接著授權方式，
         http
                 .authorizeHttpRequests()
-                .antMatchers("/verification/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/verification/login").permitAll()
+                .antMatchers(HttpMethod.POST, "/verification/parse").permitAll()
+                .antMatchers(HttpMethod.POST, "/verification/signup").permitAll()
                 .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .antMatchers("/websocket/**").permitAll()
-                .antMatchers("/post/hotPosts/**", "/note/hotNotes/**").permitAll()
-                .antMatchers("/search/**").permitAll()
-                .regexMatchers(HttpMethod.GET,".+note\\/[a-z\\d]{24}").permitAll() // note/noteID
-                .regexMatchers(HttpMethod.GET,".+note\\/[a-z\\d]{24}\\/\\d").permitAll() // note/noteID/version
-                .regexMatchers(HttpMethod.GET,".+post\\/[a-z\\d]{24}").permitAll() // post/postID
 //                .anyRequest().permitAll() // tmp for testing
-                // JWT Token Bearer
-                .anyRequest().authenticated() // 對剩下的 API 定義規則
-                .and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .anyRequest().authenticated() // 對剩下的 API 定義規則
+//                .and()
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .csrf().disable()
                 .cors().and();

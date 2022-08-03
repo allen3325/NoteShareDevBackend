@@ -250,7 +250,8 @@ public class NoteController {
         }
     }
 
-    @Operation(summary = "check the note's plagirism point and save to db.",description = "前端使用直接不用等回傳，好了會用socket通知使用者")
+    @Operation(summary = "check the note's plagiarism point and save to db.",description = "前端使用直接不用等回傳，好了會用socket" +
+            "通知使用者")
     @GetMapping("/plagiarism/{noteID}")
     public void checkNotePlagiarismAndSave(@PathVariable("noteID")String noteID) {
         noteService.checkNotePlagiarismAndSave(noteID);
