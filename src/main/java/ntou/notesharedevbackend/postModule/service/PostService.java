@@ -722,11 +722,14 @@ public class PostService {
         Date date = new Date();
         Long gap = TimeUnit.MILLISECONDS.convert(3, TimeUnit.DAYS);
         //刪除三天前的點擊
+        ArrayList<Long> tmpClickDate = new ArrayList<>(post.getClickDate());
         for (Long clickDate : post.getClickDate()) {
             if (clickDate < date.getTime() - gap) {
-                post.getClickDate().remove(clickDate);
+                tmpClickDate.remove(clickDate);//超過三天就移除
             }
         }
+        post.setClickDate(tmpClickDate);
+        //增加新的
         post.getClickDate().add(date.getTime());
         post.setClickNum(post.getClickDate().size());
         postRepository.save(post);
