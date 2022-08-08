@@ -42,6 +42,8 @@ public class PlagiarismService {
             Article article = new Article(getHtmlCodeInNote(noteID));
             if (!article.getArticle().equals("")) {
                 String comparison = article.getArticle();
+//                System.out.println("==================================================");
+//                System.out.println("comparison is " + comparison);
                 article = null;
 //            System.out.println("------------- new comparison is : "+comparison.replaceAll(System.lineSeparator(),"")+"-------------");
                 // 抓到一模一樣，直接 return
@@ -56,12 +58,16 @@ public class PlagiarismService {
                 ArrayList<String> llsArray = plagiarismChecker.getLlsArray(comparison, self);
                 int lengthToDivide = plagiarismChecker.getArticleLengthDivide(comparison, self);
                 float totalTextEqual = plagiarismChecker.getTotalTextEqual(comparison, self);
+//                System.out.println("self.length is "+self.length());
+//                System.out.println("totalTextEqual is "+totalTextEqual);
                 float plagiarismPoint = plagiarismChecker.getPlagiarism(totalTextEqual, lengthToDivide);
+//                System.out.println("first point " + plagiarismPoint);
 //            float plagiarismPoint;
 //            System.out.println("###################################################################");
 //            System.out.println("文章共有" + self.length() + "個字且有" + totalTextEqual + "個字重複。");
 //            System.out.println("plagiarismPoint is = " + plagiarismPoint * 100 + "%");
                 // TODO new : 將所有lls做處理
+//                System.out.println("llsArray.size is " + llsArray.size());
                 for (String lls : llsArray) {
                     // 1-2. 決定中英文之一句話長度參數
                     if (lls.matches(containsEngRegex)) {
@@ -72,12 +78,13 @@ public class PlagiarismService {
                     // 1-3. 若lls的長度為合理一句話（可載入至字典）
                     if (lls.length() > sentenceLengthParam) {
 //                         1-4. 一一檢查（三人成虎）
-//                        System.out.println("lls : "+lls);
+//                        System.out.println("lls : " + lls);
                         if (!shouldFixPlagiarismPointByDict(lls)) { // TODO new : 透過字典，確認是否需要修正抄襲指數
+//                            System.out.println("inininininin");
                             if (threeTiger(lls, noteIDArray)) {
                                 //TODO new : 確認為引用，且已經寫入至字典
-                                System.out.println("已透過與其他文章比較後確認是相似跟引用(三人成虎 check)，抄襲指數需要修改");
-                                System.out.println("----------------------------修改後----------------------------");
+//                                System.out.println("已透過與其他文章比較後確認是相似跟引用(三人成虎 check)，抄襲指數需要修改");
+//                                System.out.println("----------------------------修改後----------------------------");
                                 //TODO : 修改抄襲指數 -> totalTextEqual扣掉lls的長度
                                 totalTextEqual -= lls.length();
                                 plagiarismPoint = plagiarismChecker.getPlagiarism(totalTextEqual, self.length());
@@ -85,25 +92,33 @@ public class PlagiarismService {
 //                                System.out.println("文章中共有"+totalTextEqual+"個字被認為是抄襲。");
 //                            System.out.println(self.length() + "字有" + totalTextEqual + "字疑似抄襲，" + lls.length() + "字疑似引用");
 //                            System.out.println("抄襲指數為：" + plagiarismPoint * 100 + "%");
+//                                System.out.println("plagiarismPoint is " + plagiarismPoint);
                                 if (plagiarismPoint > maxPoint) {
                                     maxPoint = plagiarismPoint;
                                     maxTotalTextEqual = totalTextEqual;
                                     maxLls = lls.length();
                                 }
 //                            result.put("point", plagiarismPoint * 100);
-                            }
-//                        else {
+                            } else {
 //                            // TODO new : 已確認不是相似跟引用，抄襲指數不用修改
-////                            System.out.println("已確認不是相似跟引用，抄襲指數不用修改");
-////                            result.put("point", 0F);
-//                        }
-//                        result.put("totalTextEqual", totalTextEqual);
-//                        result.put("lls", (float) lls.length());
-//                        return result;
+
+//                                System.out.println("已確認不是相似跟引用，抄襲指數不用修改");
+//                                System.out.println("plagiarismPoint is " + plagiarismPoint);
+                                if (plagiarismPoint > maxPoint) {
+                                    maxPoint = plagiarismPoint;
+                                    maxTotalTextEqual = totalTextEqual;
+                                    maxLls = lls.length();
+                                }
+//                            result.put("point", 0F);
+                            }
+//                            result.put("totalTextEqual", totalTextEqual);
+//                            result.put("lls", (float) lls.length());
+//                            return result;
                         } else {
+//                            System.out.println("elselselesllselselsle");
                             // TODO new : 已確認是相似或引用，抄襲指數需用修改
-//                        System.out.println("已透過字典找到相同後確認是相似跟引用，抄襲指數需要修改");
-//                        System.out.println("----------------------------修改後----------------------------");
+//                            System.out.println("已透過字典找到相同後確認是相似跟引用，抄襲指數需要修改");
+//                            System.out.println("----------------------------修改後----------------------------");
                             //TODO : 修改抄襲指數
                             result.replace("tiger", 1F);
                             totalTextEqual -= lls.length();
@@ -112,6 +127,7 @@ public class PlagiarismService {
 //                            System.out.println("文章中共有"+totalTextEqual+"個字被認為是抄襲。");
 //                        System.out.println(self.length() + "字有" + totalTextEqual + "字疑似抄襲，" + lls.length() + "字疑似引用");
 //                        System.out.println("抄襲指數為：" + plagiarismPoint * 100 + "%");
+//                            System.out.println("plagiarismPoint is " + plagiarismPoint);
                             if (plagiarismPoint > maxPoint) {
                                 maxPoint = plagiarismPoint;
                                 maxTotalTextEqual = totalTextEqual;
@@ -123,14 +139,14 @@ public class PlagiarismService {
 //                        return result;
 //                            break;
                         }
+                    } else {
+                        System.out.println("lls之長度不符合最低標準：" + sentenceLengthParam);
                     }
-//                else {
-//                    System.out.println("lls之長度不符合最低標準：" + sentenceLengthParam);
-//                }
                 }
             }
         }
-        result.put("point", maxPoint);
+        result.put("point", maxPoint*100);
+//        System.out.println(maxPoint);
         result.put("totalTextEqual", maxTotalTextEqual);
         result.put("lls", maxLls);
         return result;
@@ -171,16 +187,20 @@ public class PlagiarismService {
     private boolean shouldFixPlagiarismPointByDict(String lls) {
 //        System.out.println("lls in 2 = "+lls);
         if (!findSameInDictionary(lls)) {
+//            System.out.println("!findSameInDictionary");
             // 與字典內部所有字串一一檢查各lls間的相似度，並依照相似程度判斷引用標準
             if (findLikedInDictionary(lls)) {
+//                System.out.println("findLikedInDictionary");
 //                System.out.println("需要修改的為："+lls);
                 return true;
             }
             // 確認都小於a%，確認不是引用
+//            System.out.println("已透過字典認為“不相似");
 //            System.out.println("已透過字典認為“不相似”");
             return false;
         } else {
             // 在字典內發現
+//            System.out.println("在字典內發現");
             return true;
         }
     }
@@ -189,8 +209,10 @@ public class PlagiarismService {
     private boolean findSameInDictionary(String lls) {
         Plagiarismdictionary dbLls = plagiarismDictionaryRepository.findFirstByWord(lls);
         if (dbLls == null) {
+//            System.out.println("dbLls == null");
             return false;
         } else {
+//            System.out.println("dbLls != null");
             dbLls.setFrequency(dbLls.getFrequency() + 1);
             plagiarismDictionaryRepository.save(dbLls);
 //            System.out.println("已在字典發現，且更新次數");
@@ -221,6 +243,7 @@ public class PlagiarismService {
         List<Plagiarismdictionary> allLike = plagiarismDictionaryRepository.findAllByWordLike(lls);
         PlagiarismChecker plagiarismChecker = new PlagiarismChecker();
         if (allLike.isEmpty()) {
+//            System.out.println("allLike.isEmpty");
             return false;
         } else {
             for (Plagiarismdictionary tmp : allLike) {
@@ -230,6 +253,7 @@ public class PlagiarismService {
                 if (plagiarismPoint >= a) {
                     Plagiarismdictionary plagiarismdictionary = new Plagiarismdictionary(lls, 1);
                     plagiarismDictionaryRepository.insert(plagiarismdictionary);
+//                    System.out.println("findLikedInDictionary's for");
                     return true;
                 }
             }
