@@ -44,7 +44,7 @@ public class PlagiarismChecker {
         // clean articles
         String text1 = article1.getArticle();
         String text2 = article2.getArticle();
-        return Math.min(text1.length(),text2.length());
+        return text2.length();
     }
 
     public float getTotalTextEqual(String comparison,String lls){

@@ -635,6 +635,7 @@ public class NoteService {
     @Transactional
     public void checkNotePlagiarismAndSave(String noteID) {
         Note mainNote = getNote(noteID);
+//        System.out.println("Plagiarism Start");
         String author = mainNote.getHeaderEmail();
         if (mainNote.getTag().isEmpty() && mainNote.getHiddenTag().isEmpty()) {
             // bell user that this note doesn't have tag.
@@ -660,7 +661,7 @@ public class NoteService {
                 if (similarNotesID.size() >= 10) {
                     break;
                 }
-                System.out.println("C" + inputArray.length + "取" + i);
+//                System.out.println("C" + inputArray.length + "取" + i);
                 for (String[] combination : per(inputArray, i)) {
                     // if exceed number (10) -> break;
                     similarNotesID.addAll(noteRepository.findAllByTags(combination));
@@ -670,7 +671,7 @@ public class NoteService {
             // get real ID of [{"_id": {"$oid": "629c24609e3e584beaed7cdf"}}
             ArrayList<String> realIDArray = new ArrayList<>();
             for (String tmpID : similarNotesID) {
-                System.out.println(tmpID);
+//                System.out.println(tmpID);
                 String realID = tmpID.substring(18, tmpID.length() - 3);
                 realIDArray.add(realID);
             }
@@ -696,8 +697,10 @@ public class NoteService {
                 return;
             } else {
                 Article self = new Article(mainNoteHtmlCode);
+//                System.out.println("self.getArticle is "+self.getArticle());
                 selfLength = self.getArticle().length();
                 result = plagiarismService.plagiarismPointChecker(realIDArray, self.getArticle());
+//                System.out.println("==================================================");
 //                System.out.println("article is " + self.getArticle());
                 // self.length() + "字有" + totalTextEqual + "字疑似抄襲，" + lls.length() + "字疑似引用"
             }
@@ -711,25 +714,28 @@ public class NoteService {
             if (result.get("tiger") == 0F) {
 //                mainNote.setPlagiarismPointResult("There are " + selfLength + "字有" + maxTotalTextEqual + "字疑似抄襲");
                 mainNote.setPlagiarismPointResult("There are " + selfLength + " words that suspected plagiarism in " + (int) maxTotalTextEqual + " words");
+//                System.out.println("There are " + selfLength + " words that suspected plagiarism in " + (int) maxTotalTextEqual + " " +
+//                        "words");
                 mainNote.setQuotePointResult("No citations");
                 mainNote.setQuotePoint(0F);
             } else {
 //                mainNote.setPlagiarismPointResult(selfLength + "字有" + maxTotalTextEqual + "字疑似抄襲（已扣除引用字數）");
                 mainNote.setPlagiarismPointResult("There are " + selfLength + " words(excluding citations) that suspected plagiarism in " + (int) maxTotalTextEqual + " words");
 //                mainNote.setQuotePointResult(selfLength + "字有" + maxLls + "字疑似引用");
-                mainNote.setPlagiarismPointResult("There are " + selfLength + " words that could be citations in " + (int) maxTotalTextEqual + " words");
+                mainNote.setQuotePointResult("There are " + selfLength + " words that could be citations in " + (int) maxTotalTextEqual + " words");
                 mainNote.setQuotePoint(selfLength / maxLls);
             }
             noteRepository.save(mainNote);
             long endTime = System.currentTimeMillis();
             NumberFormat formatter = new DecimalFormat("#0.0000000000000");
             System.out.print("Execution time is " + formatter.format((endTime - startTime) / 1000d) + " seconds\n");
-            System.out.println("similarNotesID.size is " + realIDArray.size());
+//            System.out.println("similarNotesID.size is " + realIDArray.size());
             String plagiarismPointReturn = "The plagiarism rate of the note " + mainNote.getTitle() + " is " + (mainNote.getPlagiarismPoint()) + "%";
             MessageReturn messageReturn = getMessageReturnFromPlagiarism(plagiarismPointReturn, noteID);
             messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
             notificationService.saveNotificationPrivate(author, messageReturn);
 //            System.out.println(max);
+//            System.out.println("Plagiarism End");
         }
 
     }
