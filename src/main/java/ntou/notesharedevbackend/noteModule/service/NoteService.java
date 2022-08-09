@@ -713,20 +713,20 @@ public class NoteService {
 
             if (result.get("tiger") == 0F) {
 //                mainNote.setPlagiarismPointResult("There are " + selfLength + "字有" + maxTotalTextEqual + "字疑似抄襲");
-                mainNote.setPlagiarismPointResult("There are " + selfLength + " words that SPR (suspected plagiarism " +
+                mainNote.setPlagiarismPointResult("There are " + (int) maxTotalTextEqual + " words that SPR (suspected plagiarism " +
                         "rate) " +
-                        "in " + (int) maxTotalTextEqual + " words");
+                        "in " + selfLength + " words");
 //                System.out.println("There are " + selfLength + " words that suspected plagiarism in " + (int) maxTotalTextEqual + " " +
 //                        "words");
                 mainNote.setQuotePointResult("No citations");
                 mainNote.setQuotePoint(0F);
             } else {
 //                mainNote.setPlagiarismPointResult(selfLength + "字有" + maxTotalTextEqual + "字疑似抄襲（已扣除引用字數）");
-                mainNote.setPlagiarismPointResult("There are " + selfLength + " words(excluding citations) that " +
-                        "SPR (suspected plagiarism rate) in " + (int) maxTotalTextEqual + " words");
+                mainNote.setPlagiarismPointResult("There are " + (int) maxTotalTextEqual + " words(excluding citations) that " +
+                        "SPR (suspected plagiarism rate) in " + selfLength + " words");
 //                mainNote.setQuotePointResult(selfLength + "字有" + maxLls + "字疑似引用");
-                mainNote.setQuotePointResult("There are " + selfLength + " words that could be CR (citations rate) in" +
-                        " " + (int) maxTotalTextEqual + " words");
+                mainNote.setQuotePointResult("There are " + (int) maxTotalTextEqual + " words that could be CR (citations rate) in" +
+                        " " + selfLength + " words");
                 mainNote.setQuotePoint(selfLength / maxLls);
             }
             noteRepository.save(mainNote);
