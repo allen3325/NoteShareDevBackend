@@ -374,7 +374,7 @@ public class NoteService {
         note.setPostID(request.getPostID());
         note.setReference(request.getReference());
         note.setBest(request.getBest());
-        if(!oldNote.getPublic() && note.getPublic()){//private -> public
+        if(!oldNote.getPublic() && request.getPublic()){//private -> public
             note.setPublishDate(new Date());
         } else{// others keep old note publishDate
             note.setPublishDate(oldNote.getPublishDate());
