@@ -131,6 +131,7 @@ public class NoteService {
         note.setComments(new ArrayList<Comment>());
         note.setPrice(request.getPrice());
         note.setPublic(request.getPublic());
+        note.setPublishDate(new Date());//建立時間
         note.setSubmit(request.getSubmit());
         note.setQuotable(request.getQuotable());
         note.setTag(new ArrayList<String>());
@@ -373,7 +374,11 @@ public class NoteService {
         note.setPostID(request.getPostID());
         note.setReference(request.getReference());
         note.setBest(request.getBest());
-        note.setPublishDate(request.getPublishDate());
+        if(!oldNote.getPublic() && note.getPublic()){//private -> public
+            note.setPublishDate(new Date());
+        } else{// others keep old note publishDate
+            note.setPublishDate(oldNote.getPublishDate());
+        }
         note.setDescription(request.getDescription());
         note.setClickDate(oldNote.getClickDate());
         note.setClickNum(note.getClickDate().size());

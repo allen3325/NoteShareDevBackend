@@ -803,7 +803,8 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.buyerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
-                .andExpect(jsonPath("$.res.contributorUserObj").isEmpty());
+                .andExpect(jsonPath("$.res.contributorUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.publishDate").hasJsonPath());
 
         if (folderRepository.findById(folder.getId()).get().getNotes().isEmpty()) {
             throw new Exception("Note Test : new note does not add in folder");
