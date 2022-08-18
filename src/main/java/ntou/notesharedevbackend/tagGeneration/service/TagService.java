@@ -29,7 +29,7 @@ public class TagService {
         text = cleanArticle(text);    // get rid of html code
 
         TagGeneration tagGeneration = new TagGeneration();
-        List<String> generatedTags = tagGeneration.wordSuggestion("台灣最強的科技公司是台積電。");
+        List<String> generatedTags = tagGeneration.wordSuggestion(text);
         ArrayList<String> tags = note.getTag();
         ArrayList<String> hiddenTags = note.getHiddenTag();
         if (!tags.isEmpty()) {
