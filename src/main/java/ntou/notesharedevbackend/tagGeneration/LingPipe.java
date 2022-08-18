@@ -69,7 +69,7 @@ public class LingPipe {
 
     public boolean checkWordInDict(String word) {
         for (String wordInDict : recommendWords) {
-            if (wordInDict.toLowerCase().equals(word.toLowerCase()))
+            if (wordInDict.equals(word.toLowerCase()))
                 return true;
         }
         return false;

@@ -81,8 +81,17 @@ public class TagService {
         }
     }
 
-    public void updateTags(ArrayList<String> tags, String noteID) {
+    public void updateTags(ArrayList<String> tempTags, String noteID) {
         Note note = noteService.getNote(noteID);
+
+        ArrayList<String> tags = new ArrayList<>();
+        for (String tag : tempTags) {   // lower case english letter
+            if (!Character.isIdeographic(tag.charAt(0)))
+                tags.add(tag.toLowerCase());
+            else
+                tags.add(tag);
+        }
+
         for (String tag : tags) {
             if (note.getTag().contains(tag))    //重複新增的tag不更改字典
                 continue;

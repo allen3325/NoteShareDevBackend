@@ -18,6 +18,7 @@ import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.PlagiarismDictionaryRepository;
 import ntou.notesharedevbackend.searchModule.entity.NoteBasicReturn;
 import ntou.notesharedevbackend.searchModule.entity.Pages;
+import ntou.notesharedevbackend.tagGeneration.service.*;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.entity.UserObj;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
@@ -59,6 +60,9 @@ public class NoteService {
     @Autowired
     @Lazy
     private PlagiarismService plagiarismService;
+    @Autowired
+    @Lazy
+    private TagService tagService;
     @Autowired
     @Lazy
     private PlagiarismDictionaryRepository plagiarismDictionaryRepository;
@@ -366,7 +370,8 @@ public class NoteService {
         note.setPublic(request.getPublic());
         note.setSubmit(request.getSubmit());
         note.setQuotable(request.getQuotable());
-        note.setTag(request.getTag());
+//        note.setTag(request.getTag());
+        tagService.updateTags(request.getTag(), request.getId());
         note.setHiddenTag(request.getHiddenTag());
         note.setVersion(request.getVersion());
         note.setContributors(request.getContributors());
