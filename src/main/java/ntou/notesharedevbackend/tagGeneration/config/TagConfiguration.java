@@ -30,7 +30,6 @@ public class TagConfiguration {
                 try {
                     for (Dictionary dictionary : jieba) {
                         String word = dictionary.getWord() + " " + String.valueOf(dictionary.getFrequency()) + "\n";
-                        System.out.println(word);
                         Files.write(Paths.get(dictPath + "/jieba.dict"), word.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
                     }
                 } catch (IOException e) {

@@ -61,7 +61,6 @@ public class BetterJieba {
                 String[] strArr = currentLine.split(" ");
                 if (strArr.length > 0) {
                     dictWordMap.put(strArr[0], Integer.parseInt(strArr[1]));
-                    System.out.println(strArr[0] + ", " + strArr[1]);
                     currentLine = reader.readLine();
                 }
             }
