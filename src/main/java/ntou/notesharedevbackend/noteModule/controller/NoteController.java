@@ -6,10 +6,12 @@ import ntou.notesharedevbackend.folderModule.entity.FolderReturn;
 import ntou.notesharedevbackend.noteModule.entity.*;
 import ntou.notesharedevbackend.noteModule.service.NoteService;
 import ntou.notesharedevbackend.searchModule.entity.Pages;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.json.JSONObject;
 
 import java.util.*;
 
@@ -110,8 +112,8 @@ public class NoteController {
                                                     @PathVariable("version") int version) {
         Map<String, Object> res = new HashMap<>();
 
-        if(version>5){
-            res.put("res","over the size.");
+        if (version > 5) {
+            res.put("res", "over the size.");
             return ResponseEntity.status(400).body(res);
         }
 
@@ -126,7 +128,7 @@ public class NoteController {
     @PutMapping("/{noteID}/{version}/{name}")
     public ResponseEntity<Object> updateNoteContentName(@PathVariable("noteID") String id,
                                                         @PathVariable("version") int version,
-                                                        @PathVariable("name")String name) {
+                                                        @PathVariable("name") String name) {
         Map<String, Object> res = new HashMap<>();
 
         Note note = noteService.updateNoteContentName(id, version, name);
@@ -250,10 +252,10 @@ public class NoteController {
         }
     }
 
-    @Operation(summary = "check the note's plagiarism point and save to db.",description = "前端使用直接不用等回傳，好了會用socket" +
+    @Operation(summary = "check the note's plagiarism point and save to db.", description = "前端使用直接不用等回傳，好了會用socket" +
             "通知使用者")
     @GetMapping("/plagiarism/{noteID}")
-    public void checkNotePlagiarismAndSave(@PathVariable("noteID")String noteID) {
+    public void checkNotePlagiarismAndSave(@PathVariable("noteID") String noteID) {
         noteService.checkNotePlagiarismAndSave(noteID);
     }
 
@@ -267,4 +269,30 @@ public class NoteController {
         return ResponseEntity.ok(res);
     }
 
+    @Operation(summary = "save collaboration note", description = "collaboration note's id and json request body -> { } 。 400 -> wrong type of request body")
+    @PutMapping("/saveTempCollaborationNote/{noteID}")
+    public ResponseEntity<Object> saveTempCollaborationNote(@PathVariable("noteID") String noteID,
+                                                            @RequestBody String content) {
+        Map<String, Object> res = new HashMap<>();
+        try {
+            new JSONObject(content);
+        } catch (JSONException e) {
+            res.put("res", "Wrong type of Request Body");
+            return ResponseEntity.badRequest().body(res);
+        }
+        noteService.saveTempCollaborationNote(noteID, content);
+        res.put("res", "success");
+        return ResponseEntity.ok(res);
+    }
+
+    @Operation(summary = "load collaboration note", description = "collaboration note's id")
+    @GetMapping("/loadTempCollaborationNote/{noteID}")
+    public ResponseEntity<Object> loadTempCollaborationNote(@PathVariable("noteID") String noteID) {
+        String content = noteService.loadTempCollaborationNote(noteID);
+        JSONObject jsonObject = new JSONObject(content);
+
+        Map<String, Object> res = new HashMap<>();
+        res.put("res", jsonObject.toMap());
+        return ResponseEntity.ok(res);
+    }
 }

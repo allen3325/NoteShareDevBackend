@@ -374,14 +374,15 @@ public class NoteService {
         note.setPostID(request.getPostID());
         note.setReference(request.getReference());
         note.setBest(request.getBest());
-        if(!oldNote.getPublic() && request.getPublic()){//private -> public
+        if (!oldNote.getPublic() && request.getPublic()) {//private -> public
             note.setPublishDate(new Date());
-        } else{// others keep old note publishDate
+        } else {// others keep old note publishDate
             note.setPublishDate(oldNote.getPublishDate());
         }
         note.setDescription(request.getDescription());
         note.setClickDate(oldNote.getClickDate());
         note.setClickNum(note.getClickDate().size());
+        note.setContent(request.getContent());
         return noteRepository.save(note);
     }
 
@@ -685,7 +686,7 @@ public class NoteService {
             similarNotesID = null;
             // 3. run
             HashMap<String, Float> result = new HashMap<>();
-            if(mainNote.getVersion().size()==0){
+            if (mainNote.getVersion().size() == 0) {
                 MessageReturn messageReturn = getMessageReturnFromPlagiarism("There is no content in the note. Please" +
                         " create one", noteID);
                 messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
@@ -842,4 +843,13 @@ public class NoteService {
         return getNote(id);
     }
 
+    public void saveTempCollaborationNote(String noteID, String content) {
+        Note note = getNote(noteID);
+        note.setContent(content);
+        replaceNote(note, note.getId());
+    }
+
+    public String loadTempCollaborationNote(String noteID) {
+        return getNote(noteID).getContent();
+    }
 }
