@@ -24,7 +24,8 @@ public class LingPipe {
     private final MapDictionary<String> myDict = new MapDictionary<>();
     private Map<String, Integer> chunkResult;
     private HashSet<String> recommendWords;
-    private final String dictPath = "././././././dict/lingpipe.dict";
+    String homePath = System.getProperty("user.home");
+    private final String dictPath = homePath + "/dict/lingpipe.dict";
     private final double CHUNK_SCORE = 1.0;
     private final String CLASS_NAME = "tags";
 

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
 import java.io.*;
+import java.nio.charset.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -22,7 +23,8 @@ public class BetterJieba {
     private WordDictionary dict;    //jieba字典
     private Map<String, Integer> sortedCountWordFreq;   //jieba切字結果
     private Map<String, Integer> dictWordMap;   //自身字典Hashmap
-    String dictPath = "././././././dict/jieba.dict";
+    String homePath = System.getProperty("user.home");
+    String dictPath = homePath + "/dict/jieba.dict";
 
     public BetterJieba() {
 //        this.sentence = removeAllMarks(sentence);
@@ -50,8 +52,8 @@ public class BetterJieba {
 
     public void loadDictWordMap() {
         try {
-            BufferedReader reader = null;
-            reader = new BufferedReader(new FileReader(dictPath));
+            InputStreamReader isr = new InputStreamReader(new FileInputStream(dictPath), StandardCharsets.UTF_8);
+            BufferedReader reader = new BufferedReader(isr);
             String currentLine = reader.readLine();
             dictWordMap.clear();
 
@@ -59,6 +61,7 @@ public class BetterJieba {
                 String[] strArr = currentLine.split(" ");
                 if (strArr.length > 0) {
                     dictWordMap.put(strArr[0], Integer.parseInt(strArr[1]));
+                    System.out.println(strArr[0] + ", " + strArr[1]);
                     currentLine = reader.readLine();
                 }
             }
@@ -84,7 +87,7 @@ public class BetterJieba {
 
     public void writeToDict(String word) {
         try {
-            Files.write(Paths.get(dictPath), word.getBytes(), StandardOpenOption.APPEND);
+            Files.write(Paths.get(dictPath), word.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -95,7 +98,7 @@ public class BetterJieba {
 
         try {
             String modifiedFileContent = "";
-            BufferedWriter writer = new BufferedWriter(new FileWriter(dictPath));
+            OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(dictPath), StandardCharsets.UTF_8);
             for (Map.Entry<String, Integer> map : dictWordMap.entrySet()) {
                 String key = map.getKey();
                 int value = map.getValue();

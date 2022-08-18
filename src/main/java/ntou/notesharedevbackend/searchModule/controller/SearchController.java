@@ -72,7 +72,7 @@ public class SearchController {
     @GetMapping("/tag/{offset}/{pageSize}/{tag}")
     public ResponseEntity<Map<String, Pages>> getNotesByTags(@PathVariable("offset") int offset,
                                                              @PathVariable("pageSize") int pageSize,
-                                                             @PathVariable("tag") String tag) {
+                                                             @PathVariable("tag") String[] tag) {
         Pages notes = searchService.getNotesByTags(offset, pageSize, tag);
         Map<String, Pages> map = new HashMap<>();
         map.put("search", notes);
