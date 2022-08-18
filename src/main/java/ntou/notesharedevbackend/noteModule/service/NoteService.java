@@ -371,7 +371,7 @@ public class NoteService {
         note.setSubmit(request.getSubmit());
         note.setQuotable(request.getQuotable());
 //        note.setTag(request.getTag());
-        tagService.updateTags(request.getTag(), request.getId());
+        note.setTag(tagService.updateTags(request.getTag(), request.getId()));
         note.setHiddenTag(request.getHiddenTag());
         note.setVersion(request.getVersion());
         note.setContributors(request.getContributors());
@@ -685,7 +685,7 @@ public class NoteService {
             similarNotesID = null;
             // 3. run
             HashMap<String, Float> result = new HashMap<>();
-            if(mainNote.getVersion().size()==0){
+            if (mainNote.getVersion().size() == 0) {
                 MessageReturn messageReturn = getMessageReturnFromPlagiarism("There is no content in the note. Please" +
                         " create one", noteID);
                 messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);

@@ -38,8 +38,7 @@ public class TagService {
                     continue;
                 tags.add(generatedTag);
             }
-        }
-        else
+        } else
             tags.addAll(generatedTags);
         if (!hiddenTags.isEmpty()) {
             for (String generatedTag : generatedTags) {
@@ -47,8 +46,7 @@ public class TagService {
                     continue;
                 hiddenTags.add(generatedTag);
             }
-        }
-        else
+        } else
             hiddenTags.addAll(generatedTags);
 
         noteRepository.save(note);
@@ -74,14 +72,13 @@ public class TagService {
             dictionary.setWord(word);
             dictionary.setFrequency(3);
             dictionaryRepository.insert(dictionary);
-        }
-        else {
+        } else {
             alreadyExist.setFrequency(alreadyExist.getFrequency() + 1);
             dictionaryRepository.save(alreadyExist);
         }
     }
 
-    public void updateTags(ArrayList<String> tempTags, String noteID) {
+    public ArrayList<String> updateTags(ArrayList<String> tempTags, String noteID) {
         Note note = noteService.getNote(noteID);
 
         ArrayList<String> tags = new ArrayList<>();
@@ -100,6 +97,7 @@ public class TagService {
 
         note.setTag(tags);
         noteRepository.save(note);
+        return tags;
     }
 
     public String cleanArticle(String article) {
@@ -108,7 +106,7 @@ public class TagService {
         String containUselessSpaceRegex = "\\s{2,}";
         article = article.replaceAll(containHtmlTagRegex, "     ");
         article = article.replaceAll(containUselessSpaceRegex, " ");
-        article = article.replaceAll(System.lineSeparator(),"");
+        article = article.replaceAll(System.lineSeparator(), "");
         return article;
     }
 }
