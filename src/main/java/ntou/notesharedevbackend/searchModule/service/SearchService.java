@@ -2,6 +2,7 @@ package ntou.notesharedevbackend.searchModule.service;
 
 import ntou.notesharedevbackend.folderModule.entity.*;
 import ntou.notesharedevbackend.noteModule.entity.*;
+import ntou.notesharedevbackend.noteModule.service.*;
 import ntou.notesharedevbackend.postModule.entity.*;
 import ntou.notesharedevbackend.postModule.service.*;
 import ntou.notesharedevbackend.repository.*;
@@ -29,6 +30,8 @@ public class SearchService {
     private AppUserService appUserService;
     @Autowired
     private PostService postService;
+    @Autowired
+    private NoteService noteService;
 
     public Pages getSearchedUser(String userName, int offset, int pageSize) {
         PageRequest pageRequest = PageRequest.of(offset, pageSize, Sort.by("name").descending());
@@ -292,28 +295,26 @@ public class SearchService {
         return new Pages(page.getContent(), page.getTotalPages());
     }
 
-    public Pages getNotesByTags(int offset, int pageSize, String tag) {
-        List<Note> notes = noteRepository.findAll();
+    public Pages getNotesByTags(int offset, int pageSize, String[] tags) {
+        List<Note> notes = new ArrayList<>();
+        Set<String> noteIdHashSet = new HashSet<>();
+        for (String tag : tags) {
+            String[] tagArr = new String[] {tag};
+            Set<String> findNotesId = noteRepository.findAllByTags(tagArr);
+            noteIdHashSet.addAll(findNotesId);
+        }
+
+        ArrayList<String> realIDArray = new ArrayList<>();
+        for (String tmpID : noteIdHashSet) {
+            String realID = tmpID.substring(18, tmpID.length() - 3);
+            realIDArray.add(realID);
+        }
+        for (String id : realIDArray)
+            notes.add(noteService.getNote(id));
+
         notes = notes.stream()
                 .filter((Note n) -> n.getPublic().equals(true))
                 .collect(Collectors.toList());
-
-        List<Note> tempNoteList = new ArrayList<>();
-        for (Note note : notes) {
-            if (note.getTag().size() == 0)
-                continue;
-            ArrayList<String> noteTag = note.getTag();
-            boolean find = false;
-            for (String value : noteTag) {
-                if (value.contains(tag)) {
-                    find = true;
-                    break;
-                }
-            }
-            if (find)
-                tempNoteList.add(note);
-        }
-        notes = tempNoteList;
 
         List<NoteBasicReturn> noteBasicReturns = new ArrayList<>();
         for (Note note : notes) {

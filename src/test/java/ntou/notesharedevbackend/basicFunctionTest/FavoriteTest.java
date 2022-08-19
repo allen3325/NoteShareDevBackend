@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.*;
 import org.springframework.test.web.servlet.*;
 
 import java.util.*;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -76,7 +77,7 @@ public class FavoriteTest {
 //        ArrayList<String> wantEnterUsersEmail = new ArrayList<>();
 //        wantEnterUsersEmail.add("noteshare1030@gmail.com");
 //        post.setWantEnterUsersEmail(wantEnterUsersEmail);
-        Apply apply = new Apply("noteshare1030@gmail.com","comment");
+        Apply apply = new Apply("noteshare1030@gmail.com", "comment");
         post.setPublic(true);
         return post;
     }
@@ -143,36 +144,47 @@ public class FavoriteTest {
     }
 
     @Test
-    public void testFavoriteNote() throws Exception{
+    public void testFavoriteNote() throws Exception {
         Note note = createNote();
         noteRepository.insert(note);
-        AppUser favoriter = createUser("yitingwu.1030@gmail.com","Ting",300);
+        AppUser favoriter = createUser("yitingwu.1030@gmail.com", "Ting", 300);
         userRepository.insert(favoriter);
         // favorite
-        mockMvc.perform(put("/favorite/note/{noteID}/{email}",note.getId(),favoriter.getEmail()).headers(httpHeaders))
+        mockMvc.perform(put("/favorite/note/{noteID}/{email}", note.getId(), favoriter.getEmail()).headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("success"));
 
-        if(!noteRepository.findById(note.getId()).get().getFavoriter().contains(favoriter.getEmail())){
+        if (!noteRepository.findById(note.getId()).get().getFavoriter().contains(favoriter.getEmail())) {
             throw new Exception("Favorite Test : note's favoriter does not update.");
         }
-        if(!noteRepository.findById(note.getId()).get().getFavoriteCount().equals(note.getFavoriteCount()+1)){
+        if (!noteRepository.findById(note.getId()).get().getFavoriteCount().equals(note.getFavoriteCount() + 1)) {
             throw new Exception("Favorite Test : note's favorite count does not update.");
         }
-        if(!folderRepository.findById(userRepository.findByEmail(favoriter.getEmail()).getFolders().get(1)).get().getNotes().contains(note.getId())){
+        if (!folderRepository.findById(userRepository.findByEmail(favoriter.getEmail()).getFolders().get(1)).get().getNotes().contains(note.getId())) {
             throw new Exception("Favorite Test : favoriter's favorite folder does not update.");
         }
+    }
+
+    @Test
+    public void testUnFavoriteNote() throws Exception {
+        Note note = createNote();
+        note.getFavoriter().add("yitingwu.1030@gmail.com");
+        note.setFavoriteCount(1);
+        noteRepository.insert(note);
+        AppUser favoriter = createUser("yitingwu.1030@gmail.com", "Ting", 300);
+        userRepository.insert(favoriter);
+
         // unFavorite
-        mockMvc.perform(put("/favorite/note/{noteID}/{email}",note.getId(),favoriter.getEmail()).headers(httpHeaders))
+        mockMvc.perform(put("/favorite/note/{noteID}/{email}", note.getId(), favoriter.getEmail()).headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("success"));
-        if(noteRepository.findById(note.getId()).get().getFavoriter().contains(favoriter.getEmail())){
+        if (noteRepository.findById(note.getId()).get().getFavoriter().contains(favoriter.getEmail())) {
             throw new Exception("Favorite Test (unFavorite) : note's favoriter does not update.");
         }
-        if(noteRepository.findById(note.getId()).get().getFavoriteCount().equals(note.getFavoriteCount()+1)){
+        if (noteRepository.findById(note.getId()).get().getFavoriteCount().equals(note.getFavoriteCount() + 1)) {
             throw new Exception("Favorite Test (unFavorite) : note's favorite count does not update.");
         }
-        if(userRepository.findByEmail(favoriter.getEmail()).getFolders().get(1).contains(note.getId())){
+        if (userRepository.findByEmail(favoriter.getEmail()).getFolders().get(1).contains(note.getId())) {
             throw new Exception("Favorite Test (unFavorite) : favoriter's favorite folder does not update.");
         }
     }
@@ -191,10 +203,10 @@ public class FavoriteTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
-        if(!noteRepository.findById(note.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")){
+        if (!noteRepository.findById(note.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")) {
             throw new Exception("Favorite Test : comment's liker does not update.");
         }
-        if(!noteRepository.findById(note.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount()+1)){
+        if (!noteRepository.findById(note.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount() + 1)) {
             throw new Exception("Favorite Test : comment's liker count does not update.");
         }
     }
@@ -214,10 +226,10 @@ public class FavoriteTest {
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
-        if(noteRepository.findById(note.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")){
+        if (noteRepository.findById(note.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")) {
             throw new Exception("Favorite Test : comment's liker does not update.");
         }
-        if(!noteRepository.findById(note.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount()-1)){
+        if (!noteRepository.findById(note.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount() - 1)) {
             throw new Exception("Favorite Test : comment's liker count does not update.");
         }
 
@@ -233,15 +245,15 @@ public class FavoriteTest {
         postRepository.insert(post);
 
         mockMvc.perform(put("/favorite/post/{postID}/{commentID}/{email}", post.getId(), comment.getId(), "dna@gmail.com")
-                .headers(httpHeaders))
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
         Comment responseComment = postRepository.findById(post.getId()).get().getComments().get(0);
-        if(!responseComment.getLiker().contains("dna@gmail.com")){
+        if (!responseComment.getLiker().contains("dna@gmail.com")) {
             throw new Exception("Favorite Test : comment's liker does not update");
         }
-        if(!responseComment.getLikeCount().equals(responseComment.getLiker().size())){
+        if (!responseComment.getLikeCount().equals(responseComment.getLiker().size())) {
             System.out.println(responseComment.getLiker().size());
             System.out.println(responseComment.getLikeCount());
             throw new Exception("Favorite Test : comment's like count does not update");
@@ -261,10 +273,10 @@ public class FavoriteTest {
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
-        if(postRepository.findById(post.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")){
+        if (postRepository.findById(post.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")) {
             throw new Exception("Favorite Test : comment's liker does not update");
         }
-        if(postRepository.findById(post.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount()+1)){
+        if (postRepository.findById(post.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount() + 1)) {
             throw new Exception("Favorite Test : comment's like count does not update");
         }
     }
