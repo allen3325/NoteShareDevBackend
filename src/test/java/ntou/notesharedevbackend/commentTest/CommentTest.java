@@ -411,7 +411,7 @@ public class CommentTest {
         AppUser appUser = userRepository.findByEmail(comment.getEmail());
         JSONObject request = new JSONObject()
                 .put("email", comment.getEmail())
-                .put("picURL", null)
+                .put("picURL", JSONObject.NULL)
                 .put("content", "NewContent");
         mockMvc.perform(put("/comment/" + post.getId() + "/0")
                         .headers(httpHeaders)

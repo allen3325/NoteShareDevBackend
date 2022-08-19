@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.*;
 import org.springframework.test.web.servlet.*;
 
 import java.util.*;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,20 +41,111 @@ public class FavoriteTest {
 
     public Note createNote() {
         Note note = new Note();
-        note.setType("collaboration");
-        note.setHeaderEmail("allen3325940072@gmail.com");
-        note.setHeaderName("allen");
-        note.setLiker(new ArrayList<String>());
-        note.setBuyer(new ArrayList<String>());
-        note.setFavoriter(new ArrayList<String>());
+        note.setType("normal");
+        note.setDepartment("CS");
+        note.setSubject("OS");
+        note.setTitle("Interrupt");
+        note.setHeaderEmail("yitingwu.1030@gmail.com");
+        note.setHeaderName("Ting");
+        ArrayList<String> authorEmails = new ArrayList<>();
+        authorEmails.add("yitingwu.1030@gmail.com");
+        note.setAuthorEmail(authorEmails);
+        ArrayList<String> authorNames = new ArrayList<>();
+        authorNames.add("Ting");
+        note.setAuthorName(authorNames);
+        note.setProfessor("NoteShare");
+        note.setSchool("NTOU");
+        note.setPublic(false);
+        note.setPrice(50);
+        note.setLiker(new ArrayList<>());
+        note.setLikeCount(0);
+        note.setBuyer(new ArrayList<>());
+        note.setFavoriter(new ArrayList<>());
         note.setFavoriteCount(0);
-        note.setComments(new ArrayList<Comment>());
-        note.setTag(new ArrayList<String>());
-        note.setHiddenTag(new ArrayList<String>());
-        note.setVersion(new ArrayList<VersionContent>());
-        note.setContributors(new ArrayList<String>());
+        note.setUnlockCount(0);
+        note.setDownloadable(false);
+        note.setCommentCount(0);
+        note.setComments(new ArrayList<>());
+        note.setSubmit(null);
+        note.setQuotable(false);
+        ArrayList<String> tags = new ArrayList<>();
+        tags.add("tag1");
+        tags.add("tag2");
+        tags.add("tag3");
+        note.setTag(tags);
+        note.setHiddenTag(new ArrayList<>());
+        ArrayList<VersionContent> versionContents = new ArrayList<>();
+        VersionContent v1 = new VersionContent();
+        v1.setName("v1");
+        v1.setSlug("string");
+        ArrayList<String> fileURLs = new ArrayList<>();
+        fileURLs.add("fileURL1");
+        fileURLs.add("fileURL2");
+        fileURLs.add("fileURL3");
+        v1.setFileURL(fileURLs);
+        ArrayList<String> picURLs = new ArrayList<>();
+        picURLs.add("picURL1");
+        picURLs.add("picURL2");
+        picURLs.add("picURL3");
+        v1.setPicURL(picURLs);
+        v1.setTemp(true);
+        Content content1 = new Content();
+        content1.setMycustom_assets("string");
+        content1.setMycustom_components("string");
+        content1.setMycustom_css("string");
+        content1.setMycustom_html("string");
+        content1.setMycustom_styles("string");
+        Content content2 = new Content();
+        content2.setMycustom_assets("string");
+        content2.setMycustom_components("string");
+        content2.setMycustom_css("string");
+        content2.setMycustom_html("string");
+        content2.setMycustom_styles("string");
+        Content content3 = new Content();
+        content3.setMycustom_assets("string");
+        content3.setMycustom_components("string");
+        content3.setMycustom_css("string");
+        content3.setMycustom_html("string");
+        content3.setMycustom_styles("string");
+        ArrayList<Content> contents = new ArrayList<>();
+        contents.add(content1);
+        contents.add(content2);
+        contents.add(content3);
+        v1.setContent(contents);
+        VersionContent v2 = new VersionContent();
+        v2.setSlug("String");
+        v2.setFileURL(fileURLs);
+        v2.setPicURL(picURLs);
+        v2.setContent(contents);
+        v2.setName("v2");
+        v2.setTemp(false);
+        VersionContent v3 = new VersionContent();
+        v3.setSlug("String");
+        v3.setFileURL(fileURLs);
+        v3.setPicURL(picURLs);
+        v3.setContent(contents);
+        v3.setTemp(true);
+        v3.setName("v3");
+        VersionContent v4 = new VersionContent();
+        v4.setSlug("String");
+        v4.setFileURL(fileURLs);
+        v4.setPicURL(picURLs);
+        v4.setContent(contents);
+        v4.setName("v4");
+        v4.setTemp(false);
+        versionContents.add(v1);
+        versionContents.add(v2);
+        versionContents.add(v3);
+        versionContents.add(v4);
+        note.setVersion(versionContents);
+        note.setContributors(new ArrayList<>());
+        note.setPostID(null);
+        note.setReference(null);
+        note.setBest(null);
+        note.setManagerEmail(null);
         note.setClickDate(new ArrayList<>());
         note.setClickNum(0);
+        noteRepository.insert(note);
         return note;
     }
 
@@ -76,7 +168,7 @@ public class FavoriteTest {
 //        ArrayList<String> wantEnterUsersEmail = new ArrayList<>();
 //        wantEnterUsersEmail.add("noteshare1030@gmail.com");
 //        post.setWantEnterUsersEmail(wantEnterUsersEmail);
-        Apply apply = new Apply("noteshare1030@gmail.com","comment");
+        Apply apply = new Apply("noteshare1030@gmail.com", "comment");
         post.setPublic(true);
         return post;
     }
@@ -143,36 +235,46 @@ public class FavoriteTest {
     }
 
     @Test
-    public void testFavoriteNote() throws Exception{
+    public void testFavoriteNote() throws Exception {
         Note note = createNote();
-        noteRepository.insert(note);
-        AppUser favoriter = createUser("yitingwu.1030@gmail.com","Ting",300);
-        userRepository.insert(favoriter);
+        AppUser favoriter = createUser("yitingwu.1030@gmail.com", "Ting", 300);
+        favoriter = userRepository.save(favoriter);
         // favorite
-        mockMvc.perform(put("/favorite/note/{noteID}/{email}",note.getId(),favoriter.getEmail()).headers(httpHeaders))
+        mockMvc.perform(put("/favorite/note/" + "/" + note.getId() + "/" + favoriter.getEmail()).headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("success"));
 
-        if(!noteRepository.findById(note.getId()).get().getFavoriter().contains(favoriter.getEmail())){
+        if (!noteRepository.findById(note.getId()).get().getFavoriter().contains(favoriter.getEmail())) {
             throw new Exception("Favorite Test : note's favoriter does not update.");
         }
-        if(!noteRepository.findById(note.getId()).get().getFavoriteCount().equals(note.getFavoriteCount()+1)){
+        if (!noteRepository.findById(note.getId()).get().getFavoriteCount().equals(note.getFavoriteCount() + 1)) {
             throw new Exception("Favorite Test : note's favorite count does not update.");
         }
-        if(!folderRepository.findById(userRepository.findByEmail(favoriter.getEmail()).getFolders().get(1)).get().getNotes().contains(note.getId())){
+        if (!folderRepository.findById(userRepository.findByEmail(favoriter.getEmail()).getFolders().get(1)).get().getNotes().contains(note.getId())) {
             throw new Exception("Favorite Test : favoriter's favorite folder does not update.");
         }
+    }
+
+    @Test
+    public void testUnFavoriteNote() throws Exception {
+        Note note = createNote();
+        note.getFavoriter().add("yitingwu.1030@gmail.com");
+        note.setFavoriteCount(1);
+        note = noteRepository.save(note);
+        AppUser favoriter = createUser("yitingwu.1030@gmail.com", "Ting", 300);
+        favoriter = userRepository.insert(favoriter);
         // unFavorite
-        mockMvc.perform(put("/favorite/note/{noteID}/{email}",note.getId(),favoriter.getEmail()).headers(httpHeaders))
+        mockMvc.perform(put("/favorite/note/" + note.getId() + "/" + favoriter.getEmail())
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("success"));
-        if(noteRepository.findById(note.getId()).get().getFavoriter().contains(favoriter.getEmail())){
+        if (noteRepository.findById(note.getId()).get().getFavoriter().contains(favoriter.getEmail())) {
             throw new Exception("Favorite Test (unFavorite) : note's favoriter does not update.");
         }
-        if(noteRepository.findById(note.getId()).get().getFavoriteCount().equals(note.getFavoriteCount()+1)){
+        if (noteRepository.findById(note.getId()).get().getFavoriteCount().equals(note.getFavoriteCount() + 1)) {
             throw new Exception("Favorite Test (unFavorite) : note's favorite count does not update.");
         }
-        if(userRepository.findByEmail(favoriter.getEmail()).getFolders().get(1).contains(note.getId())){
+        if (userRepository.findByEmail(favoriter.getEmail()).getFolders().get(1).contains(note.getId())) {
             throw new Exception("Favorite Test (unFavorite) : favoriter's favorite folder does not update.");
         }
     }
@@ -184,17 +286,18 @@ public class FavoriteTest {
         ArrayList<Comment> comments = new ArrayList<>();
         comments.add(comment);
         note.setComments(comments);
-        noteRepository.insert(note);
+        note = noteRepository.save(note);
+        comment = note.getComments().get(0);
 
-        mockMvc.perform(put("/favorite/note/{noteID}/{commentID}/{email}", note.getId(), comment.getId(), "dna@gmail.com")
+        mockMvc.perform(put("/favorite/note/" + note.getId() + "/" + comment.getId() + "/" + "dna@gmail.com")
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
-        if(!noteRepository.findById(note.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")){
+        if (!noteRepository.findById(note.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")) {
             throw new Exception("Favorite Test : comment's liker does not update.");
         }
-        if(!noteRepository.findById(note.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount()+1)){
+        if (!noteRepository.findById(note.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount() + 1)) {
             throw new Exception("Favorite Test : comment's liker count does not update.");
         }
     }
@@ -208,16 +311,16 @@ public class FavoriteTest {
         comment.setLikeCount(comment.getLiker().size());
         comments.add(comment);
         note.setComments(comments);
-        noteRepository.insert(note);
+        noteRepository.save(note);
 
         mockMvc.perform(put("/unFavorite/note/{noteID}/{commentID}/{email}", note.getId(), comment.getId(), "dna@gmail.com")
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
-        if(noteRepository.findById(note.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")){
+        if (noteRepository.findById(note.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")) {
             throw new Exception("Favorite Test : comment's liker does not update.");
         }
-        if(!noteRepository.findById(note.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount()-1)){
+        if (!noteRepository.findById(note.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount() - 1)) {
             throw new Exception("Favorite Test : comment's liker count does not update.");
         }
 
@@ -233,15 +336,15 @@ public class FavoriteTest {
         postRepository.insert(post);
 
         mockMvc.perform(put("/favorite/post/{postID}/{commentID}/{email}", post.getId(), comment.getId(), "dna@gmail.com")
-                .headers(httpHeaders))
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
 
         Comment responseComment = postRepository.findById(post.getId()).get().getComments().get(0);
-        if(!responseComment.getLiker().contains("dna@gmail.com")){
+        if (!responseComment.getLiker().contains("dna@gmail.com")) {
             throw new Exception("Favorite Test : comment's liker does not update");
         }
-        if(!responseComment.getLikeCount().equals(responseComment.getLiker().size())){
+        if (!responseComment.getLikeCount().equals(responseComment.getLiker().size())) {
             System.out.println(responseComment.getLiker().size());
             System.out.println(responseComment.getLikeCount());
             throw new Exception("Favorite Test : comment's like count does not update");
@@ -261,10 +364,10 @@ public class FavoriteTest {
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg").value("Success"));
-        if(postRepository.findById(post.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")){
+        if (postRepository.findById(post.getId()).get().getComments().get(0).getLiker().contains("dna@gmail.com")) {
             throw new Exception("Favorite Test : comment's liker does not update");
         }
-        if(postRepository.findById(post.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount()+1)){
+        if (postRepository.findById(post.getId()).get().getComments().get(0).getLikeCount().equals(comment.getLikeCount() + 1)) {
             throw new Exception("Favorite Test : comment's like count does not update");
         }
     }

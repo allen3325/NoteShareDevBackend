@@ -8,6 +8,7 @@ import org.springframework.boot.*;
 import org.springframework.context.annotation.*;
 
 import java.io.*;
+import java.nio.charset.*;
 import java.nio.file.*;
 import java.util.*;
 
@@ -17,7 +18,8 @@ public class TagConfiguration {
     @Bean
     CommandLineRunner commandLineRunner(DictionaryRepository dictionaryRepository) {
         return args -> {
-            String dictPath = "././././././dict";
+            String homePath = System.getProperty("user.home");
+            String dictPath = homePath + "/dict";
             List<Dictionary> jieba = dictionaryRepository.findAllByType("jieba");
             List<Dictionary> lingpipe = dictionaryRepository.findAllByType("lingpipe");
             if (!Files.exists(Paths.get(dictPath))) {
@@ -28,7 +30,7 @@ public class TagConfiguration {
                 try {
                     for (Dictionary dictionary : jieba) {
                         String word = dictionary.getWord() + " " + String.valueOf(dictionary.getFrequency()) + "\n";
-                        Files.write(Paths.get(dictPath + "/jieba.dict"), word.getBytes(), StandardOpenOption.APPEND);
+                        Files.write(Paths.get(dictPath + "/jieba.dict"), word.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -803,7 +803,8 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.likerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.buyerUserObj").isEmpty())
                 .andExpect(jsonPath("$.res.favoriterUserObj").isEmpty())
-                .andExpect(jsonPath("$.res.contributorUserObj").isEmpty());
+                .andExpect(jsonPath("$.res.contributorUserObj").isEmpty())
+                .andExpect(jsonPath("$.res.publishDate").hasJsonPath());
 
         if (folderRepository.findById(folder.getId()).get().getNotes().isEmpty()) {
             throw new Exception("Note Test : new note does not add in folder");
@@ -1390,6 +1391,2193 @@ public class NoteTest {
                 .andExpect(jsonPath("$.res.items.[0].authorEmailUserObj.[0].userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.items.[0].authorEmailUserObj.[0].userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.totalPages").value(2));//init 有一個共筆筆記
+    }
+
+    @Test
+    public void testSaveTempCollaborationNote() throws Exception {
+        Note collaborationNote = createCollaborationNote();
+        String content = "{\n" +
+                "    \"components\": [\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i60c\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"Cell\",\n" +
+                "                    \"draggable\": \".gjs-row\",\n" +
+                "                    \"resizable\": {\n" +
+                "                        \"tl\": 0,\n" +
+                "                        \"tc\": 0,\n" +
+                "                        \"tr\": 0,\n" +
+                "                        \"cl\": 0,\n" +
+                "                        \"cr\": 1,\n" +
+                "                        \"bl\": 0,\n" +
+                "                        \"br\": 0,\n" +
+                "                        \"minDim\": 1,\n" +
+                "                        \"bc\": 0,\n" +
+                "                        \"currentUnit\": 1,\n" +
+                "                        \"step\": 0.2\n" +
+                "                    },\n" +
+                "                    \"classes\": [\n" +
+                "                        {\n" +
+                "                            \"name\": \"gjs-cell\",\n" +
+                "                            \"private\": 1\n" +
+                "                        }\n" +
+                "                    ],\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"i3hy\"\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i22h\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"Cell\",\n" +
+                "                    \"draggable\": \".gjs-row\",\n" +
+                "                    \"resizable\": {\n" +
+                "                        \"tl\": 0,\n" +
+                "                        \"tc\": 0,\n" +
+                "                        \"tr\": 0,\n" +
+                "                        \"cl\": 0,\n" +
+                "                        \"cr\": 1,\n" +
+                "                        \"bl\": 0,\n" +
+                "                        \"br\": 0,\n" +
+                "                        \"minDim\": 1,\n" +
+                "                        \"bc\": 0,\n" +
+                "                        \"currentUnit\": 1,\n" +
+                "                        \"step\": 0.2\n" +
+                "                    },\n" +
+                "                    \"classes\": [\n" +
+                "                        {\n" +
+                "                            \"name\": \"gjs-cell\",\n" +
+                "                            \"private\": 1\n" +
+                "                        }\n" +
+                "                    ],\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"ityj\"\n" +
+                "                    },\n" +
+                "                    \"components\": [\n" +
+                "                        {\n" +
+                "                            \"type\": \"text\",\n" +
+                "                            \"attributes\": {\n" +
+                "                                \"id\": \"io9m\"\n" +
+                "                            },\n" +
+                "                            \"activeOnRender\": 1,\n" +
+                "                            \"components\": [\n" +
+                "                                {\n" +
+                "                                    \"type\": \"textnode\",\n" +
+                "                                    \"content\": \"Insert your text here\",\n" +
+                "                                    \"attributes\": {\n" +
+                "                                        \"id\": \"i0mjj\"\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            ]\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"tooltip\",\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component\",\n" +
+                "                    \"label\": \"tooltip-component\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component--empty\",\n" +
+                "                    \"label\": \"tooltip-component--empty\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"ifxe4\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"idk6\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"Cell\",\n" +
+                "                    \"draggable\": \".gjs-row\",\n" +
+                "                    \"resizable\": {\n" +
+                "                        \"tl\": 0,\n" +
+                "                        \"tc\": 0,\n" +
+                "                        \"tr\": 0,\n" +
+                "                        \"cl\": 0,\n" +
+                "                        \"cr\": 1,\n" +
+                "                        \"bl\": 0,\n" +
+                "                        \"br\": 0,\n" +
+                "                        \"minDim\": 1,\n" +
+                "                        \"bc\": 0,\n" +
+                "                        \"currentUnit\": 1,\n" +
+                "                        \"step\": 0.2\n" +
+                "                    },\n" +
+                "                    \"classes\": [\n" +
+                "                        {\n" +
+                "                            \"name\": \"gjs-cell\",\n" +
+                "                            \"private\": 1\n" +
+                "                        }\n" +
+                "                    ],\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"iqml\"\n" +
+                "                    },\n" +
+                "                    \"components\": [\n" +
+                "                        {\n" +
+                "                            \"type\": \"text\",\n" +
+                "                            \"attributes\": {\n" +
+                "                                \"id\": \"iksg\"\n" +
+                "                            },\n" +
+                "                            \"components\": [\n" +
+                "                                {\n" +
+                "                                    \"type\": \"textnode\",\n" +
+                "                                    \"content\": \"Insert your text here\",\n" +
+                "                                    \"attributes\": {\n" +
+                "                                        \"id\": \"i4pqy\"\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            ]\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"link\",\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"il7wy\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"type\": \"textnode\",\n" +
+                "                    \"content\": \"Google\",\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"ipcrc\"\n" +
+                "                    }\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"tagName\": \"br\",\n" +
+                "                    \"void\": true,\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"iw366\"\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i5l4r\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"Cell\",\n" +
+                "                    \"draggable\": \".gjs-row\",\n" +
+                "                    \"resizable\": {\n" +
+                "                        \"tl\": 0,\n" +
+                "                        \"tc\": 0,\n" +
+                "                        \"tr\": 0,\n" +
+                "                        \"cl\": 0,\n" +
+                "                        \"cr\": 1,\n" +
+                "                        \"bl\": 0,\n" +
+                "                        \"br\": 0,\n" +
+                "                        \"minDim\": 1,\n" +
+                "                        \"bc\": 0,\n" +
+                "                        \"currentUnit\": 1,\n" +
+                "                        \"step\": 0.2\n" +
+                "                    },\n" +
+                "                    \"classes\": [\n" +
+                "                        {\n" +
+                "                            \"name\": \"gjs-cell\",\n" +
+                "                            \"private\": 1\n" +
+                "                        }\n" +
+                "                    ],\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"iaujk\"\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"istun\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"Code\",\n" +
+                "            \"classes\": [\n" +
+                "                \"code-container\"\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"iuu8s\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"image\",\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i60rb\"\n" +
+                "            },\n" +
+                "            \"src\": \"https://i.imgur.com/cbRf8jz.jpg\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"tooltip\",\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component\",\n" +
+                "                    \"label\": \"tooltip-component\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i3a7d\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"type\": \"text\",\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"i3vmt\"\n" +
+                "                    },\n" +
+                "                    \"components\": [\n" +
+                "                        {\n" +
+                "                            \"type\": \"textnode\",\n" +
+                "                            \"content\": \"Tooltip!\",\n" +
+                "                            \"attributes\": {\n" +
+                "                                \"id\": \"ihjt2\"\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"style\": [\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"display\": \"table\",\n" +
+                "                \"padding-top\": \"10px\",\n" +
+                "                \"padding-right\": \"10px\",\n" +
+                "                \"padding-bottom\": \"10px\",\n" +
+                "                \"padding-left\": \"10px\",\n" +
+                "                \"width\": \"100%\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-cell\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"100%\",\n" +
+                "                \"display\": \"block\"\n" +
+                "            },\n" +
+                "            \"mediaText\": \"(max-width: 768px)\",\n" +
+                "            \"atRuleType\": \"media\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"gjs-cell30\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"100%\",\n" +
+                "                \"display\": \"block\"\n" +
+                "            },\n" +
+                "            \"mediaText\": \"(max-width: 768px)\",\n" +
+                "            \"atRuleType\": \"media\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"gjs-cell70\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"100%\",\n" +
+                "                \"display\": \"block\"\n" +
+                "            },\n" +
+                "            \"mediaText\": \"(max-width: 768px)\",\n" +
+                "            \"atRuleType\": \"media\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-cell\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"8%\",\n" +
+                "                \"display\": \"table-cell\",\n" +
+                "                \"height\": \"75px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#io9m\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"padding\": \"10px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#iksg\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"padding\": \"10px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#il7wy\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"color\": \"#d983a6\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#i60rb\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"color\": \"black\",\n" +
+                "                \"width\": \"348px\",\n" +
+                "                \"height\": \"218px\",\n" +
+                "                \"en\": \"\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"text-align\": \"center\",\n" +
+                "                \"font-family\": \"Helvetica, serif\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown-block\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"display\": \"inline-block\",\n" +
+                "                \"margin-top\": \"0px\",\n" +
+                "                \"margin-right\": \"10px\",\n" +
+                "                \"margin-bottom\": \"0px\",\n" +
+                "                \"margin-left\": \"10px\",\n" +
+                "                \"padding-top\": \"10px\",\n" +
+                "                \"padding-right\": \"10px\",\n" +
+                "                \"padding-bottom\": \"10px\",\n" +
+                "                \"padding-left\": \"10px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown-digit\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"font-size\": \"5rem\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown-endtext\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"font-size\": \"5rem\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown-cont\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"display\": \"inline-block\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component\",\n" +
+                "                    \"label\": \"tooltip-component\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"position\": \"relative\",\n" +
+                "                \"display\": \"inline-block\",\n" +
+                "                \"vertical-align\": \"top\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component--empty\",\n" +
+                "                    \"label\": \"tooltip-component--empty\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"50px\",\n" +
+                "                \"height\": \"50px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component__body\",\n" +
+                "                    \"label\": \"tooltip-component__body\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"font-family\": \"Helvetica, sans-serif\",\n" +
+                "                \"background-image\": \"initial\",\n" +
+                "                \"background-position-x\": \"initial\",\n" +
+                "                \"background-position-y\": \"initial\",\n" +
+                "                \"background-size\": \"initial\",\n" +
+                "                \"background-repeat-x\": \"initial\",\n" +
+                "                \"background-repeat-y\": \"initial\",\n" +
+                "                \"background-attachment\": \"initial\",\n" +
+                "                \"background-origin\": \"initial\",\n" +
+                "                \"background-clip\": \"initial\",\n" +
+                "                \"background-color\": \"rgba(55, 61, 73, 0.95)\",\n" +
+                "                \"border-top-left-radius\": \"3px\",\n" +
+                "                \"border-top-right-radius\": \"3px\",\n" +
+                "                \"border-bottom-right-radius\": \"3px\",\n" +
+                "                \"border-bottom-left-radius\": \"3px\",\n" +
+                "                \"bottom\": \"100%\",\n" +
+                "                \"color\": \"rgb(255, 255, 255)\",\n" +
+                "                \"content\": \"attr(data-tooltip)\",\n" +
+                "                \"display\": \"block\",\n" +
+                "                \"font-size\": \"12px\",\n" +
+                "                \"left\": \"50%\",\n" +
+                "                \"line-height\": \"normal\",\n" +
+                "                \"max-width\": \"32rem\",\n" +
+                "                \"opacity\": \"0\",\n" +
+                "                \"overflow-x\": \"hidden\",\n" +
+                "                \"overflow-y\": \"hidden\",\n" +
+                "                \"padding-top\": \"8px\",\n" +
+                "                \"padding-right\": \"16px\",\n" +
+                "                \"padding-bottom\": \"8px\",\n" +
+                "                \"padding-left\": \"16px\",\n" +
+                "                \"pointer-events\": \"none\",\n" +
+                "                \"position\": \"absolute\",\n" +
+                "                \"text-overflow\": \"ellipsis\",\n" +
+                "                \"transform\": \"translate(-50%, 0px)\",\n" +
+                "                \"transition-duration\": \"0.25s, 0.25s\",\n" +
+                "                \"transition-timing-function\": \"ease, ease\",\n" +
+                "                \"transition-delay\": \"0s, 0s\",\n" +
+                "                \"transition-property\": \"opacity, transform\",\n" +
+                "                \"white-space\": \"nowrap\",\n" +
+                "                \"box-sizing\": \"border-box\",\n" +
+                "                \"z-index\": \"10\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-visible=\\\"true\\\"]::after, [data-tooltip]:focus::after, [data-tooltip]:hover::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"opacity\": \"1\",\n" +
+                "                \"transform\": \"translate(-50%, -0.5rem)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"right\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"bottom\": \"50%\",\n" +
+                "                \"left\": \"100%\",\n" +
+                "                \"transform\": \"translate(0px, 50%)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"right\\\"]:focus::after, [data-tooltip-pos=\\\"right\\\"]:hover::after, [data-tooltip-visible=\\\"true\\\"][data-tooltip-pos=\\\"right\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"transform\": \"translate(0.5rem, 50%)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"bottom\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"bottom\": \"auto\",\n" +
+                "                \"top\": \"100%\",\n" +
+                "                \"transform\": \"translate(-50%, 0px)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"bottom\\\"]:focus::after, [data-tooltip-pos=\\\"bottom\\\"]:hover::after, [data-tooltip-visible=\\\"true\\\"][data-tooltip-pos=\\\"bottom\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"transform\": \"translate(-50%, 0.5rem)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"left\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"bottom\": \"50%\",\n" +
+                "                \"left\": \"auto\",\n" +
+                "                \"right\": \"100%\",\n" +
+                "                \"transform\": \"translate(0px, 50%)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"left\\\"]:focus::after, [data-tooltip-pos=\\\"left\\\"]:hover::after, [data-tooltip-visible=\\\"true\\\"][data-tooltip-pos=\\\"left\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"transform\": \"translate(-0.5rem, 50%)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-length=\\\"small\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"white-space\": \"normal\",\n" +
+                "                \"width\": \"80px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-length=\\\"medium\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"white-space\": \"normal\",\n" +
+                "                \"width\": \"150px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-length=\\\"large\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"white-space\": \"normal\",\n" +
+                "                \"width\": \"300px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-length=\\\"fit\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"white-space\": \"normal\",\n" +
+                "                \"width\": \"100%\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#i3vmt\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"padding\": \"10px\",\n" +
+                "                \"width\": \"218.7px\",\n" +
+                "                \"en\": \"\",\n" +
+                "                \"height\": \"53px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#ifxe4\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"271px\",\n" +
+                "                \"en\": \"\"\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"id\": \"Hello!\"\n" +
+                "}";
+        mockMvc.perform(put("/note/saveTempCollaborationNote/" + collaborationNote.getId())
+                        .headers(httpHeaders)
+                        .content(content))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res").value("success"));
+        if (noteRepository.findById(collaborationNote.getId()).get().getContent() == null || !noteRepository.findById(collaborationNote.getId()).get().getContent().equals(content)) {
+            throw new Exception("Note Test : collaboration note's content does not save.");
+        }
+    }
+
+    @Test
+    public void testSaveTempCollaborationNoteWithWrongType() throws Exception {
+        Note collaborationNote = createCollaborationNote();
+        String content = "\"{\n" +
+                "    \"components\": [\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i60c\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"Cell\",\n" +
+                "                    \"draggable\": \".gjs-row\",\n" +
+                "                    \"resizable\": {\n" +
+                "                        \"tl\": 0,\n" +
+                "                        \"tc\": 0,\n" +
+                "                        \"tr\": 0,\n" +
+                "                        \"cl\": 0,\n" +
+                "                        \"cr\": 1,\n" +
+                "                        \"bl\": 0,\n" +
+                "                        \"br\": 0,\n" +
+                "                        \"minDim\": 1,\n" +
+                "                        \"bc\": 0,\n" +
+                "                        \"currentUnit\": 1,\n" +
+                "                        \"step\": 0.2\n" +
+                "                    },\n" +
+                "                    \"classes\": [\n" +
+                "                        {\n" +
+                "                            \"name\": \"gjs-cell\",\n" +
+                "                            \"private\": 1\n" +
+                "                        }\n" +
+                "                    ],\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"i3hy\"\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i22h\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"Cell\",\n" +
+                "                    \"draggable\": \".gjs-row\",\n" +
+                "                    \"resizable\": {\n" +
+                "                        \"tl\": 0,\n" +
+                "                        \"tc\": 0,\n" +
+                "                        \"tr\": 0,\n" +
+                "                        \"cl\": 0,\n" +
+                "                        \"cr\": 1,\n" +
+                "                        \"bl\": 0,\n" +
+                "                        \"br\": 0,\n" +
+                "                        \"minDim\": 1,\n" +
+                "                        \"bc\": 0,\n" +
+                "                        \"currentUnit\": 1,\n" +
+                "                        \"step\": 0.2\n" +
+                "                    },\n" +
+                "                    \"classes\": [\n" +
+                "                        {\n" +
+                "                            \"name\": \"gjs-cell\",\n" +
+                "                            \"private\": 1\n" +
+                "                        }\n" +
+                "                    ],\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"ityj\"\n" +
+                "                    },\n" +
+                "                    \"components\": [\n" +
+                "                        {\n" +
+                "                            \"type\": \"text\",\n" +
+                "                            \"attributes\": {\n" +
+                "                                \"id\": \"io9m\"\n" +
+                "                            },\n" +
+                "                            \"activeOnRender\": 1,\n" +
+                "                            \"components\": [\n" +
+                "                                {\n" +
+                "                                    \"type\": \"textnode\",\n" +
+                "                                    \"content\": \"Insert your text here\",\n" +
+                "                                    \"attributes\": {\n" +
+                "                                        \"id\": \"i0mjj\"\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            ]\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"tooltip\",\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component\",\n" +
+                "                    \"label\": \"tooltip-component\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component--empty\",\n" +
+                "                    \"label\": \"tooltip-component--empty\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"ifxe4\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"idk6\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"Cell\",\n" +
+                "                    \"draggable\": \".gjs-row\",\n" +
+                "                    \"resizable\": {\n" +
+                "                        \"tl\": 0,\n" +
+                "                        \"tc\": 0,\n" +
+                "                        \"tr\": 0,\n" +
+                "                        \"cl\": 0,\n" +
+                "                        \"cr\": 1,\n" +
+                "                        \"bl\": 0,\n" +
+                "                        \"br\": 0,\n" +
+                "                        \"minDim\": 1,\n" +
+                "                        \"bc\": 0,\n" +
+                "                        \"currentUnit\": 1,\n" +
+                "                        \"step\": 0.2\n" +
+                "                    },\n" +
+                "                    \"classes\": [\n" +
+                "                        {\n" +
+                "                            \"name\": \"gjs-cell\",\n" +
+                "                            \"private\": 1\n" +
+                "                        }\n" +
+                "                    ],\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"iqml\"\n" +
+                "                    },\n" +
+                "                    \"components\": [\n" +
+                "                        {\n" +
+                "                            \"type\": \"text\",\n" +
+                "                            \"attributes\": {\n" +
+                "                                \"id\": \"iksg\"\n" +
+                "                            },\n" +
+                "                            \"components\": [\n" +
+                "                                {\n" +
+                "                                    \"type\": \"textnode\",\n" +
+                "                                    \"content\": \"Insert your text here\",\n" +
+                "                                    \"attributes\": {\n" +
+                "                                        \"id\": \"i4pqy\"\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            ]\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"link\",\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"il7wy\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"type\": \"textnode\",\n" +
+                "                    \"content\": \"Google\",\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"ipcrc\"\n" +
+                "                    }\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"tagName\": \"br\",\n" +
+                "                    \"void\": true,\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"iw366\"\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i5l4r\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"Cell\",\n" +
+                "                    \"draggable\": \".gjs-row\",\n" +
+                "                    \"resizable\": {\n" +
+                "                        \"tl\": 0,\n" +
+                "                        \"tc\": 0,\n" +
+                "                        \"tr\": 0,\n" +
+                "                        \"cl\": 0,\n" +
+                "                        \"cr\": 1,\n" +
+                "                        \"bl\": 0,\n" +
+                "                        \"br\": 0,\n" +
+                "                        \"minDim\": 1,\n" +
+                "                        \"bc\": 0,\n" +
+                "                        \"currentUnit\": 1,\n" +
+                "                        \"step\": 0.2\n" +
+                "                    },\n" +
+                "                    \"classes\": [\n" +
+                "                        {\n" +
+                "                            \"name\": \"gjs-cell\",\n" +
+                "                            \"private\": 1\n" +
+                "                        }\n" +
+                "                    ],\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"iaujk\"\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"istun\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"Code\",\n" +
+                "            \"classes\": [\n" +
+                "                \"code-container\"\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"iuu8s\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"image\",\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i60rb\"\n" +
+                "            },\n" +
+                "            \"src\": \"https://i.imgur.com/cbRf8jz.jpg\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"tooltip\",\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component\",\n" +
+                "                    \"label\": \"tooltip-component\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i3a7d\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"type\": \"text\",\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"i3vmt\"\n" +
+                "                    },\n" +
+                "                    \"components\": [\n" +
+                "                        {\n" +
+                "                            \"type\": \"textnode\",\n" +
+                "                            \"content\": \"Tooltip!\",\n" +
+                "                            \"attributes\": {\n" +
+                "                                \"id\": \"ihjt2\"\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"style\": [\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"display\": \"table\",\n" +
+                "                \"padding-top\": \"10px\",\n" +
+                "                \"padding-right\": \"10px\",\n" +
+                "                \"padding-bottom\": \"10px\",\n" +
+                "                \"padding-left\": \"10px\",\n" +
+                "                \"width\": \"100%\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-cell\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"100%\",\n" +
+                "                \"display\": \"block\"\n" +
+                "            },\n" +
+                "            \"mediaText\": \"(max-width: 768px)\",\n" +
+                "            \"atRuleType\": \"media\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"gjs-cell30\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"100%\",\n" +
+                "                \"display\": \"block\"\n" +
+                "            },\n" +
+                "            \"mediaText\": \"(max-width: 768px)\",\n" +
+                "            \"atRuleType\": \"media\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"gjs-cell70\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"100%\",\n" +
+                "                \"display\": \"block\"\n" +
+                "            },\n" +
+                "            \"mediaText\": \"(max-width: 768px)\",\n" +
+                "            \"atRuleType\": \"media\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-cell\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"8%\",\n" +
+                "                \"display\": \"table-cell\",\n" +
+                "                \"height\": \"75px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#io9m\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"padding\": \"10px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#iksg\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"padding\": \"10px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#il7wy\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"color\": \"#d983a6\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#i60rb\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"color\": \"black\",\n" +
+                "                \"width\": \"348px\",\n" +
+                "                \"height\": \"218px\",\n" +
+                "                \"en\": \"\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"text-align\": \"center\",\n" +
+                "                \"font-family\": \"Helvetica, serif\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown-block\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"display\": \"inline-block\",\n" +
+                "                \"margin-top\": \"0px\",\n" +
+                "                \"margin-right\": \"10px\",\n" +
+                "                \"margin-bottom\": \"0px\",\n" +
+                "                \"margin-left\": \"10px\",\n" +
+                "                \"padding-top\": \"10px\",\n" +
+                "                \"padding-right\": \"10px\",\n" +
+                "                \"padding-bottom\": \"10px\",\n" +
+                "                \"padding-left\": \"10px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown-digit\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"font-size\": \"5rem\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown-endtext\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"font-size\": \"5rem\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown-cont\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"display\": \"inline-block\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component\",\n" +
+                "                    \"label\": \"tooltip-component\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"position\": \"relative\",\n" +
+                "                \"display\": \"inline-block\",\n" +
+                "                \"vertical-align\": \"top\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component--empty\",\n" +
+                "                    \"label\": \"tooltip-component--empty\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"50px\",\n" +
+                "                \"height\": \"50px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component__body\",\n" +
+                "                    \"label\": \"tooltip-component__body\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"font-family\": \"Helvetica, sans-serif\",\n" +
+                "                \"background-image\": \"initial\",\n" +
+                "                \"background-position-x\": \"initial\",\n" +
+                "                \"background-position-y\": \"initial\",\n" +
+                "                \"background-size\": \"initial\",\n" +
+                "                \"background-repeat-x\": \"initial\",\n" +
+                "                \"background-repeat-y\": \"initial\",\n" +
+                "                \"background-attachment\": \"initial\",\n" +
+                "                \"background-origin\": \"initial\",\n" +
+                "                \"background-clip\": \"initial\",\n" +
+                "                \"background-color\": \"rgba(55, 61, 73, 0.95)\",\n" +
+                "                \"border-top-left-radius\": \"3px\",\n" +
+                "                \"border-top-right-radius\": \"3px\",\n" +
+                "                \"border-bottom-right-radius\": \"3px\",\n" +
+                "                \"border-bottom-left-radius\": \"3px\",\n" +
+                "                \"bottom\": \"100%\",\n" +
+                "                \"color\": \"rgb(255, 255, 255)\",\n" +
+                "                \"content\": \"attr(data-tooltip)\",\n" +
+                "                \"display\": \"block\",\n" +
+                "                \"font-size\": \"12px\",\n" +
+                "                \"left\": \"50%\",\n" +
+                "                \"line-height\": \"normal\",\n" +
+                "                \"max-width\": \"32rem\",\n" +
+                "                \"opacity\": \"0\",\n" +
+                "                \"overflow-x\": \"hidden\",\n" +
+                "                \"overflow-y\": \"hidden\",\n" +
+                "                \"padding-top\": \"8px\",\n" +
+                "                \"padding-right\": \"16px\",\n" +
+                "                \"padding-bottom\": \"8px\",\n" +
+                "                \"padding-left\": \"16px\",\n" +
+                "                \"pointer-events\": \"none\",\n" +
+                "                \"position\": \"absolute\",\n" +
+                "                \"text-overflow\": \"ellipsis\",\n" +
+                "                \"transform\": \"translate(-50%, 0px)\",\n" +
+                "                \"transition-duration\": \"0.25s, 0.25s\",\n" +
+                "                \"transition-timing-function\": \"ease, ease\",\n" +
+                "                \"transition-delay\": \"0s, 0s\",\n" +
+                "                \"transition-property\": \"opacity, transform\",\n" +
+                "                \"white-space\": \"nowrap\",\n" +
+                "                \"box-sizing\": \"border-box\",\n" +
+                "                \"z-index\": \"10\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-visible=\\\"true\\\"]::after, [data-tooltip]:focus::after, [data-tooltip]:hover::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"opacity\": \"1\",\n" +
+                "                \"transform\": \"translate(-50%, -0.5rem)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"right\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"bottom\": \"50%\",\n" +
+                "                \"left\": \"100%\",\n" +
+                "                \"transform\": \"translate(0px, 50%)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"right\\\"]:focus::after, [data-tooltip-pos=\\\"right\\\"]:hover::after, [data-tooltip-visible=\\\"true\\\"][data-tooltip-pos=\\\"right\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"transform\": \"translate(0.5rem, 50%)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"bottom\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"bottom\": \"auto\",\n" +
+                "                \"top\": \"100%\",\n" +
+                "                \"transform\": \"translate(-50%, 0px)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"bottom\\\"]:focus::after, [data-tooltip-pos=\\\"bottom\\\"]:hover::after, [data-tooltip-visible=\\\"true\\\"][data-tooltip-pos=\\\"bottom\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"transform\": \"translate(-50%, 0.5rem)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"left\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"bottom\": \"50%\",\n" +
+                "                \"left\": \"auto\",\n" +
+                "                \"right\": \"100%\",\n" +
+                "                \"transform\": \"translate(0px, 50%)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"left\\\"]:focus::after, [data-tooltip-pos=\\\"left\\\"]:hover::after, [data-tooltip-visible=\\\"true\\\"][data-tooltip-pos=\\\"left\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"transform\": \"translate(-0.5rem, 50%)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-length=\\\"small\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"white-space\": \"normal\",\n" +
+                "                \"width\": \"80px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-length=\\\"medium\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"white-space\": \"normal\",\n" +
+                "                \"width\": \"150px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-length=\\\"large\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"white-space\": \"normal\",\n" +
+                "                \"width\": \"300px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-length=\\\"fit\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"white-space\": \"normal\",\n" +
+                "                \"width\": \"100%\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#i3vmt\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"padding\": \"10px\",\n" +
+                "                \"width\": \"218.7px\",\n" +
+                "                \"en\": \"\",\n" +
+                "                \"height\": \"53px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#ifxe4\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"271px\",\n" +
+                "                \"en\": \"\"\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"id\": \"Hello!\"\n" +
+                "}\"";
+        mockMvc.perform(put("/note/saveTempCollaborationNote/" + collaborationNote.getId())
+                        .headers(httpHeaders)
+                        .content(content))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.res").value("Wrong type of Request Body"));
+    }
+
+    @Test
+    public void testLoadTempCollaborationNote() throws Exception {
+        Note collaborationNote = createCollaborationNote();
+        String content = "{\n" +
+                "    \"components\": [\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i60c\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"Cell\",\n" +
+                "                    \"draggable\": \".gjs-row\",\n" +
+                "                    \"resizable\": {\n" +
+                "                        \"tl\": 0,\n" +
+                "                        \"tc\": 0,\n" +
+                "                        \"tr\": 0,\n" +
+                "                        \"cl\": 0,\n" +
+                "                        \"cr\": 1,\n" +
+                "                        \"bl\": 0,\n" +
+                "                        \"br\": 0,\n" +
+                "                        \"minDim\": 1,\n" +
+                "                        \"bc\": 0,\n" +
+                "                        \"currentUnit\": 1,\n" +
+                "                        \"step\": 0.2\n" +
+                "                    },\n" +
+                "                    \"classes\": [\n" +
+                "                        {\n" +
+                "                            \"name\": \"gjs-cell\",\n" +
+                "                            \"private\": 1\n" +
+                "                        }\n" +
+                "                    ],\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"i3hy\"\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i22h\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"Cell\",\n" +
+                "                    \"draggable\": \".gjs-row\",\n" +
+                "                    \"resizable\": {\n" +
+                "                        \"tl\": 0,\n" +
+                "                        \"tc\": 0,\n" +
+                "                        \"tr\": 0,\n" +
+                "                        \"cl\": 0,\n" +
+                "                        \"cr\": 1,\n" +
+                "                        \"bl\": 0,\n" +
+                "                        \"br\": 0,\n" +
+                "                        \"minDim\": 1,\n" +
+                "                        \"bc\": 0,\n" +
+                "                        \"currentUnit\": 1,\n" +
+                "                        \"step\": 0.2\n" +
+                "                    },\n" +
+                "                    \"classes\": [\n" +
+                "                        {\n" +
+                "                            \"name\": \"gjs-cell\",\n" +
+                "                            \"private\": 1\n" +
+                "                        }\n" +
+                "                    ],\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"ityj\"\n" +
+                "                    },\n" +
+                "                    \"components\": [\n" +
+                "                        {\n" +
+                "                            \"type\": \"text\",\n" +
+                "                            \"attributes\": {\n" +
+                "                                \"id\": \"io9m\"\n" +
+                "                            },\n" +
+                "                            \"activeOnRender\": 1,\n" +
+                "                            \"components\": [\n" +
+                "                                {\n" +
+                "                                    \"type\": \"textnode\",\n" +
+                "                                    \"content\": \"Insert your text here\",\n" +
+                "                                    \"attributes\": {\n" +
+                "                                        \"id\": \"i0mjj\"\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            ]\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"tooltip\",\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component\",\n" +
+                "                    \"label\": \"tooltip-component\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component--empty\",\n" +
+                "                    \"label\": \"tooltip-component--empty\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"ifxe4\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"idk6\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"Cell\",\n" +
+                "                    \"draggable\": \".gjs-row\",\n" +
+                "                    \"resizable\": {\n" +
+                "                        \"tl\": 0,\n" +
+                "                        \"tc\": 0,\n" +
+                "                        \"tr\": 0,\n" +
+                "                        \"cl\": 0,\n" +
+                "                        \"cr\": 1,\n" +
+                "                        \"bl\": 0,\n" +
+                "                        \"br\": 0,\n" +
+                "                        \"minDim\": 1,\n" +
+                "                        \"bc\": 0,\n" +
+                "                        \"currentUnit\": 1,\n" +
+                "                        \"step\": 0.2\n" +
+                "                    },\n" +
+                "                    \"classes\": [\n" +
+                "                        {\n" +
+                "                            \"name\": \"gjs-cell\",\n" +
+                "                            \"private\": 1\n" +
+                "                        }\n" +
+                "                    ],\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"iqml\"\n" +
+                "                    },\n" +
+                "                    \"components\": [\n" +
+                "                        {\n" +
+                "                            \"type\": \"text\",\n" +
+                "                            \"attributes\": {\n" +
+                "                                \"id\": \"iksg\"\n" +
+                "                            },\n" +
+                "                            \"components\": [\n" +
+                "                                {\n" +
+                "                                    \"type\": \"textnode\",\n" +
+                "                                    \"content\": \"Insert your text here\",\n" +
+                "                                    \"attributes\": {\n" +
+                "                                        \"id\": \"i4pqy\"\n" +
+                "                                    }\n" +
+                "                                }\n" +
+                "                            ]\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"link\",\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"il7wy\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"type\": \"textnode\",\n" +
+                "                    \"content\": \"Google\",\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"ipcrc\"\n" +
+                "                    }\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"tagName\": \"br\",\n" +
+                "                    \"void\": true,\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"iw366\"\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i5l4r\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"Cell\",\n" +
+                "                    \"draggable\": \".gjs-row\",\n" +
+                "                    \"resizable\": {\n" +
+                "                        \"tl\": 0,\n" +
+                "                        \"tc\": 0,\n" +
+                "                        \"tr\": 0,\n" +
+                "                        \"cl\": 0,\n" +
+                "                        \"cr\": 1,\n" +
+                "                        \"bl\": 0,\n" +
+                "                        \"br\": 0,\n" +
+                "                        \"minDim\": 1,\n" +
+                "                        \"bc\": 0,\n" +
+                "                        \"currentUnit\": 1,\n" +
+                "                        \"step\": 0.2\n" +
+                "                    },\n" +
+                "                    \"classes\": [\n" +
+                "                        {\n" +
+                "                            \"name\": \"gjs-cell\",\n" +
+                "                            \"private\": 1\n" +
+                "                        }\n" +
+                "                    ],\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"iaujk\"\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\": \"Row\",\n" +
+                "            \"droppable\": \".gjs-cell\",\n" +
+                "            \"resizable\": {\n" +
+                "                \"tl\": 0,\n" +
+                "                \"tc\": 0,\n" +
+                "                \"tr\": 0,\n" +
+                "                \"cl\": 0,\n" +
+                "                \"cr\": 0,\n" +
+                "                \"bl\": 0,\n" +
+                "                \"br\": 0,\n" +
+                "                \"minDim\": 1\n" +
+                "            },\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"istun\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"Code\",\n" +
+                "            \"classes\": [\n" +
+                "                \"code-container\"\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"iuu8s\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"image\",\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i60rb\"\n" +
+                "            },\n" +
+                "            \"src\": \"https://i.imgur.com/cbRf8jz.jpg\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"type\": \"tooltip\",\n" +
+                "            \"classes\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component\",\n" +
+                "                    \"label\": \"tooltip-component\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"attributes\": {\n" +
+                "                \"id\": \"i3a7d\"\n" +
+                "            },\n" +
+                "            \"components\": [\n" +
+                "                {\n" +
+                "                    \"type\": \"text\",\n" +
+                "                    \"attributes\": {\n" +
+                "                        \"id\": \"i3vmt\"\n" +
+                "                    },\n" +
+                "                    \"components\": [\n" +
+                "                        {\n" +
+                "                            \"type\": \"textnode\",\n" +
+                "                            \"content\": \"Tooltip!\",\n" +
+                "                            \"attributes\": {\n" +
+                "                                \"id\": \"ihjt2\"\n" +
+                "                            }\n" +
+                "                        }\n" +
+                "                    ]\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"style\": [\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-row\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"display\": \"table\",\n" +
+                "                \"padding-top\": \"10px\",\n" +
+                "                \"padding-right\": \"10px\",\n" +
+                "                \"padding-bottom\": \"10px\",\n" +
+                "                \"padding-left\": \"10px\",\n" +
+                "                \"width\": \"100%\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-cell\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"100%\",\n" +
+                "                \"display\": \"block\"\n" +
+                "            },\n" +
+                "            \"mediaText\": \"(max-width: 768px)\",\n" +
+                "            \"atRuleType\": \"media\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"gjs-cell30\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"100%\",\n" +
+                "                \"display\": \"block\"\n" +
+                "            },\n" +
+                "            \"mediaText\": \"(max-width: 768px)\",\n" +
+                "            \"atRuleType\": \"media\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"gjs-cell70\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"100%\",\n" +
+                "                \"display\": \"block\"\n" +
+                "            },\n" +
+                "            \"mediaText\": \"(max-width: 768px)\",\n" +
+                "            \"atRuleType\": \"media\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"gjs-cell\",\n" +
+                "                    \"private\": 1\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"8%\",\n" +
+                "                \"display\": \"table-cell\",\n" +
+                "                \"height\": \"75px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#io9m\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"padding\": \"10px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#iksg\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"padding\": \"10px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#il7wy\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"color\": \"#d983a6\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#i60rb\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"color\": \"black\",\n" +
+                "                \"width\": \"348px\",\n" +
+                "                \"height\": \"218px\",\n" +
+                "                \"en\": \"\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"text-align\": \"center\",\n" +
+                "                \"font-family\": \"Helvetica, serif\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown-block\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"display\": \"inline-block\",\n" +
+                "                \"margin-top\": \"0px\",\n" +
+                "                \"margin-right\": \"10px\",\n" +
+                "                \"margin-bottom\": \"0px\",\n" +
+                "                \"margin-left\": \"10px\",\n" +
+                "                \"padding-top\": \"10px\",\n" +
+                "                \"padding-right\": \"10px\",\n" +
+                "                \"padding-bottom\": \"10px\",\n" +
+                "                \"padding-left\": \"10px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown-digit\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"font-size\": \"5rem\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown-endtext\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"font-size\": \"5rem\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"countdown-cont\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"display\": \"inline-block\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component\",\n" +
+                "                    \"label\": \"tooltip-component\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"position\": \"relative\",\n" +
+                "                \"display\": \"inline-block\",\n" +
+                "                \"vertical-align\": \"top\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component--empty\",\n" +
+                "                    \"label\": \"tooltip-component--empty\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"50px\",\n" +
+                "                \"height\": \"50px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"tooltip-component__body\",\n" +
+                "                    \"label\": \"tooltip-component__body\",\n" +
+                "                    \"type\": 1,\n" +
+                "                    \"active\": true,\n" +
+                "                    \"private\": 1,\n" +
+                "                    \"protected\": false,\n" +
+                "                    \"_undo\": true\n" +
+                "                }\n" +
+                "            ],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"font-family\": \"Helvetica, sans-serif\",\n" +
+                "                \"background-image\": \"initial\",\n" +
+                "                \"background-position-x\": \"initial\",\n" +
+                "                \"background-position-y\": \"initial\",\n" +
+                "                \"background-size\": \"initial\",\n" +
+                "                \"background-repeat-x\": \"initial\",\n" +
+                "                \"background-repeat-y\": \"initial\",\n" +
+                "                \"background-attachment\": \"initial\",\n" +
+                "                \"background-origin\": \"initial\",\n" +
+                "                \"background-clip\": \"initial\",\n" +
+                "                \"background-color\": \"rgba(55, 61, 73, 0.95)\",\n" +
+                "                \"border-top-left-radius\": \"3px\",\n" +
+                "                \"border-top-right-radius\": \"3px\",\n" +
+                "                \"border-bottom-right-radius\": \"3px\",\n" +
+                "                \"border-bottom-left-radius\": \"3px\",\n" +
+                "                \"bottom\": \"100%\",\n" +
+                "                \"color\": \"rgb(255, 255, 255)\",\n" +
+                "                \"content\": \"attr(data-tooltip)\",\n" +
+                "                \"display\": \"block\",\n" +
+                "                \"font-size\": \"12px\",\n" +
+                "                \"left\": \"50%\",\n" +
+                "                \"line-height\": \"normal\",\n" +
+                "                \"max-width\": \"32rem\",\n" +
+                "                \"opacity\": \"0\",\n" +
+                "                \"overflow-x\": \"hidden\",\n" +
+                "                \"overflow-y\": \"hidden\",\n" +
+                "                \"padding-top\": \"8px\",\n" +
+                "                \"padding-right\": \"16px\",\n" +
+                "                \"padding-bottom\": \"8px\",\n" +
+                "                \"padding-left\": \"16px\",\n" +
+                "                \"pointer-events\": \"none\",\n" +
+                "                \"position\": \"absolute\",\n" +
+                "                \"text-overflow\": \"ellipsis\",\n" +
+                "                \"transform\": \"translate(-50%, 0px)\",\n" +
+                "                \"transition-duration\": \"0.25s, 0.25s\",\n" +
+                "                \"transition-timing-function\": \"ease, ease\",\n" +
+                "                \"transition-delay\": \"0s, 0s\",\n" +
+                "                \"transition-property\": \"opacity, transform\",\n" +
+                "                \"white-space\": \"nowrap\",\n" +
+                "                \"box-sizing\": \"border-box\",\n" +
+                "                \"z-index\": \"10\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-visible=\\\"true\\\"]::after, [data-tooltip]:focus::after, [data-tooltip]:hover::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"opacity\": \"1\",\n" +
+                "                \"transform\": \"translate(-50%, -0.5rem)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"right\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"bottom\": \"50%\",\n" +
+                "                \"left\": \"100%\",\n" +
+                "                \"transform\": \"translate(0px, 50%)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"right\\\"]:focus::after, [data-tooltip-pos=\\\"right\\\"]:hover::after, [data-tooltip-visible=\\\"true\\\"][data-tooltip-pos=\\\"right\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"transform\": \"translate(0.5rem, 50%)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"bottom\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"bottom\": \"auto\",\n" +
+                "                \"top\": \"100%\",\n" +
+                "                \"transform\": \"translate(-50%, 0px)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"bottom\\\"]:focus::after, [data-tooltip-pos=\\\"bottom\\\"]:hover::after, [data-tooltip-visible=\\\"true\\\"][data-tooltip-pos=\\\"bottom\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"transform\": \"translate(-50%, 0.5rem)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"left\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"bottom\": \"50%\",\n" +
+                "                \"left\": \"auto\",\n" +
+                "                \"right\": \"100%\",\n" +
+                "                \"transform\": \"translate(0px, 50%)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-pos=\\\"left\\\"]:focus::after, [data-tooltip-pos=\\\"left\\\"]:hover::after, [data-tooltip-visible=\\\"true\\\"][data-tooltip-pos=\\\"left\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"transform\": \"translate(-0.5rem, 50%)\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-length=\\\"small\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"white-space\": \"normal\",\n" +
+                "                \"width\": \"80px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-length=\\\"medium\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"white-space\": \"normal\",\n" +
+                "                \"width\": \"150px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-length=\\\"large\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"white-space\": \"normal\",\n" +
+                "                \"width\": \"300px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [],\n" +
+                "            \"selectorsAdd\": \"[data-tooltip-length=\\\"fit\\\"]::after\",\n" +
+                "            \"style\": {\n" +
+                "                \"white-space\": \"normal\",\n" +
+                "                \"width\": \"100%\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#i3vmt\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"padding\": \"10px\",\n" +
+                "                \"width\": \"218.7px\",\n" +
+                "                \"en\": \"\",\n" +
+                "                \"height\": \"53px\"\n" +
+                "            }\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"selectors\": [\n" +
+                "                \"#ifxe4\"\n" +
+                "            ],\n" +
+                "            \"style\": {\n" +
+                "                \"width\": \"271px\",\n" +
+                "                \"en\": \"\"\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"id\": \"Hello!\"\n" +
+                "}";
+        collaborationNote.setContent(content);
+        noteRepository.save(collaborationNote);
+        mockMvc.perform(get("/note/loadTempCollaborationNote/" + collaborationNote.getId())
+                        .headers(httpHeaders))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res.components").exists())
+                .andExpect(jsonPath("$.res.style").exists())
+                .andExpect(jsonPath("$.res.id").exists());
     }
 
     @AfterEach

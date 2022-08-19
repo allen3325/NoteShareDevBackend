@@ -18,6 +18,7 @@ import ntou.notesharedevbackend.repository.NoteRepository;
 import ntou.notesharedevbackend.repository.PlagiarismDictionaryRepository;
 import ntou.notesharedevbackend.searchModule.entity.NoteBasicReturn;
 import ntou.notesharedevbackend.searchModule.entity.Pages;
+import ntou.notesharedevbackend.tagGeneration.service.*;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.entity.UserObj;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
@@ -59,6 +60,9 @@ public class NoteService {
     @Autowired
     @Lazy
     private PlagiarismService plagiarismService;
+    @Autowired
+    @Lazy
+    private TagService tagService;
     @Autowired
     @Lazy
     private PlagiarismDictionaryRepository plagiarismDictionaryRepository;
@@ -131,6 +135,7 @@ public class NoteService {
         note.setComments(new ArrayList<Comment>());
         note.setPrice(request.getPrice());
         note.setPublic(request.getPublic());
+        note.setPublishDate(new Date());//建立時間
         note.setSubmit(request.getSubmit());
         note.setQuotable(request.getQuotable());
         note.setTag(new ArrayList<String>());
@@ -366,17 +371,23 @@ public class NoteService {
         note.setPublic(request.getPublic());
         note.setSubmit(request.getSubmit());
         note.setQuotable(request.getQuotable());
-        note.setTag(request.getTag());
+//        note.setTag(request.getTag());
+        note.setTag(tagService.updateTags(request.getTag(), request.getId()));
         note.setHiddenTag(request.getHiddenTag());
         note.setVersion(request.getVersion());
         note.setContributors(request.getContributors());
         note.setPostID(request.getPostID());
         note.setReference(request.getReference());
         note.setBest(request.getBest());
-        note.setPublishDate(request.getPublishDate());
+        if (!oldNote.getPublic() && request.getPublic()) {//private -> public
+            note.setPublishDate(new Date());
+        } else {// others keep old note publishDate
+            note.setPublishDate(oldNote.getPublishDate());
+        }
         note.setDescription(request.getDescription());
         note.setClickDate(oldNote.getClickDate());
         note.setClickNum(note.getClickDate().size());
+        note.setContent(request.getContent());
         return noteRepository.save(note);
     }
 
@@ -680,7 +691,7 @@ public class NoteService {
             similarNotesID = null;
             // 3. run
             HashMap<String, Float> result = new HashMap<>();
-            if(mainNote.getVersion().size()==0){
+            if (mainNote.getVersion().size() == 0) {
                 MessageReturn messageReturn = getMessageReturnFromPlagiarism("There is no content in the note. Please" +
                         " create one", noteID);
                 messagingTemplate.convertAndSendToUser(author, "/topic/private-messages", messageReturn);
@@ -837,4 +848,13 @@ public class NoteService {
         return getNote(id);
     }
 
+    public void saveTempCollaborationNote(String noteID, String content) {
+        Note note = getNote(noteID);
+        note.setContent(content);
+        replaceNote(note, note.getId());
+    }
+
+    public String loadTempCollaborationNote(String noteID) {
+        return getNote(noteID).getContent();
+    }
 }

@@ -44,6 +44,7 @@ public class TagController {
         return ResponseEntity.ok(res);
     }
 
+    @Operation(summary = "update tags", description = "更新tags，並將新tags加入字典(注意Request body只有一個key名稱是 : tags)")
     @PutMapping("/updateTags/{noteID}")
     public ResponseEntity<Object> updateTags(@PathVariable("noteID") String noteID,
                                              @RequestBody Map<String, ArrayList<String>> request) {
