@@ -52,6 +52,7 @@ public class Note {
     private String quotePointResult;
     private ArrayList<Long> clickDate;
     private Integer clickNum;
+    private String content;
 
 
     // constructors
@@ -60,6 +61,14 @@ public class Note {
 
 
     // getter and setter
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 
     public String getPlagiarismPointResult() {
         return plagiarismPointResult;
