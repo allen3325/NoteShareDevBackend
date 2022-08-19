@@ -522,7 +522,7 @@ public class FolderTest {
         //修改位置
         JSONObject request = new JSONObject()
                 .put("path", "/Alan")
-                .put("parent", null);
+                .put("parent", JSONObject.NULL);
         mockMvc.perform(put("/folder/save/" + appUser.getEmail() + "/" + folder.getId())
                         .headers(httpHeaders)
                         .content(request.toString()))
