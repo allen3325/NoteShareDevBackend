@@ -20,9 +20,6 @@ public class DownloadConfiguration {
                 Files.createFile(Paths.get(htmlPath));
                 Files.createFile(Paths.get(cssPath));
             }
-            // erase both files
-            new PrintWriter(htmlPath).close();
-            new PrintWriter(cssPath).close();
         };
     }
 }
