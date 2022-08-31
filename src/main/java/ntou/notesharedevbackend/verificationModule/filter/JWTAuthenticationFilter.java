@@ -1,7 +1,7 @@
 package ntou.notesharedevbackend.verificationModule.filter;
 
-import ntou.notesharedevbackend.verificationModule.entity.service.JWTService;
-import ntou.notesharedevbackend.verificationModule.entity.service.SpringUserService;
+import ntou.notesharedevbackend.verificationModule.service.JWTService;
+import ntou.notesharedevbackend.verificationModule.service.SpringUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
