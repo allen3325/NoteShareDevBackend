@@ -43,7 +43,7 @@ public class JWTService {
 
         // 2. 產生JWT
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR,3);
+        calendar.add(Calendar.HOUR,24);
 
         // generate Claims obj into JWT's payload
         Claims claims = Jwts.claims();
