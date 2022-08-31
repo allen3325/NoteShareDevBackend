@@ -2,7 +2,7 @@ package ntou.notesharedevbackend.verificationModule.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.verificationModule.entity.AuthRequest;
-import ntou.notesharedevbackend.verificationModule.entity.service.MailService;
+import ntou.notesharedevbackend.verificationModule.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
