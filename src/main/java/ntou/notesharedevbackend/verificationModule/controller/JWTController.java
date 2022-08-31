@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
 import ntou.notesharedevbackend.userModule.service.AppUserService;
 import ntou.notesharedevbackend.verificationModule.entity.AuthRequest;
-import ntou.notesharedevbackend.verificationModule.entity.service.JWTService;
+import ntou.notesharedevbackend.verificationModule.service.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;

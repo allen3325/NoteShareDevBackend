@@ -1,4 +1,4 @@
-package ntou.notesharedevbackend.verificationModule.entity.service;
+package ntou.notesharedevbackend.verificationModule.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
