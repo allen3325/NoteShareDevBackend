@@ -299,8 +299,7 @@ public class SearchService {
         List<Note> notes = new ArrayList<>();
         Set<String> noteIdHashSet = new HashSet<>();
         for (String tag : tags) {
-            String[] tagArr = new String[] {tag};
-            Set<String> findNotesId = noteRepository.findAllByTags(tagArr);
+            Set<String> findNotesId = noteRepository.findAllByTagRegex(tag);
             noteIdHashSet.addAll(findNotesId);
         }
 
