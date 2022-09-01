@@ -84,10 +84,10 @@ public class AppUserService {
         appUser.setUnreadMessageCount(0);
         userRepository.insert(appUser);
         // create Buy and Favorite and default folder
-        createFolderAtRoot(appUser.getEmail(), "Buy");
-        createFolderAtRoot(appUser.getEmail(), "Favorite");
-        createFolderAtRoot(appUser.getEmail(), "Folder");
-        createFolderAtRoot(appUser.getEmail(), "Temp Reward Note");//放未提交的reward note
+        createFolderAtRoot(appUser.getEmail(), "Owned");
+        createFolderAtRoot(appUser.getEmail(), "Favorites");
+        createFolderAtRoot(appUser.getEmail(), "Folders");
+        createFolderAtRoot(appUser.getEmail(), "Draft Reward Notes");//放未提交的reward note
         appUser = getUserById(appUser.getId());
         return appUser;
     }
