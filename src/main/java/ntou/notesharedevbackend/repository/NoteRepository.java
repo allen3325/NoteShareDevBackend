@@ -20,6 +20,9 @@ public interface NoteRepository extends MongoRepository<Note, String> {
     @Query(value = "{ tag: { $all: ?0 } }", fields = "{_id : 1}")
     Set<String> findAllByTags(String[] tags);
 
+    @Query(value = "{ tag: { $regex: ?0 } }", fields = "{_id : 1}")
+    Set<String> findAllByTagRegex(String tags);
+
     @Query(value = "{ hiddenTag: { $all: ?0 } }", fields = "{_id : 1}")
     List<String> findAllByHiddenTags(Set<String> tags);
 
