@@ -1,4 +1,4 @@
-package ntou.notesharedevbackend.verificationModule.entity.service;
+package ntou.notesharedevbackend.verificationModule.service;
 
 import ntou.notesharedevbackend.exception.NotFoundException;
 import ntou.notesharedevbackend.userModule.entity.AppUser;
