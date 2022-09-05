@@ -3,6 +3,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+testingocr-331615-5004a2226dc5.json
 
 ### token ###
 tokens/
