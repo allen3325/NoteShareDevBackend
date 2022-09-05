@@ -26,4 +26,4 @@ ENV GOOGLE_APPLICATION_CREDENTIALS=/app/testingocr-331615-5004a2226dc5.json
 
 # RUN chown -R teco:tecogroup /app
 
-CMD java -jar NoteShareDevBackend-0.0.1-SNAPSHOT.jar
+CMD java -jar /app/NoteShareDevBackend-0.0.1-SNAPSHOT.jar

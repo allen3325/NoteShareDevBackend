@@ -86,4 +86,9 @@ public class JWTController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<Object> testConnection(){
+        return ResponseEntity.ok("still alive!");
+    }
 }
