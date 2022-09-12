@@ -84,8 +84,8 @@ public class SearchTest {
         appUser.setActivate(true);
         appUser.setName(name);
         appUser.setPassword(passwordEncoder.encode("1234"));
-        Folder buyFolder = createFolder("Buy", "/Buy", null, email, name);
-        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null, email, name);
+        Folder buyFolder = createFolder("Owned", "/Owned", null, email, name);
+        Folder favoriteFolder = createFolder("Favorites", "/Favorites", null, email, name);
         Folder OSFolder = createFolder("OS", "/OS", null, email, name);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());

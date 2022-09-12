@@ -61,9 +61,9 @@ public class UserTest {
         appUser.setName(name);
         appUser.setPassword(passwordEncoder.encode("1234"));
         appUser.setVerifyCode("1111");
-        Folder buyFolder = createFolder("Buy", "/Buy", null);
-        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null);
-        Folder folderFolder = createFolder("Folder", "/Folder", null);
+        Folder buyFolder = createFolder("Owned", "/Owned", null);
+        Folder favoriteFolder = createFolder("Favorites", "/Favorites", null);
+        Folder folderFolder = createFolder("Folders", "/Folders", null);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());

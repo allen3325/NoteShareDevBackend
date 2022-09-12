@@ -240,7 +240,7 @@ public class NoteController {
     public ResponseEntity<Object> removeNoteFromFolder(@PathVariable("noteID") String noteID, @PathVariable("folderID") String folderID) {
         Folder folder = noteService.removeNoteFromFolder(noteID, folderID);
         Map<String, Object> res = new HashMap<>();
-        if (folder.getFolderName().equals("Buy")) {
+        if (folder.getFolderName().equals("Owned")) {
             res.put("res", "Can't delete note which in Buy Folder");
             return ResponseEntity.status(406).body(res);
         } else if (folder.getNotes().contains(noteID)) {
