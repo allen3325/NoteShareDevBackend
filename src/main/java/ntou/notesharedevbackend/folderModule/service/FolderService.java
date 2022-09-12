@@ -44,7 +44,7 @@ public class FolderService {
     public Folder getFavoriteFolderByUserEmail(String email) {
         ArrayList<String> tmpFolderIDList = appUserService.getUserByEmail(email).getFolders();
         for (String folderID : tmpFolderIDList) {
-            if (getFolderByID(folderID).getFolderName().equals("Favorite")) {
+            if (getFolderByID(folderID).getFolderName().equals("Favorites")) {
                 return getFolderByID(folderID);
             }
         }
@@ -54,7 +54,7 @@ public class FolderService {
     public Folder getBuyFolderByUserEmail(String email) {
         ArrayList<String> tmpFolderIDList = appUserService.getUserByEmail(email).getFolders();
         for (String folderID : tmpFolderIDList) {
-            if (getFolderByID(folderID).getFolderName().equals("Buy")) {
+            if (getFolderByID(folderID).getFolderName().equals("Owned")) {
                 return getFolderByID(folderID);
             }
         }
@@ -377,7 +377,7 @@ public class FolderService {
     public Folder getFolderFolderByEmail(String email) {
         AppUser appUser = appUserService.getUserByEmail(email);
         for (String folderID : appUser.getFolders()) {
-            if (getFolderByID(folderID).getFolderName().equals("Folder")) {
+            if (getFolderByID(folderID).getFolderName().equals("Folders")) {
                 return getFolderByID(folderID);
             }
         }

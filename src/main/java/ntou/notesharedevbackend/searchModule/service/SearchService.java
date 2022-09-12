@@ -275,9 +275,9 @@ public class SearchService {
                     .collect(Collectors.toList());
 
         List<Folder> copyFolderList = new ArrayList<>(foldersLikePage);
-        copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Buy")));
-        copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Favorite")));
-        copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Folder")));
+        copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Owned")));
+        copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Favorites")));
+        copyFolderList.removeIf((Folder p) -> (p.getFolderName().equals("Folders")));
 
         List<FolderBasicReturn> folderBasicReturnList = new ArrayList<>();
         for (Folder folder : copyFolderList) {
