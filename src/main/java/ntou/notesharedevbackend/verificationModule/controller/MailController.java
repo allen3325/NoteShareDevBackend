@@ -28,13 +28,18 @@ public class MailController {
         return ResponseEntity.ok(res);
     }
 
-    @Operation(summary = "重設密碼", description = "")
+    @Operation(summary = "重設密碼", description = "status code -> 200 Success, 403 Wrong password")
     @PostMapping("/resetPassword")
     public ResponseEntity<Object> resetPassword(@Valid @RequestBody AuthRequest request) {
         Map<String,Object> res = new HashMap<>();
-        mailService.resetPasswordMail(request);
-        res.put("msg","Success");
-        return ResponseEntity.ok(res);
+        if(mailService.resetPasswordMail(request)){
+            res.put("msg","Success");
+            return ResponseEntity.ok(res);
+        }else{
+            res.put("msg","Wrong password.");
+            return ResponseEntity.status(403).body(res);
+        }
+
     }
 
     @Operation(summary = "重寄驗證碼", description = "")

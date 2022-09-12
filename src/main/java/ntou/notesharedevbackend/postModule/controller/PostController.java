@@ -118,10 +118,11 @@ public class PostController {
         if (post != null) {
             PostReturn postReturn = postService.getUserInfo(post);
             res.put("res", postReturn);
+            return ResponseEntity.ok(res);
         } else {
             res.put("msg", "can't change publish state before you got best answer.");
+            return ResponseEntity.status(409).body(res);
         }
-        return ResponseEntity.ok(res);
     }
 
     @Operation(summary = "apply become one of collaboration note's author.", description = "wantEnterUsersEmail為申請者,commentFromApplicant為留言")
@@ -130,10 +131,11 @@ public class PostController {
         Map<String, Object> res = new HashMap<>();
         if (postService.applyCollaboration(id, applicant)) {
             res.put("msg", "Success");
+            return ResponseEntity.ok(res);
         } else {
             res.put("msg", "User already apply");
+            return ResponseEntity.status(409).body(res);
         }
-        return ResponseEntity.ok(res);
     }
 
     @Operation(summary = "deny someone become one of collaboration note's author.", description = "wantEnterUsersEmail為申請者,commentFromApplicant為留言")
@@ -241,10 +243,11 @@ public class PostController {
         Map<String, String> res = new HashMap<>();
         if (postService.archivePost(postID)) {
             res.put("res", "Success");
+            return ResponseEntity.ok().body(res);
         } else {
             res.put("res", "can't change archive state before you got best answer.");
+            return ResponseEntity.status(409).body(res);
         }
-        return ResponseEntity.ok().body(res);
     }
 
     @Operation(summary = "get hot posts", description = "offset頁數，pageSize一頁顯示貼文的數量，type: collaboration, reward ,QA")

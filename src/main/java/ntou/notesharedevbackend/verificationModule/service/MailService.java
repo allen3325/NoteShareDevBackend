@@ -57,17 +57,18 @@ public class MailService {
 
         sendEmailToUser(user.getEmail(),"NoteShare Random Password",password);
     }
-    public void resetPasswordMail(AuthRequest request) {
+    public boolean resetPasswordMail(AuthRequest request) {
         AppUser user = userService.getUserByEmail(request.getEmail());
         if(passwordEncoder.matches(request.getPassword(),user.getPassword())){
             userService.replacePassword(request.getEmail(), request.getNewPassword());
         }
         else{
-            System.out.println("wrong password");
-            return;
+//            System.out.println("wrong password");
+            return false;
         }
 
         sendEmailToUser(user.getEmail(),"NoteShare Password Reset Successfully" ,"Password reset Successfully!");
+        return true;
     }
     public void resendCodeMail(String email) {
         AppUser user = userService.getUserByEmail(email);
