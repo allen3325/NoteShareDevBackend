@@ -69,8 +69,8 @@ public class CoinTest {
         appUser.setActivate(true);
         appUser.setName(name);
         appUser.setPassword(passwordEncoder.encode("1234"));
-        Folder buyFolder = createFolder("Buy", "/Buy", null);
-        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null);
+        Folder buyFolder = createFolder("Owned", "/Owned", null);
+        Folder favoriteFolder = createFolder("Favorites", "/Favorites", null);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());

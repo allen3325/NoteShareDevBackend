@@ -108,11 +108,11 @@ public class FollowTest {
         appUser.setVerifyCode("1111");
         Folder folder = new Folder();
         folder.setCreatorName(name);
-        folder.setFolderName("Folder");
+        folder.setFolderName("Folders");
         folder.setChildren(new ArrayList<>());
         folder.setNotes(new ArrayList<>());
         folder.setParent(null);
-        folder.setPath("/Folder");
+        folder.setPath("/Folders");
         folder.setFavorite(false);
         folder.setPublic(false);
         folder.getNotes().add(createNormalNote(email, name).getId());

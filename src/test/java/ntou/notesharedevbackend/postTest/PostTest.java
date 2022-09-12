@@ -85,10 +85,10 @@ public class PostTest {
         appUser.setActivate(true);
         appUser.setName(name);
         appUser.setPassword(passwordEncoder.encode("1234"));
-        Folder buyFolder = createFolder("Buy", "/Buy", null, name);
-        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null, name);
-        Folder defaultFolder = createFolder("Folder", "/Folder", null, name);
-        Folder tempRewardNote = createFolder("Temp Reward Note", "/TempRewardNote", null, name);
+        Folder buyFolder = createFolder("Owned", "/Owned", null, name);
+        Folder favoriteFolder = createFolder("Favorites", "/Favorites", null, name);
+        Folder defaultFolder = createFolder("Folders", "/Folders", null, name);
+        Folder tempRewardNote = createFolder("Draft Reward Notes", "/TempRewardNote", null, name);
         Folder collaborationFolder = createFolder("Collaboration", "/Collaboration", null, name);
         Folder OSFolder = createFolder("OS", "/OS", null, name);
         ArrayList<String> folderList = new ArrayList<>();

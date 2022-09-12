@@ -77,11 +77,11 @@ public class NoteTest {
         appUser.setActivate(true);
         appUser.setName(name);
         appUser.setPassword(passwordEncoder.encode("1234"));
-        Folder buyFolder = createFolder("Buy", "/Buy", null, name);
-        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null, name);
+        Folder buyFolder = createFolder("Owned", "/Owned", null, name);
+        Folder favoriteFolder = createFolder("Favorites", "/Favorites", null, name);
         Folder collaborationFolder = createFolder("Collaboration", "/Collaboration", null, name);
         Folder OSFolder = createFolder("OS", "/OS", null, name);
-        Folder tempRewardNoteFolder = createFolder("Temp Reward Note", "/Temp Reward Note", null, name);
+        Folder tempRewardNoteFolder = createFolder("Draft Reward Notes", "/Draft Reward Notes", null, name);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());

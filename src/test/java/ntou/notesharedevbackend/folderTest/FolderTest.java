@@ -102,10 +102,10 @@ public class FolderTest {
         appUser.setActivate(true);
         appUser.setName("Ting");
         appUser.setPassword("1234");
-        Folder buyFolder = createFolder("Buy", "/Buy", null);
-        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null);
-        Folder folderFolder = createFolder("Folder", "/Folder", null);
-        Folder tempRewardFolder = createFolder("Temp Reward Note", "/Temp Reward Note", null);
+        Folder buyFolder = createFolder("Owned", "/Owned", null);
+        Folder favoriteFolder = createFolder("Favorites", "/Favorites", null);
+        Folder folderFolder = createFolder("Folders", "/Folders", null);
+        Folder tempRewardFolder = createFolder("Draft Reward Notes", "/Draft Reward Notes", null);
         ArrayList<String> folderList = new ArrayList<>();
         folderList.add(buyFolder.getId());
         folderList.add(favoriteFolder.getId());
@@ -258,33 +258,33 @@ public class FolderTest {
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.[0].id").value(appUser.getFolders().get(0)))
-                .andExpect(jsonPath("$.res.[0].folderName").value("Buy"))
+                .andExpect(jsonPath("$.res.[0].folderName").value("Owned"))
                 .andExpect(jsonPath("$.res.[0].parent").value(folderRepository.findById(appUser.getFolders().get(0)).get().getParent()))
-                .andExpect(jsonPath("$.res.[0].path").value("/Buy"))
+                .andExpect(jsonPath("$.res.[0].path").value("/Owned"))
                 .andExpect(jsonPath("$.res.[0].public").value(false))
                 .andExpect(jsonPath("$.res[0].creatorUserObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res[0].creatorUserObj.userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res[0].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.[1].id").value(appUser.getFolders().get(1)))
-                .andExpect(jsonPath("$.res.[1].folderName").value("Favorite"))
+                .andExpect(jsonPath("$.res.[1].folderName").value("Favorites"))
                 .andExpect(jsonPath("$.res.[1].parent").value(folderRepository.findById(appUser.getFolders().get(1)).get().getParent()))
-                .andExpect(jsonPath("$.res.[1].path").value("/Favorite"))
+                .andExpect(jsonPath("$.res.[1].path").value("/Favorites"))
                 .andExpect(jsonPath("$.res.[1].public").value(false))
                 .andExpect(jsonPath("$.res[1].creatorUserObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res[1].creatorUserObj.userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res[1].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.[2].id").value(appUser.getFolders().get(2)))
-                .andExpect(jsonPath("$.res.[2].folderName").value("Folder"))
+                .andExpect(jsonPath("$.res.[2].folderName").value("Folders"))
                 .andExpect(jsonPath("$.res.[2].parent").value(IsNull.nullValue()))
-                .andExpect(jsonPath("$.res.[2].path").value("/Folder"))
+                .andExpect(jsonPath("$.res.[2].path").value("/Folders"))
                 .andExpect(jsonPath("$.res.[2].public").value(false))
                 .andExpect(jsonPath("$.res[2].creatorUserObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res[2].creatorUserObj.userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res[2].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.[3].id").value(appUser.getFolders().get(3)))
-                .andExpect(jsonPath("$.res.[3].folderName").value("Temp Reward Note"))
+                .andExpect(jsonPath("$.res.[3].folderName").value("Draft Reward Notes"))
                 .andExpect(jsonPath("$.res.[3].parent").value(IsNull.nullValue()))
-                .andExpect(jsonPath("$.res.[3].path").value("/Temp Reward Note"))
+                .andExpect(jsonPath("$.res.[3].path").value("/Draft Reward Notes"))
                 .andExpect(jsonPath("$.res.[3].public").value(false))
                 .andExpect(jsonPath("$.res[3].creatorUserObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res[3].creatorUserObj.userObjName").value(appUser.getName()))
@@ -310,7 +310,7 @@ public class FolderTest {
     @Test
     public void testGetAllFoldersAndNotesUnderUserSpecificFolder() throws Exception {
         //建立 parent folder and children folder
-        Folder parentFolder = createFolder("Buy", "/Buy", null);
+        Folder parentFolder = createFolder("Owned", "/Owned", null);
         Folder firstChildrenFolder = createFolder("Ting", "/Buy/Ting", parentFolder.getId());
         Folder secondChildrenFolder = createFolder("Ting2", "/Buy/Ting2", parentFolder.getId());
         //建立note
@@ -664,33 +664,33 @@ public class FolderTest {
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.[0].id").value(appUser.getFolders().get(0)))
-                .andExpect(jsonPath("$.res.[0].folderName").value("Buy"))
+                .andExpect(jsonPath("$.res.[0].folderName").value("Owned"))
                 .andExpect(jsonPath("$.res.[0].parent").value(IsNull.nullValue()))
-                .andExpect(jsonPath("$.res.[0].path").value("/Buy"))
+                .andExpect(jsonPath("$.res.[0].path").value("/Owned"))
                 .andExpect(jsonPath("$.res.[0].public").value(false))
                 .andExpect(jsonPath("$.res.[0].creatorUserObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.[0].creatorUserObj.userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.[0].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.[1].id").value(appUser.getFolders().get(1)))
-                .andExpect(jsonPath("$.res.[1].folderName").value("Favorite"))
+                .andExpect(jsonPath("$.res.[1].folderName").value("Favorites"))
                 .andExpect(jsonPath("$.res.[1].parent").value(IsNull.nullValue()))
-                .andExpect(jsonPath("$.res.[1].path").value("/Favorite"))
+                .andExpect(jsonPath("$.res.[1].path").value("/Favorites"))
                 .andExpect(jsonPath("$.res.[1].public").value(false))
                 .andExpect(jsonPath("$.res.[1].creatorUserObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.[1].creatorUserObj.userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.[1].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.[2].id").value(appUser.getFolders().get(2)))
-                .andExpect(jsonPath("$.res.[2].folderName").value("Folder"))
+                .andExpect(jsonPath("$.res.[2].folderName").value("Folders"))
                 .andExpect(jsonPath("$.res.[2].parent").value(IsNull.nullValue()))
-                .andExpect(jsonPath("$.res.[2].path").value("/Folder"))
+                .andExpect(jsonPath("$.res.[2].path").value("/Folders"))
                 .andExpect(jsonPath("$.res.[2].public").value(false))
                 .andExpect(jsonPath("$.res.[3].creatorUserObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.[3].creatorUserObj.userObjName").value(appUser.getName()))
                 .andExpect(jsonPath("$.res.[3].creatorUserObj.userObjAvatar").value(appUser.getHeadshotPhoto()))
                 .andExpect(jsonPath("$.res.[3].id").value(appUser.getFolders().get(3)))
-                .andExpect(jsonPath("$.res.[3].folderName").value("Temp Reward Note"))
+                .andExpect(jsonPath("$.res.[3].folderName").value("Draft Reward Notes"))
                 .andExpect(jsonPath("$.res.[3].parent").value(IsNull.nullValue()))
-                .andExpect(jsonPath("$.res.[3].path").value("/Temp Reward Note"))
+                .andExpect(jsonPath("$.res.[3].path").value("/Draft Reward Notes"))
                 .andExpect(jsonPath("$.res.[3].public").value(false))
                 .andExpect(jsonPath("$.res.[3].creatorUserObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.[3].creatorUserObj.userObjName").value(appUser.getName()))
@@ -706,9 +706,9 @@ public class FolderTest {
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(appUser.getFolders().get(1)))
-                .andExpect(jsonPath("$.res.folderName").value("Favorite"))
+                .andExpect(jsonPath("$.res.folderName").value("Favorites"))
                 .andExpect(jsonPath("$.res.parent").value(IsNull.nullValue()))
-                .andExpect(jsonPath("$.res.path").value("/Favorite"))
+                .andExpect(jsonPath("$.res.path").value("/Favorites"))
                 .andExpect(jsonPath("$.res.public").value(false))
                 .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
@@ -724,9 +724,9 @@ public class FolderTest {
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(appUser.getFolders().get(0)))
-                .andExpect(jsonPath("$.res.folderName").value("Buy"))
+                .andExpect(jsonPath("$.res.folderName").value("Owned"))
                 .andExpect(jsonPath("$.res.parent").value(IsNull.nullValue()))
-                .andExpect(jsonPath("$.res.path").value("/Buy"))
+                .andExpect(jsonPath("$.res.path").value("/Owned"))
                 .andExpect(jsonPath("$.res.public").value(false))
                 .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
@@ -742,9 +742,9 @@ public class FolderTest {
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res.id").value(appUser.getFolders().get(3)))
-                .andExpect(jsonPath("$.res.folderName").value("Temp Reward Note"))
+                .andExpect(jsonPath("$.res.folderName").value("Draft Reward Notes"))
                 .andExpect(jsonPath("$.res.parent").value(IsNull.nullValue()))
-                .andExpect(jsonPath("$.res.path").value("/Temp Reward Note"))
+                .andExpect(jsonPath("$.res.path").value("/Draft Reward Notes"))
                 .andExpect(jsonPath("$.res.public").value(false))
                 .andExpect(jsonPath("$.res.creatorUserObj.userObjEmail").value(appUser.getEmail()))
                 .andExpect(jsonPath("$.res.creatorUserObj.userObjName").value(appUser.getName()))
