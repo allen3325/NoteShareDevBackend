@@ -367,7 +367,7 @@ public class FolderService {
     public Folder getTempRewardNoteFolder(String email) {
         AppUser appUser = appUserService.getUserByEmail(email);
         for (String folderID : appUser.getFolders()) {
-            if (getFolderByID(folderID).getFolderName().equals("Temp Reward Note")) {
+            if (getFolderByID(folderID).getFolderName().equals("Draft Reward Notes")) {
                 return getFolderByID(folderID);
             }
         }
