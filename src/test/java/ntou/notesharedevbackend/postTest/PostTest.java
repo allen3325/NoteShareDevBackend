@@ -1054,7 +1054,7 @@ public class PostTest {
 
         mockMvc.perform(put("/post/publish/" + post.getId())
                         .headers(httpHeaders))
-                .andExpect(status().isOk())
+                .andExpect(status().is(409))
                 .andExpect(jsonPath("$.msg").value("can't change publish state before you got best answer."));
 
         if (postRepository.findById(post.getId()).get().getPublic().equals(false)) {
@@ -1068,7 +1068,7 @@ public class PostTest {
 
         mockMvc.perform(put("/post/publish/" + post.getId())
                         .headers(httpHeaders))
-                .andExpect(status().isOk())
+                .andExpect(status().is(409))
                 .andExpect(jsonPath("$.msg").value("can't change publish state before you got best answer."));
 
         if (postRepository.findById(post.getId()).get().getPublic().equals(false)) {
@@ -1564,7 +1564,7 @@ public class PostTest {
 
         mockMvc.perform(put("/post/archive/" + post.getId())
                         .headers(httpHeaders))
-                .andExpect(status().isOk())
+                .andExpect(status().is(409))
                 .andExpect(jsonPath("$.res").value("can't change archive state before you got best answer."));
 
         if (postRepository.findById(post.getId()).get().getArchive().equals(true)) {
@@ -1578,7 +1578,7 @@ public class PostTest {
 
         mockMvc.perform(put("/post/archive/" + post.getId())
                         .headers(httpHeaders))
-                .andExpect(status().isOk())
+                .andExpect(status().is(409))
                 .andExpect(jsonPath("$.res").value("can't change archive state before you got best answer."));
 
         if (postRepository.findById(post.getId()).get().getArchive().equals(true)) {
