@@ -77,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000/", "http://54.238.149.164:3000/", "https://54" +
-                ".238.149.164:3000/","https://noteshare.soselab.tw/"));
+                ".238.149.164:3000/","https://noteshare.soselab.tw/","http://noteshare.ninja/"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(List.of("Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
                 "Access-Control-Request-Method", "Access-Control-Request-Headers", "Origin", "Cache-Control", "Content-Type", "Authorization"));
