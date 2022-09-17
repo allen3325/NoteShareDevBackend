@@ -85,10 +85,10 @@ public class PostTest {
         appUser.setActivate(true);
         appUser.setName(name);
         appUser.setPassword(passwordEncoder.encode("1234"));
-        Folder buyFolder = createFolder("Buy", "/Buy", null, name);
-        Folder favoriteFolder = createFolder("Favorite", "/Favorite", null, name);
-        Folder defaultFolder = createFolder("Folder", "/Folder", null, name);
-        Folder tempRewardNote = createFolder("Temp Reward Note", "/TempRewardNote", null, name);
+        Folder buyFolder = createFolder("Owned", "/Owned", null, name);
+        Folder favoriteFolder = createFolder("Favorites", "/Favorites", null, name);
+        Folder defaultFolder = createFolder("Folders", "/Folders", null, name);
+        Folder tempRewardNote = createFolder("Draft Reward Notes", "/TempRewardNote", null, name);
         Folder collaborationFolder = createFolder("Collaboration", "/Collaboration", null, name);
         Folder OSFolder = createFolder("OS", "/OS", null, name);
         ArrayList<String> folderList = new ArrayList<>();
@@ -1054,7 +1054,7 @@ public class PostTest {
 
         mockMvc.perform(put("/post/publish/" + post.getId())
                         .headers(httpHeaders))
-                .andExpect(status().isOk())
+                .andExpect(status().is(409))
                 .andExpect(jsonPath("$.msg").value("can't change publish state before you got best answer."));
 
         if (postRepository.findById(post.getId()).get().getPublic().equals(false)) {
@@ -1068,7 +1068,7 @@ public class PostTest {
 
         mockMvc.perform(put("/post/publish/" + post.getId())
                         .headers(httpHeaders))
-                .andExpect(status().isOk())
+                .andExpect(status().is(409))
                 .andExpect(jsonPath("$.msg").value("can't change publish state before you got best answer."));
 
         if (postRepository.findById(post.getId()).get().getPublic().equals(false)) {
@@ -1564,7 +1564,7 @@ public class PostTest {
 
         mockMvc.perform(put("/post/archive/" + post.getId())
                         .headers(httpHeaders))
-                .andExpect(status().isOk())
+                .andExpect(status().is(409))
                 .andExpect(jsonPath("$.res").value("can't change archive state before you got best answer."));
 
         if (postRepository.findById(post.getId()).get().getArchive().equals(true)) {
@@ -1578,7 +1578,7 @@ public class PostTest {
 
         mockMvc.perform(put("/post/archive/" + post.getId())
                         .headers(httpHeaders))
-                .andExpect(status().isOk())
+                .andExpect(status().is(409))
                 .andExpect(jsonPath("$.res").value("can't change archive state before you got best answer."));
 
         if (postRepository.findById(post.getId()).get().getArchive().equals(true)) {

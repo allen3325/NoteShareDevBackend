@@ -595,7 +595,7 @@ public class NoteService {
     public Folder removeNoteFromFolder(String noteID, String folderID) {
         //判斷是否為buyFolder，裡面筆記不可刪除
         Folder folder = folderService.getFolderByID(folderID);
-        if (folder.getFolderName().equals("Buy")) {
+        if (folder.getFolderName().equals("Owned")) {
             return folder;
         }
         //判斷是否為購買的筆記
