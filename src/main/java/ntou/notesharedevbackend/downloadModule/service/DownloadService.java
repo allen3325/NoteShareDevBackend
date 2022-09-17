@@ -1,14 +1,18 @@
 package ntou.notesharedevbackend.downloadModule.service;
 
 import com.itextpdf.html2pdf.*;
+import com.lowagie.text.pdf.*;
 import ntou.notesharedevbackend.noteModule.entity.*;
 import ntou.notesharedevbackend.noteModule.service.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
+import org.xhtmlrenderer.pdf.*;
 
 import java.io.*;
+import java.net.*;
 import java.nio.charset.*;
 import java.nio.file.*;
+import java.util.*;
 
 @Service
 public class DownloadService {
@@ -22,8 +26,25 @@ public class DownloadService {
     // generate PDF from HTML -> convert into byte[]
     public byte[] convertHtmlToPdf() {
         byte[] pdf = null;
+//        try {
+//            HtmlConverter.convertToPdf(new File(htmlPath), new File(homePath + "/NoteShare.pdf"));
+//            Path pdfPath = Paths.get(homePath + "/NoteShare.pdf");
+//            pdf = Files.readAllBytes(pdfPath);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
         try {
-            HtmlConverter.convertToPdf(new File(htmlPath), new File(homePath + "/NoteShare.pdf"));
+            String url = new File(htmlPath).toURI().toURL().toString();
+            OutputStream os = new FileOutputStream(homePath + "/NoteShare.pdf");
+            ITextRenderer renderer = new ITextRenderer();
+
+            renderer.getFontResolver().addFont("C:/Windows/fonts/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+
+            renderer.setDocument(url);
+            renderer.layout();
+            renderer.createPDF(os);
+            os.close();
             Path pdfPath = Paths.get(homePath + "/NoteShare.pdf");
             pdf = Files.readAllBytes(pdfPath);
         } catch (IOException e) {
@@ -49,13 +70,15 @@ public class DownloadService {
         Content getContent = versionContent.getContent().get(content);
         String htmlContent = getContent.getMycustom_html();
         String css = getContent.getMycustom_css();
+        css = removeFontFamily(css);
+
         htmlContent = "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
                 "<head>\n" +
                 "    <meta charset=\"UTF-8\" />\n" +
                 "    <link  href=\"note.css\" rel=\"stylesheet\" type=\"text/css\" />\n" +
                 "</head>\n" +
-                "<body>\n" +
+                "<body style=\"font-family:SimSun\" >\n" +
                 htmlContent + "\n" +
                 "</body>\n" +
                 "</html>" ;
@@ -68,5 +91,23 @@ public class DownloadService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String removeFontFamily (String cssString) {
+        int indexOfFontFamily = cssString.indexOf("font-family", 0);
+
+        // found "font-family"
+        while (indexOfFontFamily >= 0) {
+            // get index of "font-family" & ";"
+            int i = indexOfFontFamily;
+            int indexOfSemicolon = cssString.indexOf(";", i) + 1;
+            // remove substring
+            String toBeRemoved = cssString.substring(indexOfFontFamily, indexOfSemicolon);
+            cssString = cssString.replace(toBeRemoved, "");
+
+            indexOfFontFamily = cssString.indexOf("font-family", 0);
+        }
+
+        return cssString;
     }
 }
