@@ -164,4 +164,17 @@ public class FolderController {
 
         return ResponseEntity.ok(res);
     }
+
+    @Operation(summary = "Change folder's public state.", description = "填入資料夾ID")
+    @PutMapping("/public/{folderID}")
+    public ResponseEntity<Object> changeFolderPublicState(@PathVariable(name = "folderID") String folderID) {
+        Map<String, Object> res = new HashMap<>();
+        if (folderService.changeState(folderID)) {
+            res.put("msg","Success");
+            return ResponseEntity.ok(res);
+        } else {
+            res.put("msg","Fail");
+            return ResponseEntity.status(418).body(res);
+        }
+    }
 }
