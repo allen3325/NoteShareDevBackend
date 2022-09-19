@@ -384,4 +384,14 @@ public class FolderService {
         return null;
     }
 
+    public boolean changeState(String folderID) {
+        Folder folder = getFolderByID(folderID);
+        if(folder != null){
+            folder.setPublic(!folder.getPublic());
+            Folder folder2 = replaceFolder(folder);
+            System.out.println(folder2.getPublic());
+            return true;
+        }
+        return false;
+    }
 }
