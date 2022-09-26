@@ -15,7 +15,7 @@ public class TagController {
     private TagService tagService;
 
     @Operation(summary = "store recommended tags in a note")
-    @PutMapping("/wordSuggestion/{noteID}")
+    @GetMapping("/wordSuggestion/{noteID}")
     public ResponseEntity<Object> getWordSuggestion(@PathVariable("noteID") String noteID) {
         List<String> generatedTags = tagService.getWordSuggestion(noteID);
         Map<String, Object> res = new HashMap<>();
