@@ -153,32 +153,12 @@ public class TagTest {
     public void testGetWordSuggestion() throws Exception {
         Note note = createNormalNote();
 
-        mockMvc.perform(put("/note/tag/wordSuggestion/" + note.getId())
+        mockMvc.perform(get("/note/tag/wordSuggestion/" + note.getId())
                         .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.generatedTags.[0]").value("deep learning"))
                 .andExpect(jsonPath("$.generatedTags.[1]").value("machine learning"))
                 .andExpect(jsonPath("$.generatedTags.[2]").value("python"));
-
-        note = noteRepository.findById(note.getId()).get();
-        if (!note.getTag().contains("python")) {
-            throw new Exception("Tag Test : note's tag doesn't update");
-        }
-        if (!note.getTag().contains("machine learning")) {
-            throw new Exception("Tag Test : note's tag doesn't update");
-        }
-        if (!note.getTag().contains("deep learning")) {
-            throw new Exception("Tag Test : note's tag doesn't update");
-        }
-        if (!note.getHiddenTag().contains("python")) {
-            throw new Exception("Tag Test : note's hidden tag doesn't update");
-        }
-        if (!note.getHiddenTag().contains("machine learning")) {
-            throw new Exception("Tag Test : note's hidden tag doesn't update");
-        }
-        if (!note.getHiddenTag().contains("deep learning")) {
-            throw new Exception("Tag Test : note's hidden tag doesn't update");
-        }
     }
 
     @Test
