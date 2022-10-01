@@ -26,21 +26,13 @@ jobs:
         java-version: '11'
         distribution: 'zulu'
         cache: maven
-    - name: create-json
-      id: create-json
-      uses: jsdaniell/create-json@1.1.2
+    - run: mvn clean
+    - run: mvn install:install-file -Dfile=libs/better-jieba-1.0.0-SNAPSHOT.jar -DgroupId=org.manlier -DartifactId=better-jieba -Dversion=1.0.0-SNAPSHOT -Dpackaging=jar
+    - run: mvn --batch-mode --update-snapshots verify
+    - run: mkdir staging && cp target/*.jar staging
+    - uses: actions/upload-artifact@v3
       with:
-        name: "testingocr-331615-5004a2226dc5.json"
-        json: ${{ secrets.OCR_JSON }}
-        dir: "/"
-    - run: git config --global user.email "00857146@email.ntou.edu.tw" && git config --global user.name "allen3325" && git add . && git add --force testingocr-331615-5004a2226dc5.json && git status && git commit -a -m "Deploy Google Vision API JSON created!"
-#     - run: mvn clean
-#     - run: mvn install:install-file -Dfile=libs/better-jieba-1.0.0-SNAPSHOT.jar -DgroupId=org.manlier -DartifactId=better-jieba -Dversion=1.0.0-SNAPSHOT -Dpackaging=jar
-#     - run: mvn --batch-mode --update-snapshots verify
-#     - run: mkdir staging && cp target/*.jar staging
-#     - uses: actions/upload-artifact@v3
-#       with:
-#         name: Package
-#         path: staging  
+        name: Package
+        path: staging  
 #     - name: Build with Maven
 #       run: mvn -B package --file pom.xml
