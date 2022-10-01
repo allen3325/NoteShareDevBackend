@@ -34,6 +34,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: noteshare/backend:deployaws
+          no-cache: true
       -
         name: Send mail
         uses: dawidd6/action-send-mail@v3
