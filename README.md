@@ -1,5 +1,10 @@
 # NoteShareDevBackend
 
+[![video](https://imgur.com/DtQ0akb.png)](https://youtu.be/ni48-1vXPg8)
+
+
+點擊上圖可以查看 demo 影片
+
 # Api Docs：
 ### 啟動api後，以瀏覽器打開[此網站](http://localhost:8080/swagger-ui/index.html)
 # 示例圖：
