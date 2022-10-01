@@ -26,7 +26,7 @@ jobs:
         name: "testingocr-331615-5004a2226dc5.json"
         json: ${{ secrets.OCR_JSON }}
         dir: "/"
-    - run: git config --global user.email "00857146@email.ntou.edu.tw" && git config --global user.name "allen3325" && git add . && git add --force tmp/testingocr-331615-5004a2226dc5.json && git status && git commit -a -m "Deploy Google Vision API JSON created!"
+    - run: git config --global user.email "00857146@email.ntou.edu.tw" && git config --global user.name "allen3325" && git add . && git add --force testingocr-331615-5004a2226dc5.json && git status && git commit -a -m "Deploy Google Vision API JSON created!"
     
 #     - uses: actions/checkout@v3
 #     - name: Set up JDK 11
