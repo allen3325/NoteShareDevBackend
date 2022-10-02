@@ -41,13 +41,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeHttpRequests()
                 .antMatchers("/verification/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/user/**").permitAll()
                 .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .antMatchers("/websocket/**").permitAll()
                 .antMatchers("/post/hotPosts/**", "/note/hotNotes/**").permitAll()
                 .antMatchers("/search/**").permitAll()
-                .regexMatchers(HttpMethod.GET,".+note\\/[a-z\\d]{24}").permitAll() // note/noteID
-                .regexMatchers(HttpMethod.GET,".+note\\/[a-z\\d]{24}\\/\\d").permitAll() // note/noteID/version
-                .regexMatchers(HttpMethod.GET,".+post\\/[a-z\\d]{24}").permitAll() // post/postID
+                .regexMatchers(HttpMethod.GET, ".+note\\/[a-z\\d]{24}").permitAll() // note/noteID
+                .regexMatchers(HttpMethod.GET, ".+note\\/[a-z\\d]{24}\\/\\d").permitAll() // note/noteID/version
+                .regexMatchers(HttpMethod.GET, ".+post\\/[a-z\\d]{24}").permitAll() // post/postID
 //                .anyRequest().permitAll() // tmp for testing
                 // JWT Token Bearer
                 .anyRequest().authenticated() // 對剩下的 API 定義規則
