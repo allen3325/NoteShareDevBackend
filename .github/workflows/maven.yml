@@ -36,10 +36,12 @@ jobs:
         java-version: '11'
         distribution: 'zulu'
         cache: maven
-    - run: mvn clean
-    - run: mvn install:install-file -Dfile=libs/better-jieba-1.0.0-SNAPSHOT.jar -DgroupId=org.manlier -DartifactId=better-jieba -Dversion=1.0.0-SNAPSHOT -Dpackaging=jar
     - run: export GOOGLE_APPLICATION_CREDENTIALS="/home/runner/work/NoteShareDevBackend/NoteShareDevBackend/testingocr-331615-5004a2226dc5.json"
-    - run: mvn test
+    - run: ls "$GOOGLE_APPLICATION_CREDENTIALS"
+#    - run: mvn clean
+#    - run: mvn install:install-file -Dfile=libs/better-jieba-1.0.0-SNAPSHOT.jar -DgroupId=org.manlier -DartifactId=better-jieba -Dversion=1.0.0-SNAPSHOT -Dpackaging=jar
+
+#    - run: mvn test
 #    - run: mkdir staging && cp target/*.jar staging
 #    - uses: actions/upload-artifact@v3
 #      with:
