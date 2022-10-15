@@ -17,6 +17,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env: # Or as an environment variable
+      GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.OCR_JSON }}
 
 
     steps:
@@ -28,8 +30,6 @@ jobs:
         java-version: '11'
         distribution: 'zulu'
         cache: maven
-      env: # Or as an environment variable
-        testingocr-331615-5004a2226dc5: ${{ secrets.OCR_JSON }}
     - run: mvn clean
     - run: mvn install:install-file -Dfile=libs/better-jieba-1.0.0-SNAPSHOT.jar -DgroupId=org.manlier -DartifactId=better-jieba -Dversion=1.0.0-SNAPSHOT -Dpackaging=jar
     - run: mvn test
