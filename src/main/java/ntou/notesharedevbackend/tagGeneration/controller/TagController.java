@@ -14,8 +14,8 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
-    @Operation(summary = "store recommended tags in a note")
-    @PutMapping("/wordSuggestion/{noteID}")
+    @Operation(summary = "get recommended tags in a note")
+    @GetMapping("/wordSuggestion/{noteID}")
     public ResponseEntity<Object> getWordSuggestion(@PathVariable("noteID") String noteID) {
         List<String> generatedTags = tagService.getWordSuggestion(noteID);
         Map<String, Object> res = new HashMap<>();
@@ -37,7 +37,7 @@ public class TagController {
     public ResponseEntity<Object> addWordToDict(@RequestBody Map<String, String[]> request) {
         String[] words = request.get("words");
         for (String word : words)
-            tagService.addWordToDict(word);
+            tagService.addWordToDict(word.toLowerCase());
 
         Map<String, Object> res = new HashMap<>();
         res.put("msg", "Success");

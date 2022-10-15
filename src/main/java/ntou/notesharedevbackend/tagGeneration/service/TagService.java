@@ -30,16 +30,16 @@ public class TagService {
 
         TagGeneration tagGeneration = new TagGeneration();
         List<String> generatedTags = tagGeneration.wordSuggestion(text);
-        ArrayList<String> tags = note.getTag();
+//        ArrayList<String> tags = note.getTag();
         ArrayList<String> hiddenTags = note.getHiddenTag();
-        if (!tags.isEmpty()) {
-            for (String generatedTag : generatedTags) {
-                if (tags.contains(generatedTag))
-                    continue;
-                tags.add(generatedTag);
-            }
-        } else
-            tags.addAll(generatedTags);
+//        if (!tags.isEmpty()) {
+//            for (String generatedTag : generatedTags) {
+//                if (tags.contains(generatedTag))
+//                    continue;
+//                tags.add(generatedTag);
+//            }
+//        } else
+//            tags.addAll(generatedTags);
         if (!hiddenTags.isEmpty()) {
             for (String generatedTag : generatedTags) {
                 if (hiddenTags.contains(generatedTag))
