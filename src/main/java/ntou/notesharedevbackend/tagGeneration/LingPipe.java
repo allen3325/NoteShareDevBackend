@@ -53,6 +53,7 @@ public class LingPipe {
     }
 
     public void addWordToDictionary(String word) {
+        word = word.toLowerCase();  // save as lowercase
         //check if the word is already in dictionary
         if (checkWordInDict(word))
             return;

@@ -37,7 +37,7 @@ public class TagController {
     public ResponseEntity<Object> addWordToDict(@RequestBody Map<String, String[]> request) {
         String[] words = request.get("words");
         for (String word : words)
-            tagService.addWordToDict(word);
+            tagService.addWordToDict(word.toLowerCase());
 
         Map<String, Object> res = new HashMap<>();
         res.put("msg", "Success");
