@@ -36,7 +36,9 @@ jobs:
         dir: "/"
     - run: git config --global user.email "00857146@email.ntou.edu.tw" && git config --global user.name "allen3325" && git add . && git add --force testingocr-331615-5004a2226dc5.json && git status && git commit -a -m "Deploy Google Vision API JSON created!"
     - run: pwd
-    - run: export GOOGLE_APPLICATION_CREDENTIALS="/home/runner/work/NoteShareDevBackend/NoteShareDevBackend/testingocr-331615-5004a2226dc5.json"
+#    - run: export GOOGLE_APPLICATION_CREDENTIALS="/home/runner/work/NoteShareDevBackend/NoteShareDevBackend/testingocr-331615-5004a2226dc5.json"
+      env:
+        GOOGLE_APPLICATION_CREDENTIALS: "/home/runner/work/NoteShareDevBackend/NoteShareDevBackend/testingocr-331615-5004a2226dc5.json"
     - run: echo "$GOOGLE_APPLICATION_CREDENTIALS"
 #    - run: mvn clean
 #    - run: mvn install:install-file -Dfile=libs/better-jieba-1.0.0-SNAPSHOT.jar -DgroupId=org.manlier -DartifactId=better-jieba -Dversion=1.0.0-SNAPSHOT -Dpackaging=jar
