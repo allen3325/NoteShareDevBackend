@@ -49,13 +49,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .regexMatchers(HttpMethod.GET, ".+note\\/[a-z\\d]{24}").permitAll() // note/noteID
                 .regexMatchers(HttpMethod.GET, ".+note\\/[a-z\\d]{24}\\/\\d").permitAll() // note/noteID/version
                 .regexMatchers(HttpMethod.GET, ".+post\\/[a-z\\d]{24}").permitAll() // post/postID
-//                .anyRequest().permitAll() // tmp for testing
+                .anyRequest().permitAll() // tmp for testing
                 // JWT Token Bearer
-                .anyRequest().authenticated() // 對剩下的 API 定義規則
-                .and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .anyRequest().authenticated() // 對剩下的 API 定義規則
+//                .and()
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .csrf().disable()
                 .cors().and();
