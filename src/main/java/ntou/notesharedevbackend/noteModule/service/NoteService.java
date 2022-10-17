@@ -388,6 +388,10 @@ public class NoteService {
         note.setClickDate(oldNote.getClickDate());
         note.setClickNum(note.getClickDate().size());
         note.setContent(request.getContent());
+        note.setPlagiarismPoint(request.getPlagiarismPoint());
+        note.setPlagiarismPointResult(request.getPlagiarismPointResult());
+        note.setQuotePoint(request.getQuotePoint());
+        note.setQuotePointResult(request.getQuotePointResult());
         return noteRepository.save(note);
     }
 
