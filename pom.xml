@@ -152,12 +152,14 @@
 <!--            <artifactId>quartz-mongodb</artifactId>-->
 <!--            <version>2.2.0-rc2</version>-->
 <!--        </dependency>-->
-        <!-- https://mvnrepository.com/artifact/com.novemberain/quartz-mongodb -->
+
+        <!-- https://mvnrepository.com/artifact/io.fluidsonic.mirror/quartz-mongodb -->
         <dependency>
-            <groupId>com.novemberain</groupId>
+            <groupId>io.fluidsonic.mirror</groupId>
             <artifactId>quartz-mongodb</artifactId>
             <version>2.2.0-rc2</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
