@@ -21,10 +21,10 @@
             <id>michaelklishin</id>
             <url>https://dl.bintray.com/michaelklishin/maven/</url>
         </repository>
-        <repository>
-            <id>jcenter</id>
-            <url>https://jcenter.bintray.com/</url>
-        </repository>
+<!--        <repository>-->
+<!--            <id>jcenter</id>-->
+<!--            <url>https://jcenter.bintray.com/</url>-->
+<!--        </repository>-->
         <!--        <repository>-->
         <!--            <id>tmp</id>-->
         <!--            <url>file://${project.basedir}/libs</url>-->
@@ -147,11 +147,18 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.novemberain</groupId>-->
+<!--            <artifactId>quartz-mongodb</artifactId>-->
+<!--            <version>2.2.0-rc2</version>-->
+<!--        </dependency>-->
+        <!-- https://mvnrepository.com/artifact/com.novemberain/quartz-mongodb -->
         <dependency>
             <groupId>com.novemberain</groupId>
             <artifactId>quartz-mongodb</artifactId>
             <version>2.2.0-rc2</version>
         </dependency>
+
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
